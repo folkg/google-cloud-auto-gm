@@ -1,39 +1,34 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { CallableContext } from "firebase-functions/lib/common/providers/https";
+import {CallableContext} from "firebase-functions/lib/common/providers/https";
 
-import { Team } from "./interfaces/team";
-import { httpGet } from "./services/yahooHttp.service";
+import {Team} from "./interfaces/team";
+import {httpGet} from "./services/yahooHttp.service";
 
 exports.refreshTeams = functions.https.onCall(
-  async (data, context: CallableContext) => {
-    const uid = context.auth?.uid;
-    if (!uid) {
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        "You must be logged in to get an access token"
-      );
-    }
-    const teams: Team[] = await fetchTeamsFromYahoo(uid);
+    async (data, context: CallableContext) => {
+      const uid = context.auth?.uid;
+      if (!uid) {
+        throw new functions.https.HttpsError(
+            "unauthenticated",
+            "You must be logged in to get an access token"
+        );
+      }
+      const teams: Team[] = await fetchTeamsFromYahoo(uid);
 
-    const db = admin.firestore();
-    const batch = db.batch();
-    teams.forEach((team) => {
+      const db = admin.firestore();
+      const batch = db.batch();
+      teams.forEach((team) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data: any = team;
-      const docId = String(team.team_key);
-      // remove the team_key from the data since it will be the doc id
-      // and add the uid as a field
-      delete data.team_key;
-      data.uid = uid;
-
-      const docRef = db.collection("teams").doc(docId);
-      batch.set(docRef, data);
-    });
-    const results = await batch.commit();
-    // TODO: Add a more meaningful return value? Or does it matter?
-    return results;
-  }
+        const data: any = team;
+        const docId = String(team.team_key);
+        // remove the team_key from the data since it will be the doc id
+        delete data.team_key;
+        const docRef = db.collection("users/" + uid + "/teams").doc(docId);
+        batch.set(docRef, data);
+      });
+      await batch.commit();
+    }
 );
 
 /**
@@ -53,7 +48,6 @@ async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
       const game = games[key].game[0];
       const leagues = games[key].game[1].leagues;
       // Loop through each league within the game
-      // TODO: Convert date to a timestamp
       for (const key in leagues) {
         if (key !== "count") {
           const allTeams = leagues[key].league[1].standings[0].teams;
@@ -88,16 +82,16 @@ async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
 async function getAllStandings(uid: string): Promise<any> {
   try {
     return await httpGet(
-      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
+        "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
         "leagues/standings?format=json",
-      uid
+        uid
     );
   } catch (error) {
     console.log("Error fetching teams from Yahoo API:");
     console.log(error);
     throw new functions.https.HttpsError(
-      "internal",
-      "Communication with Yahoo failed: " + error
+        "internal",
+        "Communication with Yahoo failed: " + error
     );
   }
 }
