@@ -4,6 +4,7 @@ export interface Team {
   scoring_type: string;
   start_date: number;
   end_date: number;
+  weekly_deadline: string | number;
   edit_key: string;
   is_approved: boolean;
   is_setting_lineups: boolean;

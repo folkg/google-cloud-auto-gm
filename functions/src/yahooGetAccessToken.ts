@@ -1,34 +1,35 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {CallableContext} from "firebase-functions/lib/common/providers/https";
+import { CallableContext } from "firebase-functions/lib/common/providers/https";
 
 import {
   ReturnCredential,
   YahooCredential,
   YahooRefreshRequestBody,
 } from "./interfaces/credential";
-import {httpPost} from "./services/yahooHttp.service";
+import { httpPost } from "./services/yahooHttp.service";
 
 exports.getAccessToken = functions.https.onCall(
-    async (data, context: CallableContext) => {
-      const uid = context.auth?.uid;
-      if (!uid) {
-        throw new functions.https.HttpsError(
-            "unauthenticated",
-            "You must be logged in to get an access token"
-        );
-      }
-      return loadYahooAccessToken(uid);
+  async (data, context: CallableContext) => {
+    const uid = context.auth?.uid;
+    if (!uid) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "You must be logged in to get an access token"
+      );
     }
+    return loadYahooAccessToken(uid);
+  }
 );
 
+//TODO: move these functions into different yahooAPI service?
 /**
  * Load the access token from DB, or refresh from Yahoo if expired
  * @param {(string)} uid The firebase uid
  * @return {Promise<ReturnCredential>} The credential with token and expiry
  */
 export async function loadYahooAccessToken(
-    uid: string
+  uid: string
 ): Promise<ReturnCredential> {
   const db = admin.firestore();
 
@@ -38,8 +39,8 @@ export async function loadYahooAccessToken(
   const docData = doc.data();
   if (!doc.exists || !docData) {
     throw new functions.https.HttpsError(
-        "not-found",
-        "No access token found for user"
+      "not-found",
+      "No access token found for user"
     );
   }
 
@@ -65,8 +66,8 @@ export async function loadYahooAccessToken(
  * @return {Promise<ReturnCredential>} The new credential
  */
 async function refreshYahooAccessToken(
-    uid: string,
-    refreshToken: string
+  uid: string,
+  refreshToken: string
 ): Promise<ReturnCredential> {
   const db = admin.firestore();
 
@@ -79,13 +80,13 @@ async function refreshYahooAccessToken(
     grant_type: "refresh_token",
   };
   const body = Object.keys(requestBody)
-      .map(
-          (key) =>
-            encodeURIComponent(key) +
+    .map(
+      (key) =>
+        encodeURIComponent(key) +
         "=" +
         encodeURIComponent(requestBody[key as keyof YahooRefreshRequestBody])
-      )
-      .join("&");
+    )
+    .join("&");
 
   let results: YahooCredential;
   try {
@@ -94,8 +95,8 @@ async function refreshYahooAccessToken(
     console.log("Error fetching token from Yahoo API:");
     console.log(error);
     throw new functions.https.HttpsError(
-        "internal",
-        "Communication with Yahoo failed." + error
+      "internal",
+      "Communication with Yahoo failed." + error
     );
   }
 
