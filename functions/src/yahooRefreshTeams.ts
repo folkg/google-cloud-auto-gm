@@ -1,31 +1,46 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-import {Team} from "./interfaces/team";
-import {httpGetAxios} from "./services/yahooHttp.service";
-import {AxiosError} from "axios";
+import { Team } from "./interfaces/team";
+import { httpGetAxios } from "./services/yahooHttp.service";
+import { AxiosError } from "axios";
 
 exports.refreshTeams = functions.https.onCall(async (data, context) => {
   const uid = context.auth?.uid;
   if (!uid) {
     throw new functions.https.HttpsError(
-        "unauthenticated",
-        "You must be logged in to get an access token"
+      "unauthenticated",
+      "You must be logged in to get an access token"
     );
   }
-  const teams: Team[] = await fetchTeamsFromYahoo(uid);
-
   const db = admin.firestore();
-  const batch = db.batch();
-  teams.forEach((team) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = team;
-    const docId = String(team.team_key);
-    // remove the team_key from the data since it will be the doc id
-    delete data.team_key;
-    const docRef = db.collection("users/" + uid + "/teams").doc(docId);
-    batch.set(docRef, data);
+  const existingTeams: string[] = [];
+
+  const [yahooTeams, teamsSnapshot] = await Promise.all([
+    fetchTeamsFromYahoo(uid),
+    db.collection("users/" + uid + "/teams").get(),
+  ]);
+  console.log(yahooTeams);
+  console.log("Fetched teams from Firebase:");
+  teamsSnapshot.forEach((doc) => {
+    existingTeams.push(doc.id);
   });
+  console.log(existingTeams);
+
+  const batch = db.batch();
+
+  // Check each team from Yahoo and add it to batch if it isn't in firestore
+  for (const yTeam of yahooTeams) {
+    if (!existingTeams.includes(yTeam.team_key)) {
+      console.log("Adding team to batch: " + yTeam.team_key);
+      const data: any = yTeam;
+      const docId = String(yTeam.team_key);
+      // remove the team_key from the data since it will be the doc id
+      delete data.team_key;
+      const docRef = db.collection("users/" + uid + "/teams").doc(docId);
+      batch.set(docRef, data);
+    }
+  }
   await batch.commit();
 });
 
@@ -83,10 +98,10 @@ async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
  */
 async function getAllStandings(uid: string): Promise<any> {
   try {
-    const {data} = await httpGetAxios(
-        "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
+    const { data } = await httpGetAxios(
+      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
         "leagues/standings?format=json",
-        uid
+      uid
     );
     return data;
   } catch (error: AxiosError | any) {
@@ -96,8 +111,8 @@ async function getAllStandings(uid: string): Promise<any> {
       console.log(error.response.status);
       console.log(error.response.headers);
       throw new functions.https.HttpsError(
-          "internal",
-          "Communication with Yahoo failed: " + error.response.data
+        "internal",
+        "Communication with Yahoo failed: " + error.response.data
       );
     }
   }
