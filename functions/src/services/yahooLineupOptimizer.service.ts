@@ -1,4 +1,4 @@
-import { Player, Roster, RosterModification } from "../interfaces/roster";
+import {Player, Roster, RosterModification} from "../interfaces/roster";
 
 // Statuses to be considered a "healthy" player
 const HEALTHY_STATUS_LIST = ["Healthy", "Questionable", "Probable"];
@@ -213,7 +213,7 @@ export function optimizeStartingLineup(teamRoster: Roster) {
           while (playerCompareFunction(thirdPlayer, benchPlayer) < 0) {
             if (
               rosterPlayer.eligible_positions.includes(
-                thirdPlayer.selected_position
+                  thirdPlayer.selected_position
               )
             ) {
               // If rosterPlayer can be swapped with any of the earlier players,

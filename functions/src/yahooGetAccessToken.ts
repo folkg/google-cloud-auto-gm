@@ -7,7 +7,8 @@ import {
   YahooCredential,
   YahooRefreshRequestBody,
 } from "./interfaces/credential";
-import {httpPost} from "./services/yahooHttp.service";
+import {httpPostAxios} from "./services/yahooHttp.service";
+import {AxiosError} from "axios";
 
 exports.getAccessToken = functions.https.onCall(
     async (data, context: CallableContext) => {
@@ -23,6 +24,7 @@ exports.getAccessToken = functions.https.onCall(
 );
 
 // TODO: move these functions into different yahooAPI service?
+// TODO: Ensure this post request is working with axios
 /**
  * Load the access token from DB, or refresh from Yahoo if expired
  * @param {(string)} uid The firebase uid
@@ -70,6 +72,10 @@ async function refreshYahooAccessToken(
     refreshToken: string
 ): Promise<ReturnCredential> {
   const db = admin.firestore();
+  let credential: ReturnCredential = {
+    accessToken: "",
+    tokenExpirationTime: -1,
+  };
 
   const url = "https://api.login.yahoo.com/oauth2/get_token";
   const requestBody: YahooRefreshRequestBody = {
@@ -90,33 +96,36 @@ async function refreshYahooAccessToken(
 
   let results: YahooCredential;
   try {
-    results = (await httpPost(url, body)) as YahooCredential;
-  } catch (error) {
-    console.log("Error fetching token from Yahoo API:");
-    console.log(error);
-    throw new functions.https.HttpsError(
-        "internal",
-        "Communication with Yahoo failed." + error
-    );
+    const {data} = await httpPostAxios(url, body);
+    results = data as YahooCredential;
+    // Get the token info from the response and save it to the database
+    const accessToken = results.access_token;
+    const tokenExpirationTime = results.expires_in * 1000 + Date.now();
+    const token = {
+      accessToken: accessToken,
+      refreshToken: results.refresh_token,
+      tokenExpirationTime: tokenExpirationTime,
+    };
+
+    // set will add or overwrite the data
+    await db.collection("users").doc(uid).set(token);
+
+    // return the credential from the function (without the refresh token)
+    credential = {
+      accessToken: accessToken,
+      tokenExpirationTime: tokenExpirationTime,
+    };
+  } catch (error: AxiosError | any) {
+    console.log("Error fetching token from Yahoo API");
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      throw new functions.https.HttpsError(
+          "internal",
+          "Communication with Yahoo failed: " + error.response.data
+      );
+    }
   }
-
-  // Get the token info from the response and save it to the database
-  const accessToken = results.access_token;
-  const tokenExpirationTime = results.expires_in * 1000 + Date.now();
-  const data = {
-    accessToken: accessToken,
-    refreshToken: results.refresh_token,
-    tokenExpirationTime: tokenExpirationTime,
-  };
-
-  // set will add or overwrite the data
-  await db.collection("users").doc(uid).set(data);
-
-  // return the credential from the function (without the refresh token)
-  const credential: ReturnCredential = {
-    accessToken: accessToken,
-    tokenExpirationTime: tokenExpirationTime,
-  };
-
   return credential;
 }

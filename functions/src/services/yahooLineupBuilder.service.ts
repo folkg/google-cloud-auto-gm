@@ -1,7 +1,8 @@
 import * as functions from "firebase-functions";
-import { httpGet } from "./yahooHttp.service";
-import { getChild } from "./utilities.service";
-import { Player, Roster } from "../interfaces/roster";
+import {httpGetAxios} from "./yahooHttp.service";
+import {getChild} from "./utilities.service";
+import {Player, Roster} from "../interfaces/roster";
+import {AxiosError} from "axios";
 
 /**
  * A function to build the roster object for a team
@@ -13,8 +14,8 @@ import { Player, Roster } from "../interfaces/roster";
  * @return {Promise<any>}
  */
 export async function fetchRostersFromYahoo(
-  games: string,
-  uid: string
+    games: string,
+    uid: string
 ): Promise<Roster[]> {
   try {
     const yahooRostersJSON = await getRostersByGameID(games, uid);
@@ -43,8 +44,8 @@ export async function fetchRostersFromYahoo(
             // TODO: Finish the position counts and dummy roster spots
             const positionCounter: any = getPositionCounts(leaguesJSON, key);
             const players: Player[] = getPlayersFromRoster(
-              usersTeamRoster[0].players,
-              positionCounter
+                usersTeamRoster[0].players,
+                positionCounter
             );
             // Add a dummy player for every unfilled position in the roster
             const dummyPlayers: Player[] = fillDummyPlayers(positionCounter);
@@ -57,8 +58,8 @@ export async function fetchRostersFromYahoo(
               coverage_type: coverageType,
               coverage_period: usersTeamRoster[coverageType],
               weekly_deadline: getChild(
-                leaguesJSON[key].league,
-                "weekly_deadline"
+                  leaguesJSON[key].league,
+                  "weekly_deadline"
               ),
               game_code: getChild(gameJSON, "code"),
             };
@@ -103,14 +104,19 @@ async function getRostersByGameID(games: string, uid: string): Promise<any> {
     "?format=json";
 
   try {
-    return await httpGet(url, uid);
-  } catch (error) {
-    console.log("Error fetching rosters from Yahoo API:");
-    console.log(error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "Communication with Yahoo failed: " + error
-    );
+    const {data} = await httpGetAxios(url, uid);
+    return data;
+  } catch (error: AxiosError | any) {
+    console.log("Error fetching rosters from Yahoo API");
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      throw new functions.https.HttpsError(
+          "internal",
+          "Communication with Yahoo failed: " + error.response.data
+      );
+    }
   }
 }
 
@@ -124,11 +130,11 @@ async function getRostersByGameID(games: string, uid: string): Promise<any> {
 function getPositionCounts(leaguesJSON: any, key: string) {
   const positionCounter: any = {};
   getChild(leaguesJSON[key].league, "settings")[0].roster_positions.forEach(
-    (position: any) => {
-      positionCounter[position.roster_position.position] = parseInt(
-        position.roster_position.count
-      );
-    }
+      (position: any) => {
+        positionCounter[position.roster_position.position] = parseInt(
+            position.roster_position.count
+        );
+      }
   );
   return positionCounter;
 }
@@ -141,8 +147,8 @@ function getPositionCounts(leaguesJSON: any, key: string) {
  * @return {Player[]} - An array of Player objects
  */
 function getPlayersFromRoster(
-  playersJSON: any,
-  positionCounter: any
+    playersJSON: any,
+    positionCounter: any
 ): Player[] {
   // TODO: Refactor to pull out some functions for readability
   const players: Player[] = [];
@@ -164,7 +170,7 @@ function getPlayersFromRoster(
       const percentOwned = getDiamondPCT(player, "percent_owned");
 
       // pull the player ranks out of the JSON
-      const { rankNext7Days, rankProjectedWeek } = getPlayerRanks(player);
+      const {rankNext7Days, rankProjectedWeek} = getPlayerRanks(player);
 
       // pull the transaction delta out of the JSON
       const transactionDelta = getTransactions(player);
@@ -174,18 +180,18 @@ function getPlayersFromRoster(
         player_name: getChild(player[0], "name").full,
         eligible_positions: eligiblePositions,
         selected_position: getChild(
-          getChild(player, "selected_position"),
-          "position"
+            getChild(player, "selected_position"),
+            "position"
         ),
-        is_editable: getChild(player, "is_editable"),
+        is_editable: getChild(player, "is_editable") === "1" ? true : false,
         is_playing: !opponent || opponent === "Bye" ? false : true,
         injury_status: getChild(player[0], "status_full") || "Healthy",
         percent_started: percentStarted,
         percent_owned: percentOwned,
         transactions_delta: transactionDelta,
-        is_starting: getChild(player, "starting_status")
-          ? getChild(getChild(player, "starting_status"), "is_starting")
-          : "N/A",
+        is_starting: getChild(player, "starting_status") ?
+          getChild(getChild(player, "starting_status"), "is_starting") :
+          "N/A",
         rank_next7days: rankNext7Days,
         rank_projected_week: rankProjectedWeek,
         score: 0,
@@ -277,7 +283,7 @@ function getPlayerRanks(player: any) {
       rankProjectedWeek = parseInt(rank.player_rank.rank_value) || -1;
     }
   });
-  return { rankNext7Days, rankProjectedWeek };
+  return {rankNext7Days, rankProjectedWeek};
 }
 
 /**

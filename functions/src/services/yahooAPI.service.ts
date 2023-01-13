@@ -1,6 +1,6 @@
-import {AxiosError} from "axios";
-import {RosterModification} from "../interfaces/roster";
-import {httpPutAxios} from "./yahooHttp.service";
+import { AxiosError } from "axios";
+import { RosterModification } from "../interfaces/roster";
+import { httpPutAxios } from "./yahooHttp.service";
 const js2xmlparser = require("js2xmlparser");
 
 /**
@@ -13,13 +13,13 @@ const js2xmlparser = require("js2xmlparser");
  * @return {unknown}
  */
 export async function postRosterChanges(
-    rosterModifications: RosterModification[],
-    uid: string
+  rosterModifications: RosterModification[],
+  uid: string
 ) {
   const putRequests: Promise<any>[] = [];
   // eslint-disable-next-line guard-for-in
   for (const rosterModification of rosterModifications) {
-    const {teamKey, coverageType, coveragePeriod, newPlayerPositions} =
+    const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
       rosterModification;
 
     const players: any[] = [];
@@ -50,7 +50,7 @@ export async function postRosterChanges(
     allResults.forEach((result) => {
       console.log(result.data);
     });
-  } catch (error: any | Error | AxiosError) {
+  } catch (error: AxiosError | any) {
     if (error.response) {
       console.log(error.response.data);
       console.log(error.response.status);

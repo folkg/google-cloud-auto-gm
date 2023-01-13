@@ -2,7 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 import {Team} from "./interfaces/team";
-import {httpGet} from "./services/yahooHttp.service";
+import {httpGetAxios} from "./services/yahooHttp.service";
+import {AxiosError} from "axios";
 
 exports.refreshTeams = functions.https.onCall(async (data, context) => {
   const uid = context.auth?.uid;
@@ -82,18 +83,23 @@ async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
  */
 async function getAllStandings(uid: string): Promise<any> {
   try {
-    return await httpGet(
+    const {data} = await httpGetAxios(
         "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
         "leagues/standings?format=json",
         uid
     );
-  } catch (error) {
-    console.log("Error fetching teams from Yahoo API:");
-    console.log(error);
-    throw new functions.https.HttpsError(
-        "internal",
-        "Communication with Yahoo failed: " + error
-    );
+    return data;
+  } catch (error: AxiosError | any) {
+    console.log("Error fetching teams from Yahoo API");
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      throw new functions.https.HttpsError(
+          "internal",
+          "Communication with Yahoo failed: " + error.response.data
+      );
+    }
   }
 }
 
