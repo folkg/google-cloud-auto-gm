@@ -1,15 +1,15 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-import { Team } from "./interfaces/team";
-import { httpGet } from "./services/yahooHttp.service";
+import {Team} from "./interfaces/team";
+import {httpGet} from "./services/yahooHttp.service";
 
 exports.refreshTeams = functions.https.onCall(async (data, context) => {
   const uid = context.auth?.uid;
   if (!uid) {
     throw new functions.https.HttpsError(
-      "unauthenticated",
-      "You must be logged in to get an access token"
+        "unauthenticated",
+        "You must be logged in to get an access token"
     );
   }
   const teams: Team[] = await fetchTeamsFromYahoo(uid);
@@ -28,7 +28,7 @@ exports.refreshTeams = functions.https.onCall(async (data, context) => {
   await batch.commit();
 });
 
-//TODO: move these functions below into different yahooAPI service?
+// TODO: move these functions below into different yahooAPI service?
 /**
  * Create an array of Team objects for the calling user's Yahoo teams
  * @async
@@ -83,16 +83,16 @@ async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
 async function getAllStandings(uid: string): Promise<any> {
   try {
     return await httpGet(
-      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
+        "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
         "leagues/standings?format=json",
-      uid
+        uid
     );
   } catch (error) {
     console.log("Error fetching teams from Yahoo API:");
     console.log(error);
     throw new functions.https.HttpsError(
-      "internal",
-      "Communication with Yahoo failed: " + error
+        "internal",
+        "Communication with Yahoo failed: " + error
     );
   }
 }

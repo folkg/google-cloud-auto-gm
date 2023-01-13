@@ -23,3 +23,10 @@ export interface Player {
   rank_projected_week: number;
   score: number;
 }
+
+export interface RosterModification {
+  teamKey: string;
+  coverageType: string;
+  coveragePeriod: string;
+  newPlayerPositions: any;
+}

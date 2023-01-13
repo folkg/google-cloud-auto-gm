@@ -1,7 +1,10 @@
 import * as functions from "firebase-functions";
+import {RosterModification} from "./interfaces/roster";
+import {postRosterChanges} from "./services/yahooAPI.service";
 // import * as admin from "firebase-admin";
 
 import {fetchRostersFromYahoo} from "./services/yahooLineupBuilder.service";
+import {optimizeStartingLineup} from "./services/yahooLineupOptimizer.service";
 
 exports.setLineups = functions.https.onCall(async (data, context) => {
   const uid = context.auth?.uid;
@@ -13,6 +16,16 @@ exports.setLineups = functions.https.onCall(async (data, context) => {
   }
   // TODO: Get gameIDs or teamIDs from data
   // currently just using nhl and nfl hardcoded for testing
-  const results = await fetchRostersFromYahoo("nhl,nfl", uid);
-  return results;
+  const rosters = await fetchRostersFromYahoo("nhl,nfl", uid);
+
+  const rosterModifications: RosterModification[] = [];
+  for (const roster of rosters) {
+    const rm = optimizeStartingLineup(roster);
+    if (rm) {
+      rosterModifications.push(rm);
+    }
+  }
+
+  postRosterChanges(rosterModifications, uid);
+  return rosters;
 });

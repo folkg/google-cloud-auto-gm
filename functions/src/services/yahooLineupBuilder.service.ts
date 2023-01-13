@@ -168,7 +168,6 @@ function getPlayersFromRoster(
 
       // pull the transaction delta out of the JSON
       const transactionDelta = getTransactions(player);
-
       // Build the player object
       const playerObj: Player = {
         player_key: getChild(player[0], "player_key"),
@@ -180,13 +179,13 @@ function getPlayersFromRoster(
         ),
         is_editable: getChild(player, "is_editable"),
         is_playing: !opponent || opponent === "Bye" ? false : true,
-        injury_status: getChild(player[0], "status_full"),
+        injury_status: getChild(player[0], "status_full") || "Healthy",
         percent_started: percentStarted,
         percent_owned: percentOwned,
         transactions_delta: transactionDelta,
-        is_starting:
-          getChild(getChild(player[0], "starting_status"), "is_starting") ||
-          "N/A",
+        is_starting: getChild(player, "starting_status")
+          ? getChild(getChild(player, "starting_status"), "is_starting")
+          : "N/A",
         rank_next7days: rankNext7Days,
         rank_projected_week: rankProjectedWeek,
         score: 0,
