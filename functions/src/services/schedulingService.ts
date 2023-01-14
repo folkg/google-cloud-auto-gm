@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
-import axios, { AxiosError } from "axios";
-import { GameStartTimes } from "../interfaces/gameStartTime";
+import axios, {AxiosError} from "axios";
+import {GameStartTimes} from "../interfaces/gameStartTime";
 
 /**
  * Determine if there are any leagues starting games in the next hour
@@ -34,8 +34,8 @@ export function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes[]) {
  * @return {Promise<GameStartTimes[]>} - The game start times
  */
 export async function loadTodaysGames(
-  db: admin.firestore.Firestore,
-  todayDate: string
+    db: admin.firestore.Firestore,
+    todayDate: string
 ): Promise<GameStartTimes[]> {
   let gameStartTimes: GameStartTimes[] = [];
   const scheduleDoc = await db.collection("schedule").doc("today").get();
@@ -116,11 +116,11 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes[]> {
  * @return {unknown} - object containing league and array of game timestamps
  */
 async function getGameTimesYahoo(
-  league: string,
-  todayDate: string
+    league: string,
+    todayDate: string
 ): Promise<GameStartTimes> {
   const url = `https://api-secure.sports.yahoo.com/v1/editorial/league/${league}/games;date=${todayDate};game_type=1?format=json`;
-  const { data } = await axios.get(url);
+  const {data} = await axios.get(url);
 
   // get the game timestamp for each game in the response
   const gamesJSON = data.league.games[0];
@@ -131,7 +131,7 @@ async function getGameTimesYahoo(
   });
 
   const gameTimesArray = Array.from(new Set(gameTimesSet));
-  return { league: league, gameTimestamps: gameTimesArray };
+  return {league: league, gameTimestamps: gameTimesArray};
 }
 
 /**
@@ -143,11 +143,11 @@ async function getGameTimesYahoo(
  * @return {unknown} - object containing league and array of game timestamps
  */
 async function getGameTimesSportsnet(
-  league: string,
-  todayDate: string
+    league: string,
+    todayDate: string
 ): Promise<GameStartTimes> {
   const url = `https://mobile-statsv2.sportsnet.ca/scores?league=${league}&team=&day=${todayDate}`;
-  const { data } = await axios.get(url);
+  const {data} = await axios.get(url);
 
   // get the game timestamp for each game in the response
   const gamesJSON = data.data[0].games;
@@ -159,5 +159,5 @@ async function getGameTimesSportsnet(
   });
 
   const gameTimesArray = Array.from(new Set(gameTimesSet));
-  return { league: league, gameTimestamps: gameTimesArray };
+  return {league: league, gameTimestamps: gameTimesArray};
 }

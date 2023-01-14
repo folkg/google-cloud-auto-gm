@@ -69,6 +69,7 @@ async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
           const allTeams = leagues[key].league[1].standings[0].teams;
           const usersTeam = getUsersTeam(allTeams);
           const teamObj: Team = {
+            uid: uid,
             game_code: game.code,
             team_key: usersTeam.team[0][0].team_key,
             scoring_type: leagues[key].league[0].scoring_type,

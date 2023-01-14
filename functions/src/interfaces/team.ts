@@ -1,4 +1,5 @@
 export interface Team {
+  uid: string;
   game_code: string;
   team_key: string;
   scoring_type: string;
