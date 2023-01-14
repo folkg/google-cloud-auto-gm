@@ -1,37 +1,18 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {
-  AuthEventContext,
-  AuthUserRecord,
-} from "firebase-functions/lib/common/providers/identity";
 
 exports.beforeCreate = functions.auth.user().beforeCreate((user, context) => {
-  // set emailVerified to false when signing up with Yahoo, user to reverify
-  if (context.credential?.providerId === "yahoo.com") {
-    return {
-      emailVerified: false,
+  if (context.credential) {
+    const db = admin.firestore();
+    const credential = context.credential;
+    const uid = user.uid;
+    const data = {
+      accessToken: credential.accessToken,
+      refreshToken: credential.refreshToken,
+      tokenExpirationTime: Date.parse(credential.expirationTime as string),
+      activeLeagues: [],
     };
+
+    db.collection("users").doc(uid).set(data);
   }
-  return {};
 });
-
-exports.beforeSignIn = functions.auth
-    .user()
-    .beforeSignIn((user: AuthUserRecord, context: AuthEventContext) => {
-    // If the user is created by Yahoo, save the access token and refresh token
-      if (context.credential?.providerId === "yahoo.com") {
-        const db = admin.firestore();
-
-        const uid = user.uid;
-        const data = {
-          accessToken: context.credential.accessToken,
-          refreshToken: context.credential.refreshToken,
-          tokenExpirationTime: Date.parse(
-          context.credential.expirationTime as string
-          ),
-        };
-
-        // set will add or overwrite the data
-        db.collection("users").doc(uid).set(data);
-      }
-    });
