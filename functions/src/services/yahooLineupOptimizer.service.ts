@@ -19,34 +19,19 @@ export function optimizeStartingLineup(teamRoster: Roster) {
     players,
     coverage_type: coverageType,
     coverage_period: coveragePeriod,
+    weekly_deadline: weeklyDeadline,
   } = teamRoster;
 
-  // TODO: Create different scoring functions
-  // TODO: Assign the scoring function based on game_code and weekly_deadline
   // Function to generate a score for comparing each player's value
-  const genPlayerScore = (player: Player) => {
-    if (player.player_key === "") return 0;
-    const NOT_PLAYING_FACTOR = 0.001;
-    const NOT_STARTING_FACTOR = 0.01;
-    // If a player is playing, we will use their percent_started attribute
-    // TODO: is_starting needs to be more specific (basketball G, baseball P)
-    let score = player.percent_started;
-    if (!player.is_playing) {
-      // If a player is not playing, set their score to a minimal value
-      score *= NOT_PLAYING_FACTOR;
-    } else if (
-      player.is_starting === 0 ||
-      (player.is_starting === "N/A" &&
-        player.eligible_positions.includes("G")) ||
-      !HEALTHY_STATUS_LIST.includes(player.injury_status)
-    ) {
-      // If a player is not starting or hurt, factor their score such that it
-      // falls below all healthy players, but above players not playing.
-      score *= NOT_STARTING_FACTOR;
-    }
-
-    return score;
-  };
+  let genPlayerScore: (player: Player) => number;
+  if (teamRoster.game_code === "nfl") {
+    genPlayerScore = nflScoreFunction();
+  } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
+    // weeklyDeadline will be something like "1" tor epresent Monday
+    genPlayerScore = weeklyLineupScoreFunction();
+  } else {
+    genPlayerScore = defaultScoreFunction();
+  }
 
   // Loop through all players and add them to the benched, rostered, or IR list
   // Don't swap players if they are not editable or if they are in an IR spot
@@ -282,4 +267,89 @@ export function optimizeStartingLineup(teamRoster: Roster) {
   } else {
     return null;
   }
+}
+/**
+ * Default score function used to compare players.
+ * Higher scores are better.
+ *
+ * @return {()} - A function that takes a player and returns a score.
+ *  returns a score.
+ */
+function defaultScoreFunction(): (player: Player) => number {
+  return (player: Player) => {
+    if (player.player_key === "") return 0;
+    const NOT_PLAYING_FACTOR = 0.001;
+    const NOT_STARTING_FACTOR = 0.01;
+    // The score will be percent_started
+    // TODO: is_starting to be more specific (basketball G, baseball players)
+    // Maybe boost the score of players who are starting instead of penalizing?
+    let score = player.percent_started;
+    if (!player.is_playing) {
+      // If a player is not playing, set their score to a minimal value
+      score *= NOT_PLAYING_FACTOR;
+    } else if (
+      player.is_starting === 0 ||
+      (player.is_starting === "N/A" &&
+        player.eligible_positions.includes("G")) ||
+      !HEALTHY_STATUS_LIST.includes(player.injury_status)
+    ) {
+      // If a player is not starting or hurt, factor their score such that it
+      // falls below all healthy players, but above players not playing.
+      score *= NOT_STARTING_FACTOR;
+    }
+
+    return score;
+  };
+}
+
+/**
+ * Score function used to compare players in NFL leagues.
+ * Higher scores are better.
+ *
+ * @return {()} - A function that takes a player and returns a score.
+ *  returns a score.
+ */
+function nflScoreFunction(): (player: Player) => number {
+  return (player: Player) => {
+    if (player.player_key === "") return 0;
+    const NOT_PLAYING_FACTOR = 0.001;
+    const NOT_STARTING_FACTOR = 0.01;
+    // The score will be percent_started / rank_projected_week
+    // TODO: is_starting needs to be more specific (basketball G, baseball P)
+    // TODO: Does rank_projected_week factor in injury status already?
+    // Are we double counting?
+    let score = (player.percent_started / player.rank_projected_week) * 100;
+    if (!player.is_playing) {
+      // If a player is not playing, set their score to a minimal value
+      score *= NOT_PLAYING_FACTOR;
+    } else if (
+      player.is_starting === 0 ||
+      (player.is_starting === "N/A" &&
+        player.eligible_positions.includes("G")) ||
+      !HEALTHY_STATUS_LIST.includes(player.injury_status)
+    ) {
+      // If a player is not starting or hurt, factor their score such that it
+      // falls below all healthy players, but above players not playing.
+      score *= NOT_STARTING_FACTOR;
+    }
+
+    return score;
+  };
+}
+
+/**
+ * Score function used to compare players in leagues that need their lineups
+ * set weekly.
+ * Higher scores are better.
+ *
+ * @return {()} - A function that takes a player and returns a score.
+ */
+function weeklyLineupScoreFunction(): (player: Player) => number {
+  return (player: Player) => {
+    if (player.player_key === "") return 0;
+    // The score will be the inverse of their projected rank for the next week
+    // We will not factor in injury status as Yahoo has already accounted for it
+    const score = 100 / player.rank_next7days;
+    return score;
+  };
 }
