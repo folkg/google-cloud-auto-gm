@@ -108,7 +108,7 @@ async function refreshYahooAccessToken(
     };
 
     // set will add or overwrite the data
-    await db.collection("users").doc(uid).set(token);
+    await db.collection("users").doc(uid).update(token);
 
     // return the credential from the function (without the refresh token)
     credential = {
