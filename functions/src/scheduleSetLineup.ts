@@ -5,7 +5,6 @@ import {
   loadTodaysGames,
   findLeaguesPlayingNextHour,
 } from "./services/schedulingService";
-import { GameStartTimes } from "./interfaces/gameStartTime";
 
 // function will run every hour at 54 minutes past the hour
 exports.scheduleSetLineup = functions.pubsub
@@ -27,28 +26,35 @@ exports.scheduleSetLineup = functions.pubsub
       todayDateParts[2] + "-" + todayDateParts[0] + "-" + todayDateParts[1];
 
     // load all of the game start times for today
-    const gameStartTimes: GameStartTimes[] = await loadTodaysGames(
+    const { loadedFromDB, gameStartTimes } = await loadTodaysGames(
       db,
       todayDate
     );
 
-    // check if any games are starting in the next hour
-    let leaguesPlayingNextHour: string[] =
-      findLeaguesPlayingNextHour(gameStartTimes);
+    let leagues: string[];
+    if (loadedFromDB) {
+      // If the games were loaded from the database, then check if any games are
+      // starting in the next hour.
+      leagues = findLeaguesPlayingNextHour(gameStartTimes);
 
-    // TODO: comment out this next line. It is here just to test the function.
-    // leaguesPlayingNextHour = ["nba", "nfl", "nhl", "mlb"];
-    if (leaguesPlayingNextHour.length === 0) {
-      console.log("No games starting in the next hour");
-      return;
+      if (leagues.length === 0) {
+        console.log("No games starting in the next hour");
+        // If there are no games starting in the next hour, then we will not
+        // set any lineups.
+        return;
+      }
+    } else {
+      // If this is the first time the games are being loaded, then we will
+      // set the lineup for all leagues with teams playing any time today.
+      leagues = gameStartTimes.map((game) => game.league);
     }
 
-    // get all user's teams in leagues that are playing in the next hour
+    // get all user's teams in the relevant leagues
     const teamsRef = db.collectionGroup("teams");
     const teamsSnapshot = await teamsRef
       .where("is_setting_lineups", "==", true)
       .where("end_date", ">=", Date.now())
-      .where("game_code", "in", leaguesPlayingNextHour)
+      .where("game_code", "in", leagues)
       .get();
 
     // create a map of user_id to list of teams

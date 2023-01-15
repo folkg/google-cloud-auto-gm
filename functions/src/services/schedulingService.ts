@@ -36,8 +36,9 @@ export function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes[]) {
 export async function loadTodaysGames(
     db: admin.firestore.Firestore,
     todayDate: string
-): Promise<GameStartTimes[]> {
+) {
   let gameStartTimes: GameStartTimes[] = [];
+  let loadedFromDB: boolean;
   const scheduleDoc = await db.collection("schedule").doc("today").get();
   const scheduleDocData = scheduleDoc.data();
   if (
@@ -49,12 +50,14 @@ export async function loadTodaysGames(
     //  the schedule. This is an issue with using the UTC time.
     console.log("No games in database, fetching from internet");
     gameStartTimes = await getTodaysGames(todayDate);
+    loadedFromDB = false;
   } else {
     // console.log("Games found in database");
     gameStartTimes = scheduleDocData.games;
+    loadedFromDB = true;
   }
   // console.log(gameStartTimes);
-  return gameStartTimes;
+  return {loadedFromDB, gameStartTimes};
 }
 
 /**

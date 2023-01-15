@@ -190,7 +190,7 @@ function getPlayersFromRoster(
           getChild(player, "selected_position"),
           "position"
         ),
-        is_editable: getChild(player, "is_editable") === "1" ? true : false,
+        is_editable: getChild(player, "is_editable") === 1 ? true : false,
         is_playing: !opponent || opponent === "Bye" ? false : true,
         injury_status: getChild(player[0], "status_full") || "Healthy",
         percent_started: percentStarted,

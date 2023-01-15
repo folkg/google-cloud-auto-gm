@@ -17,6 +17,8 @@ export async function postRosterChanges(
   uid: string
 ): Promise<boolean> {
   const putRequests: Promise<any>[] = [];
+  console.log("entering postRosterChanges");
+  console.log("Posting roster changes for uid: " + uid);
   // eslint-disable-next-line guard-for-in
   for (const rosterModification of rosterModifications) {
     // TODO: Check for null here? Or has that been taken care of already?
@@ -52,7 +54,8 @@ export async function postRosterChanges(
     // allResults.forEach((result) => {
     //   console.log(result.data);
     // });
-    // TODO: Log the last_updated timestamp to each team in firebase
+    // TODO: Log the last_updated timestamp to each team in firebase.
+    // This will only get the timestamp for teams with changes.
     console.log("All roster changes posted successfully for uid: " + uid);
     return true;
   } catch (error: AxiosError | any) {

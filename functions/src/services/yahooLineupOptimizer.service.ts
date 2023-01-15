@@ -43,8 +43,10 @@ export async function setUsersLineup(
     }
   }
 
-  // TODO: Should we check for null rosterModifications here?
-  console.log("Roster Modifications: " + JSON.stringify(rosterModifications));
+  if (rosterModifications.length === 0) {
+    console.log("No roster changes needed for uid: " + uid);
+    return true;
+  }
   const result = postRosterChanges(rosterModifications, uid);
   return result;
 }
@@ -66,7 +68,6 @@ function optimizeStartingLineup(teamRoster: Roster) {
   } = teamRoster;
 
   // Function to generate a score for comparing each player's value
-  // console.log("Currently optimizing roster for team: " + teamKey);
   let genPlayerScore: (player: Player) => number;
   if (teamRoster.game_code === "nfl") {
     genPlayerScore = nflScoreFunction();
@@ -124,6 +125,8 @@ function optimizeStartingLineup(teamRoster: Roster) {
     rostered.length === 0 ||
     (benched.length === 0 && healthyOnIR.length === 0)
   ) {
+    console.log("No players to optimize for team: " + teamKey);
+
     return null;
   }
 
