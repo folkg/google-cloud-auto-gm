@@ -10,7 +10,6 @@ exports.beforeCreate = functions.auth.user().beforeCreate((user, context) => {
       accessToken: credential.accessToken,
       refreshToken: credential.refreshToken,
       tokenExpirationTime: Date.parse(credential.expirationTime as string),
-      activeLeagues: [],
     };
 
     db.collection("users").doc(uid).set(data);

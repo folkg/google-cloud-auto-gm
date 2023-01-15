@@ -1,4 +1,4 @@
-import { loadYahooAccessToken } from "../yahooGetAccessToken";
+import {loadYahooAccessToken} from "../yahooGetAccessToken";
 import axios from "axios";
 
 const API_URL = "https://fantasysports.yahooapis.com/fantasy/v2/";
@@ -57,7 +57,7 @@ export async function httpPutAxios(uid: string, url: string, body: string) {
   return axios.put(API_URL + url, body, {
     headers: {
       "content-type": "application/xml; charset=UTF-8",
-      Authorization: "Bearer " + accessToken,
+      "Authorization": "Bearer " + accessToken,
     },
   });
 }

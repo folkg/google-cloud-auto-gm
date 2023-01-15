@@ -1,4 +1,7 @@
-import {Player, Roster, RosterModification} from "../interfaces/roster";
+import * as functions from "firebase-functions";
+import { Player, Roster, RosterModification } from "../interfaces/roster";
+import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
+import { postRosterChanges } from "./yahooAPI.service";
 
 // Statuses to be considered a "healthy" player
 const HEALTHY_STATUS_LIST = ["Healthy", "Questionable", "Probable"];
@@ -6,14 +9,54 @@ const HEALTHY_STATUS_LIST = ["Healthy", "Questionable", "Probable"];
 const INACTIVE_POSITION_LIST = ["IR", "IR+", "NA"];
 
 /**
- * Description placeholder
- * @date 2023-01-12 - 2:20:04 p.m.
+ * Will optimize the starting lineup for a specific users teams
  *
  * @export
- * @param {Roster} teamRoster
- * @return {*}
+ * @async
+ * @param {(string)} uid - The user id
+ * @param {(string[])} teams - The team ids
+ * @return {unknown}
  */
-export function optimizeStartingLineup(teamRoster: Roster) {
+export async function setUsersLineup(
+  uid: string,
+  teams: string[]
+): Promise<boolean> {
+  if (!uid) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "You must be logged in to get an access token"
+    );
+  }
+  if (!teams) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "You must provide a list of teams to optimize"
+    );
+  }
+
+  const rosters = await fetchRostersFromYahoo(teams, uid);
+  const rosterModifications: RosterModification[] = [];
+  for (const roster of rosters) {
+    const rm = optimizeStartingLineup(roster);
+    if (rm) {
+      rosterModifications.push(rm);
+    }
+  }
+
+  // TODO: Should we check for null rosterModifications here?
+  console.log("Roster Modifications: " + JSON.stringify(rosterModifications));
+  const result = postRosterChanges(rosterModifications, uid);
+  return result;
+}
+
+/**
+ * Will optimize the starting lineup for a given roster
+ *
+ * @export
+ * @param {Roster} teamRoster - The roster to optimize
+ * @return {*} {RosterModification} - The roster modification to make
+ */
+function optimizeStartingLineup(teamRoster: Roster) {
   const {
     team_key: teamKey,
     players,
@@ -23,6 +66,7 @@ export function optimizeStartingLineup(teamRoster: Roster) {
   } = teamRoster;
 
   // Function to generate a score for comparing each player's value
+  // console.log("Currently optimizing roster for team: " + teamKey);
   let genPlayerScore: (player: Player) => number;
   if (teamRoster.game_code === "nfl") {
     genPlayerScore = nflScoreFunction();
@@ -30,7 +74,7 @@ export function optimizeStartingLineup(teamRoster: Roster) {
     // weeklyDeadline will be something like "1" tor epresent Monday
     genPlayerScore = weeklyLineupScoreFunction();
   } else {
-    genPlayerScore = defaultScoreFunction();
+    genPlayerScore = dailyScoreFunction();
   }
 
   // Loop through all players and add them to the benched, rostered, or IR list
@@ -198,7 +242,7 @@ export function optimizeStartingLineup(teamRoster: Roster) {
           while (playerCompareFunction(thirdPlayer, benchPlayer) < 0) {
             if (
               rosterPlayer.eligible_positions.includes(
-                  thirdPlayer.selected_position
+                thirdPlayer.selected_position
               )
             ) {
               // If rosterPlayer can be swapped with any of the earlier players,
@@ -275,7 +319,7 @@ export function optimizeStartingLineup(teamRoster: Roster) {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-function defaultScoreFunction(): (player: Player) => number {
+function dailyScoreFunction(): (player: Player) => number {
   return (player: Player) => {
     if (player.player_key === "") return 0;
     const NOT_PLAYING_FACTOR = 0.001;

@@ -1,31 +1,30 @@
 import * as functions from "firebase-functions";
-import {RosterModification} from "./interfaces/roster";
-import {postRosterChanges} from "./services/yahooAPI.service";
-// import * as admin from "firebase-admin";
 
-import {fetchRostersFromYahoo} from "./services/yahooLineupBuilder.service";
-import {optimizeStartingLineup} from "./services/yahooLineupOptimizer.service";
+import {setUsersLineup} from "./services/yahooLineupOptimizer.service";
 
-exports.setLineups = functions.https.onCall(async (data, context) => {
-  const uid = context.auth?.uid;
-  if (!uid) {
-    throw new functions.https.HttpsError(
-        "unauthenticated",
-        "You must be logged in to get an access token"
-    );
-  }
-  // TODO: Get gameIDs or teamIDs from data
-  // currently just using nhl and nfl hardcoded for testing
-  const rosters = await fetchRostersFromYahoo("nhl,nfl", uid);
+// //TODO: We can possibly remove this function if we will only ever be
+// // queuing tasks directly
+// exports.setLineups = functions.https.onCall(async (data, context) => {
+//   const uid = context.auth?.uid;
+//   const rosters = await setUsersLineup(uid);
+//   return rosters;
+// });
 
-  const rosterModifications: RosterModification[] = [];
-  for (const roster of rosters) {
-    const rm = optimizeStartingLineup(roster);
-    if (rm) {
-      rosterModifications.push(rm);
-    }
-  }
-
-  postRosterChanges(rosterModifications, uid);
-  return rosters;
-});
+exports.dispatchSetLineupTask = functions.tasks
+    .taskQueue({
+      retryConfig: {
+        maxAttempts: 3,
+        minBackoffSeconds: 60,
+      },
+      rateLimits: {
+        maxConcurrentDispatches: 1000,
+        maxDispatchesPerSecond: 500.0,
+      },
+    })
+    .onDispatch(async (data) => {
+      const uid: string = data.uid;
+      const teams: string[] = data.teams;
+      if (!uid) throw new Error("No uid provided");
+      if (!teams) throw new Error("No teams provided");
+      await setUsersLineup(uid, teams);
+    });

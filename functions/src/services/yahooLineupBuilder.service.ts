@@ -1,24 +1,24 @@
 import * as functions from "firebase-functions";
-import {httpGetAxios} from "./yahooHttp.service";
-import {getChild} from "./utilities.service";
-import {Player, Roster} from "../interfaces/roster";
-import {AxiosError} from "axios";
+import { httpGetAxios } from "./yahooHttp.service";
+import { getChild } from "./utilities.service";
+import { Player, Roster } from "../interfaces/roster";
+import { AxiosError } from "axios";
 
 /**
- * A function to build the roster object for a team
+ * Get the roster objects for the given teams
  *
  * @export
  * @async
- * @param {string} games
- * @param {string} uid
- * @return {Promise<any>}
+ * @param {string[]} teams The team keys
+ * @param {string} uid The firebase uid of the user
+ * @return {Promise<Roster[]>} The roster objects
  */
 export async function fetchRostersFromYahoo(
-    games: string,
-    uid: string
+  teams: string[],
+  uid: string
 ): Promise<Roster[]> {
   try {
-    const yahooRostersJSON = await getRostersByGameID(games, uid);
+    const yahooRostersJSON = await getRostersByTeamID(teams, uid);
 
     const rosters: Roster[] = [];
     const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
@@ -36,16 +36,14 @@ export async function fetchRostersFromYahoo(
             const isEditable = usersTeamRoster.is_editable;
             if (!isEditable) {
               // skip this team if it is not editable
-              // TODO: Uncomment this. Commented out for testing.
-              // continue;
+              continue;
             }
             const coverageType = usersTeamRoster.coverage_type;
             // save the position counts to a map
-            // TODO: Finish the position counts and dummy roster spots
             const positionCounter: any = getPositionCounts(leaguesJSON, key);
             const players: Player[] = getPlayersFromRoster(
-                usersTeamRoster[0].players,
-                positionCounter
+              usersTeamRoster[0].players,
+              positionCounter
             );
             // Add a dummy player for every unfilled position in the roster
             const dummyPlayers: Player[] = fillDummyPlayers(positionCounter);
@@ -58,8 +56,8 @@ export async function fetchRostersFromYahoo(
               coverage_type: coverageType,
               coverage_period: usersTeamRoster[coverageType],
               weekly_deadline: getChild(
-                  leaguesJSON[key].league,
-                  "weekly_deadline"
+                leaguesJSON[key].league,
+                "weekly_deadline"
               ),
               game_code: getChild(gameJSON, "code"),
             };
@@ -68,7 +66,7 @@ export async function fetchRostersFromYahoo(
         }
       }
     }
-    console.log("Fetched rosters from Yahoo API:");
+    // console.log("Fetched rosters from Yahoo API:");
     return rosters;
     // return yahooRostersJSON;
   } catch (err) {
@@ -77,24 +75,33 @@ export async function fetchRostersFromYahoo(
   }
 }
 
+// TODO: Move to yahooAPI.service.ts
 /**
- * Will get the JSON response from Yahoo for all teams matching the GameIDs
- * This will be useful if we want to gget rosters for all teams for a sport
+ * Will get the JSON response from Yahoo for all teams matching the TeamIDs
+ * This will be useful if we want to get for just individual teams
  *
  * @async
- * @param {string} games - comma separated string of gameIDs ie "nfl","nfl,nhl"
+ * @param {string} teams - comma separated string of teamIDs, ie.
+ * "414.l.240994.t.12, 414.l.358976.t.4, 419.l.14950.t.2,
+ * 419.l.19947.t.6,419.l.28340.t.1,419.l.59985.t.12"
  * @param {string} uid - The firebase uid
  * @return {Promise<any>} The Yahoo JSON object containing the rosters
  */
-async function getRostersByGameID(games: string, uid: string): Promise<any> {
-  // Could add the following API options if desired
-  // cut_types=diamond
-  // ranks=o-rank,last7days,last14days,last30days,
-  // projected_next7days,projected_next14days,projected_week
+async function getRostersByTeamID(teams: string[], uid: string): Promise<any> {
+  const leagueKeysArray: string[] = [];
+  teams.forEach((teamKey) => {
+    const leagueKey = teamKey.split(".t")[0];
+    if (!leagueKeysArray.includes(leagueKey)) {
+      leagueKeysArray.push(leagueKey);
+    }
+  });
+  const leagueKeys = leagueKeysArray.join(",");
+
   const url =
-    "users;use_login=1/games;game_keys=" +
-    games +
-    "/leagues;out=settings/teams/roster" +
+    "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
+    "/leagues;league_keys=" +
+    leagueKeys +
+    ";out=settings/teams/roster" +
     "/players;out=percent_started,percent_owned,ranks,opponent," +
     "transactions,starting_status" +
     ";ranks=projected_next7days,projected_week" +
@@ -104,7 +111,7 @@ async function getRostersByGameID(games: string, uid: string): Promise<any> {
     "?format=json";
 
   try {
-    const {data} = await httpGetAxios(url, uid);
+    const { data } = await httpGetAxios(url, uid);
     return data;
   } catch (error: AxiosError | any) {
     console.log("Error fetching rosters from Yahoo API");
@@ -113,28 +120,28 @@ async function getRostersByGameID(games: string, uid: string): Promise<any> {
       console.log(error.response.status);
       console.log(error.response.headers);
       throw new functions.https.HttpsError(
-          "internal",
-          "Communication with Yahoo failed: " + error.response.data
+        "internal",
+        "Communication with Yahoo failed: " + error.response.data
       );
     }
   }
 }
 
 /**
+ * Get the position counts from the leagues JSON object
  *
- *
- * @param {*} leaguesJSON
- * @param {string} key
- * @return {*}
+ * @param {*} leaguesJSON - The leagues JSON object
+ * @param {string} key - The key of the league
+ * @return {*} - A map of positions and the number of players
  */
 function getPositionCounts(leaguesJSON: any, key: string) {
   const positionCounter: any = {};
   getChild(leaguesJSON[key].league, "settings")[0].roster_positions.forEach(
-      (position: any) => {
-        positionCounter[position.roster_position.position] = parseInt(
-            position.roster_position.count
-        );
-      }
+    (position: any) => {
+      positionCounter[position.roster_position.position] = parseInt(
+        position.roster_position.count
+      );
+    }
   );
   return positionCounter;
 }
@@ -147,8 +154,8 @@ function getPositionCounts(leaguesJSON: any, key: string) {
  * @return {Player[]} - An array of Player objects
  */
 function getPlayersFromRoster(
-    playersJSON: any,
-    positionCounter: any
+  playersJSON: any,
+  positionCounter: any
 ): Player[] {
   // TODO: Refactor to pull out some functions for readability
   const players: Player[] = [];
@@ -170,7 +177,7 @@ function getPlayersFromRoster(
       const percentOwned = getDiamondPCT(player, "percent_owned");
 
       // pull the player ranks out of the JSON
-      const {rankNext7Days, rankProjectedWeek} = getPlayerRanks(player);
+      const { rankNext7Days, rankProjectedWeek } = getPlayerRanks(player);
 
       // pull the transaction delta out of the JSON
       const transactionDelta = getTransactions(player);
@@ -180,8 +187,8 @@ function getPlayersFromRoster(
         player_name: getChild(player[0], "name").full,
         eligible_positions: eligiblePositions,
         selected_position: getChild(
-            getChild(player, "selected_position"),
-            "position"
+          getChild(player, "selected_position"),
+          "position"
         ),
         is_editable: getChild(player, "is_editable") === "1" ? true : false,
         is_playing: !opponent || opponent === "Bye" ? false : true,
@@ -189,9 +196,9 @@ function getPlayersFromRoster(
         percent_started: percentStarted,
         percent_owned: percentOwned,
         transactions_delta: transactionDelta,
-        is_starting: getChild(player, "starting_status") ?
-          getChild(getChild(player, "starting_status"), "is_starting") :
-          "N/A",
+        is_starting: getChild(player, "starting_status")
+          ? getChild(getChild(player, "starting_status"), "is_starting")
+          : "N/A",
         rank_next7days: rankNext7Days,
         rank_projected_week: rankProjectedWeek,
         score: 0,
@@ -209,13 +216,12 @@ function getPlayersFromRoster(
 }
 
 /**
- * Description placeholder
- * @date 2023-01-11 - 8:51:14 p.m.
+ * Fill in dummy players for every roster position that is not filled
  *
- * @param {*} positionCounter
- * @return {{}}
+ * @param {*} positionCounter - A map of positions and the number of players
+ * @return {Player[]} - An array of Player objects
  */
-function fillDummyPlayers(positionCounter: any) {
+function fillDummyPlayers(positionCounter: any): Player[] {
   const dummyPlayers: Player[] = [];
   // TODO: Maybe want to count the number of unused roster spots here as well?
   // Or maybe in a different function.
@@ -283,7 +289,7 @@ function getPlayerRanks(player: any) {
       rankProjectedWeek = parseInt(rank.player_rank.rank_value) || -1;
     }
   });
-  return {rankNext7Days, rankProjectedWeek};
+  return { rankNext7Days, rankProjectedWeek };
 }
 
 /**
@@ -302,53 +308,3 @@ function getTransactions(player: any): number {
   });
   return transactionDelta;
 }
-
-// /**
-//  * Will get the JSON response from Yahoo for all teams matching the TeamIDs
-//  * This will be useful if we want to get for just individual teams
-//  *
-//  * @async
-//  * @param {string} teams - comma separated string of teamIDs, ie.
-//  * "414.l.240994.t.12, 414.l.358976.t.4, 419.l.14950.t.2,
-//  * 419.l.19947.t.6,419.l.28340.t.1,419.l.59985.t.12"
-//  * @param {string} uid - The firebase uid
-//  * @return {Promise<any>} The Yahoo JSON object containing the rosters
-//  */
-// async function getRostersByTeamID(teams: string, uid: string): Promise<any> {
-//   // TODO: Make this a loop to get all teams if there are commas in string
-//   let leagueKeys = "";
-//   if (teams.includes(",")) {
-//     // TODO: If split creates an array of one if there is no comma, simplify
-//     const teamKeys: string[] = teams.split(",");
-//     for (const teamKey of teamKeys) {
-//       leagueKeys += teamKey.split(".t.", 1)[0] + ",";
-//     }
-//     // Remove trailing comma from final leagueKeys string
-//     leagueKeys = leagueKeys.slice(0, -1);
-//   } else {
-//     leagueKeys = teams.split(".t.", 1)[0];
-//   }
-//   const url =
-//     "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
-//     "/leagues;league_keys=" +
-//     leagueKeys +
-//     ";out=settings/teams/roster" +
-//     "/players;out=percent_started,percent_owned,ranks,opponent," +
-//     "transactions,starting_status" +
-//     ";ranks=projected_next7days,projected_week" +
-//     ";percent_started.cut_types=diamond" +
-//     ";percent_owned.cut_types=diamond" +
-//     ";transaction.cut_types=diamond" +
-//     "?format=json";
-
-//   try {
-//     return await httpGet(url, uid);
-//   } catch (error) {
-//     console.log("Error fetching rosters from Yahoo API:");
-//     console.log(error);
-//     throw new functions.https.HttpsError(
-//       "internal",
-//       "Communication with Yahoo failed: " + error
-//     );
-//   }
-// }

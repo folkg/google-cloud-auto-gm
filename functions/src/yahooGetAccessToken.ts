@@ -36,7 +36,7 @@ export async function loadYahooAccessToken(
   const db = admin.firestore();
 
   // fetch the current token from the database
-  console.log(uid);
+  // console.log(uid);
   const doc = await db.collection("users").doc(uid).get();
   const docData = doc.data();
   if (!doc.exists || !docData) {
@@ -49,10 +49,10 @@ export async function loadYahooAccessToken(
   // return the current token if it is valid, or refresh the token if not
   let credential: ReturnCredential;
   if (docData.tokenExpirationTime <= Date.now()) {
-    console.log("Token has expired, refreshing token.");
+    // console.log("Token has expired, refreshing token.");
     credential = await refreshYahooAccessToken(uid, docData.refreshToken);
   } else {
-    console.log("Token is still valid, returning current token.");
+    // console.log("Token is still valid, returning current token.");
     credential = {
       accessToken: docData.accessToken,
       tokenExpirationTime: docData.tokenExpirationTime,

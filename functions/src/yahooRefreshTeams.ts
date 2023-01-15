@@ -1,16 +1,16 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-import { Team } from "./interfaces/team";
-import { httpGetAxios } from "./services/yahooHttp.service";
-import { AxiosError } from "axios";
+import {Team} from "./interfaces/team";
+import {httpGetAxios} from "./services/yahooHttp.service";
+import {AxiosError} from "axios";
 
 exports.refreshTeams = functions.https.onCall(async (data, context) => {
   const uid = context.auth?.uid;
   if (!uid) {
     throw new functions.https.HttpsError(
-      "unauthenticated",
-      "You must be logged in to get an access token"
+        "unauthenticated",
+        "You must be logged in to get an access token"
     );
   }
   const db = admin.firestore();
@@ -99,10 +99,10 @@ async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
  */
 async function getAllStandings(uid: string): Promise<any> {
   try {
-    const { data } = await httpGetAxios(
-      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
+    const {data} = await httpGetAxios(
+        "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
         "leagues/standings?format=json",
-      uid
+        uid
     );
     return data;
   } catch (error: AxiosError | any) {
@@ -112,8 +112,8 @@ async function getAllStandings(uid: string): Promise<any> {
       console.log(error.response.status);
       console.log(error.response.headers);
       throw new functions.https.HttpsError(
-        "internal",
-        "Communication with Yahoo failed: " + error.response.data
+          "internal",
+          "Communication with Yahoo failed: " + error.response.data
       );
     }
   }

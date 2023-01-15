@@ -50,10 +50,10 @@ export async function loadTodaysGames(
     console.log("No games in database, fetching from internet");
     gameStartTimes = await getTodaysGames(todayDate);
   } else {
-    console.log("Games found in database");
+    // console.log("Games found in database");
     gameStartTimes = scheduleDocData.games;
   }
-  console.log(gameStartTimes);
+  // console.log(gameStartTimes);
   return gameStartTimes;
 }
 
@@ -96,13 +96,10 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes[]> {
 
   // store the games in the DB
   const db = admin.firestore();
-  const scheduleDoc = await db.collection("schedule").doc("today").get();
-  if (!scheduleDoc.exists) {
-    await db.collection("schedule").doc("today").set({
-      date: todayDate,
-      games: gameStartTimes,
-    });
-  }
+  await db.collection("schedule").doc("today").set({
+    date: todayDate,
+    games: gameStartTimes,
+  });
 
   return gameStartTimes;
 }

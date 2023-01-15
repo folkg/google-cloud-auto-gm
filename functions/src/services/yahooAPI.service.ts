@@ -15,10 +15,11 @@ const js2xmlparser = require("js2xmlparser");
 export async function postRosterChanges(
   rosterModifications: RosterModification[],
   uid: string
-) {
+): Promise<boolean> {
   const putRequests: Promise<any>[] = [];
   // eslint-disable-next-line guard-for-in
   for (const rosterModification of rosterModifications) {
+    // TODO: Check for null here? Or has that been taken care of already?
     const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
       rosterModification;
 
@@ -46,15 +47,22 @@ export async function postRosterChanges(
   }
   // perform all put requests in parallel
   try {
-    const allResults = await Promise.all(putRequests);
-    allResults.forEach((result) => {
-      console.log(result.data);
-    });
+    // const allResults =
+    await Promise.all(putRequests);
+    // allResults.forEach((result) => {
+    //   console.log(result.data);
+    // });
+    // TODO: Log the last_updated timestamp to each team in firebase
+    console.log("All roster changes posted successfully for uid: " + uid);
+    return true;
   } catch (error: AxiosError | any) {
     if (error.response) {
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
     }
+    // TODO: Log this clearly, and send an email to the user?
+    console.log("Error posting roster changes for uid: " + uid);
+    return false;
   }
 }
