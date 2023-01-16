@@ -1,7 +1,7 @@
-import * as functions from "firebase-functions";
 import { Player, Roster, RosterModification } from "../interfaces/roster";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 import { postRosterChanges } from "./yahooAPI.service";
+import { HttpsError } from "firebase-functions/v2/https";
 
 // Statuses to be considered a "healthy" player
 const HEALTHY_STATUS_LIST = ["Healthy", "Questionable", "Probable"];
@@ -22,13 +22,13 @@ export async function setUsersLineup(
   teams: string[]
 ): Promise<boolean> {
   if (!uid) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "unauthenticated",
       "You must be logged in to get an access token"
     );
   }
   if (!teams) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "You must provide a list of teams to optimize"
     );

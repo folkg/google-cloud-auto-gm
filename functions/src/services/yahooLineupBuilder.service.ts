@@ -1,8 +1,8 @@
-import * as functions from "firebase-functions";
 import { httpGetAxios } from "./yahooHttp.service";
 import { getChild } from "./utilities.service";
 import { Player, Roster } from "../interfaces/roster";
 import { AxiosError } from "axios";
+import { HttpsError } from "firebase-functions/v2/https";
 
 /**
  * Get the roster objects for the given teams
@@ -71,7 +71,7 @@ export async function fetchRostersFromYahoo(
     // return yahooRostersJSON;
   } catch (err) {
     console.log(err);
-    throw new functions.https.HttpsError("internal", "Error: " + err);
+    throw new HttpsError("internal", "Error: " + err);
   }
 }
 
@@ -119,7 +119,7 @@ async function getRostersByTeamID(teams: string[], uid: string): Promise<any> {
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         "internal",
         "Communication with Yahoo failed: " + error.response.data
       );

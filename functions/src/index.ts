@@ -1,24 +1,24 @@
 import * as admin from "firebase-admin";
-import * as functions from "firebase-functions";
+import { onRequest } from "firebase-functions/v2/https";
 
 const authBlockingFunctions = require("./authBlockingFunctions");
-exports.beforeCreate = authBlockingFunctions.beforeCreate;
+exports.beforecreate = authBlockingFunctions.beforecreate;
 
 const yahooGetAccessToken = require("./yahooGetAccessToken");
-exports.getAccessToken = yahooGetAccessToken.getAccessToken;
+exports.getaccesstoken = yahooGetAccessToken.getaccesstoken;
 
 const yahooRefreshTeams = require("./yahooRefreshTeams");
-exports.refreshTeams = yahooRefreshTeams.refreshTeams;
+exports.refreshteams = yahooRefreshTeams.refreshteams;
 
 const scheduleSetLineup = require("./scheduleSetLineup");
-exports.scheduleSetLineup = scheduleSetLineup.scheduleSetLineup;
+exports.schedulesetlineup = scheduleSetLineup.schedulesetlineup;
 
 const yahooSetLineups = require("./yahooSetLineups");
-exports.dispatchSetLineupTask = yahooSetLineups.dispatchSetLineupTask;
+exports.dispatchsetlineup = yahooSetLineups.dispatchsetlineup;
 
 // TODO: This is just for testing. Remove later.
 import { setUsersLineup } from "./services/yahooLineupOptimizer.service";
-exports.testSetLineups = functions.https.onRequest(async (data, context) => {
+exports.testsetlineups = onRequest(async (req, res) => {
   const uid = "6IK2AFpBWidMWYDAKtDiLHbwOhq2";
   const teams = [
     "414.l.240994.t.12",

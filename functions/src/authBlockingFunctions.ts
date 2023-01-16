@@ -1,11 +1,11 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { beforeUserCreated } from "firebase-functions/v2/identity";
 
-exports.beforeCreate = functions.auth.user().beforeCreate((user, context) => {
-  if (context.credential) {
+export const beforecreate = beforeUserCreated((event) => {
+  const credential = event.credential;
+  if (credential) {
     const db = admin.firestore();
-    const credential = context.credential;
-    const uid = user.uid;
+    const uid = event.data.uid;
     const data = {
       accessToken: credential.accessToken,
       refreshToken: credential.refreshToken,
