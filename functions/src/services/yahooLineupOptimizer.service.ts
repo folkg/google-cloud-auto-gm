@@ -20,7 +20,7 @@ const INACTIVE_POSITION_LIST = ["IR", "IR+", "NA"];
 export async function setUsersLineup(
   uid: string,
   teams: string[]
-): Promise<boolean> {
+): Promise<void> {
   if (!uid) {
     throw new HttpsError(
       "unauthenticated",
@@ -43,8 +43,7 @@ export async function setUsersLineup(
     }
   }
 
-  const result = postRosterChanges(rosterModifications, uid);
-  return result;
+  return await postRosterChanges(rosterModifications, uid);
 }
 
 /**

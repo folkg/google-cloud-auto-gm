@@ -17,6 +17,6 @@ export const dispatchsetlineup = onTaskDispatched(
     const teams: string[] = req.data.teams;
     if (!uid) throw new Error("No uid provided");
     if (!teams) throw new Error("No teams provided");
-    await setUsersLineup(uid, teams);
+    return await setUsersLineup(uid, teams);
   }
 );

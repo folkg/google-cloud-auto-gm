@@ -28,7 +28,7 @@ exports.testsetlineups = onRequest(async (req, res) => {
     "419.l.28340.t.1",
     "419.l.59985.t.12",
   ];
-  await setUsersLineup(uid, teams);
+  return await setUsersLineup(uid, teams);
 });
 
 admin.initializeApp();

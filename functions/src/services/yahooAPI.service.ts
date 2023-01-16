@@ -216,8 +216,7 @@ function getUsersTeam(allTeams: any): any {
 export async function postRosterChanges(
   rosterModifications: RosterModification[],
   uid: string
-): Promise<boolean> {
-  const putRequests: Promise<any>[] = [];
+): Promise<void> {
   // eslint-disable-next-line guard-for-in
   for (const rosterModification of rosterModifications) {
     const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
@@ -244,40 +243,40 @@ export async function postRosterChanges(
         },
       };
       const xmlBody = js2xmlparser.parse("fantasy_content", data);
-      putRequests.push(
-        httpPutAxios(uid, "team/" + teamKey + "/roster", xmlBody)
-      );
+      try {
+        await httpPutAxios(
+          uid,
+          "team/" + teamKey + "/roster?format=json",
+          xmlBody
+        );
+        // write the current timestamp to the team in firebase
+        updateFirestoreTimestamp(uid, teamKey);
+      } catch (error: AxiosError | any) {
+        console.log("Error posting roster changes for team: " + teamKey);
+        if (error.response) {
+          console.log(
+            "Message from Yahoo: ",
+            error.response.data.error.description
+          );
+        }
+      }
+    } else {
+      updateFirestoreTimestamp(uid, teamKey);
     }
-    // write the current timestamp to the team in firebase
-    const db = admin.firestore();
-    const teamRef = db.collection("users/" + uid + "/teams").doc(teamKey);
-    await teamRef.update({
-      last_updated: Date.now(),
-    });
   }
-  if (putRequests.length === 0) {
-    console.log("No roster changes to post for uid: " + uid);
-    return true;
-  }
-  // perform all put requests in parallel
-  try {
-    const allResults = await Promise.all(putRequests);
-    // TODO: Check the results of each request to make sure they were successful
-    allResults.forEach((result) => {
-      console.log(result.data.status);
-    });
-    // TODO: Log the last_updated timestamp to each team in firebase.
-    // This will only get the timestamp for teams with changes.
-    console.log("All roster changes posted successfully for uid: " + uid);
-    return true;
-  } catch (error: AxiosError | any) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    }
-    // TODO: Log this clearly, and send an email to the user?
-    console.log("Error posting roster changes for uid: " + uid);
-    return false;
-  }
+}
+
+/**
+ * Update the last_updated timestamp in Firestore
+ *
+ * @async
+ * @param {string} uid The firebase uid
+ * @param {string} teamKey The team key
+ */
+async function updateFirestoreTimestamp(uid: string, teamKey: string) {
+  const db = admin.firestore();
+  const teamRef = db.collection("users/" + uid + "/teams").doc(teamKey);
+  await teamRef.update({
+    last_updated: Date.now(),
+  });
 }
