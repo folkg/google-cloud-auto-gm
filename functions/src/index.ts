@@ -19,7 +19,7 @@ exports.dispatchsetlineup = yahooSetLineups.dispatchsetlineup;
 // TODO: This is just for testing. Remove later.
 import { setUsersLineup } from "./services/yahooLineupOptimizer.service";
 exports.testsetlineups = onRequest(async (req, res) => {
-  const uid = "6IK2AFpBWidMWYDAKtDiLHbwOhq2";
+  const uid = "ViGHQOGjhrhbTthiUgsdSIc3Im93";
   const teams = [
     "414.l.240994.t.12",
     "414.l.358976.t.4",

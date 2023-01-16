@@ -43,10 +43,6 @@ export async function setUsersLineup(
     }
   }
 
-  if (rosterModifications.length === 0) {
-    console.log("No roster changes needed for uid: " + uid);
-    return true;
-  }
   const result = postRosterChanges(rosterModifications, uid);
   return result;
 }
@@ -58,7 +54,7 @@ export async function setUsersLineup(
  * @param {Roster} teamRoster - The roster to optimize
  * @return {*} {RosterModification} - The roster modification to make
  */
-function optimizeStartingLineup(teamRoster: Roster) {
+function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   const {
     team_key: teamKey,
     players,
@@ -126,8 +122,7 @@ function optimizeStartingLineup(teamRoster: Roster) {
     (benched.length === 0 && healthyOnIR.length === 0)
   ) {
     console.log("No players to optimize for team: " + teamKey);
-
-    return null;
+    return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
   }
 
   const playerCompareFunction = (a: Player, b: Player) => {
@@ -312,7 +307,7 @@ function optimizeStartingLineup(teamRoster: Roster) {
     };
     return rosterModification;
   } else {
-    return null;
+    return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
   }
 }
 /**

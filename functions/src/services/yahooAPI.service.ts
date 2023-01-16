@@ -218,43 +218,54 @@ export async function postRosterChanges(
   uid: string
 ): Promise<boolean> {
   const putRequests: Promise<any>[] = [];
-  console.log("entering postRosterChanges");
-  console.log("Posting roster changes for uid: " + uid);
   // eslint-disable-next-line guard-for-in
   for (const rosterModification of rosterModifications) {
-    // TODO: Check for null here? Or has that been taken care of already?
     const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
       rosterModification;
 
-    const players: any[] = [];
-    // eslint-disable-next-line guard-for-in
-    for (const playerKey in newPlayerPositions) {
-      const position = newPlayerPositions[playerKey];
-      players.push({
-        player_key: playerKey,
-        position: position,
-      });
-    }
+    if (Object.keys(newPlayerPositions).length !== 0) {
+      const players: any[] = [];
+      // eslint-disable-next-line guard-for-in
+      for (const playerKey in newPlayerPositions) {
+        const position = newPlayerPositions[playerKey];
+        players.push({
+          player_key: playerKey,
+          position: position,
+        });
+      }
 
-    const data: any = {
-      roster: {
-        coverage_type: coverageType,
-        [coverageType]: coveragePeriod,
-        players: {
-          player: players,
+      const data: any = {
+        roster: {
+          coverage_type: coverageType,
+          [coverageType]: coveragePeriod,
+          players: {
+            player: players,
+          },
         },
-      },
-    };
-    const xmlBody = js2xmlparser.parse("fantasy_content", data);
-    putRequests.push(httpPutAxios(uid, "team/" + teamKey + "/roster", xmlBody));
+      };
+      const xmlBody = js2xmlparser.parse("fantasy_content", data);
+      putRequests.push(
+        httpPutAxios(uid, "team/" + teamKey + "/roster", xmlBody)
+      );
+    }
+    // write the current timestamp to the team in firebase
+    const db = admin.firestore();
+    const teamRef = db.collection("users/" + uid + "/teams").doc(teamKey);
+    await teamRef.update({
+      last_updated: Date.now(),
+    });
+  }
+  if (putRequests.length === 0) {
+    console.log("No roster changes to post for uid: " + uid);
+    return true;
   }
   // perform all put requests in parallel
   try {
-    // const allResults =
-    await Promise.all(putRequests);
-    // allResults.forEach((result) => {
-    //   console.log(result.data);
-    // });
+    const allResults = await Promise.all(putRequests);
+    // TODO: Check the results of each request to make sure they were successful
+    allResults.forEach((result) => {
+      console.log(result.data.status);
+    });
     // TODO: Log the last_updated timestamp to each team in firebase.
     // This will only get the timestamp for teams with changes.
     console.log("All roster changes posted successfully for uid: " + uid);
