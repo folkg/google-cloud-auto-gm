@@ -1,4 +1,6 @@
 export interface GameStartTimes {
-  league: string;
-  gameTimestamps: number[];
+  nhl?: number[];
+  nfl?: number[];
+  mlb?: number[];
+  nba?: number[];
 }

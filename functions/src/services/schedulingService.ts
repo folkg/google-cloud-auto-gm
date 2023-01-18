@@ -9,14 +9,14 @@ import { GameStartTimes } from "../interfaces/gameStartTime";
  * @param {GameStartTimes[]} gameStartTimes - The games for today
  * @return {{}} - The leagues that are playing in the next hour
  */
-export function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes[]) {
+export function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes) {
   const now: number = Date.now();
   const nextHour: number = now + 3600000;
   const leaguesPlayingNextHour: string[] = [];
-  for (const game of gameStartTimes) {
-    for (const timestamp of game.gameTimestamps) {
+  for (const [league, gameTimestamps] of Object.entries(gameStartTimes)) {
+    for (const timestamp of gameTimestamps) {
       if (timestamp > now && timestamp < nextHour) {
-        leaguesPlayingNextHour.push(game.league);
+        leaguesPlayingNextHour.push(league);
         break;
       }
     }
@@ -37,7 +37,7 @@ export async function loadTodaysGames(
   db: admin.firestore.Firestore,
   todayDate: string
 ) {
-  let gameStartTimes: GameStartTimes[] = [];
+  let gameStartTimes: GameStartTimes;
   let loadedFromDB: boolean;
   const scheduleDoc = await db.collection("schedule").doc("today").get();
   const scheduleDocData = scheduleDoc.data();
@@ -67,13 +67,16 @@ export async function loadTodaysGames(
  * @param {string} todayDate - The date to fetch the games for
  * @return {Promise<GameStartTimes[]>} - The game start times
  */
-async function getTodaysGames(todayDate: string): Promise<GameStartTimes[]> {
+async function getTodaysGames(todayDate: string): Promise<GameStartTimes> {
   const leagues: string[] = ["nba", "nhl", "nfl", "mlb"];
   // get today's gametimes for each league
-  const gameStartTimes: GameStartTimes[] = [];
+  let gameStartTimes: GameStartTimes = {};
   for (const league of leagues) {
     try {
-      gameStartTimes.push(await getGameTimesYahoo(league, todayDate));
+      gameStartTimes = {
+        ...gameStartTimes,
+        ...(await getGameTimesYahoo(league, todayDate)),
+      };
     } catch (error: AxiosError | any) {
       console.log("Error fetching games from Yahoo API");
       console.log(error);
@@ -85,7 +88,10 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes[]> {
       // get gamestimes from Sportsnet as a backup plan
       console.log("Trying to get games from Sportsnet API");
       try {
-        gameStartTimes.push(await getGameTimesSportsnet(league, todayDate));
+        gameStartTimes = {
+          ...gameStartTimes,
+          ...(await getGameTimesSportsnet(league, todayDate)),
+        };
       } catch (error: AxiosError | any) {
         console.log("Error fetching games from Sportsnet API");
         if (error.response) {
@@ -99,14 +105,13 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes[]> {
 
   // store the games in the DB
   const db = admin.firestore();
-  await db.collection("schedule").doc("today").set({
-    date: todayDate,
-    games: gameStartTimes,
-  });
+  await db
+    .collection("schedule")
+    .doc("today")
+    .set({ date: todayDate, games: gameStartTimes });
 
   return gameStartTimes;
 }
-
 /**
  * Get the game start times for a given league and date from the Yahoo API
  *
@@ -119,7 +124,7 @@ async function getGameTimesYahoo(
   league: string,
   todayDate: string
 ): Promise<GameStartTimes> {
-  const url = `https://api-secure.sports.yahoo.com/v1/editorial/league/${league}/games;date=${todayDate};game_type=1?format=json`;
+  const url = `https://api-secure.sports.yahoo.com/v1/editorial/league/${league}/games;date=${todayDate}?format=json`;
   const { data } = await axios.get(url);
 
   // get the game timestamp for each game in the response
@@ -131,7 +136,8 @@ async function getGameTimesYahoo(
   });
 
   const gameTimesArray = Array.from(new Set(gameTimesSet));
-  return { league: league, gameTimestamps: gameTimesArray };
+  // use the league as the key for the object
+  return { [league]: gameTimesArray };
 }
 
 /**
@@ -159,5 +165,5 @@ async function getGameTimesSportsnet(
   });
 
   const gameTimesArray = Array.from(new Set(gameTimesSet));
-  return { league: league, gameTimestamps: gameTimesArray };
+  return { [league]: gameTimesArray };
 }

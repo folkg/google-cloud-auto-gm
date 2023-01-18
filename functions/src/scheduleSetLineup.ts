@@ -42,7 +42,8 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   } else {
     // If this is the first time the games are being loaded, then we will
     // set the lineup for all leagues with teams playing any time today.
-    leagues = gameStartTimes.map((game) => game.league);
+    // leagues = gameStartTimes.map((game) => game.league);
+    leagues = Object.keys(gameStartTimes);
   }
 
   // get all user's teams in the relevant leagues

@@ -319,7 +319,7 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
 function dailyScoreFunction(): (player: Player) => number {
   return (player: Player) => {
     if (player.player_key === "") return 0;
-    const NOT_PLAYING_FACTOR = 0.001;
+    const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
     // The score will be percent_started
     // TODO: is_starting to be more specific (basketball G, baseball players)
@@ -353,7 +353,7 @@ function dailyScoreFunction(): (player: Player) => number {
 function nflScoreFunction(): (player: Player) => number {
   return (player: Player) => {
     if (player.player_key === "") return 0;
-    const NOT_PLAYING_FACTOR = 0.001;
+    const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
     // The score will be percent_started / rank_projected_week
     // TODO: is_starting needs to be more specific (basketball G, baseball P)

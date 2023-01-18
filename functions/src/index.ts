@@ -21,12 +21,12 @@ import { setUsersLineup } from "./services/yahooLineupOptimizer.service";
 exports.testsetlineups = onRequest(async (req, res) => {
   const uid = "ViGHQOGjhrhbTthiUgsdSIc3Im93";
   const teams = [
-    "414.l.240994.t.12",
+    // "414.l.240994.t.12",
     "414.l.358976.t.4",
-    "419.l.14950.t.2",
+    // "419.l.14950.t.2",
     "419.l.19947.t.6",
-    "419.l.28340.t.1",
-    "419.l.59985.t.12",
+    // "419.l.28340.t.1",
+    // "419.l.59985.t.12",
   ];
   return await setUsersLineup(uid, teams);
 });
