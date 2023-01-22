@@ -4,6 +4,8 @@ import { Player, Roster } from "../interfaces/roster";
 import { AxiosError } from "axios";
 import { HttpsError } from "firebase-functions/v2/https";
 
+import { INACTIVE_POSITION_LIST } from "../helpers/constants";
+
 /**
  * Get the roster objects for the given teams
  *
@@ -46,9 +48,15 @@ export async function fetchRostersFromYahoo(
               positionCounter
             );
             // Add a dummy player for every unfilled position in the roster
+
             const dummyPlayers: Player[] = fillDummyPlayers(positionCounter);
             // add all dummyPlayers to players
             players.push(...dummyPlayers);
+
+            // count the number of empty roster spots
+            const emptyRosterSpots: number = Object.keys(positionCounter)
+              .filter((key) => !INACTIVE_POSITION_LIST.includes(key))
+              .reduce((previous, key) => previous + positionCounter[key], 0);
 
             const rosterObj: Roster = {
               team_key: getChild(usersTeam.team[0], "team_key"),
@@ -60,6 +68,7 @@ export async function fetchRostersFromYahoo(
                 "weekly_deadline"
               ),
               game_code: getChild(gameJSON, "code"),
+              empty_roster_spots: emptyRosterSpots,
             };
             rosters.push(rosterObj);
           }
@@ -157,16 +166,15 @@ function getPlayersFromRoster(
   playersJSON: any,
   positionCounter: any
 ): Player[] {
-  // TODO: Refactor to pull out some functions for readability
   const players: Player[] = [];
 
   for (const key in playersJSON) {
     if (key !== "count") {
       const player = playersJSON[key].player;
       // Loop through the eligible_positions array
-      let eligiblePositions = "";
+      const eligiblePositions: string[] = [];
       getChild(player[0], "eligible_positions").forEach((position: any) => {
-        eligiblePositions += position.position;
+        eligiblePositions.push(position.position);
       });
 
       // get the player's opponent
@@ -223,17 +231,16 @@ function getPlayersFromRoster(
  */
 function fillDummyPlayers(positionCounter: any): Player[] {
   const dummyPlayers: Player[] = [];
-  // TODO: Maybe want to count the number of unused roster spots here as well?
   // Or maybe in a different function.
   // eslint-disable-next-line guard-for-in
   for (const position in positionCounter) {
     const count = positionCounter[position];
-    if (position !== "BN" && count > 0) {
+    if (count > 0) {
       for (let i = 0; i < count; i++) {
         const dummyObj: Player = {
           player_key: "",
           player_name: "",
-          eligible_positions: "",
+          eligible_positions: [],
           selected_position: position,
           is_editable: true,
           is_playing: false,
@@ -244,7 +251,7 @@ function fillDummyPlayers(positionCounter: any): Player[] {
           is_starting: "N/A",
           rank_next7days: -1,
           rank_projected_week: -1,
-          score: 0,
+          score: -1,
         };
         dummyPlayers.push(dummyObj);
       } // end for i loop

@@ -5,12 +5,13 @@ export interface Roster {
   coverage_period: string;
   weekly_deadline: string;
   game_code: string;
+  empty_roster_spots: number;
 }
 
 export interface Player {
   player_key: string;
   player_name: string;
-  eligible_positions: string;
+  eligible_positions: string[];
   selected_position: string;
   is_editable: boolean;
   is_playing: boolean;
