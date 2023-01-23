@@ -2,7 +2,7 @@ export interface Team {
   uid: string;
   game_code: string;
   team_key: string;
-  scoring_type: string;
+  scoring_type?: string;
   start_date: number;
   end_date: number;
   weekly_deadline: string | number;

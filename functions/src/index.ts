@@ -2,7 +2,8 @@ import * as admin from "firebase-admin";
 import { onRequest } from "firebase-functions/v2/https";
 
 const authBlockingFunctions = require("./authBlockingFunctions");
-exports.beforecreate = authBlockingFunctions.beforecreate;
+// exports.beforecreate = authBlockingFunctions.beforecreate;
+exports.beforeCreateV1 = authBlockingFunctions.beforeCreateV1;
 
 const yahooGetAccessToken = require("./yahooGetAccessToken");
 exports.getaccesstoken = yahooGetAccessToken.getaccesstoken;
@@ -15,6 +16,9 @@ exports.schedulesetlineup = scheduleSetLineup.schedulesetlineup;
 
 const yahooSetLineups = require("./yahooSetLineups");
 exports.dispatchsetlineup = yahooSetLineups.dispatchsetlineup;
+
+const sendFeedbackEmail = require("./sendFeedbackEmail");
+exports.sendfeedbackemail = sendFeedbackEmail.sendfeedbackemail;
 
 // TODO: This is just for testing. Remove later.
 import { setUsersLineup } from "./services/yahooLineupOptimizer.service";

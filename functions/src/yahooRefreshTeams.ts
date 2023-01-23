@@ -17,12 +17,18 @@ export const refreshteams = onCall(async (request) => {
     fetchTeamsFromYahoo(uid),
     db.collection("users/" + uid + "/teams").get(),
   ]);
-  console.log(yahooTeams);
-  console.log("Fetched teams from Firebase:");
+
+  if (yahooTeams.length === 0) {
+    throw new HttpsError(
+      "internal",
+      "No teams were returned from Yahoo. Please try again later."
+    );
+  }
+
+  // Get the list of existing teams from firestore snapshot
   teamsSnapshot.forEach((doc) => {
     existingTeams.push(doc.id);
   });
-  console.log(existingTeams);
 
   const batch = db.batch();
 
@@ -38,5 +44,25 @@ export const refreshteams = onCall(async (request) => {
       batch.set(docRef, data);
     }
   }
+
+  // TODO: Could keep this in case we want to update the team data from Yahoo and keep the records in DB
+  // // check each team from firestore and update the record is_setting_lineups is false if it isn't in Yahoo
+  // for (const eTeam of existingTeams) {
+  //   if (!yahooTeams.some((yTeam) => yTeam.team_key === eTeam)) {
+  //     console.log("Updating team in batch: " + eTeam);
+  //     const docRef = db.collection("users/" + uid + "/teams").doc(eTeam);
+  //     batch.update(docRef, { is_setting_lineups: false });
+  //   }
+  // }
+
+  // check each team from firestore and delete it from firestore if it isn't in Yahoo
+  for (const eTeam of existingTeams) {
+    if (!yahooTeams.some((yTeam) => yTeam.team_key === eTeam)) {
+      console.log("Deleting team from batch: " + eTeam);
+      const docRef = db.collection("users/" + uid + "/teams").doc(eTeam);
+      batch.delete(docRef);
+    }
+  }
+
   await batch.commit();
 });

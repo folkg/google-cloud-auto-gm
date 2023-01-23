@@ -141,7 +141,7 @@ export async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
             uid: uid,
             game_code: game.code,
             team_key: usersTeam.team[0][0].team_key,
-            scoring_type: leagues[key].league[0].scoring_type,
+            // scoring_type: leagues[key].league[0].scoring_type,
             start_date: Date.parse(leagues[key].league[0].start_date),
             end_date: Date.parse(leagues[key].league[0].end_date),
             weekly_deadline: leagues[key].league[0].weekly_deadline,
