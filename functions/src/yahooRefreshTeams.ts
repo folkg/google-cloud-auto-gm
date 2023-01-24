@@ -2,6 +2,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { fetchTeamsFromYahoo } from "./services/yahooAPI.service";
 
+const db = admin.firestore();
 export const refreshteams = onCall(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
@@ -10,7 +11,7 @@ export const refreshteams = onCall(async (request) => {
       "You must be logged in to get an access token"
     );
   }
-  const db = admin.firestore();
+
   const existingTeams: string[] = [];
 
   const [yahooTeams, teamsSnapshot] = await Promise.all([

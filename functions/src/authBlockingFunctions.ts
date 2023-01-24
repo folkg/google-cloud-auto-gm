@@ -1,12 +1,12 @@
 import * as admin from "firebase-admin";
 import * as functionsV1 from "firebase-functions/v1";
+const db = admin.firestore();
 
 export const beforeCreateV1 = functionsV1.auth
   .user()
   .beforeCreate((user, context) => {
     const credential = context.credential;
     if (credential) {
-      const db = admin.firestore();
       const uid = user.uid;
       const data = {
         accessToken: credential.accessToken,

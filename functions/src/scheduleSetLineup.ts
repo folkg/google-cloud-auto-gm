@@ -7,10 +7,9 @@ import {
 } from "./services/schedulingService";
 import { getFunctionUrl } from "./services/utilities.service";
 
+const db = admin.firestore();
 // function will run every hour at 55 minutes past the hour
 export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
-  const db = admin.firestore();
-
   // get games for today for all sports
   // Convert UTC time to Pacific Time to ensure all games are finished
   const today: Date = new Date();

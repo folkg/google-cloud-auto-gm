@@ -10,6 +10,7 @@ import { AxiosError } from "axios";
 import { HttpsError } from "firebase-functions/v2/https";
 import { Team } from "../interfaces/team";
 const js2xmlparser = require("js2xmlparser");
+const db = admin.firestore();
 
 /**
  * Load the access token from DB, or refresh from Yahoo if expired
@@ -19,8 +20,6 @@ const js2xmlparser = require("js2xmlparser");
 export async function loadYahooAccessToken(
   uid: string
 ): Promise<ReturnCredential> {
-  const db = admin.firestore();
-
   // fetch the current token from the database
   const doc = await db.collection("users").doc(uid).get();
   const docData = doc.data();
@@ -53,7 +52,6 @@ async function refreshYahooAccessToken(
   uid: string,
   refreshToken: string
 ): Promise<ReturnCredential> {
-  const db = admin.firestore();
   let credential: ReturnCredential = {
     accessToken: "",
     tokenExpirationTime: -1,
@@ -329,7 +327,6 @@ export async function postRosterChanges(
  * @param {string} teamKey The team key
  */
 async function updateFirestoreTimestamp(uid: string, teamKey: string) {
-  const db = admin.firestore();
   const teamRef = db.collection("users/" + uid + "/teams").doc(teamKey);
   await teamRef.update({
     last_updated: Date.now(),
