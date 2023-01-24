@@ -160,6 +160,61 @@ export async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
   return teams;
 }
 
+// TODO: Move to yahooAPI.service.ts
+/**
+ * Will get the JSON response from Yahoo for all teams matching the TeamIDs
+ * This will be useful if we want to get for just individual teams
+ *
+ * @async
+ * @param {string} teams - comma separated string of teamIDs, ie.
+ * "414.l.240994.t.12, 414.l.358976.t.4, 419.l.14950.t.2,
+ * 419.l.19947.t.6,419.l.28340.t.1,419.l.59985.t.12"
+ * @param {string} uid - The firebase uid
+ * @return {Promise<any>} The Yahoo JSON object containing the rosters
+ */
+export async function getRostersByTeamID(
+  teams: string[],
+  uid: string
+): Promise<any> {
+  const leagueKeysArray: string[] = [];
+  teams.forEach((teamKey) => {
+    const leagueKey = teamKey.split(".t")[0];
+    if (!leagueKeysArray.includes(leagueKey)) {
+      leagueKeysArray.push(leagueKey);
+    }
+  });
+  const leagueKeys = leagueKeysArray.join(",");
+
+  const url =
+    "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
+    "/leagues;league_keys=" +
+    leagueKeys +
+    ";out=settings/teams/roster" +
+    "/players;out=percent_started,percent_owned,ranks,opponent," +
+    "transactions,starting_status" +
+    ";ranks=projected_next7days,projected_week" +
+    ";percent_started.cut_types=diamond" +
+    ";percent_owned.cut_types=diamond" +
+    ";transaction.cut_types=diamond" +
+    "?format=json";
+
+  try {
+    const { data } = await httpGetAxios(url, uid);
+    return data;
+  } catch (error: AxiosError | any) {
+    console.log("Error fetching rosters from Yahoo API");
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      throw new HttpsError(
+        "internal",
+        "Communication with Yahoo failed: " + error.response.data
+      );
+    }
+  }
+}
+
 // TODO: Update this function to use a different API call so that we aren't
 // getting all the standings, nor using the getUsersTeam function
 /**

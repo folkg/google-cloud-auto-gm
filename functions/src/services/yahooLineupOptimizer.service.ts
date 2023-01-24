@@ -221,7 +221,7 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
  */
 function dailyScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    if (player.player_key === "") return 0;
+    if (player.player_key === "") return -1;
     const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
     // The score will be percent_started
@@ -255,7 +255,7 @@ function dailyScoreFunction(): (player: Player) => number {
  */
 function nflScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    if (player.player_key === "") return 0;
+    if (player.player_key === "") return -1;
     const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
     // The score will be percent_started / rank_projected_week
@@ -290,10 +290,12 @@ function nflScoreFunction(): (player: Player) => number {
  */
 function weeklyLineupScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    if (player.player_key === "") return 0;
+    if (player.player_key === "") return -1;
+
     // The score will be the inverse of their projected rank for the next week
     // We will not factor in injury status as Yahoo has already accounted for it
     const score = 100 / player.rank_next7days;
+    // console.log(player.player_name, score);
     return score;
   };
 }

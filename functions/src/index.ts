@@ -33,7 +33,13 @@ exports.testsetlineups = onRequest(async (req, res) => {
   //   // "419.l.28340.t.1",
   //   // "419.l.59985.t.12",
   // ]; // Graeme Folk
-  const teams = ["414.l.358976.t.4", "419.l.91560.t.5", "419.l.91564.t.11"]; // Jeff Barnes
+  const teams = [
+    "414.l.358976.t.4",
+    "419.l.91560.t.5",
+    "419.l.91564.t.11",
+    "418.l.201581.t.1",
+    "418.l.200641.t.9",
+  ]; // Jeff Barnes
   return await setUsersLineup(uid, teams);
 });
 
