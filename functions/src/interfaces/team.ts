@@ -6,7 +6,7 @@ export interface Team {
   start_date: number;
   end_date: number;
   weekly_deadline: string | number;
-  edit_key: string;
+  edit_key?: string;
   is_approved: boolean;
   is_setting_lineups: boolean;
   last_updated: number;

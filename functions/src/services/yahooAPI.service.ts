@@ -143,7 +143,7 @@ export async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
             start_date: Date.parse(leagues[key].league[0].start_date),
             end_date: Date.parse(leagues[key].league[0].end_date),
             weekly_deadline: leagues[key].league[0].weekly_deadline,
-            edit_key: leagues[key].league[0].edit_key,
+            // edit_key: leagues[key].league[0].edit_key,
             is_approved: true, // in future if we add payment default to false
             is_setting_lineups: false,
             last_updated: -1,
