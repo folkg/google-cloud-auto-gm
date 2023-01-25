@@ -7,11 +7,11 @@ const authBlockingFunctions = require("./authBlockingFunctions");
 // exports.beforecreate = authBlockingFunctions.beforecreate;
 exports.beforeCreateV1 = authBlockingFunctions.beforeCreateV1;
 
+const fetchUserTeams = require("./fetchUsersTeams");
+exports.fetchuserteams = fetchUserTeams.fetchuserteams;
+
 const yahooGetAccessToken = require("./yahooGetAccessToken");
 exports.getaccesstoken = yahooGetAccessToken.getaccesstoken;
-
-const yahooRefreshTeams = require("./yahooRefreshTeams");
-exports.refreshteams = yahooRefreshTeams.refreshteams;
 
 const scheduleSetLineup = require("./scheduleSetLineup");
 exports.schedulesetlineup = scheduleSetLineup.schedulesetlineup;

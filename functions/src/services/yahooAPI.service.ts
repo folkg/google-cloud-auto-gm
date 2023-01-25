@@ -8,7 +8,8 @@ import {
 } from "../interfaces/credential";
 import { AxiosError } from "axios";
 import { HttpsError } from "firebase-functions/v2/https";
-import { Team } from "../interfaces/team";
+import { TeamClient } from "../interfaces/team";
+import { updateFirestoreTimestamp } from "./firestoreAPI.service";
 const js2xmlparser = require("js2xmlparser");
 const db = admin.firestore();
 
@@ -110,18 +111,16 @@ async function refreshYahooAccessToken(
   return credential;
 }
 
-// TODO: Update this function to use a different API call so that we aren't
-// getting all the standings, nor using the getUsersTeam function
 /**
- * Create an array of Team objects for the calling user's Yahoo teams
+ * Get the user's teams from the Yahoo API
+ *
+ * @export
  * @async
  * @param {string} uid The firebase uid
- * @return {Promise<Team[]>} An array of Team objects from Yahoo
+ * @return {Promise<TeamClient[]>} The user's teams
  */
-export async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
-  // TODO: Update with the getChild function from utilities, more fleixible
-  // TODO: Change the API request so we don't need to fetch standings
-  const teams: Team[] = [];
+export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
+  const teams: TeamClient[] = [];
   const standings = await getAllStandings(uid);
   const gamesJSON = standings.fantasy_content.users[0].user[1].games;
   // console.log(games); //use this to debug the JSON object and see all data
@@ -131,20 +130,33 @@ export async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
       const game = gamesJSON[key].game[0];
       const leagues = gamesJSON[key].game[1].leagues;
       // Loop through each league within the game
+      // TODO: Make this more robust with the help of the getChild function
       for (const key in leagues) {
         if (key !== "count") {
           const allTeams = leagues[key].league[1].standings[0].teams;
           const usersTeam = getUsersTeam(allTeams);
-          const teamObj: Team = {
-            uid: uid,
+          const teamObj: TeamClient = {
+            game_name: game.name,
             game_code: game.code,
+            game_season: game.season,
+            game_is_over: game.is_game_over,
             team_key: usersTeam.team[0][0].team_key,
-            // scoring_type: leagues[key].league[0].scoring_type,
+            team_name: usersTeam.team[0][2].name,
+            team_url: usersTeam.team[0][4].url,
+            team_logo: usersTeam.team[0][5].team_logos[0].team_logo.url,
+            league_name: leagues[key].league[0].name,
+            num_teams: leagues[key].league[0].num_teams,
+            rank: usersTeam.team[2].team_standings.rank,
+            points_for: usersTeam.team[2].team_standings.points_for,
+            points_against: usersTeam.team[2].team_standings.points_against,
+            points_back: usersTeam.team[2].team_standings.points_back,
+            outcome_totals: usersTeam.team[2].team_standings.outcome_totals,
+            scoring_type: leagues[key].league[0].scoring_type,
             start_date: Date.parse(leagues[key].league[0].start_date),
             end_date: Date.parse(leagues[key].league[0].end_date),
             weekly_deadline: leagues[key].league[0].weekly_deadline,
-            // edit_key: leagues[key].league[0].edit_key,
-            is_approved: true, // in future if we add payment default to false
+            edit_key: leagues[key].league[0].edit_key,
+            is_approved: true,
             is_setting_lineups: false,
             last_updated: -1,
           };
@@ -158,7 +170,6 @@ export async function fetchTeamsFromYahoo(uid: string): Promise<Team[]> {
   return teams;
 }
 
-// TODO: Move to yahooAPI.service.ts
 /**
  * Will get the JSON response from Yahoo for all teams matching the TeamIDs
  * This will be useful if we want to get for just individual teams
@@ -317,18 +328,4 @@ export async function postRosterChanges(
       updateFirestoreTimestamp(uid, teamKey);
     }
   }
-}
-
-/**
- * Update the last_updated timestamp in Firestore
- *
- * @async
- * @param {string} uid The firebase uid
- * @param {string} teamKey The team key
- */
-async function updateFirestoreTimestamp(uid: string, teamKey: string) {
-  const teamRef = db.collection("users/" + uid + "/teams").doc(teamKey);
-  await teamRef.update({
-    last_updated: Date.now(),
-  });
 }
