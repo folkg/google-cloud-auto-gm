@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
 import { onRequest } from "firebase-functions/v2/https";
 
+admin.initializeApp();
+
 const authBlockingFunctions = require("./authBlockingFunctions");
 // exports.beforecreate = authBlockingFunctions.beforecreate;
 exports.beforeCreateV1 = authBlockingFunctions.beforeCreateV1;
@@ -42,5 +44,3 @@ exports.testsetlineups = onRequest(async (req, res) => {
   ]; // Jeff Barnes
   return await setUsersLineup(uid, teams);
 });
-
-admin.initializeApp();
