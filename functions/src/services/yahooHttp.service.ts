@@ -1,5 +1,5 @@
-import { loadYahooAccessToken } from "./yahooAPI.service";
 import axios from "axios";
+import { loadYahooAccessToken } from "./firestore.service";
 
 const API_URL = "https://fantasysports.yahooapis.com/fantasy/v2/";
 

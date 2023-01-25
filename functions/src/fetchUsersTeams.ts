@@ -1,10 +1,10 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { TeamClient, TeamFirestore } from "./interfaces/team";
+import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service";
 import {
   fetchTeamsFirestore,
   syncTeamsInFirebase,
-} from "./services/firestoreAPI.service";
-import { fetchTeamsYahoo } from "./services/yahooAPI.service";
+} from "./services/firestore.service";
 
 export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
   const uid = request.auth?.uid;

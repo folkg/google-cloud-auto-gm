@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
-import * as functionsV1 from "firebase-functions/v1";
 const db = admin.firestore();
+import * as functionsV1 from "firebase-functions/v1";
 
 export const beforeCreateV1 = functionsV1.auth
   .user()
@@ -23,7 +23,6 @@ export const beforeCreateV1 = functionsV1.auth
 // export const beforecreate = beforeUserCreated((event) => {
 //   const credential = event.credential;
 //   if (credential) {
-//     const db = admin.firestore();
 //     const uid = event.data.uid;
 //     const data = {
 //       accessToken: credential.accessToken,

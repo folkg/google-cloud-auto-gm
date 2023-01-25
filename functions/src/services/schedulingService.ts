@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+const db = admin.firestore();
 import axios, { AxiosError } from "axios";
 import { GameStartTimes } from "../interfaces/gameStartTime";
 
@@ -103,8 +104,6 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes> {
     }
   }
 
-  // store the games in the DB
-  const db = admin.firestore();
   await db
     .collection("schedule")
     .doc("today")

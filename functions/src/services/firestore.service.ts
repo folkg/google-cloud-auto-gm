@@ -4,7 +4,44 @@ import {
   TeamFirestore,
 } from "../interfaces/team";
 import * as admin from "firebase-admin";
+import { ReturnCredential, Token } from "../interfaces/credential";
+import { refreshYahooAccessToken } from "./yahooAPI.service";
 const db = admin.firestore();
+
+/**
+ * Load the access token from DB, or refresh from Yahoo if expired
+ * @param {(string)} uid The firebase uid
+ * @return {Promise<ReturnCredential>} The credential with token and expiry
+ */
+
+export async function loadYahooAccessToken(
+  uid: string
+): Promise<ReturnCredential> {
+  // fetch the current token from the database
+  const doc = await db.collection("users").doc(uid).get();
+  const docData = doc.data();
+  if (!doc.exists || !docData) {
+    throw new Error("No access token found for user");
+  }
+
+  // return the current token if it is valid, or refresh the token if not
+  let credential: ReturnCredential;
+  if (docData.tokenExpirationTime <= Date.now()) {
+    const token: Token = await refreshYahooAccessToken(docData.refreshToken);
+    await db.collection("users").doc(uid).update(token);
+
+    credential = {
+      accessToken: token.accessToken,
+      tokenExpirationTime: token.tokenExpirationTime,
+    };
+  } else {
+    credential = {
+      accessToken: docData.accessToken,
+      tokenExpirationTime: docData.tokenExpirationTime,
+    };
+  }
+  return credential;
+}
 
 /**
  * Fetches all teams from Firestore for the user

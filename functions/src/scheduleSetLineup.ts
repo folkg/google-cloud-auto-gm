@@ -1,5 +1,6 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
+const db = admin.firestore();
 import { getFunctions } from "firebase-admin/functions";
 import {
   loadTodaysGames,
@@ -7,7 +8,6 @@ import {
 } from "./services/schedulingService";
 import { getFunctionUrl } from "./services/utilities.service";
 
-const db = admin.firestore();
 // function will run every hour at 55 minutes past the hour
 export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   // get games for today for all sports
