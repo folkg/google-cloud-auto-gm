@@ -24,5 +24,24 @@
       "host": "localhost",
       "port": "5000"
     }
+  },
+  "hosting": {
+    "rewrites": [
+      {
+        "source": "/sendfeedbackemail",
+        "function": "sendfeedbackemail",
+        "region": "us-central1"
+      },
+      {
+        "source": "/getaccesstoken",
+        "function": "getaccesstoken",
+        "region": "us-central1"
+      },
+      {
+        "source": "/refreshteams",
+        "function": "refreshteams",
+        "region": "us-central1"
+      }
+    ]
   }
 }
