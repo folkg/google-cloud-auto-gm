@@ -13,7 +13,6 @@ const db = admin.firestore();
  * @param {(string)} uid The firebase uid
  * @return {Promise<ReturnCredential>} The credential with token and expiry
  */
-
 export async function loadYahooAccessToken(
   uid: string
 ): Promise<ReturnCredential> {
@@ -71,48 +70,35 @@ export async function fetchTeamsFirestore(
 }
 
 /**
- * Syncs the teams in Firestore to match the teams in Yahoo
+ * Syncs teams in Firestore with teams from Yahoo
  *
  * @export
  * @async
- * @param {TeamClient[]} yahooTeams - The missing  teams from Yahoo
+ * @param {TeamClient[]} missingTeams - Teams that are in Yahoo but not in Firestore
+ * @param {TeamFirestore[]} extraTeams - Teams that are in Firestore but not in Yahoo
  * @param {string} uid - The user id
- * @param {TeamFirestore[]} firestoreTeams - The teams from Firestore
  */
 export async function syncTeamsInFirebase(
-  yahooTeams: TeamClient[],
-  uid: string,
-  firestoreTeams: TeamFirestore[]
+  missingTeams: TeamClient[],
+  extraTeams: TeamFirestore[],
+  uid: string
 ) {
   const batch = db.batch();
 
-  // find all teams that are in yahoo (w/ active season) but not in firestore
-  const missingTeams: TeamClient[] = yahooTeams.filter(
-    (t) =>
-      t.end_date > Date.now() &&
-      !firestoreTeams.some((f) => f.team_key === t.team_key)
-  );
-  console.log("Missing teams: " + missingTeams.length);
-
   for (const mTeam of missingTeams) {
-    console.log("Adding team to batch: " + mTeam.team_key);
+    if (mTeam.end_date < Date.now()) continue;
+
+    // console.log("Adding team to batch: " + mTeam.team_key);
     mTeam.uid = uid; // uid is not present in TeamClient
     const data: TeamFirestore = clientToFirestore(mTeam);
-    console.log("Data: " + JSON.stringify(data));
 
     const docId = String(mTeam.team_key);
     const docRef = db.collection("users/" + uid + "/teams").doc(docId);
     batch.set(docRef, data);
   }
 
-  // find all teams that are in firestore but not in yahoo
-  const extraTeams = firestoreTeams.filter(
-    (t) => !yahooTeams.some((y) => y.team_key === t.team_key)
-  );
-  console.log("Extra teams: " + extraTeams.length);
-
   for (const eTeam of extraTeams) {
-    console.log("Deleting team from batch: " + eTeam.team_key);
+    // console.log("Deleting team from batch: " + eTeam.team_key);
     const docId = String(eTeam.team_key);
     const docRef = db.collection("users/" + uid + "/teams").doc(docId);
     batch.delete(docRef);

@@ -29,8 +29,10 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
     );
   }
 
-  // Update the teams in firestore if required
-  syncTeamsInFirebase(yahooTeams, uid, firestoreTeams);
+  // find all teams that are in firestore but not in yahoo
+  const extraTeams = firestoreTeams.filter(
+    (t) => !yahooTeams.some((y) => y.team_key === t.team_key)
+  );
 
   const teams: TeamClient[] = [];
   firestoreTeams.forEach((firestoreTeam: TeamFirestore) => {
@@ -45,6 +47,11 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
   });
   // add the remaining teams from yahoo to the teams array for display on the frontend
   teams.push(...yahooTeams);
+
+  console.log("Extra teams: " + extraTeams.length);
+
+  // Update the teams in firestore if required
+  syncTeamsInFirebase(yahooTeams, extraTeams, uid);
 
   return teams;
 });
