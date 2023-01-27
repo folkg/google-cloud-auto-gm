@@ -60,8 +60,15 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
     coverage_type: coverageType,
     coverage_period: coveragePeriod,
     weekly_deadline: weeklyDeadline,
+    empty_positions: unfilledPositions,
   } = teamRoster;
-  let emptyRosterSpots = teamRoster.empty_roster_spots;
+  let emptyRosterSpots: number = Object.keys(unfilledPositions).reduce(
+    (acc, key) => {
+      if (!INACTIVE_POSITION_LIST.includes(key)) acc += unfilledPositions[key];
+      return acc;
+    },
+    0
+  );
 
   // Function to generate a score for comparing each player's value
   let genPlayerScore: (player: Player) => number;
@@ -80,15 +87,8 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   const rostered: Player[] = [];
   const healthyOnIR: Player[] = [];
   const injuredOnRoster: Player[] = [];
-  const emptyPositions: any = {};
   players.forEach((player) => {
     if (player.is_editable) {
-      // Count the number of empty roster spots
-      if (player.player_key === "") {
-        emptyPositions[player.selected_position] =
-          emptyPositions[player.selected_position] + 1 || 1;
-      }
-
       // Add a new property to each player 'score'
       player.score = genPlayerScore(player);
 
@@ -101,25 +101,17 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
         }
       } else {
         // If the player is NOT currently in an IR position
-        if (player.selected_position !== "BN") {
-          rostered.push(player);
-        } else {
-          if (player.player_key !== "") {
-            // only push real players, not dummy players
-            benched.push(player);
-          }
-        } // end if player.selected_position == "BN"
-
-        // In addition to adding to the benched or rostered arrays above,
-        // check if the player is injured and on the bench/roster
-
         // check if player.eligible_positions and INACTIVE_POSITION_LIST arrays intersect
         const inactiveEligiblePositions = player.eligible_positions.filter(
           (value) => INACTIVE_POSITION_LIST.includes(value)
         );
         if (player.player_key && inactiveEligiblePositions.length > 0) {
           injuredOnRoster.push(player);
-        }
+        } else if (player.selected_position !== "BN") {
+          rostered.push(player);
+        } else {
+          benched.push(player);
+        } // end if player.selected_position == "BN"
       } // end if player is currently in an IR position
     } // end if player is editable
   });
@@ -127,7 +119,7 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   // If there are no editable roster players, or there are no editable bench
   // and no editable IR players return from the function at this point.
   if (
-    rostered.length === 0 ||
+    (rostered.length === 0 && injuredOnRoster.length === 0) ||
     (benched.length === 0 && healthyOnIR.length === 0)
   ) {
     console.log("No players to optimize for team: " + teamKey);
@@ -141,7 +133,8 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   // swapped with healthy players on IR.
   if (healthyOnIR.length > 0 && injuredOnRoster.length > 0) {
     // Healthy players on IR will be sorted higher to lower
-    healthyOnIR.sort(playerCompareFunction).reverse();
+    healthyOnIR.sort(playerCompareFunction);
+    healthyOnIR.reverse();
     // IR eligible players on bench will be sorted lower to higher
     injuredOnRoster.sort(playerCompareFunction);
 
@@ -153,12 +146,14 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
 
     // Loop through all healthy players on IR and attempt to swap them with
     // IR eligible players on the bench. This may not be possible.
+    console.log(injuredOnRoster);
+    console.log(healthyOnIR);
     for (const healthyPlayer of healthyOnIR) {
       findInactivePlayerSwap(
         injuredOnRoster,
-        emptyPositions,
+        unfilledPositions,
         healthyPlayer,
-        movePlayerToBN,
+        movePlayerToBN, // TODO: Just pass benched instead
         newPlayerPositions
       );
       // finally, if there are any empty roster spots, move the injured player there
@@ -166,28 +161,39 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
         movePlayerToBN(healthyPlayer);
         emptyRosterSpots -= 1;
       }
+      console.log(newPlayerPositions);
     }
   } // end check IR players
-
+  rostered.push(...injuredOnRoster);
+  rostered.sort(playerCompareFunction);
   // TODO: If there are empty roster spots, add a player from free agency.
   // If this is an intraday league, do this async and wait. Otherwise, do it
   // synchronously. What happens here if it is only one thread?
 
-  // both lists will be sorted by player score
-  // rostered will behave like an array with the lowest ranked player at idx 0
-  rostered.sort(playerCompareFunction);
-  // benched will behave like a stack with the lowest ranked player at the top
-  // benched.sort(playerCompareFunction).reverse();
-
   // Loop over benched players with games and swap into the active roster
+
   while (benched.length > 0) {
     // Pop the benchPlayer off the benched stack, it will either be moved
     // to the roster, or it belongs on the bench and can be ignored.
     const benchPlayer: Player | undefined = benched.pop();
     if (benchPlayer) {
-      // Only attempt to swap player if it is better than at least one player
-      // on the active roster. Otherwise, just discard and move to the next.
+      let benchPlayerMoved = false;
+      // TODO: This will move them onto an IR position if there is one too
+      for (const eligiblePosition of benchPlayer.eligible_positions) {
+        if (unfilledPositions[eligiblePosition] > 0) {
+          benchPlayer.selected_position = eligiblePosition;
+          newPlayerPositions[benchPlayer.player_key] = eligiblePosition;
+          unfilledPositions[eligiblePosition] -= 1;
+          rostered.push(benchPlayer);
+          rostered.sort(playerCompareFunction);
+          benchPlayerMoved = true;
+          break;
+        }
+      }
+      if (benchPlayerMoved) continue;
       if (playerCompareFunction(benchPlayer, rostered[0]) > 0) {
+        // Only attempt to swap player if it is better than at least one player
+        // on the active roster. Otherwise, just discard and move to the next.
         swapPlayerToActiveRoster(
           benchPlayer,
           rostered,
@@ -221,7 +227,6 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
  */
 function dailyScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    if (player.player_key === "") return -1;
     const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
     // The score will be percent_started
@@ -255,7 +260,6 @@ function dailyScoreFunction(): (player: Player) => number {
  */
 function nflScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    if (player.player_key === "") return -1;
     const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
     // The score will be percent_started / rank_projected_week
@@ -290,8 +294,6 @@ function nflScoreFunction(): (player: Player) => number {
  */
 function weeklyLineupScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    if (player.player_key === "") return -1;
-
     // The score will be the inverse of their projected rank for the next week
     // We will not factor in injury status as Yahoo has already accounted for it
     const score = 100 / player.rank_next7days;
@@ -335,16 +337,18 @@ function findInactivePlayerSwap(
     // in a specific list of Inactive Positions
     const findAvailblePosition = (positionsList: string[]) => {
       for (const eligiblePosition of injuredPlayer.eligible_positions) {
-        // if eligiblePosition is in INACTIVE_POSITION_LIST_P1
         if (positionsList.includes(eligiblePosition)) {
           if (eligiblePosition === healthyPlayer.selected_position) {
             movePlayerToBN(healthyPlayer);
             newPlayerPositions[injuredPlayer.player_key] = eligiblePosition;
+            emptyPositions[injuredPlayer.selected_position] += 1;
             injuredOnRoster.splice(i, 1);
             return true;
           } else if (emptyPositions[eligiblePosition] > 0) {
             movePlayerToBN(healthyPlayer);
             newPlayerPositions[injuredPlayer.player_key] = eligiblePosition;
+            emptyPositions[injuredPlayer.selected_position] += 1;
+            injuredOnRoster.splice(i, 1);
             emptyPositions[eligiblePosition] -= 1;
             return true;
           }
@@ -396,16 +400,12 @@ function swapPlayerToActiveRoster(
         benchPlayer.selected_position = rosterPlayer.selected_position;
         rosterPlayer.selected_position = "BN";
 
-        // Add to the newPlayerPositions dictionary
         newPlayerPositions[benchPlayer.player_key] =
           benchPlayer.selected_position;
-        if (rosterPlayer.player_key !== "") {
-          // Only add the rosterPlayer to dictionary if it was not a dummy
-          newPlayerPositions[rosterPlayer.player_key] =
-            rosterPlayer.selected_position;
-          // rosterPlayer could still potentially displace a different player
-          benched.push(rosterPlayer);
-        }
+        newPlayerPositions[rosterPlayer.player_key] =
+          rosterPlayer.selected_position;
+        // rosterPlayer could still potentially displace a different player
+        benched.push(rosterPlayer);
 
         // Add benchPlayer to rostered in place of rosterPlayer and re-sort
         const swapIndex = rostered.indexOf(rosterPlayer);

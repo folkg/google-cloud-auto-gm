@@ -5,7 +5,7 @@ export interface Roster {
   coverage_period: string;
   weekly_deadline: string;
   game_code: string;
-  empty_roster_spots: number;
+  empty_positions: any;
 }
 
 export interface Player {

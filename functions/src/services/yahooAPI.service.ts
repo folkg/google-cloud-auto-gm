@@ -190,6 +190,7 @@ export async function postRosterChanges(
         updateFirestoreTimestamp(uid, teamKey);
       } catch (error: AxiosError | any) {
         console.log("Error posting roster changes for team: " + teamKey);
+        console.log(rosterModification);
         if (error.response) {
           console.log(
             "Message from Yahoo: ",

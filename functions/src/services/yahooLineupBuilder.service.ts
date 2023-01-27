@@ -3,8 +3,6 @@ import { Player, Roster } from "../interfaces/roster";
 import { HttpsError } from "firebase-functions/v2/https";
 import { getRostersByTeamID } from "./yahooAPI.service";
 
-import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-
 /**
  * Get the roster objects for the given teams
  *
@@ -46,16 +44,6 @@ export async function fetchRostersFromYahoo(
               usersTeamRoster[0].players,
               positionCounter
             );
-            // Add a dummy player for every unfilled position in the roster
-
-            const dummyPlayers: Player[] = fillDummyPlayers(positionCounter);
-            // add all dummyPlayers to players
-            players.push(...dummyPlayers);
-
-            // count the number of empty roster spots
-            const emptyRosterSpots: number = Object.keys(positionCounter)
-              .filter((key) => !INACTIVE_POSITION_LIST.includes(key))
-              .reduce((previous, key) => previous + positionCounter[key], 0);
 
             const rosterObj: Roster = {
               team_key: getChild(usersTeam.team[0], "team_key"),
@@ -67,7 +55,7 @@ export async function fetchRostersFromYahoo(
                 "weekly_deadline"
               ),
               game_code: getChild(gameJSON, "code"),
-              empty_roster_spots: emptyRosterSpots,
+              empty_positions: positionCounter,
             };
             rosters.push(rosterObj);
           }
@@ -115,6 +103,7 @@ function getPlayersFromRoster(
 ): Player[] {
   const players: Player[] = [];
 
+  // eslint-disable-next-line guard-for-in
   for (const key in playersJSON) {
     if (key !== "count") {
       const player = playersJSON[key].player;
@@ -168,43 +157,6 @@ function getPlayersFromRoster(
     }
   }
   return players;
-}
-
-/**
- * Fill in dummy players for every roster position that is not filled
- *
- * @param {*} positionCounter - A map of positions and the number of players
- * @return {Player[]} - An array of Player objects
- */
-function fillDummyPlayers(positionCounter: any): Player[] {
-  const dummyPlayers: Player[] = [];
-  // Or maybe in a different function.
-  // eslint-disable-next-line guard-for-in
-  for (const position in positionCounter) {
-    const count = positionCounter[position];
-    if (count > 0) {
-      for (let i = 0; i < count; i++) {
-        const dummyObj: Player = {
-          player_key: "",
-          player_name: "",
-          eligible_positions: [],
-          selected_position: position,
-          is_editable: true,
-          is_playing: false,
-          injury_status: "",
-          percent_started: 0,
-          percent_owned: 0,
-          transactions_delta: 0,
-          is_starting: "N/A",
-          rank_next7days: -1,
-          rank_projected_week: -1,
-          score: -1,
-        };
-        dummyPlayers.push(dummyObj);
-      } // end for i loop
-    } // end if
-  } // end for position loop
-  return dummyPlayers;
 }
 
 /**
