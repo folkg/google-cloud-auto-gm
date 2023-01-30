@@ -2,6 +2,42 @@ import * as admin from "firebase-admin";
 const db = admin.firestore();
 import axios, { AxiosError } from "axios";
 import { GameStartTimes } from "../interfaces/gameStartTime";
+import { datePSTString } from "./utilities.service";
+
+/**
+ * Determine the leagues that we will set lineups for at this time
+ * Any games that are starting in the next hour will be set.
+ * All leagues with games today will be set if this is the first execution of
+ * the day.
+ *
+ *
+ * @export
+ * @async
+ * @return {Promise<string[]>} - The leagues that will have lineups set
+ */
+export async function leaguesToSetLineupsFor(): Promise<string[]> {
+  // load all of the game start times for today
+  const todayDate: string = datePSTString(new Date());
+  let leagues: string[];
+  const { loadedFromDB, gameStartTimes } = await loadTodaysGames(todayDate);
+  if (loadedFromDB) {
+    // If the games were loaded from the database, then check if any games are
+    // starting in the next hour.
+    leagues = findLeaguesPlayingNextHour(gameStartTimes);
+
+    if (leagues.length === 0) {
+      console.log("No games starting in the next hour");
+      // If there are no games starting in the next hour, then we will not
+      // set any lineups.
+      return [];
+    }
+  } else {
+    // If this is the first time the games are being loaded, then we will
+    // set the lineup for all leagues with teams playing any time today.
+    leagues = Object.keys(gameStartTimes);
+  }
+  return leagues;
+}
 
 /**
  * Determine if there are any leagues starting games in the next hour
@@ -10,7 +46,7 @@ import { GameStartTimes } from "../interfaces/gameStartTime";
  * @param {GameStartTimes[]} gameStartTimes - The games for today
  * @return {{}} - The leagues that are playing in the next hour
  */
-export function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes) {
+function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes) {
   const now: number = Date.now();
   const nextHour: number = now + 3600000;
   const leaguesPlayingNextHour: string[] = [];
@@ -30,14 +66,10 @@ export function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes) {
  *
  * @export
  * @async
- * @param {admin.firestore.Firestore} db - The Firestore DB
  * @param {string} todayDate - The date to fetch the games for
  * @return {Promise<GameStartTimes[]>} - The game start times
  */
-export async function loadTodaysGames(
-  db: admin.firestore.Firestore,
-  todayDate: string
-) {
+async function loadTodaysGames(todayDate: string) {
   let gameStartTimes: GameStartTimes;
   let loadedFromDB: boolean;
   const scheduleDoc = await db.collection("schedule").doc("today").get();
@@ -47,17 +79,13 @@ export async function loadTodaysGames(
     !scheduleDocData ||
     scheduleDocData.date !== todayDate
   ) {
-    // TODO: We need to not fetch new games if there are still valid games on
-    //  the schedule. This is an issue with using the UTC time.
     console.log("No games in database, fetching from internet");
     gameStartTimes = await getTodaysGames(todayDate);
     loadedFromDB = false;
   } else {
-    // console.log("Games found in database");
     gameStartTimes = scheduleDocData.games;
     loadedFromDB = true;
   }
-  // console.log(gameStartTimes);
   return { loadedFromDB, gameStartTimes };
 }
 
