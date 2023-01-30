@@ -142,6 +142,49 @@ export async function getAllStandings(uid: string): Promise<any> {
 }
 
 /**
+ * Get the projected/confirmed starting goalies for the league
+ *
+ * This will return starting goalies based on the weekly_deadline
+ * ie. intraday leagues will return today's starters, while daily leagues
+ * will return tomorrow's starters
+ *
+ * @export
+ * @async
+ * @param {string} uid The firebase uid
+ * @param {string} leagueKey The league key
+ * @return {Promise<any>} The Yahoo JSON object containing goalie data
+ */
+export async function getStartingGoalies(uid: string, leagueKey: string) {
+  try {
+    // There could be up to 32 starting goalies, so we need to make 2 calls
+    // to get all the goalies. The first call will get the first 25 goalies.
+    const [data1, data2] = await Promise.all([
+      await httpGetAxios(
+        "league/" +
+          leagueKey +
+          "/players;position=S_G;sort=AR;start=0?format=json",
+        uid
+      ),
+      await httpGetAxios(
+        "league/" +
+          leagueKey +
+          "/players;position=S_G;sort=AR;start=25?format=json",
+        uid
+      ),
+    ]);
+    return [data1.data, data2.data];
+  } catch (error: AxiosError | any) {
+    console.log("Error fetching starting goalies from Yahoo API");
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    }
+    throw new Error("Communication with Yahoo failed: " + error.response.data);
+  }
+}
+
+/**
  * Post the roster changes to Yahoo
  *
  * @export

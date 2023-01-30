@@ -7,6 +7,7 @@ import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,
 } from "../helpers/constants";
+import { NHL_STARTING_GOALIES } from "./yahooStartingGoalie.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -37,7 +38,7 @@ export async function setUsersLineup(
   const rosters = await fetchRostersFromYahoo(teams, uid);
   const rosterModifications: RosterModification[] = [];
   for (const roster of rosters) {
-    const rm = optimizeStartingLineup(roster);
+    const rm = await optimizeStartingLineup(roster);
     if (rm) {
       rosterModifications.push(rm);
     }
@@ -53,7 +54,9 @@ export async function setUsersLineup(
  * @param {Roster} teamRoster - The roster to optimize
  * @return {*} {RosterModification} - The roster modification to make
  */
-function optimizeStartingLineup(teamRoster: Roster): RosterModification {
+async function optimizeStartingLineup(
+  teamRoster: Roster
+): Promise<RosterModification> {
   const {
     team_key: teamKey,
     players,
@@ -77,6 +80,8 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
     // weeklyDeadline will be something like "1" to represent Monday
     genPlayerScore = weeklyLineupScoreFunction();
+  } else if (teamRoster.game_code === "nhl") {
+    genPlayerScore = await nhlScoreFunction();
   } else {
     genPlayerScore = dailyScoreFunction();
   }
@@ -103,7 +108,6 @@ function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   }
 
   const newPlayerPositions: any = {};
-
   if (healthyOnIR.length > 0 && injuredOnRoster.length > 0) {
     // Healthy players on IR will be sorted higher to lower
     healthyOnIR.sort(playerCompareFunction);
@@ -231,15 +235,15 @@ function fillRosterArrays(
         } else {
           benched.push(player);
         } // end if player.selected_position == "BN"
-      } // end if player is currently in an IR position
 
-      // check if player.eligible_positions and INACTIVE_POSITION_LIST arrays intersect
-      const inactiveEligiblePositions = player.eligible_positions.filter(
-        (value) => INACTIVE_POSITION_LIST.includes(value)
-      );
-      if (inactiveEligiblePositions.length > 0) {
-        injuredOnRoster.push(player);
-      }
+        // check if player.eligible_positions and INACTIVE_POSITION_LIST arrays intersect
+        const inactiveEligiblePositions = player.eligible_positions.filter(
+          (value) => INACTIVE_POSITION_LIST.includes(value)
+        );
+        if (inactiveEligiblePositions.length > 0) {
+          injuredOnRoster.push(player);
+        }
+      } // end if player is currently in an IR position
     } // end if player is editable
   });
   return { rostered, injuredOnRoster, benched, healthyOnIR };
@@ -265,8 +269,6 @@ function dailyScoreFunction(): (player: Player) => number {
       score *= NOT_PLAYING_FACTOR;
     } else if (
       player.is_starting === 0 ||
-      (player.is_starting === "N/A" &&
-        player.eligible_positions.includes("G")) ||
       !HEALTHY_STATUS_LIST.includes(player.injury_status)
     ) {
       // If a player is not starting or hurt, factor their score such that it
@@ -274,6 +276,52 @@ function dailyScoreFunction(): (player: Player) => number {
       score *= NOT_STARTING_FACTOR;
     }
     return score;
+  };
+}
+
+/**
+ * Score function used to compare players in NHL leagues.
+ * Higher scores are better.
+ *
+ * @return {()} - A function that takes a player and returns a score.
+ *  returns a score.
+ */
+async function nhlScoreFunction(): Promise<(player: Player) => number> {
+  const starters = await NHL_STARTING_GOALIES;
+  return (player: Player) => {
+    const NOT_PLAYING_FACTOR = 0.0001;
+    const NOT_STARTING_FACTOR = 0.01;
+    const STARTING_FACTOR = 100;
+    // The score will be percent_started
+    let score = player.percent_started;
+    const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
+    const isStartingGoalie = player.eligible_positions.includes("G")
+      ? checkStartingGoalie()
+      : false;
+    if (!player.is_playing) {
+      score *= NOT_PLAYING_FACTOR;
+    } else if (isPlayerInjured) {
+      score *= NOT_STARTING_FACTOR;
+    } else if (isStartingGoalie) {
+      score *= STARTING_FACTOR;
+    }
+    return score;
+
+    /**
+     * Checks if the player is a starting goalie
+     *
+     * @return {boolean} - Whether the player is a starting goalie or not
+     */
+    function checkStartingGoalie(): boolean {
+      if (starters.length === 0) {
+        // default to is_starting flag if we can't get the starting goalies
+        return player.is_starting === 1;
+      }
+      if (starters.findIndex((g) => g === player.player_key) === -1) {
+        return false;
+      }
+      return true;
+    }
   };
 }
 
