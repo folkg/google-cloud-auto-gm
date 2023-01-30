@@ -45,3 +45,22 @@ export async function getFunctionUrl(name: string, location = "us-central1") {
   }
   return uri;
 }
+
+/**
+ * convert date (PST) to a string in the format YYYY-MM-DD
+ *
+ * @param {Date} date - The date to convert
+ * @return {string}
+ */
+export function datePSTString(date: Date): string {
+  const datePTC: string = date.toLocaleDateString("en-US", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const dateParts: string[] = datePTC.split("/");
+  const dateString: string =
+    dateParts[2] + "-" + dateParts[0] + "-" + dateParts[1];
+  return dateString;
+}
