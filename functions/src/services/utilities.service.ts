@@ -64,3 +64,30 @@ export function datePSTString(date: Date): string {
     dateParts[2] + "-" + dateParts[0] + "-" + dateParts[1];
   return dateString;
 }
+
+/**
+ * Takes an array and a predicate function and returns an array of two arrays.
+ * The first array contains all the elements that satisfy the predicate.
+ * The second array contains all the elements that do not satisfy the predicate.
+ *
+ * @template T The type of the array elements
+ * @param {T[]} arr The array to partition
+ * @param {(item: T) => boolean} predicate The predicate function
+ * @returns {T[][]} The partitioned array
+ */
+export function partitionArray<T>(
+  arr: T[],
+  predicate: (item: T) => boolean
+): T[][] {
+  return arr.reduce(
+    (acc, item) => {
+      if (predicate(item)) {
+        acc[0].push(item);
+      } else {
+        acc[1].push(item);
+      }
+      return acc;
+    },
+    [[], []] as T[][]
+  );
+}
