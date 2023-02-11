@@ -72,8 +72,8 @@ export function datePSTString(date: Date): string {
  *
  * @template T The type of the array elements
  * @param {T[]} arr The array to partition
- * @param {(item: T) => boolean} predicate The predicate function
- * @returns {T[][]} The partitioned array
+ * @param {()} predicate The predicate function
+ * @return {[][]} The partitioned array
  */
 export function partitionArray<T>(
   arr: T[],

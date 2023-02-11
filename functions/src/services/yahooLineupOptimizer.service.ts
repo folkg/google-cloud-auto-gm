@@ -103,7 +103,7 @@ async function optimizeStartingLineup(
     rostered.length === 0 ||
     (benched.length === 0 && healthyOnIR.length === 0)
   ) {
-    console.log("No players to optimize for team: " + teamKey);
+    // console.log("No players to optimize for team: " + teamKey);
     return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
   }
 

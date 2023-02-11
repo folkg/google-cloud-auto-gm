@@ -29,8 +29,7 @@ async function fetchStartingGoaliesYahoo(): Promise<string[]> {
   const leagues: string[] = await leaguesToSetLineupsFor();
   // we won't waste resources getting starting goalies if we aren't
   // setting lineups for the NHL currently
-  console.log(leagues);
-  // if (!leagues.includes("nhl")) return [];
+  if (!leagues.includes("nhl")) return [];
 
   const teamsRef = db.collectionGroup("teams");
   const teamsSnapshot = await teamsRef
@@ -57,8 +56,8 @@ async function fetchStartingGoaliesYahoo(): Promise<string[]> {
         }
       }
     }
-    console.log("Starting goalies count: " + startingGoalies.length);
-    console.log("Starting goalies: " + JSON.stringify(startingGoalies));
+    // console.log("Starting goalies count: " + startingGoalies.length);
+    // console.log("Starting goalies: " + JSON.stringify(startingGoalies));
     return startingGoalies;
   } catch (error: Error | any) {
     console.log("Error getting starting goalies from Yahoo API: " + error);
