@@ -3,10 +3,7 @@ import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 import { postRosterChanges } from "./yahooAPI.service";
 import { HttpsError } from "firebase-functions/v2/https";
 
-import {
-  HEALTHY_STATUS_LIST,
-  INACTIVE_POSITION_LIST,
-} from "../helpers/constants";
+import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import {
   nflScoreFunction,
   weeklyLineupScoreFunction,
@@ -45,6 +42,7 @@ export async function setUsersLineup2(
   const rosterModifications: RosterModification[] = [];
   for (const roster of rosters) {
     const rm = await optimizeStartingLineup2(roster);
+    console.log("rm for team " + roster.team_key + " is " + JSON.stringify(rm));
     if (rm) {
       rosterModifications.push(rm);
     }
@@ -87,8 +85,13 @@ async function optimizeStartingLineup2(
   }
 
   const editablePlayers = players.filter((player) => player.is_editable);
+  if (editablePlayers.length === 0) {
+    console.log("no players to optimize for team " + teamKey);
+    return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
+  }
   editablePlayers.forEach((player) => {
     player.score = genPlayerScore(player);
+    player.eligible_positions.push("BN"); // not included by default in Yahoo
   });
   // sort lower to higher
   editablePlayers.sort((a, b) => a.score - b.score);
@@ -97,34 +100,57 @@ async function optimizeStartingLineup2(
   // Illegal players are players that are not eligible for their selected position
   // For example, any player in an IR position that is now healthy, IR+, or NA
 
+  // TODO: Assumption was that "BN" is on player's eligible positions. It's not. Could cause bugs.
+  // TODO: This isn't quite right. Need to check health status as well in roster. We need more filters/partitions.
+
   const [illegalPlayers, legalPlayers] = partitionArray(
     editablePlayers,
     (player) => !player.eligible_positions.includes(player.selected_position)
   );
-  // reverse sort higher to lower
   illegalPlayers.reverse();
   // first check if a simple swap is possible between any two players on illelegalPlayers
   // if not, then call swapPlayer()
+  console.log("swapping illegalPlayers amongst themselves:");
   newPlayerPositions = internalDirectPlayerSwap(illegalPlayers);
+  console.log(
+    "after internalDirectPlayerSwap: " + JSON.stringify(newPlayerPositions)
+  );
 
+  console.log("swapping illegalPlayer / legalPlayers:");
   newPlayerPositions = {
     ...newPlayerPositions,
     ...swapPlayers(illegalPlayers, legalPlayers, unfilledPositions),
   };
+  console.log(
+    "after swapPlayers illegalPlayer / legalPlayers: " +
+      JSON.stringify(newPlayerPositions)
+  );
 
   // TODO: Move all injured players to InactiveList if possible
   // TODO: Add new players from FA if there are empty roster spots
 
   // Optimize the active roster by swapping eligible players from bench to roster
-  const [roster, bench] = partitionArray(
-    editablePlayers,
-    (player) => player.selected_position !== "BN"
+  // // TODO: roster here will include inactive players as well.
+  // const [roster, bench] = partitionArray(
+  //   editablePlayers,
+  //   (player) => player.selected_position !== "BN"
+  // );
+  const activeRoster = editablePlayers.filter(
+    (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
+  );
+  const [bench, roster] = partitionArray(
+    activeRoster,
+    (player) => player.selected_position === "BN"
   );
 
+  console.log("swapping bench / roster:");
   newPlayerPositions = {
     ...newPlayerPositions,
     ...swapPlayers(bench, roster, unfilledPositions),
   };
+  console.log(
+    "after swapPlayers bench / roster: " + JSON.stringify(newPlayerPositions)
+  );
 
   // Return the roster modification object if there are changes
   if (Object.keys(newPlayerPositions).length > 0) {
@@ -141,10 +167,11 @@ async function optimizeStartingLineup2(
 }
 
 /**
- * Moves a player to a new position
+ * Will swap players between two arrays of players
  *
- * @param {Player} player - The player to move
- * @param {string} position - The new position
+ * @param {Player} player - The player to swap
+ * @param {string} position - The position to swap the player to
+ * @param {{}} newPlayerPositions - The dictionary of players to move
  */
 function movePlayerToPosition(
   player: Player,
@@ -159,12 +186,12 @@ function movePlayerToPosition(
  * Make direct swaps between players in the playersArr array
  *
  * @param {Player[]} playersArr - The array of players to swap
- * @return {{ [key: string]: string; }} - dictionary of players moved to new positions
+ * @return {{}} - dictionary of players moved to new positions
  */
 function internalDirectPlayerSwap(playersArr: Player[]): {
   [key: string]: string;
 } {
-  let newPlayerPositions: { [key: string]: string } = {};
+  const newPlayerPositions: { [key: string]: string } = {};
   for (const playerA of playersArr) {
     for (const playerB of playersArr) {
       if (
@@ -193,21 +220,21 @@ function internalDirectPlayerSwap(playersArr: Player[]): {
  *
  * @param {Player[]} source - array of players to move from
  * @param {Player[]} target - array of players to move to
- * @param {{ [key: string]: number }} unfilledPositions - dictionary of unfilled positions
- * @return {{ [key: string]: string; }} - dictionary of players moved to new positions
+ * @param {{}} unfilledPositions - dictionary of unfilled positions
+ * @return {{}} - dictionary of players moved to new positions
  */
 function swapPlayers(
   source: Player[],
   target: Player[],
   unfilledPositions: { [key: string]: number }
 ) {
-  let newPlayerPositions: { [key: string]: string } = {};
+  const newPlayerPositions: { [key: string]: string } = {};
   let isSourceActiveRoster = false;
   let isTargetActiveRoster = false;
   const isMaximizingScore = () => {
     return isSourceActiveRoster && isTargetActiveRoster;
   };
-  const isMovingILToRoster = () => {
+  const isSwappingILToRoster = () => {
     return !isSourceActiveRoster && isTargetActiveRoster;
   };
   const movePlayerTo = (player: Player, position: string) => {
@@ -229,6 +256,8 @@ function swapPlayers(
   // playerC is always from target, and is the player we are trying to move playerB to
   let swapped;
   let i = 0;
+  console.log("source: " + source.map((p) => p.player_name));
+  console.log("target: " + target.map((p) => p.player_name));
   while (i < source.length) {
     swapped = false;
     const playerA = source[i];
@@ -240,7 +269,20 @@ function swapPlayers(
       targetPlayer.eligible_positions.includes(playerA.selected_position)
     );
     if (eligibleTargetPlayers.length > 0) {
+      console.log(
+        "eligibleTargetPlayers for player " +
+          playerA.player_name +
+          ": " +
+          eligibleTargetPlayers.map((p) => p.player_name)
+      );
+
       for (const playerB of eligibleTargetPlayers) {
+        console.log(
+          "comparing playerA " + playerA.player_name,
+          playerA.score + " to playerB " + playerB.player_name,
+          playerB.score
+        );
+
         isTargetActiveRoster = !INACTIVE_POSITION_LIST.includes(
           playerB.selected_position
         );
@@ -250,7 +292,7 @@ function swapPlayers(
         //      if score, then two way swap
         //      if not score, then three way swap
         // if IR -> ActiveRoster, make two way swap
-        if (isMovingILToRoster()) {
+        if (isSwappingILToRoster()) {
           movePlayerTo(playerB, "BN");
           swapPlayers(playerA, playerB);
           break;
@@ -259,13 +301,18 @@ function swapPlayers(
         if (playerA.eligible_positions.includes(playerB.selected_position)) {
           if (isMaximizingScore() && playerB.score >= playerA.score) {
             // if maximizing score, we will only swap directly if sourcePlayer.score > targetPlayer.score
+            console.log(
+              "Need to find a three way swap since sourcePlayer.score < targetPlayer.score"
+            );
             const playerC = findPlayerC(playerA, playerB);
             if (playerC) {
               swapPlayers(playerA, playerB);
               swapPlayers(playerB, playerC);
               break;
             }
+            console.log("No three way swap found");
           } else {
+            console.log("Direct swap");
             swapPlayers(playerA, playerB);
             break;
             // TODO: What about rechecking the player swapped to bench? ie. recheck in source. Might need to convert to for i loop.
@@ -281,6 +328,9 @@ function swapPlayers(
           sourcePlayer.eligible_positions.includes(playerA.selected_position)
       );
       if (eligibleSourcePlayers.length > 0) {
+        console.log(
+          "looking for three way swap to move inactive player to active roster"
+        );
         for (const playerB of eligibleSourcePlayers) {
           const playerC = findPlayerC(playerA, playerB);
           if (playerC) {
@@ -291,15 +341,16 @@ function swapPlayers(
         }
       }
     }
-    // break without incrementing i if a swap was made
+    // continue without incrementing i if a swap was made
     // this is to ensure we recheck the player swapped to bench for other swaps
-    if (swapped) break;
+    if (swapped) continue;
+    console.log("No swaps for player " + playerA.player_name);
 
     // TODO: Refactor this into a function
     // Finally, if there are no eligible player swaps, then we will look for an unfilled position
     let unfilledPosition: string | undefined;
-    if (isMovingILToRoster()) {
-      const emptyRosterSpots = Object.keys(unfilledPositions).reduce(
+    if (!isSourceActiveRoster) {
+      const numEmptyRosterSpots = Object.keys(unfilledPositions).reduce(
         (acc, key) => {
           if (!INACTIVE_POSITION_LIST.includes(key))
             acc += unfilledPositions[key];
@@ -307,10 +358,11 @@ function swapPlayers(
         },
         0
       );
-      if (emptyRosterSpots > 0) {
+      console.log("numEmptyRosterSpots: ", numEmptyRosterSpots);
+      if (numEmptyRosterSpots > 0) {
         unfilledPosition = "BN";
       }
-      //TODO: else Drop players to make room for playerA
+      // TODO: else Drop players to make room for playerA
     } else {
       unfilledPosition = Object.keys(unfilledPositions).find(
         (position) =>
@@ -321,14 +373,29 @@ function swapPlayers(
 
     if (unfilledPosition) {
       // if there is an unfilled position, then we will move the player to that position
+      console.log(
+        "Moving player " + playerA.player_name + " to unfilled position: ",
+        unfilledPosition
+      );
       movePlayerTo(playerA, unfilledPosition);
       // splice the player from source and add to target
       const idx = source.indexOf(playerA);
       target.push(source.splice(idx, 1)[0]);
       // decrement the unfilled position
+      console.log(
+        "unfilledPositions before: ",
+        JSON.stringify(unfilledPositions)
+      );
       unfilledPositions[unfilledPosition] -= 1;
+      console.log(
+        "unfilledPositions after: ",
+        JSON.stringify(unfilledPositions)
+      );
+      // continue without incrementing i if a swap was made
+      continue;
     }
     i++;
+    console.log("i: " + i + " source.length: " + source.length);
   }
 
   return newPlayerPositions;
@@ -342,7 +409,7 @@ function swapPlayers(
    */
   function findPlayerC(playerA: Player, playerB: Player): Player | undefined {
     const eligibleThirdPlayer = target.find(
-      (thirdPlayer) =>
+      (thirdPlayer: Player) =>
         thirdPlayer.eligible_positions.includes(playerB.selected_position) &&
         thirdPlayer.player_key !== playerB.player_key &&
         (isMaximizingScore() ? thirdPlayer.score < playerA.score : true)
@@ -356,8 +423,9 @@ function swapPlayers(
    * @param {Player} playerOne - The first player to swap
    * @param {Player} playerTwo - The second player to swap
    */
-  function swapPlayers(playerOne: Player, playerTwo: Player) {
+  function swapPlayers(playerOne: Player, playerTwo: Player): void {
     // TODO: Don't want to move to other array if it is all the players. Only if it is a subset of the players.
+    console.log("swapping", playerOne.player_name, playerTwo.player_name);
     const idxOne = source.indexOf(playerOne);
     const idxTwo = target.indexOf(playerTwo);
     source[idxOne] = playerTwo;
