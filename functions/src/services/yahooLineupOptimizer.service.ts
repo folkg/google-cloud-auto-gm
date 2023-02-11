@@ -1,6 +1,6 @@
 import { Player, Roster, RosterModification } from "../interfaces/roster";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import { postRosterChanges } from "./yahooAPI.service";
+import { postRosterModifications } from "./yahooAPI.service";
 import { HttpsError } from "firebase-functions/v2/https";
 
 import {
@@ -49,7 +49,7 @@ export async function setUsersLineup(
     }
   }
 
-  return await postRosterChanges(rosterModifications, uid);
+  return await postRosterModifications(rosterModifications, uid);
 }
 
 /**

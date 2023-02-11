@@ -3,6 +3,34 @@ import { HEALTHY_STATUS_LIST } from "../helpers/constants";
 import { NHL_STARTING_GOALIES } from "./yahooStartingGoalie.service";
 
 /**
+ * Returns the proper score function used to compare players to other players
+ * on the same fantasy roster based on the league settings
+ *
+ * @export
+ * @async
+ * @param {string} gameCode - The game code for the league
+ * @param {string} weeklyDeadline - The weekly deadline for the league
+ * @return {()} - A function that takes a player and returns a score.
+ */
+export async function assignPlayerScoreFunction(
+  gameCode: string,
+  weeklyDeadline: string
+) {
+  let playerScoreFunction: (player: Player) => number;
+  if (gameCode === "nfl") {
+    playerScoreFunction = nflScoreFunction();
+  } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
+    // weeklyDeadline will be something like "1" to represent Monday
+    playerScoreFunction = weeklyLineupScoreFunction();
+  } else if (gameCode === "nhl") {
+    playerScoreFunction = await nhlScoreFunction();
+  } else {
+    playerScoreFunction = dailyScoreFunction();
+  }
+  return playerScoreFunction;
+}
+
+/**
  * Default score function used to compare players.
  * Higher scores are better.
  *

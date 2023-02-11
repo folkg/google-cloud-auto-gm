@@ -1,16 +1,11 @@
 import { Player, Roster, RosterModification } from "../interfaces/roster";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import { postRosterChanges } from "./yahooAPI.service";
+import { postRosterModifications } from "./yahooAPI.service";
 import { HttpsError } from "firebase-functions/v2/https";
 
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import {
-  nflScoreFunction,
-  weeklyLineupScoreFunction,
-  nhlScoreFunction,
-  dailyScoreFunction,
-} from "./playerScoreFunctions.service";
 import { partitionArray } from "./utilities.service";
+import { assignPlayerScoreFunction } from "./playerScoreFunctions.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -31,6 +26,7 @@ export async function setUsersLineup2(
       "You must be logged in to get an access token"
     );
   }
+
   if (!teams) {
     throw new HttpsError(
       "invalid-argument",
@@ -38,8 +34,27 @@ export async function setUsersLineup2(
     );
   }
 
+  const rosterModifications: RosterModification[] =
+    await getRosterModifications(teams, uid);
+
+  return await postRosterModifications(rosterModifications, uid);
+}
+
+/**
+ * Will get the required roster modifications for a given user
+ *
+ * @async
+ * @param {string[]} teams - The teams to optimize
+ * @param {string} uid - The user id
+ * @return {Promise<RosterModification[]>} - The roster modifications to make
+ */
+async function getRosterModifications(
+  teams: string[],
+  uid: string
+): Promise<RosterModification[]> {
   const rosters = await fetchRostersFromYahoo(teams, uid);
   const rosterModifications: RosterModification[] = [];
+
   for (const roster of rosters) {
     const rm = await optimizeStartingLineup2(roster);
     console.log("rm for team " + roster.team_key + " is " + JSON.stringify(rm));
@@ -47,8 +62,7 @@ export async function setUsersLineup2(
       rosterModifications.push(rm);
     }
   }
-
-  return await postRosterChanges(rosterModifications, uid);
+  return rosterModifications;
 }
 
 /**
@@ -72,17 +86,8 @@ async function optimizeStartingLineup2(
 
   let newPlayerPositions: { [key: string]: string } = {};
 
-  let genPlayerScore: (player: Player) => number;
-  if (teamRoster.game_code === "nfl") {
-    genPlayerScore = nflScoreFunction();
-  } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
-    // weeklyDeadline will be something like "1" to represent Monday
-    genPlayerScore = weeklyLineupScoreFunction();
-  } else if (teamRoster.game_code === "nhl") {
-    genPlayerScore = await nhlScoreFunction();
-  } else {
-    genPlayerScore = dailyScoreFunction();
-  }
+  const genPlayerScore: (player: Player) => number =
+    await assignPlayerScoreFunction(teamRoster.game_code, weeklyDeadline);
 
   const editablePlayers = players.filter((player) => player.is_editable);
   if (editablePlayers.length === 0) {

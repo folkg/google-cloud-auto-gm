@@ -193,7 +193,7 @@ export async function getStartingGoalies(uid: string, leagueKey: string) {
  * @param {string} uid The firebase uid of the user
  * @return {unknown}
  */
-export async function postRosterChanges(
+export async function postRosterModifications(
   rosterModifications: RosterModification[],
   uid: string
 ): Promise<void> {
