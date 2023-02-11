@@ -112,24 +112,26 @@ async function optimizeStartingLineup2(
     editablePlayers,
     (player) => !player.eligible_positions.includes(player.selected_position)
   );
-  illegalPlayers.reverse();
-  // first check if a simple swap is possible between any two players on illelegalPlayers
-  // if not, then call swapPlayer()
-  console.log("swapping illegalPlayers amongst themselves:");
-  newPlayerPositions = internalDirectPlayerSwap(illegalPlayers);
-  console.log(
-    "after internalDirectPlayerSwap: " + JSON.stringify(newPlayerPositions)
-  );
+  if (illegalPlayers.length > 0) {
+    illegalPlayers.reverse();
+    // first check if a simple swap is possible between any two players on illelegalPlayers
+    // if not, then call swapPlayer()
+    console.log("swapping illegalPlayers amongst themselves:");
+    newPlayerPositions = internalDirectPlayerSwap(illegalPlayers);
+    console.log(
+      "after internalDirectPlayerSwap: " + JSON.stringify(newPlayerPositions)
+    );
 
-  console.log("swapping illegalPlayer / legalPlayers:");
-  newPlayerPositions = {
-    ...newPlayerPositions,
-    ...swapPlayers(illegalPlayers, legalPlayers, unfilledPositions),
-  };
-  console.log(
-    "after swapPlayers illegalPlayer / legalPlayers: " +
-      JSON.stringify(newPlayerPositions)
-  );
+    console.log("swapping illegalPlayer / legalPlayers:");
+    newPlayerPositions = {
+      ...newPlayerPositions,
+      ...swapPlayers(illegalPlayers, legalPlayers, unfilledPositions),
+    };
+    console.log(
+      "after swapPlayers illegalPlayer / legalPlayers: " +
+        JSON.stringify(newPlayerPositions)
+    );
+  }
 
   // TODO: Move all injured players to InactiveList if possible
   // TODO: Add new players from FA if there are empty roster spots
@@ -311,6 +313,7 @@ function swapPlayers(
             );
             const playerC = findPlayerC(playerA, playerB);
             if (playerC) {
+              console.log("Found three way swap");
               swapPlayers(playerA, playerB);
               swapPlayers(playerB, playerC);
               break;
@@ -382,20 +385,23 @@ function swapPlayers(
         "Moving player " + playerA.player_name + " to unfilled position: ",
         unfilledPosition
       );
-      movePlayerTo(playerA, unfilledPosition);
-      // splice the player from source and add to target
-      const idx = source.indexOf(playerA);
-      target.push(source.splice(idx, 1)[0]);
-      // decrement the unfilled position
+      // modify the unfilled positions
       console.log(
         "unfilledPositions before: ",
         JSON.stringify(unfilledPositions)
       );
+      unfilledPositions[playerA.selected_position] += 1;
       unfilledPositions[unfilledPosition] -= 1;
       console.log(
         "unfilledPositions after: ",
         JSON.stringify(unfilledPositions)
       );
+
+      movePlayerTo(playerA, unfilledPosition);
+      // splice the player from source and add to target
+      const idx = source.indexOf(playerA);
+      target.push(source.splice(idx, 1)[0]);
+
       // continue without incrementing i if a swap was made
       continue;
     }
@@ -415,7 +421,7 @@ function swapPlayers(
   function findPlayerC(playerA: Player, playerB: Player): Player | undefined {
     const eligibleThirdPlayer = target.find(
       (thirdPlayer: Player) =>
-        thirdPlayer.eligible_positions.includes(playerB.selected_position) &&
+        playerB.eligible_positions.includes(thirdPlayer.selected_position) &&
         thirdPlayer.player_key !== playerB.player_key &&
         (isMaximizingScore() ? thirdPlayer.score < playerA.score : true)
     );
