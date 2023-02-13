@@ -5,7 +5,7 @@ import { HttpsError } from "firebase-functions/v2/https";
 
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { partitionArray } from "./utilities.service";
-import { assignPlayerScoreFunction } from "./playerScoreFunctions.service";
+import { assignPlayerStartSitScoreFunction } from "./playerStartSitScoreFunctions.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -87,7 +87,10 @@ async function optimizeStartingLineup2(
   let newPlayerPositions: { [key: string]: string } = {};
 
   const genPlayerScore: (player: Player) => number =
-    await assignPlayerScoreFunction(teamRoster.game_code, weeklyDeadline);
+    await assignPlayerStartSitScoreFunction(
+      teamRoster.game_code,
+      weeklyDeadline
+    );
 
   const editablePlayers = players.filter((player) => player.is_editable);
   if (editablePlayers.length === 0) {
@@ -236,13 +239,13 @@ function swapPlayers(
   unfilledPositions: { [key: string]: number }
 ) {
   const newPlayerPositions: { [key: string]: string } = {};
-  let isSourceActiveRoster = false;
-  let isTargetActiveRoster = false;
+  let isPlayerAActiveRoster = false,
+    isPlayerBActiveRoster = false;
   const isMaximizingScore = () => {
-    return isSourceActiveRoster && isTargetActiveRoster;
+    return isPlayerAActiveRoster && isPlayerBActiveRoster;
   };
   const isSwappingILToRoster = () => {
-    return !isSourceActiveRoster && isTargetActiveRoster;
+    return !isPlayerAActiveRoster && isPlayerBActiveRoster;
   };
   const movePlayerTo = (player: Player, position: string) => {
     movePlayerToPosition(player, position, newPlayerPositions);
@@ -261,14 +264,15 @@ function swapPlayers(
   // playerA is always from source, and is the player we are trying to move
   // playerB can be from source or target, and is the player we are trying to move playerA to
   // playerC is always from target, and is the player we are trying to move playerB to
-  let swapped;
+  let isPlayerASwapped;
   let i = 0;
   console.log("source: " + source.map((p) => p.player_name));
   console.log("target: " + target.map((p) => p.player_name));
   while (i < source.length) {
-    swapped = false;
     const playerA = source[i];
-    isSourceActiveRoster = !INACTIVE_POSITION_LIST.includes(
+    isPlayerASwapped = false;
+
+    isPlayerAActiveRoster = !INACTIVE_POSITION_LIST.includes(
       playerA.selected_position
     );
     // Note: eligibleTargetPlayers will be all players when moving bench to roster
@@ -290,7 +294,7 @@ function swapPlayers(
           playerB.score
         );
 
-        isTargetActiveRoster = !INACTIVE_POSITION_LIST.includes(
+        isPlayerBActiveRoster = !INACTIVE_POSITION_LIST.includes(
           playerB.selected_position
         );
         // if BN -> Roster, check playerA can move to playerB
@@ -342,22 +346,24 @@ function swapPlayers(
         for (const playerB of eligibleSourcePlayers) {
           const playerC = findPlayerC(playerA, playerB);
           if (playerC) {
+            console.log("Found three way swap");
             swapPlayers(playerB, playerC);
             swapPlayers(playerA, playerB);
             break;
           }
+          console.log("No three way swap found");
         }
       }
     }
     // continue without incrementing i if a swap was made
     // this is to ensure we recheck the player swapped to bench for other swaps
-    if (swapped) continue;
+    if (isPlayerASwapped) continue;
     console.log("No swaps for player " + playerA.player_name);
 
     // TODO: Refactor this into a function
     // Finally, if there are no eligible player swaps, then we will look for an unfilled position
     let unfilledPosition: string | undefined;
-    if (!isSourceActiveRoster) {
+    if (!isPlayerAActiveRoster) {
       const numEmptyRosterSpots = Object.keys(unfilledPositions).reduce(
         (acc, key) => {
           if (!INACTIVE_POSITION_LIST.includes(key))
@@ -421,8 +427,8 @@ function swapPlayers(
   function findPlayerC(playerA: Player, playerB: Player): Player | undefined {
     const eligibleThirdPlayer = target.find(
       (thirdPlayer: Player) =>
-        playerB.eligible_positions.includes(thirdPlayer.selected_position) &&
         thirdPlayer.player_key !== playerB.player_key &&
+        playerB.eligible_positions.includes(thirdPlayer.selected_position) &&
         (isMaximizingScore() ? thirdPlayer.score < playerA.score : true)
     );
     return eligibleThirdPlayer;
@@ -446,6 +452,6 @@ function swapPlayers(
     movePlayerTo(playerOne, playerTwo.selected_position);
     movePlayerTo(playerTwo, tempPosition);
 
-    swapped = true;
+    isPlayerASwapped = true;
   }
 }

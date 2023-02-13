@@ -12,7 +12,7 @@ import {
   weeklyLineupScoreFunction,
   nhlScoreFunction,
   dailyScoreFunction,
-} from "./playerScoreFunctions.service";
+} from "./playerStartSitScoreFunctions.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams
