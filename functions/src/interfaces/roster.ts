@@ -5,6 +5,7 @@ export interface Roster {
   coverage_period: string;
   weekly_deadline: string;
   game_code: string;
+  roster_positions: any;
   empty_positions: any;
 }
 
