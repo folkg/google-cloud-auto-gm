@@ -18,7 +18,6 @@ exports.dispatchsetlineup = yahooSetLineups.dispatchsetlineup;
 
 const sendEmail = require("./sendEmail");
 exports.sendfeedbackemail = sendEmail.sendfeedbackemail;
-exports.senduseremail = sendEmail.senduseremail;
 
 // TODO: This is just for testing. Remove later.
 import { setUsersLineup2 } from "./services/newLineupOptimizer.service";

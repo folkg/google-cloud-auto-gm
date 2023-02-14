@@ -19,7 +19,7 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
     fetchTeamsYahoo(uid),
     fetchTeamsFirestore(uid),
   ]).catch((err: Error | any) => {
-    throw new HttpsError("internal", err);
+    throw new HttpsError("data-loss", err.message);
   });
 
   if (yahooTeams.length === 0) {
@@ -48,10 +48,12 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
   // add the remaining teams from yahoo to the teams array for display on the frontend
   teams.push(...yahooTeams);
 
-  console.log("Extra teams: " + extraTeams.length);
-
   // Update the teams in firestore if required
-  syncTeamsInFirebase(yahooTeams, extraTeams, uid);
+  try {
+    await syncTeamsInFirebase(yahooTeams, extraTeams, uid);
+  } catch (err: Error | any) {
+    console.log("Error syncing teams in firebase: " + err.message);
+  }
 
   return teams;
 });

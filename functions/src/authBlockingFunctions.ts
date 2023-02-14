@@ -4,7 +4,7 @@ import * as functionsV1 from "firebase-functions/v1";
 
 export const beforeSignInV1 = functionsV1.auth
   .user()
-  .beforeSignIn((user, context) => {
+  .beforeSignIn(async (user, context) => {
     const credential = context.credential;
     if (credential) {
       const uid = user.uid;
@@ -14,7 +14,16 @@ export const beforeSignInV1 = functionsV1.auth
         tokenExpirationTime: Date.parse(credential.expirationTime as string),
       };
 
-      db.collection("users").doc(uid).set(data);
+      try {
+        await db.collection("users").doc(uid).set(data);
+      } catch (err: Error | any) {
+        throw new Error(
+          "Error saving login token credentials in Firestore for user " +
+            uid +
+            ". " +
+            err.message
+        );
+      }
     }
   });
 

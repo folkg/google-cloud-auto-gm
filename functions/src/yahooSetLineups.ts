@@ -15,8 +15,21 @@ export const dispatchsetlineup = onTaskDispatched(
   async (req) => {
     const uid: string = req.data.uid;
     const teams: string[] = req.data.teams;
-    if (!uid) throw new Error("No uid provided");
-    if (!teams) throw new Error("No teams provided");
-    return await setUsersLineup(uid, teams);
+    if (!uid) {
+      console.log("No uid provided");
+      return;
+    }
+    if (!teams) {
+      console.log("No teams provided");
+      return;
+    }
+
+    try {
+      return await setUsersLineup(uid, teams);
+    } catch (err: Error | any) {
+      throw new Error(
+        "Error setting lineup for user " + uid + ". " + err.message
+      );
+    }
   }
 );

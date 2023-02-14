@@ -25,7 +25,7 @@ export async function sendFeedbackEmail(
   feedbackType: string,
   title: string,
   message: string
-): Promise<boolean> {
+) {
   const mailOptions = {
     from:
       "'AutoCoach " +
@@ -41,10 +41,9 @@ export async function sendFeedbackEmail(
 
   try {
     await transporter.sendMail(mailOptions);
-    return true;
-  } catch (error) {
+  } catch (error: Error | any) {
     console.log("feedback email failed to send: " + error);
-    return false;
+    throw new Error("Failed to send feedback email: " + error.message);
   }
 }
 
