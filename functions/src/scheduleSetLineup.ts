@@ -29,6 +29,8 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
     }
   });
 
+  // TODO: Ensure we don't pass empty arrays
+
   // enqueue a task for each user (with playing teams) to set their lineup
   const queue = getFunctions().taskQueue("dispatchsetlineup");
   const targetUri = await getFunctionUrl("dispatchsetlineup");

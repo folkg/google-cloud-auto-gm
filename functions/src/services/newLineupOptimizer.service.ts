@@ -239,8 +239,8 @@ function swapPlayers(
   unfilledPositions: { [key: string]: number }
 ) {
   const newPlayerPositions: { [key: string]: string } = {};
-  let isPlayerAActiveRoster = false,
-    isPlayerBActiveRoster = false;
+  let isPlayerAActiveRoster = false;
+  let isPlayerBActiveRoster = false;
   const isMaximizingScore = () => {
     return isPlayerAActiveRoster && isPlayerBActiveRoster;
   };
