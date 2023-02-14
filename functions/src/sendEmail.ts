@@ -25,12 +25,12 @@ export const sendfeedbackemail = onCall(async (request) => {
       "All fields must be provided to send feedback email"
     );
   }
-
-  const result = await sendFeedbackEmail(
-    userEmail,
-    feedbackType,
-    title,
-    message
-  );
+  let result = false;
+  try {
+    await sendFeedbackEmail(userEmail, feedbackType, title, message);
+    result = true;
+  } catch (err: Error | any) {
+    console.log("feedback email failed to send: " + err.message);
+  }
   return result;
 });

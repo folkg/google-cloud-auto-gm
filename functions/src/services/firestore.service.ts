@@ -61,7 +61,7 @@ export async function loadYahooAccessToken(
       tokenExpirationTime: docData.tokenExpirationTime,
     };
   }
-  return credential!;
+  return credential;
 }
 
 /**
