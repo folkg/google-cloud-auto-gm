@@ -2,9 +2,9 @@ import * as admin from "firebase-admin";
 const db = admin.firestore();
 import * as functionsV1 from "firebase-functions/v1";
 
-export const beforeCreateV1 = functionsV1.auth
+export const beforeSignInV1 = functionsV1.auth
   .user()
-  .beforeCreate((user, context) => {
+  .beforeSignIn((user, context) => {
     const credential = context.credential;
     if (credential) {
       const uid = user.uid;
