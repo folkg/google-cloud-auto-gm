@@ -6,6 +6,9 @@ import {
 import * as admin from "firebase-admin";
 import { ReturnCredential, Token } from "../interfaces/credential";
 import { refreshYahooAccessToken } from "./yahooAPI.service";
+import { HttpsError } from "firebase-functions/v2/https";
+import { sendUserEmail } from "./email.service";
+import { revokeRefreshToken } from "./revokeRefreshToken.service";
 const db = admin.firestore();
 
 /**
@@ -26,7 +29,26 @@ export async function loadYahooAccessToken(
   // return the current token if it is valid, or refresh the token if not
   let credential: ReturnCredential;
   if (docData.tokenExpirationTime <= Date.now()) {
-    const token: Token = await refreshYahooAccessToken(docData.refreshToken);
+    let token: Token;
+    try {
+      token = await refreshYahooAccessToken(docData.refreshToken);
+    } catch (error: Error | any) {
+      // Revoking the refresh token will force the user to re-authenticate with Yahoo
+      // Send an email to the user to let them know
+      revokeRefreshToken(uid);
+      sendUserEmail(
+        uid,
+        "Fantasy AutoCoach: Yahoo Authentication Error",
+        "You Yahoo access has expired and your lineups are not currently being set!\n" +
+          "Please visit the Fantasy AutoCoach website and sign-in again to re-authenticate.\n" +
+          "https://auto-gm-372620.web.app/"
+      );
+      throw new HttpsError(
+        "internal",
+        "Could not refresh access token for user: " + uid + ". " + error.message
+      );
+    }
+    console.log("Token refreshed: " + JSON.stringify(token));
     await db.collection("users").doc(uid).update(token);
 
     credential = {
@@ -39,7 +61,7 @@ export async function loadYahooAccessToken(
       tokenExpirationTime: docData.tokenExpirationTime,
     };
   }
-  return credential;
+  return credential!;
 }
 
 /**

@@ -16,47 +16,43 @@ export const db = admin.firestore();
 export async function refreshYahooAccessToken(
   refreshToken: string
 ): Promise<Token> {
-  let token: Token;
-  try {
-    const url = "https://api.login.yahoo.com/oauth2/get_token";
-    const requestBody: YahooRefreshRequestBody = {
-      client_id: process.env.YAHOO_CLIENT_ID as string,
-      client_secret: process.env.YAHOO_CLIENT_SECRET as string,
-      redirect_uri: process.env.YAHOO_REDIRECT_URI as string,
-      refresh_token: refreshToken,
-      grant_type: "refresh_token",
-    };
-    const body = Object.keys(requestBody)
-      .map(
-        (key) =>
-          encodeURIComponent(key) +
-          "=" +
-          encodeURIComponent(requestBody[key as keyof YahooRefreshRequestBody])
-      )
-      .join("&");
+  const url = "https://api.login.yahoo.com/oauth2/get_token";
+  const requestBody: YahooRefreshRequestBody = {
+    client_id: process.env.YAHOO_CLIENT_ID as string,
+    client_secret: process.env.YAHOO_CLIENT_SECRET as string,
+    redirect_uri: process.env.YAHOO_REDIRECT_URI as string,
+    refresh_token: refreshToken,
+    grant_type: "refresh_token",
+  };
+  const body = Object.keys(requestBody)
+    .map(
+      (key) =>
+        encodeURIComponent(key) +
+        "=" +
+        encodeURIComponent(requestBody[key as keyof YahooRefreshRequestBody])
+    )
+    .join("&");
 
+  let results;
+  try {
     const { data } = await httpPostAxios(url, body);
-    const results = data;
-    // Get the token info from the response and save it to the database
-    const accessToken = results.access_token;
-    const tokenExpirationTime = results.expires_in * 1000 + Date.now();
-    token = {
-      accessToken: accessToken,
-      refreshToken: results.refresh_token,
-      tokenExpirationTime: tokenExpirationTime,
-    };
+    results = data;
   } catch (error: AxiosError | any) {
-    console.log("Error fetching token from Yahoo API");
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-      throw new Error(
-        "Communication with Yahoo failed: " + error.response.data
-      );
-    }
+    const { error: err, error_description: errorDescription } =
+      error.response.data;
+    throw new Error(err + ": " + errorDescription);
   }
-  return token!;
+
+  // Get the token info from the response and save it to the database
+  const accessToken = results.access_token;
+  const tokenExpirationTime = results.expires_in * 1000 + Date.now();
+  const token: Token = {
+    accessToken: accessToken,
+    refreshToken: results.refresh_token,
+    tokenExpirationTime: tokenExpirationTime,
+  };
+
+  return token;
 }
 
 /**
@@ -100,16 +96,7 @@ export async function getRostersByTeamID(
     const { data } = await httpGetAxios(url, uid);
     return data;
   } catch (error: AxiosError | any) {
-    console.log("Error fetching rosters from Yahoo API");
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-      throw new HttpsError(
-        "internal",
-        "Communication with Yahoo failed: " + error.response.data
-      );
-    }
+    throw new Error("Fetching rosters from Yahoo failed. " + error.message);
   }
 }
 
