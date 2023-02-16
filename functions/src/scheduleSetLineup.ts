@@ -5,6 +5,7 @@ import { getFunctions, TaskQueue } from "firebase-admin/functions";
 import { leaguesToSetLineupsFor } from "./services/schedulingService";
 import { getFunctionUrl } from "./services/utilities.service";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
+import { error } from "firebase-functions/logger";
 
 // function will run every hour at 55 minutes past the hour
 export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
@@ -24,9 +25,9 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
       .where("game_code", "in", leagues)
       .get();
   } catch (err: Error | any) {
-    throw new Error(
-      "Error getting teams from Firestore for scheduling. " + err.message
-    );
+    error("Error fetching teams from Firebase. " + err.message);
+    console.log("Leagues: " + leagues.join(", "));
+    return;
   }
 
   // create a map of user_id to list of teams
@@ -53,7 +54,8 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
     queue = getFunctions().taskQueue("dispatchsetlineup");
     targetUri = await getFunctionUrl("dispatchsetlineup");
   } catch (err: Error | any) {
-    throw new Error("Error getting task queue. " + err.message);
+    error("Error getting task queue. " + err.message);
+    return;
   }
 
   const enqueues: any[] = [];
@@ -73,6 +75,6 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
     await Promise.all(enqueues);
     console.log("Successfully enqueued tasks");
   } catch (err: Error | any) {
-    throw new Error("Error enqueuing tasks: " + err.message);
+    error("Error enqueuing tasks: " + err.message);
   }
 });

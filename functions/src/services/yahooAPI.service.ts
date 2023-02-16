@@ -3,7 +3,7 @@ import { httpGetAxios, httpPostAxios, httpPutAxios } from "./yahooHttp.service";
 import { RosterModification } from "../interfaces/roster";
 import { Token, YahooRefreshRequestBody } from "../interfaces/credential";
 import { AxiosError } from "axios";
-import { HttpsError } from "firebase-functions/v2/https";
+import { error } from "firebase-functions/logger";
 import { updateFirestoreTimestamp } from "./firestore.service";
 const js2xmlparser = require("js2xmlparser");
 export const db = admin.firestore();
@@ -95,8 +95,10 @@ export async function getRostersByTeamID(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (error: AxiosError | any) {
-    throw new Error("Fetching rosters from Yahoo failed. " + error.message);
+  } catch (err: AxiosError | any) {
+    error("Error in getRostersByTeamID. User: " + uid + " Teams: " + teams);
+    const { error: e, error_description: errorDescription } = err.response.data;
+    throw new Error("Error getting rosters. " + e + ": " + errorDescription);
   }
 }
 
@@ -114,17 +116,10 @@ export async function getAllStandings(uid: string): Promise<any> {
       uid
     );
     return data;
-  } catch (error: AxiosError | any) {
-    console.log("Error fetching teams from Yahoo API");
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-      throw new HttpsError(
-        "internal",
-        "Communication with Yahoo failed: " + error.response.data
-      );
-    }
+  } catch (err: AxiosError | any) {
+    error("Error in getAllStandings. User: " + uid);
+    const { error: e, error_description: errorDescription } = err.response.data;
+    throw new Error("Error getting standings. " + e + ": " + errorDescription);
   }
 }
 
@@ -160,14 +155,17 @@ export async function getStartingGoalies(uid: string, leagueKey: string) {
       ),
     ]);
     return [data1.data, data2.data];
-  } catch (error: AxiosError | any) {
-    console.log("Error fetching starting goalies from Yahoo API");
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    }
-    throw new Error("Communication with Yahoo failed: " + error.response.data);
+  } catch (err: AxiosError | any) {
+    error(
+      "Error in getStartingGoalies. Using User: " +
+        uid +
+        " League: " +
+        leagueKey
+    );
+    const { error: e, error_description: errorDescription } = err.response.data;
+    throw new Error(
+      "Error getting starting Goalies. " + e + ": " + errorDescription
+    );
   }
 }
 
@@ -218,15 +216,15 @@ export async function postRosterModifications(
         );
         // write the current timestamp to the team in firebase
         updateFirestoreTimestamp(uid, teamKey);
-      } catch (error: AxiosError | any) {
-        console.log("Error posting roster changes for team: " + teamKey);
-        console.log(rosterModification);
-        if (error.response) {
-          console.log(
-            "Message from Yahoo: ",
-            error.response.data.error.description
-          );
-        }
+      } catch (err: AxiosError | any) {
+        error(
+          "Error in postRosterModifications. User: " + uid + " Team: " + teamKey
+        );
+        const { error: e, error_description: errorDescription } =
+          err.response.data;
+        throw new Error(
+          "Error posting rosters. " + e + ": " + errorDescription
+        );
       }
     } else {
       updateFirestoreTimestamp(uid, teamKey);

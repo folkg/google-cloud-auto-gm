@@ -1,3 +1,4 @@
+import { error } from "firebase-functions/logger";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { setUsersLineup } from "./services/yahooLineupOptimizer.service";
 
@@ -27,9 +28,8 @@ export const dispatchsetlineup = onTaskDispatched(
     try {
       return await setUsersLineup(uid, teams);
     } catch (err: Error | any) {
-      throw new Error(
-        "Error setting lineup for user " + uid + ". " + err.message
-      );
+      error("Error setting lineup for user " + uid + ". " + err.message);
+      console.log("User's teams: " + teams);
     }
   }
 );

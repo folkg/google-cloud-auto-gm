@@ -1,7 +1,6 @@
 import { Player, Roster, RosterModification } from "../interfaces/roster";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 import { postRosterModifications } from "./yahooAPI.service";
-import { HttpsError } from "firebase-functions/v2/https";
 
 import {
   HEALTHY_STATUS_LIST,
@@ -28,16 +27,12 @@ export async function setUsersLineup(
   teams: string[]
 ): Promise<void> {
   if (!uid) {
-    throw new HttpsError(
-      "unauthenticated",
-      "You must be logged in to get an access token"
+    throw new Error(
+      "User must be logged in to get an access token. No uid provided."
     );
   }
   if (!teams) {
-    throw new HttpsError(
-      "invalid-argument",
-      "You must provide a list of teams to optimize"
-    );
+    throw new Error("No teams provided to optimize lineups for. User: " + uid);
   }
 
   const rosters = await fetchRostersFromYahoo(teams, uid);

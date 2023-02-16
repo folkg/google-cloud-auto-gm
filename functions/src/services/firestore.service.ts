@@ -6,9 +6,9 @@ import {
 import * as admin from "firebase-admin";
 import { ReturnCredential, Token } from "../interfaces/credential";
 import { refreshYahooAccessToken } from "./yahooAPI.service";
-import { HttpsError } from "firebase-functions/v2/https";
 import { sendUserEmail } from "./email.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
+import { error } from "firebase-functions/logger";
 const db = admin.firestore();
 
 /**
@@ -43,13 +43,20 @@ export async function loadYahooAccessToken(
           "Please visit the Fantasy AutoCoach website and sign-in again to re-authenticate.\n" +
           "https://auto-gm-372620.web.app/"
       );
-      throw new HttpsError(
-        "internal",
+      throw new Error(
         "Could not refresh access token for user: " + uid + ". " + error.message
       );
     }
-    console.log("Token refreshed: " + JSON.stringify(token));
-    await db.collection("users").doc(uid).update(token);
+    try {
+      await db.collection("users").doc(uid).update(token);
+    } catch (error: Error | any) {
+      error(
+        "Error storing token in Firestore for user: " +
+          uid +
+          ". " +
+          error.message
+      );
+    }
 
     credential = {
       accessToken: token.accessToken,
@@ -87,6 +94,7 @@ export async function fetchTeamsFirestore(
     });
     return teams;
   } catch (err: Error | any) {
+    error("Error in fetchTeamsFirestore for User: " + uid);
     throw new Error("Error fetching teams from Firebase. " + err.message);
   }
 }
@@ -128,6 +136,9 @@ export async function syncTeamsInFirebase(
   try {
     await batch.commit();
   } catch (err: Error | any) {
+    error("Error in syncTeamsInFirebase for User: " + uid);
+    console.log("missingTeams: " + JSON.stringify(missingTeams));
+    console.log("extraTeams: " + JSON.stringify(extraTeams));
     throw new Error("Error syncing teams in Firebase. " + err.message);
   }
 }
@@ -141,7 +152,15 @@ export async function syncTeamsInFirebase(
  */
 export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
   const teamRef = db.collection("users/" + uid + "/teams").doc(teamKey);
-  await teamRef.update({
-    last_updated: Date.now(),
-  });
+  try {
+    await teamRef.update({
+      last_updated: Date.now(),
+    });
+  } catch (err: Error | any) {
+    error(
+      "Error in updateFirestoreTimestamp updating last_updated timestamp in Firebase. " +
+        err
+    );
+    error("uid: " + uid + ", teamKey: " + teamKey);
+  }
 }
