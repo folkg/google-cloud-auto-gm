@@ -6,11 +6,12 @@ export const dispatchsetlineup = onTaskDispatched(
   {
     retryConfig: {
       maxAttempts: 3,
-      minBackoffSeconds: 60,
+      minBackoffSeconds: 10,
+      maxDoublings: 3,
     },
     rateLimits: {
-      maxConcurrentDispatches: 1000,
-      maxDispatchesPerSecond: 500.0,
+      maxConcurrentDispatches: 1,
+      maxDispatchesPerSecond: 500,
     },
   },
   async (req) => {
