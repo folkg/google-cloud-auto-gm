@@ -38,9 +38,9 @@ export async function refreshYahooAccessToken(
     const { data } = await httpPostAxios(url, body);
     results = data;
   } catch (error: AxiosError | any) {
-    const { error: err, error_description: errorDescription } =
-      error.response.data;
-    throw new Error(err + ": " + errorDescription);
+    // const { error: err, error_description: errorDescription } =
+    //   error.response.data;
+    throw new Error(JSON.stringify(error));
   }
 
   // Get the token info from the response and save it to the database
@@ -96,9 +96,15 @@ export async function getRostersByTeamID(
     const { data } = await httpGetAxios(url, uid);
     return data;
   } catch (err: AxiosError | any) {
-    error("Error in getRostersByTeamID. User: " + uid + " Teams: " + teams);
-    const { error: e, error_description: errorDescription } = err.response.data;
-    throw new Error("Error getting rosters. " + e + ": " + errorDescription);
+    error(
+      "Error in getRostersByTeamID. User: " +
+        uid +
+        " Teams: " +
+        teams +
+        ". Error:" +
+        JSON.stringify(err)
+    );
+    throw new Error("Error getting rosters. " + JSON.stringify(err));
   }
 }
 
@@ -117,9 +123,14 @@ export async function getAllStandings(uid: string): Promise<any> {
     );
     return data;
   } catch (err: AxiosError | any) {
-    error("Error in getAllStandings. User: " + uid);
-    const { error: e, error_description: errorDescription } = err.response.data;
-    throw new Error("Error getting standings. " + e + ": " + errorDescription);
+    error(
+      "Error in getAllStandings. User: " +
+        uid +
+        ". Error:" +
+        JSON.stringify(err)
+    );
+    // const { error: e, error_description: errorDescription } = err.response.data;
+    throw new Error("Error getting standings. " + JSON.stringify(err));
   }
 }
 
@@ -160,12 +171,13 @@ export async function getStartingGoalies(uid: string, leagueKey: string) {
       "Error in getStartingGoalies. Using User: " +
         uid +
         " League: " +
-        leagueKey
+        leagueKey +
+        ". Error:" +
+        JSON.stringify(err)
     );
-    const { error: e, error_description: errorDescription } = err.response.data;
-    throw new Error(
-      "Error getting starting Goalies. " + e + ": " + errorDescription
-    );
+    error("error response data: " + err.response.data);
+    error("error message:" + err.message);
+    throw new Error("Error getting starting goalies. " + JSON.stringify(err));
   }
 }
 
@@ -218,12 +230,17 @@ export async function postRosterModifications(
         updateFirestoreTimestamp(uid, teamKey);
       } catch (err: AxiosError | any) {
         error(
-          "Error in postRosterModifications. User: " + uid + " Team: " + teamKey
+          "Error in postRosterModifications. User: " +
+            uid +
+            " Team: " +
+            teamKey +
+            ". Error:" +
+            JSON.stringify(err)
         );
-        const { error: e, error_description: errorDescription } =
-          err.response.data;
+        // const { error: e, error_description: errorDescription } =
+        //   err.response.data;
         throw new Error(
-          "Error posting rosters. " + e + ": " + errorDescription
+          "Error posting rosters to Yahoo. " + JSON.stringify(err)
         );
       }
     } else {

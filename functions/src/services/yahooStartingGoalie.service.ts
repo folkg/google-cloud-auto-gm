@@ -31,8 +31,8 @@ async function fetchStartingGoaliesYahoo(): Promise<string[]> {
   // setting lineups for the NHL currently
 
   // TODO: Uncomment this!
-  console.log("Leagues: " + leagues);
-  // if (!leagues.includes("nhl")) return [];
+  // console.log("Leagues: " + leagues);
+  if (!leagues.includes("nhl")) return [];
 
   const teamsRef = db.collectionGroup("teams");
   const teamsSnapshot = await teamsRef

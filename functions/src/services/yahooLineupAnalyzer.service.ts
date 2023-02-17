@@ -1,4 +1,5 @@
 import { Roster } from "../interfaces/roster";
+import { addDropScoreFunction } from "./playerAddDropScoreFunctions.service";
 
 /**
  * Get the strength of the roster for the given team
@@ -12,15 +13,14 @@ export function getRosterStrength(
   const { players, roster_positions: positionDelta } = roster;
   // const EXEMPT_POSITIONS = ["DEF", "K"]; // positions that don't count towards the roster strength
 
-  // TODO: Add player scores
-
   const positionScores: Record<string, number> = {};
   players.forEach((player) => {
+    player.addDropScore = addDropScoreFunction(player);
     player.eligible_positions.forEach((position) => {
       if (positionScores[position]) {
-        positionScores[position] += player.score;
+        positionScores[position] += player.addDropScore;
       } else {
-        positionScores[position] = player.score;
+        positionScores[position] = player.addDropScore;
       }
       positionDelta[position]--;
     });
