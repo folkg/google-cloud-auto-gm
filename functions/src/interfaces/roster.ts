@@ -10,6 +10,7 @@ export interface Roster {
 }
 
 export interface Player {
+  addDropScore?: any;
   player_key: string;
   player_name: string;
   eligible_positions: string[];
