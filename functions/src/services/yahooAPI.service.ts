@@ -33,26 +33,22 @@ export async function refreshYahooAccessToken(
     )
     .join("&");
 
-  let results;
   try {
+    const requestTime = Date.now();
     const { data } = await httpPostAxios(url, body);
-    results = data;
+    // Get the token info from the response and save it to the database
+    const accessToken = data.access_token;
+    const tokenExpirationTime = data.expires_in * 1000 + requestTime;
+    const token: Token = {
+      accessToken: accessToken,
+      refreshToken: data.refresh_token,
+      tokenExpirationTime: tokenExpirationTime,
+    };
+
+    return token;
   } catch (error: AxiosError | any) {
-    // const { error: err, error_description: errorDescription } =
-    //   error.response.data;
     throw new Error(JSON.stringify(error));
   }
-
-  // Get the token info from the response and save it to the database
-  const accessToken = results.access_token;
-  const tokenExpirationTime = results.expires_in * 1000 + Date.now();
-  const token: Token = {
-    accessToken: accessToken,
-    refreshToken: results.refresh_token,
-    tokenExpirationTime: tokenExpirationTime,
-  };
-
-  return token;
 }
 
 /**
@@ -175,8 +171,8 @@ export async function getStartingGoalies(uid: string, leagueKey: string) {
         ". Error:" +
         JSON.stringify(err)
     );
-    error("error response data: " + err.response.data);
-    error("error message:" + err.message);
+    error("error response data: " + JSON.stringify(err.response.data));
+    error("error message: " + err.message);
     throw new Error("Error getting starting goalies. " + JSON.stringify(err));
   }
 }

@@ -28,7 +28,8 @@ export async function loadYahooAccessToken(
 
   // return the current token if it is valid, or refresh the token if not
   let credential: ReturnCredential;
-  if (docData.tokenExpirationTime <= Date.now()) {
+  // add 5 seconds to the expiration time to account for latency
+  if (docData.tokenExpirationTime < Date.now() + 5000) {
     let token: Token;
     try {
       token = await refreshYahooAccessToken(docData.refreshToken);
