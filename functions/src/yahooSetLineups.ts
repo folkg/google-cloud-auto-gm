@@ -5,12 +5,12 @@ import { setUsersLineup } from "./services/yahooLineupOptimizer.service";
 export const dispatchsetlineup = onTaskDispatched(
   {
     retryConfig: {
-      maxAttempts: 3,
+      maxAttempts: 5,
       minBackoffSeconds: 10,
-      maxDoublings: 3,
+      maxDoublings: 4,
     },
     rateLimits: {
-      maxConcurrentDispatches: 1,
+      maxConcurrentDispatches: 5,
       maxDispatchesPerSecond: 500,
     },
   },
