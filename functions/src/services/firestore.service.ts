@@ -9,7 +9,8 @@ import { refreshYahooAccessToken } from "./yahooAPI.service";
 import { sendUserEmail } from "./email.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
 import { error } from "firebase-functions/logger";
-const db = admin.firestore();
+
+export const db = admin.firestore();
 
 /**
  * Load the access token from DB, or refresh from Yahoo if expired

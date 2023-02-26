@@ -1,12 +1,11 @@
-import * as admin from "firebase-admin";
 import {
   DocumentData,
   DocumentSnapshot,
   QuerySnapshot,
 } from "firebase-admin/firestore";
+import { db } from "./firestore.service";
 import { getChild } from "./utilities.service";
 import { getStartingGoalies } from "./yahooAPI.service";
-const db = admin.firestore();
 
 /**
  * The NHL starting goalies for the current day as a global variable

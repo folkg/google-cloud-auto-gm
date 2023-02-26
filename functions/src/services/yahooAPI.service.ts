@@ -1,11 +1,9 @@
-import * as admin from "firebase-admin";
 import { httpGetAxios, httpPostAxios, httpPutAxios } from "./yahooHttp.service";
 import { RosterModification } from "../interfaces/roster";
 import { Token, YahooRefreshRequestBody } from "../interfaces/credential";
 import { AxiosError } from "axios";
 import { updateFirestoreTimestamp } from "./firestore.service";
 const js2xmlparser = require("js2xmlparser");
-export const db = admin.firestore();
 
 /**
  * Refresh the Yahoo access token for the given user

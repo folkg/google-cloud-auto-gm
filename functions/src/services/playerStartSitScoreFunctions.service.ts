@@ -23,7 +23,7 @@ export async function assignPlayerStartSitScoreFunction(
     // weeklyDeadline will be something like "1" to represent Monday
     playerScoreFunction = weeklyLineupScoreFunction();
   } else if (gameCode === "nhl") {
-    playerScoreFunction = await nhlScoreFunction();
+    playerScoreFunction = nhlScoreFunction();
   } else {
     playerScoreFunction = dailyScoreFunction();
   }

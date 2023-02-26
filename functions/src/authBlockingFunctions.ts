@@ -1,7 +1,6 @@
-import * as admin from "firebase-admin";
 import { error } from "firebase-functions/logger";
-const db = admin.firestore();
 import * as functionsV1 from "firebase-functions/v1";
+import { db } from "./services/firestore.service";
 
 export const beforeSignInV1 = functionsV1.auth
   .user()

@@ -1,7 +1,6 @@
-import * as admin from "firebase-admin";
-const db = admin.firestore();
 import axios, { AxiosError } from "axios";
 import { GameStartTimes } from "../interfaces/gameStartTime";
+import { db } from "./firestore.service";
 import { datePSTString } from "./utilities.service";
 
 /**
