@@ -40,15 +40,23 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
     return;
   }
 
+  if (teamsSnapshot.size === 0) {
+    console.log("No teams to set lineups for");
+    return;
+  }
+
   // create a map of user_id to list of teams
   const activeUsers: Map<string, string[]> = new Map();
   teamsSnapshot.forEach((doc) => {
     const team = doc.data();
-    const userTeams = activeUsers.get(team.uid);
-    if (userTeams === undefined) {
-      activeUsers.set(team.uid, [doc.id]);
-    } else {
-      userTeams.push(doc.id);
+    // only add teams where the season has started
+    if (team.start_date <= Date.now()) {
+      const userTeams = activeUsers.get(team.uid);
+      if (userTeams === undefined) {
+        activeUsers.set(team.uid, [doc.id]);
+      } else {
+        userTeams.push(doc.id);
+      }
     }
   });
 
