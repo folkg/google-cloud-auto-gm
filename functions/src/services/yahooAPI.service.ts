@@ -3,7 +3,6 @@ import { httpGetAxios, httpPostAxios, httpPutAxios } from "./yahooHttp.service";
 import { RosterModification } from "../interfaces/roster";
 import { Token, YahooRefreshRequestBody } from "../interfaces/credential";
 import { AxiosError } from "axios";
-import { error } from "firebase-functions/logger";
 import { updateFirestoreTimestamp } from "./firestore.service";
 const js2xmlparser = require("js2xmlparser");
 export const db = admin.firestore();
@@ -47,7 +46,8 @@ export async function refreshYahooAccessToken(
 
     return token;
   } catch (error: AxiosError | any) {
-    throw new Error(JSON.stringify(error));
+    handleAxiosError(error, null);
+    return Promise.reject(error);
   }
 }
 
@@ -92,15 +92,9 @@ export async function getRostersByTeamID(
     const { data } = await httpGetAxios(url, uid);
     return data;
   } catch (err: AxiosError | any) {
-    error(
-      "Error in getRostersByTeamID. User: " +
-        uid +
-        " Teams: " +
-        teams +
-        ". Error:" +
-        JSON.stringify(err)
-    );
-    throw new Error("Error getting rosters. " + JSON.stringify(err));
+    const errMessage =
+      "Error in getRostersByTeamID. User: " + uid + " Teams: " + teams;
+    handleAxiosError(err, errMessage);
   }
 }
 
@@ -119,14 +113,8 @@ export async function getAllStandings(uid: string): Promise<any> {
     );
     return data;
   } catch (err: AxiosError | any) {
-    error(
-      "Error in getAllStandings. User: " +
-        uid +
-        ". Error:" +
-        JSON.stringify(err)
-    );
-    // const { error: e, error_description: errorDescription } = err.response.data;
-    throw new Error("Error getting standings. " + JSON.stringify(err));
+    const errMessage = "Error in getAllStandings. User: " + uid;
+    handleAxiosError(err, errMessage);
   }
 }
 
@@ -143,7 +131,10 @@ export async function getAllStandings(uid: string): Promise<any> {
  * @param {string} leagueKey The league key
  * @return {Promise<any>} The Yahoo JSON object containing goalie data
  */
-export async function getStartingGoalies(uid: string, leagueKey: string) {
+export async function getStartingGoalies(
+  uid: string,
+  leagueKey: string
+): Promise<any> {
   try {
     // There could be up to 32 starting goalies, so we need to make 2 calls
     // to get all the goalies. The first call will get the first 25 goalies.
@@ -163,17 +154,12 @@ export async function getStartingGoalies(uid: string, leagueKey: string) {
     ]);
     return [data1.data, data2.data];
   } catch (err: AxiosError | any) {
-    error(
+    const errMessage =
       "Error in getStartingGoalies. Using User: " +
-        uid +
-        " League: " +
-        leagueKey +
-        ". Error:" +
-        JSON.stringify(err)
-    );
-    error("error response data: " + JSON.stringify(err.response.data));
-    error("error message: " + err.message);
-    throw new Error("Error getting starting goalies. " + JSON.stringify(err));
+      uid +
+      " League: " +
+      leagueKey;
+    handleAxiosError(err, errMessage);
   }
 }
 
@@ -225,22 +211,38 @@ export async function postRosterModifications(
         // write the current timestamp to the team in firebase
         updateFirestoreTimestamp(uid, teamKey);
       } catch (err: AxiosError | any) {
-        error(
+        const errMessage =
           "Error in postRosterModifications. User: " +
-            uid +
-            " Team: " +
-            teamKey +
-            ". Error:" +
-            JSON.stringify(err)
-        );
-        // const { error: e, error_description: errorDescription } =
-        //   err.response.data;
-        throw new Error(
-          "Error posting rosters to Yahoo. " + JSON.stringify(err)
-        );
+          uid +
+          " Team: " +
+          teamKey;
+        handleAxiosError(err, errMessage);
       }
     } else {
       updateFirestoreTimestamp(uid, teamKey);
     }
+  }
+}
+
+/**
+ * Handle the axios error
+ *
+ * @param {(AxiosError | any)} err - The axios error
+ * @param {string} message - The message to throw
+ */
+function handleAxiosError(err: AxiosError | any, message: string | null): void {
+  const errMessage = message ? message + ". " : "";
+  if (err.response) {
+    throw new Error(
+      errMessage +
+        "Error status: " +
+        err.response.status +
+        ": " +
+        JSON.stringify(err.response.data)
+    );
+  } else if (err.request) {
+    throw new Error(errMessage + err.request);
+  } else {
+    throw new Error(errMessage + err.message);
   }
 }

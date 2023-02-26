@@ -9,7 +9,7 @@ import { getAuth } from "firebase-admin/auth";
 export function revokeRefreshToken(uid: string) {
   try {
     getAuth().revokeRefreshTokens(uid);
-    console.log(`Tokens revoked for user ${uid} successfully.`);
+    console.log(`Token revoked for user ${uid} successfully.`);
   } catch (error) {
     console.log(error);
   }
