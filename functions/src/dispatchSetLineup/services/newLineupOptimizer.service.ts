@@ -242,6 +242,10 @@ function swapPlayers(
   target: Player[],
   unfilledPositions: { [key: string]: number }
 ) {
+  // temp variables, to be user settings later
+  const addPlayersToRoster = false;
+  // const dropPlayersFromRoster = false;
+  // intialize variables
   const newPlayerPositions: { [key: string]: string } = {};
   let isPlayerAActiveRoster = false;
   let isPlayerBActiveRoster = false;
@@ -382,11 +386,16 @@ function swapPlayers(
       }
       // TODO: else Drop players to make room for playerA
     } else {
-      unfilledPosition = Object.keys(unfilledPositions).find(
-        (position) =>
+      unfilledPosition = Object.keys(unfilledPositions).find((position) => {
+        let predicate: boolean =
           unfilledPositions[position] > 0 &&
-          playerA.eligible_positions.includes(position)
-      );
+          playerA.eligible_positions.includes(position);
+        if (!addPlayersToRoster) {
+          // if we are not adding players to the roster, do not move players to inactive positions
+          predicate &&= !INACTIVE_POSITION_LIST.includes(position);
+        }
+        return predicate;
+      });
     }
 
     if (unfilledPosition) {
