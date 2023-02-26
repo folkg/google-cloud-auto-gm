@@ -12,6 +12,7 @@ import {
   nhlScoreFunction,
   dailyScoreFunction,
 } from "./playerStartSitScoreFunctions.service";
+import { initStartingGoalies } from "./yahooStartingGoalie.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -35,10 +36,13 @@ export async function setUsersLineup(
     throw new Error("No teams provided to optimize lineups for. User: " + uid);
   }
 
+  // initialize starting goalies global array
+  await initStartingGoalies();
+
   const rosters = await fetchRostersFromYahoo(teams, uid);
   const rosterModifications: RosterModification[] = [];
   for (const roster of rosters) {
-    const rm = await optimizeStartingLineup(roster);
+    const rm = optimizeStartingLineup(roster);
     if (rm) {
       rosterModifications.push(rm);
     }
@@ -54,9 +58,7 @@ export async function setUsersLineup(
  * @param {Roster} teamRoster - The roster to optimize
  * @return {*} {RosterModification} - The roster modification to make
  */
-async function optimizeStartingLineup(
-  teamRoster: Roster
-): Promise<RosterModification> {
+function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   const {
     team_key: teamKey,
     players,
@@ -81,7 +83,7 @@ async function optimizeStartingLineup(
     // weeklyDeadline will be something like "1" to represent Monday
     genPlayerScore = weeklyLineupScoreFunction();
   } else if (teamRoster.game_code === "nhl") {
-    genPlayerScore = await nhlScoreFunction();
+    genPlayerScore = nhlScoreFunction();
   } else {
     genPlayerScore = dailyScoreFunction();
   }
@@ -192,7 +194,7 @@ async function optimizeStartingLineup(
   function moveToUnfilledPosition(
     positionsList: string[],
     benchPlayer: Player
-  ) {
+  ): boolean {
     for (const eligiblePosition of positionsList) {
       if (unfilledPositions[eligiblePosition] > 0) {
         movePlayerTo(benchPlayer, eligiblePosition, newPlayerPositions);

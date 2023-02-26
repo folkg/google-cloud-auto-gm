@@ -6,6 +6,7 @@ import { HttpsError } from "firebase-functions/v2/https";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { partitionArray } from "./utilities.service";
 import { assignPlayerStartSitScoreFunction } from "./playerStartSitScoreFunctions.service";
+import { initStartingGoalies } from "./yahooStartingGoalie.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -33,6 +34,9 @@ export async function setUsersLineup2(
       "You must provide a list of teams to optimize"
     );
   }
+
+  // initialize starting goalies global array
+  await initStartingGoalies();
 
   const rosterModifications: RosterModification[] =
     await getRosterModifications(teams, uid);

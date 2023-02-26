@@ -6,13 +6,24 @@ import { leaguesToSetLineupsFor } from "./services/schedulingService";
 import { getFunctionUrl } from "./services/utilities.service";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { error } from "firebase-functions/logger";
+import { fetchStartingGoaliesYahoo } from "./services/yahooStartingGoalie.service";
 
+// TODO: Refactor this function to be more readable and maintainable
 // function will run every hour at 55 minutes past the hour
 export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   const leagues: string[] = await leaguesToSetLineupsFor();
   if (leagues.length === 0) {
     console.log("No leagues to set lineups for");
     return;
+  }
+
+  // Fetch starting goalies from Yahoo if there are NHL games to schedule for
+  if (leagues.includes("nhl")) {
+    try {
+      await fetchStartingGoaliesYahoo();
+    } catch (err: Error | any) {
+      error("Error fetching starting goalies. " + err.message);
+    }
   }
 
   // get all users' teams in the relevant leagues

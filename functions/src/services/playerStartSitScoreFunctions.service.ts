@@ -66,8 +66,8 @@ export function dailyScoreFunction(): (player: Player) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export async function nhlScoreFunction(): Promise<(player: Player) => number> {
-  const starters = await NHL_STARTING_GOALIES;
+export function nhlScoreFunction(): (player: Player) => number {
+  const starters = NHL_STARTING_GOALIES ? NHL_STARTING_GOALIES : [];
   return (player: Player) => {
     const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
