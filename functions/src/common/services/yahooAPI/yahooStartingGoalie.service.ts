@@ -3,8 +3,8 @@ import {
   DocumentSnapshot,
   QuerySnapshot,
 } from "firebase-admin/firestore";
-import { db } from "./firestore.service";
-import { getChild } from "./utilities.service";
+import { db } from "../firebase/firestore.service";
+import { getChild } from "../utilities.service";
 import { getStartingGoalies } from "./yahooAPI.service";
 
 /**

@@ -1,12 +1,12 @@
 import { Player, Roster, RosterModification } from "../interfaces/roster";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import { postRosterModifications } from "./yahooAPI.service";
+import { postRosterModifications } from "../../common/services/yahooAPI/yahooAPI.service";
 import { HttpsError } from "firebase-functions/v2/https";
 
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { partitionArray } from "./utilities.service";
+import { partitionArray } from "../../common/services/utilities.service";
 import { assignPlayerStartSitScoreFunction } from "./playerStartSitScoreFunctions.service";
-import { initStartingGoalies } from "./yahooStartingGoalie.service";
+import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams

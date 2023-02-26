@@ -1,8 +1,8 @@
 import { httpGetAxios, httpPostAxios, httpPutAxios } from "./yahooHttp.service";
-import { RosterModification } from "../interfaces/roster";
-import { Token, YahooRefreshRequestBody } from "../interfaces/credential";
+import { RosterModification } from "../../../dispatchSetLineup/interfaces/roster";
+import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
 import { AxiosError } from "axios";
-import { updateFirestoreTimestamp } from "./firestore.service";
+import { updateFirestoreTimestamp } from "../firebase/firestore.service";
 const js2xmlparser = require("js2xmlparser");
 
 /**

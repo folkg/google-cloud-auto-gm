@@ -1,6 +1,6 @@
-import { getChild } from "./utilities.service";
+import { getChild } from "../../common/services/utilities.service";
 import { Player, Roster } from "../interfaces/roster";
-import { getRostersByTeamID } from "./yahooAPI.service";
+import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**
  * Get the roster objects for the given teams

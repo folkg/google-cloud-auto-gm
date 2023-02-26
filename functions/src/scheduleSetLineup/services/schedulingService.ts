@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { GameStartTimes } from "../interfaces/gameStartTime";
-import { db } from "./firestore.service";
-import { datePSTString } from "./utilities.service";
+import { db } from "../../common/services/firebase/firestore.service";
+import { datePSTString } from "../../common/services/utilities.service";
 
 /**
  * Determine the leagues that we will set lineups for at this time

@@ -1,11 +1,11 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { getFunctions, TaskQueue } from "firebase-admin/functions";
 import { leaguesToSetLineupsFor } from "./services/schedulingService";
-import { getFunctionUrl } from "./services/utilities.service";
+import { getFunctionUrl } from "../common/services/utilities.service";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { error } from "firebase-functions/logger";
-import { fetchStartingGoaliesYahoo } from "./services/yahooStartingGoalie.service";
-import { db } from "./services/firestore.service";
+import { fetchStartingGoaliesYahoo } from "../common/services/yahooAPI/yahooStartingGoalie.service";
+import { db } from "../common/services/firebase/firestore.service";
 
 // TODO: Refactor this function to be more readable and maintainable
 // function will run every hour at 55 minutes past the hour

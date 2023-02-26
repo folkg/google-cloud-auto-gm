@@ -1,27 +1,24 @@
-import * as admin from "firebase-admin";
-import { onRequest } from "firebase-functions/v2/https";
+import { initializeApp } from "firebase-admin/app";
+initializeApp();
 
-admin.initializeApp();
+import { beforeSignInV1 } from "./authBlockingFunctions/authBlockingFunctions";
+exports.beforeSignInV1 = beforeSignInV1;
 
-const authBlockingFunctions = require("./authBlockingFunctions");
-// exports.beforecreate = authBlockingFunctions.beforecreate;
-exports.beforeSignInV1 = authBlockingFunctions.beforeSignInV1;
+import { fetchuserteams } from "./fetchUsersTeams/fetchUsersTeams";
+exports.fetchuserteams = fetchuserteams;
 
-const fetchUserTeams = require("./fetchUsersTeams");
-exports.fetchuserteams = fetchUserTeams.fetchuserteams;
+import { schedulesetlineup } from "./scheduleSetLineup/scheduleSetLineup";
+exports.schedulesetlineup = schedulesetlineup;
 
-const scheduleSetLineup = require("./scheduleSetLineup");
-exports.schedulesetlineup = scheduleSetLineup.schedulesetlineup;
+import { dispatchsetlineup } from "./dispatchSetLineup/dispatchSetLineup";
+exports.dispatchsetlineup = dispatchsetlineup;
 
-const yahooSetLineups = require("./yahooSetLineups");
-exports.dispatchsetlineup = yahooSetLineups.dispatchsetlineup;
-
-const sendEmail = require("./sendEmail");
-exports.sendfeedbackemail = sendEmail.sendfeedbackemail;
+import { sendfeedbackemail } from "./sendEmail/sendEmail";
+exports.sendfeedbackemail = sendfeedbackemail;
 
 // TODO: This is just for testing. Remove later.
-import { setUsersLineup2 } from "./services/newLineupOptimizer.service";
-// import { setUsersLineup } from "./services/yahooLineupOptimizer.service";
+import { onRequest } from "firebase-functions/v2/https";
+import { setUsersLineup2 } from "./dispatchSetLineup/services/newLineupOptimizer.service";
 exports.testsetlineups = onRequest(async (req, res) => {
   // const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1"; // Graeme Folk
   const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
@@ -42,7 +39,6 @@ exports.testsetlineups = onRequest(async (req, res) => {
     // "418.l.200641.t.9",
   ]; // Jeff Barnes
 
-  // return await setUsersLineup(uid, teams);
   try {
     return await setUsersLineup2(uid, teams);
   } catch (error) {

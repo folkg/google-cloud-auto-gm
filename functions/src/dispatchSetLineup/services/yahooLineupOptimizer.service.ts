@@ -1,6 +1,6 @@
 import { Player, Roster, RosterModification } from "../interfaces/roster";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import { postRosterModifications } from "./yahooAPI.service";
+import { postRosterModifications } from "../../common/services/yahooAPI/yahooAPI.service";
 
 import {
   HEALTHY_STATUS_LIST,
@@ -12,7 +12,7 @@ import {
   nhlScoreFunction,
   dailyScoreFunction,
 } from "./playerStartSitScoreFunctions.service";
-import { initStartingGoalies } from "./yahooStartingGoalie.service";
+import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams

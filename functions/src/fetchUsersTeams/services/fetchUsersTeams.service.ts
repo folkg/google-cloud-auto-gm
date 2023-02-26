@@ -1,5 +1,5 @@
-import { TeamClient } from "../interfaces/team";
-import { getAllStandings } from "./yahooAPI.service";
+import { TeamClient } from "../../common/interfaces/team";
+import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**
  * Get the user's teams from the Yahoo API

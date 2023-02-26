@@ -1,6 +1,6 @@
 import { Player } from "../interfaces/roster";
 import { HEALTHY_STATUS_LIST } from "../helpers/constants";
-import { NHL_STARTING_GOALIES } from "./yahooStartingGoalie.service";
+import { NHL_STARTING_GOALIES } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 
 /**
  * Returns the proper score function used to compare players to other players

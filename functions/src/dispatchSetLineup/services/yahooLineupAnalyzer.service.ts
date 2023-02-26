@@ -1,4 +1,4 @@
-import { Roster } from "../interfaces/roster";
+import { Player, Roster } from "../interfaces/roster";
 import { addDropScoreFunction } from "./playerAddDropScoreFunctions.service";
 
 /**
@@ -14,9 +14,9 @@ export function getRosterStrength(
   // const EXEMPT_POSITIONS = ["DEF", "K"]; // positions that don't count towards the roster strength
 
   const positionScores: Record<string, number> = {};
-  players.forEach((player) => {
+  players.forEach((player: Player) => {
     player.addDropScore = addDropScoreFunction(player);
-    player.eligible_positions.forEach((position) => {
+    player.eligible_positions.forEach((position: string) => {
       if (positionScores[position]) {
         positionScores[position] += player.addDropScore;
       } else {

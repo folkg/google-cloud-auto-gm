@@ -1,6 +1,6 @@
 import { error } from "firebase-functions/logger";
 import * as functionsV1 from "firebase-functions/v1";
-import { db } from "./services/firestore.service";
+import { db } from "../common/services/firebase/firestore.service";
 
 export const beforeSignInV1 = functionsV1.auth
   .user()

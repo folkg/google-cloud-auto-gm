@@ -1,13 +1,8 @@
 import { auth } from "firebase-admin";
-import { createTransport } from "nodemailer";
+import { createTransport, Transporter } from "nodemailer";
+import SMTPTransport = require("nodemailer/lib/smtp-transport");
 
-const transporter = createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.NODEMAILER_GMAIL_ADDRESS,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+let transporter: Transporter<SMTPTransport.SentMessageInfo>;
 
 /**
  * Send an email to the AutoCoach gmail account from the client UI
@@ -25,7 +20,15 @@ export async function sendFeedbackEmail(
   feedbackType: string,
   title: string,
   message: string
-) {
+): Promise<void> {
+  transporter = createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_GMAIL_ADDRESS,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+
   const mailOptions = {
     from:
       "'AutoCoach " +
@@ -62,6 +65,14 @@ export async function sendUserEmail(
   title: string,
   message: string
 ): Promise<boolean> {
+  transporter = createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_GMAIL_ADDRESS,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+
   const userEmailAddress = (await auth().getUser(uid)).email;
   if (!userEmailAddress) {
     throw new Error("User does not have a valid email address");
