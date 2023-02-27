@@ -4,7 +4,7 @@ import {
   QuerySnapshot,
 } from "firebase-admin/firestore";
 import { db } from "../firebase/firestore.service";
-import { getChild } from "../utilities.service";
+import { datePSTString, getChild } from "../utilities.service";
 import { getStartingGoalies } from "./yahooAPI.service";
 
 /**
@@ -112,7 +112,7 @@ async function storeStartingGoaliesToFirestore(
   try {
     await startingGoaliesRef
       .doc("nhl")
-      .set({ startingGoalies, timestamp: Date.now() });
+      .set({ startingGoalies, date: datePSTString(new Date()) });
   } catch (error: Error | any) {
     throw new Error(
       "Error storing starting goalies to firestore: " + error.message
@@ -135,10 +135,10 @@ async function getStartingGoaliesFromFirestore(): Promise<string[]> {
 
     if (startingGoaliesSnapshot.exists) {
       // check if the starting goalies were updated today
-      const timestamp = startingGoaliesSnapshot.data()?.timestamp;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (timestamp && timestamp >= today.getTime()) {
+      const date: string = startingGoaliesSnapshot.data()?.date;
+      const today = datePSTString(new Date());
+
+      if (date === today) {
         return startingGoaliesSnapshot.data()?.startingGoalies;
       }
     }
