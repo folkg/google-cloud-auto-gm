@@ -37,19 +37,16 @@ export async function setUsersLineup2(
 
   // initialize starting goalies global array
   await initStartingGoalies();
-  console.log("starting goalies initialized");
 
   const rosterModifications: RosterModification[] =
     await getRosterModifications(teams, uid);
-  console.log("rosterModifications: " + JSON.stringify(rosterModifications));
 
   await postRosterModifications(rosterModifications, uid);
-  console.log("postRosterModifications complete for user " + uid);
 
   return Promise.resolve();
 }
 
-const verboseLogging = true;
+const verboseLogging = false;
 /**
  * Will get the required roster modifications for a given user
  *
@@ -65,12 +62,14 @@ async function getRosterModifications(
   const rosters = await fetchRostersFromYahoo(teams, uid);
   const rosterModifications: RosterModification[] = [];
 
+  console.log(
+    "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
+  );
   for (const roster of rosters) {
     const rm = await optimizeStartingLineup2(roster);
-    verboseLogging &&
-      console.info(
-        "rm for team " + roster.team_key + " is " + JSON.stringify(rm)
-      );
+    console.info(
+      "rm for team " + roster.team_key + " is " + JSON.stringify(rm)
+    );
     if (rm) {
       rosterModifications.push(rm);
     }

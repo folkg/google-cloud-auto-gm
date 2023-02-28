@@ -206,7 +206,12 @@ export async function postRosterModifications(
           "team/" + teamKey + "/roster?format=json",
           xmlBody
         );
-        // write the current timestamp to the team in firebase
+        console.log(
+          "Successfully posted roster changes for team: " +
+            teamKey +
+            " for user: " +
+            uid
+        );
         updateFirestoreTimestamp(uid, teamKey);
       } catch (err: AxiosError | any) {
         const errMessage =
@@ -217,6 +222,12 @@ export async function postRosterModifications(
         handleAxiosError(err, errMessage);
       }
     } else {
+      console.log(
+        "Successfully completed. No changes to post for team: " +
+          teamKey +
+          " for user: " +
+          uid
+      );
       updateFirestoreTimestamp(uid, teamKey);
     }
   }
