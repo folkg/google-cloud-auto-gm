@@ -36,11 +36,12 @@ export async function fetchRostersFromYahoo(
           }
           const coverageType = usersTeamRoster.coverage_type;
           // save the position counts to a map
-          const rosterPositions: any = getPositionCounts(leaguesJSON, key);
-          const emptyPositions = { ...rosterPositions };
+          const rosterPositions: { [key: string]: number } = getPositionCounts(
+            leaguesJSON,
+            key
+          );
           const players: Player[] = getPlayersFromRoster(
-            usersTeamRoster[0].players,
-            emptyPositions
+            usersTeamRoster[0].players
           );
 
           const rosterObj: Roster = {
@@ -54,7 +55,6 @@ export async function fetchRostersFromYahoo(
             ),
             game_code: getChild(gameJSON, "code"),
             roster_positions: rosterPositions,
-            empty_positions: emptyPositions,
           };
           rosters.push(rosterObj);
         }
@@ -91,7 +91,7 @@ function getPositionCounts(leaguesJSON: any, key: string) {
  * @param {*} emptyPositions - A map of positions and the number of players
  * @return {Player[]} - An array of Player objects
  */
-function getPlayersFromRoster(playersJSON: any, emptyPositions: any): Player[] {
+function getPlayersFromRoster(playersJSON: any): Player[] {
   const players: Player[] = [];
 
   // eslint-disable-next-line guard-for-in
@@ -138,10 +138,6 @@ function getPlayersFromRoster(playersJSON: any, emptyPositions: any): Player[] {
         rank_projected_week: rankProjectedWeek,
         score: 0,
       };
-
-      // Decrement the player's selected position from the allowable total
-      // At the end positionCounter will hold the number of unfilled positions
-      emptyPositions[playerObj.selected_position]--;
 
       // push the player to the object
       players.push(playerObj);
