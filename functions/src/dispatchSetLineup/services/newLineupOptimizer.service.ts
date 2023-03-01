@@ -93,9 +93,10 @@ export async function optimizeStartingLineup2(
     coverage_type: coverageType,
     coverage_period: coveragePeriod,
     weekly_deadline: weeklyDeadline,
-    empty_positions: unfilledPositions,
+    roster_positions: rosterPositions,
   } = teamRoster;
 
+  const unfilledPositions = getUnfilledPositions(players, rosterPositions);
   let newPlayerPositions: { [key: string]: string } = {};
 
   const genPlayerScore: (player: Player) => number =
@@ -191,6 +192,24 @@ export async function optimizeStartingLineup2(
   } else {
     return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
   }
+}
+
+/**
+ * Will calculate the number of unfilled positions for a given roster
+ *
+ * @param {Player[]} players - The players on the roster
+ * @param {{ [key: string]: number }} rosterPositions - The roster positions
+ * @returns {{ [key: string]: number }} - The number of unfilled positions
+ */
+function getUnfilledPositions(
+  players: Player[],
+  rosterPositions: { [key: string]: number }
+): { [key: string]: number } {
+  const unfilledPositions: { [key: string]: number } = { ...rosterPositions };
+  players.forEach((player) => {
+    unfilledPositions[player.selected_position]--;
+  });
+  return unfilledPositions;
 }
 
 /**

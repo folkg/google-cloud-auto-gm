@@ -5,7 +5,7 @@ export interface Roster {
   coverage_period: string;
   weekly_deadline: string;
   game_code: string;
-  roster_positions: any;
+  roster_positions: { [key: string]: number };
 }
 
 export interface Player {
@@ -30,5 +30,5 @@ export interface RosterModification {
   teamKey: string;
   coverageType: string;
   coveragePeriod: string;
-  newPlayerPositions: any;
+  newPlayerPositions: { [key: string]: string };
 }

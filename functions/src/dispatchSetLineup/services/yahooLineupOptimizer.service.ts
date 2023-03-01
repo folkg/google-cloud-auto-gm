@@ -58,7 +58,7 @@ export async function setUsersLineup(
  * @param {Roster} teamRoster - The roster to optimize
  * @return {*} {RosterModification} - The roster modification to make
  */
-function optimizeStartingLineup(teamRoster: Roster): RosterModification {
+export function optimizeStartingLineup(teamRoster: Roster): RosterModification {
   const {
     team_key: teamKey,
     players,
