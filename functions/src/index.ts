@@ -26,8 +26,8 @@ exports.testsetlineups = onRequest(async (req, res) => {
     // "414.l.358976.t.4",
     // "419.l.14950.t.2",
     // "419.l.19947.t.6",
-    // "419.l.28340.t.1",
-    "419.l.59985.t.12",
+    "419.l.28340.t.1",
+    // "419.l.59985.t.12",
   ]; // Graeme Folk
 
   // const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
