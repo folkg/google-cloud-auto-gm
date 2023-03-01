@@ -84,7 +84,7 @@ async function getRosterModifications(
  * @param {Roster} teamRoster - The roster to optimize
  * @return {*} {RosterModification} - The roster modification to make
  */
-async function optimizeStartingLineup2(
+export async function optimizeStartingLineup2(
   teamRoster: Roster
 ): Promise<RosterModification> {
   const {
