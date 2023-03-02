@@ -1,4 +1,4 @@
-import { Players } from "./players";
+import { Roster as Roster } from "./Roster";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { Team } from "../interfaces/Team";
 import { Player } from "../interfaces/Player";
@@ -6,8 +6,8 @@ import { RosterModification } from "../interfaces/RosterModification";
 import { assignPlayerStartSitScoreFunction } from "../services/playerStartSitScoreFunctions.service";
 
 class LineupOptimizer {
-  private roster: Team;
-  private players: Players;
+  private team: Team;
+  private roster: Roster;
   private originalPlayerPositions: { [key: string]: string };
   private unfilledPositions: { [key: string]: number };
   private _verboseLogging: boolean = false;
@@ -15,42 +15,39 @@ class LineupOptimizer {
     this._verboseLogging = value;
   }
 
-  constructor(roster: Team) {
-    this.roster = roster;
+  constructor(team: Team) {
+    this.team = team;
 
-    this.players = new Players(
-      roster.players,
-      assignPlayerStartSitScoreFunction(
-        roster.game_code,
-        roster.weekly_deadline
-      )
+    this.roster = new Roster(
+      team.players,
+      assignPlayerStartSitScoreFunction(team.game_code, team.weekly_deadline)
     );
 
     this.originalPlayerPositions = this.createPlayerPositionDict(
-      this.players.editablePlayers
+      this.roster.editablePlayers
     );
 
     this.unfilledPositions = this.getUnfilledPositions(
-      this.players.allPlayers,
-      roster.roster_positions
+      this.roster.allPlayers,
+      team.roster_positions
     );
   }
 
   public async optimizeStartingLineup() {
-    if (this.players.editablePlayers.length === 0) {
+    if (this.roster.editablePlayers.length === 0) {
       this.verbose &&
-        console.info("no players to optimize for team " + this.roster.team_key);
+        console.info("no players to optimize for team " + this.team.team_key);
       return this.rosterModification({});
     }
 
     // Attempt to fix illegal players by swapping them with all eligible players
     // Illegal players are players that are not eligible for their selected position
     // For example, any player in an IR position that is now healthy, IR+, or NA
-    const illegalPlayers = this.players.illegalPlayers;
+    const illegalPlayers = this.roster.illegalPlayers;
     if (illegalPlayers.length > 0) {
-      const legalPlayers = this.players.legalPlayers;
-      Players.sortAscendingByScore(legalPlayers);
-      Players.sortDescendingByScore(illegalPlayers);
+      const legalPlayers = this.roster.legalPlayers;
+      Roster.sortAscendingByScore(legalPlayers);
+      Roster.sortDescendingByScore(illegalPlayers);
       // first check if a simple swap is possible between any two players on illelegalPlayers
       // if not, then call swapPlayer()
       this.verbose &&
@@ -66,15 +63,15 @@ class LineupOptimizer {
     // TODO: Add new players from FA if there are empty roster spots
 
     this.verbose && console.info("swapping bench / roster:");
-    const benchPlayers = this.players.benchPlayers;
-    const rosterPlayers = this.players.rosterPlayers;
-    Players.sortDescendingByScore(benchPlayers);
-    Players.sortAscendingByScore(rosterPlayers);
+    const benchPlayers = this.roster.benchPlayers;
+    const rosterPlayers = this.roster.rosterPlayers;
+    Roster.sortDescendingByScore(benchPlayers);
+    Roster.sortAscendingByScore(rosterPlayers);
     swapPlayers(benchPlayers, rosterPlayers, this.unfilledPositions, true);
 
     const newPlayerPositions = this.playerPositionDictDiff(
       this.originalPlayerPositions,
-      this.createPlayerPositionDict(this.players.editablePlayers)
+      this.createPlayerPositionDict(this.roster.editablePlayers)
     );
 
     // helper function to verify that the optimization was successful
@@ -88,9 +85,9 @@ class LineupOptimizer {
     [key: string]: string;
   }): RosterModification {
     return {
-      teamKey: this.roster.team_key,
-      coverageType: this.roster.coverage_type,
-      coveragePeriod: this.roster.coverage_period,
+      teamKey: this.team.team_key,
+      coverageType: this.team.coverage_type,
+      coveragePeriod: this.team.coverage_period,
       newPlayerPositions,
     };
   }
@@ -135,7 +132,7 @@ class LineupOptimizer {
     if (unfilledActiveRosterPositions().length > 0) {
       console.error(
         `unfilledRosterPositions for team ${
-          this.roster.team_key
+          this.team.team_key
         }: ${unfilledActiveRosterPositions()}`
       );
       return false;
@@ -145,20 +142,20 @@ class LineupOptimizer {
       return false;
     }
 
-    if (this.players.getIllegalPlayers().length > 0) {
+    if (this.roster.getIllegalPlayers().length > 0) {
       console.error(
         `illegalPlayers for team ${
-          this.roster.team_key
-        }: ${this.players.getIllegalPlayers()}`
+          this.team.team_key
+        }: ${this.roster.getIllegalPlayers()}`
       );
       return false;
     }
 
-    for (const benchPlayer of this.players.getBenchPlayersWithGameToday()) {
-      for (const rosterPlayer of this.players.getRosterPlayers()) {
+    for (const benchPlayer of this.roster.getBenchPlayersWithGameToday()) {
+      for (const rosterPlayer of this.roster.getRosterPlayers()) {
         if (eligibleReplacementPlayerHasLowerScore(benchPlayer, rosterPlayer)) {
           console.error(
-            `benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.roster.team_key}`
+            `benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
           );
           return false;
         }

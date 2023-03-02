@@ -1,7 +1,7 @@
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { Player } from "../interfaces/Player";
 
-export class Players {
+export class Roster {
   private _allPlayers: Player[];
   public get allPlayers(): Player[] {
     return this._allPlayers;
