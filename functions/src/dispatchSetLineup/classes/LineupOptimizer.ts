@@ -31,7 +31,7 @@ export class LineupOptimizer {
     );
   }
 
-  public async optimizeStartingLineup() {
+  public async optimizeStartingLineup(): Promise<RosterModification> {
     if (this.roster.editablePlayers.length === 0) {
       this.verbose &&
         console.info("no players to optimize for team " + this.team.team_key);
@@ -50,15 +50,11 @@ export class LineupOptimizer {
       // if not, then call swapPlayer()
       this.verbose &&
         console.info("swapping illegalPlayers amongst themselves:");
-      internalDirectPlayerSwap(illegalPlayers);
+      this.internalDirectPlayerSwap(illegalPlayers);
 
       this.verbose && console.info("swapping illegalPlayer / legalPlayers:");
       // illegalPlayers  will be sorted high to low, legalPlayers will be sorted low to high
-      transferPlayers(
-        illegalPlayers,
-        legalPlayers,
-        this.unfilledPositionsCounter
-      );
+      this.transferPlayers(illegalPlayers, legalPlayers);
     }
 
     // TODO: Move all injured players to InactiveList if possible
@@ -69,12 +65,7 @@ export class LineupOptimizer {
     const rosterPlayers = this.roster.rosterPlayers;
     Roster.sortDescendingByScore(benchPlayers);
     Roster.sortAscendingByScore(rosterPlayers);
-    transferPlayers(
-      benchPlayers,
-      rosterPlayers,
-      this.unfilledPositionsCounter,
-      true
-    );
+    this.transferPlayers(benchPlayers, rosterPlayers, true);
 
     this.newPlayerPositions = this.diffPlayerPositionDictionary(
       this.originalPlayerPositions,
@@ -130,7 +121,20 @@ export class LineupOptimizer {
     return result;
   }
 
+  public internalDirectPlayerSwap(illegalPlayers: Player[]): void {
+    throw new Error("Function not implemented.");
+  }
+
+  public transferPlayers(
+    illegalPlayers: Player[],
+    legalPlayers: Player[],
+    boolean: boolean = false
+  ): void {
+    throw new Error("Function not implemented.");
+  }
+
   public isSuccessfullyOptimized(): boolean {
+    // TODO: Refactor this further. Maybe we can pull out code into a separate function
     const unfilledPositionsCounter = this.unfilledPositionsCounter;
 
     if (unfilledActiveRosterPositions().length > 0) {
@@ -180,6 +184,7 @@ export class LineupOptimizer {
 
     // end of verifyOptimization() function
 
+    // TODO: Can we move this into Player class?
     function eligibleReplacementPlayerHasLowerScore(
       benchPlayer: Player,
       rosterPlayer: Player
@@ -191,6 +196,7 @@ export class LineupOptimizer {
       );
     }
 
+    // TODO: Will we need this in the transferPlayers() function?
     function unfilledActiveRosterPositions() {
       return Object.keys(unfilledPositionsCounter).filter(
         (position) =>
@@ -200,19 +206,6 @@ export class LineupOptimizer {
       );
     }
   }
-}
-
-function transferPlayers(
-  illegalPlayers: Player[],
-  legalPlayers: Player[],
-  unfilledPositionsCounter: { [key: string]: number },
-  boolean: boolean = false
-) {
-  throw new Error("Function not implemented.");
-}
-
-function internalDirectPlayerSwap(illegalPlayers: Player[]) {
-  throw new Error("Function not implemented.");
 }
 // interface LOPlayer extends Player {}
 // class LOPlayer implements Player {
