@@ -5,29 +5,27 @@ import { Player } from "../interfaces/Player";
 import { RosterModification } from "../interfaces/RosterModification";
 import { assignPlayerStartSitScoreFunction } from "../services/playerStartSitScoreFunctions.service";
 
-class LineupOptimizer {
+export class LineupOptimizer {
   private team: Team;
   private roster: Roster;
   private originalPlayerPositions: { [key: string]: string };
-  private unfilledPositions: { [key: string]: number };
-  private _verboseLogging: boolean = false;
+  private newPlayerPositions: { [key: string]: string } = {};
+  private unfilledPositionsCounter: { [key: string]: number };
+  private _verboseLogging = false;
   public set verbose(value: boolean) {
     this._verboseLogging = value;
   }
 
   constructor(team: Team) {
     this.team = team;
-
     this.roster = new Roster(
       team.players,
       assignPlayerStartSitScoreFunction(team.game_code, team.weekly_deadline)
     );
-
-    this.originalPlayerPositions = this.createPlayerPositionDict(
+    this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.roster.editablePlayers
     );
-
-    this.unfilledPositions = this.getUnfilledPositions(
+    this.unfilledPositionsCounter = this.getUnfilledRosterPositions(
       this.roster.allPlayers,
       team.roster_positions
     );
@@ -37,7 +35,7 @@ class LineupOptimizer {
     if (this.roster.editablePlayers.length === 0) {
       this.verbose &&
         console.info("no players to optimize for team " + this.team.team_key);
-      return this.rosterModification({});
+      return this.aRosterModification({});
     }
 
     // Attempt to fix illegal players by swapping them with all eligible players
@@ -46,8 +44,8 @@ class LineupOptimizer {
     const illegalPlayers = this.roster.illegalPlayers;
     if (illegalPlayers.length > 0) {
       const legalPlayers = this.roster.legalPlayers;
-      Roster.sortAscendingByScore(legalPlayers);
       Roster.sortDescendingByScore(illegalPlayers);
+      Roster.sortAscendingByScore(legalPlayers);
       // first check if a simple swap is possible between any two players on illelegalPlayers
       // if not, then call swapPlayer()
       this.verbose &&
@@ -56,7 +54,11 @@ class LineupOptimizer {
 
       this.verbose && console.info("swapping illegalPlayer / legalPlayers:");
       // illegalPlayers  will be sorted high to low, legalPlayers will be sorted low to high
-      swapPlayers(illegalPlayers, legalPlayers, this.unfilledPositions);
+      transferPlayers(
+        illegalPlayers,
+        legalPlayers,
+        this.unfilledPositionsCounter
+      );
     }
 
     // TODO: Move all injured players to InactiveList if possible
@@ -67,21 +69,23 @@ class LineupOptimizer {
     const rosterPlayers = this.roster.rosterPlayers;
     Roster.sortDescendingByScore(benchPlayers);
     Roster.sortAscendingByScore(rosterPlayers);
-    swapPlayers(benchPlayers, rosterPlayers, this.unfilledPositions, true);
-
-    const newPlayerPositions = this.playerPositionDictDiff(
-      this.originalPlayerPositions,
-      this.createPlayerPositionDict(this.roster.editablePlayers)
+    transferPlayers(
+      benchPlayers,
+      rosterPlayers,
+      this.unfilledPositionsCounter,
+      true
     );
 
-    // helper function to verify that the optimization was successful
-    this.verifyOptimization();
+    this.newPlayerPositions = this.diffPlayerPositionDictionary(
+      this.originalPlayerPositions,
+      this.createPlayerPositionDictionary(this.roster.editablePlayers)
+    );
 
     // Return the roster modification object if there are changes
-    return this.rosterModification(newPlayerPositions);
+    return this.aRosterModification(this.newPlayerPositions);
   }
 
-  private rosterModification(newPlayerPositions: {
+  private aRosterModification(newPlayerPositions: {
     [key: string]: string;
   }): RosterModification {
     return {
@@ -92,7 +96,7 @@ class LineupOptimizer {
     };
   }
 
-  private createPlayerPositionDict(players: Player[]) {
+  private createPlayerPositionDictionary(players: Player[]) {
     const result: { [key: string]: string } = {};
     players.forEach((player) => {
       result[player.player_key] = player.selected_position;
@@ -100,7 +104,7 @@ class LineupOptimizer {
     return result;
   }
 
-  private playerPositionDictDiff(
+  private diffPlayerPositionDictionary(
     originalPlayerPositions: { [key: string]: string },
     finalPlayerPositions: { [key: string]: string }
   ) {
@@ -115,19 +119,19 @@ class LineupOptimizer {
     return result;
   }
 
-  private getUnfilledPositions(
+  private getUnfilledRosterPositions(
     players: Player[],
     rosterPositions: { [key: string]: number }
   ) {
-    const unfilledPositions: { [key: string]: number } = { ...rosterPositions };
+    const result: { [key: string]: number } = { ...rosterPositions };
     players.forEach((player) => {
-      unfilledPositions[player.selected_position]--;
+      result[player.selected_position]--;
     });
-    return unfilledPositions;
+    return result;
   }
 
-  private verifyOptimization(): boolean {
-    const unfilledPositions = this.unfilledPositions;
+  public isSuccessfullyOptimized(): boolean {
+    const unfilledPositionsCounter = this.unfilledPositionsCounter;
 
     if (unfilledActiveRosterPositions().length > 0) {
       console.error(
@@ -138,21 +142,31 @@ class LineupOptimizer {
       return false;
     }
 
-    if (arePositionsOverfilled()) {
-      return false;
+    const unfilledPositions = Object.keys(unfilledPositionsCounter);
+    for (const position of unfilledPositions) {
+      if (position !== "BN" && unfilledPositionsCounter[position] < 0) {
+        console.error(
+          `too many players at position ${position} for team ${this.team.team_key}`
+        );
+        return false;
+      }
     }
 
-    if (this.roster.getIllegalPlayers().length > 0) {
+    const illegallyMovedPlayers = Object.keys(this.newPlayerPositions).filter(
+      (movedPlayerKey) =>
+        this.roster.illegalPlayers.some(
+          (illegalPlayer) => illegalPlayer.player_key === movedPlayerKey
+        )
+    );
+    if (illegallyMovedPlayers.length > 0) {
       console.error(
-        `illegalPlayers for team ${
-          this.team.team_key
-        }: ${this.roster.getIllegalPlayers()}`
+        `illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`
       );
       return false;
     }
 
-    for (const benchPlayer of this.roster.getBenchPlayersWithGameToday()) {
-      for (const rosterPlayer of this.roster.getRosterPlayers()) {
+    for (const benchPlayer of this.roster.benchPlayersWithGameToday) {
+      for (const rosterPlayer of this.roster.rosterPlayers) {
         if (eligibleReplacementPlayerHasLowerScore(benchPlayer, rosterPlayer)) {
           console.error(
             `benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
@@ -178,29 +192,29 @@ class LineupOptimizer {
     }
 
     function unfilledActiveRosterPositions() {
-      return Object.keys(unfilledPositions).filter(
+      return Object.keys(unfilledPositionsCounter).filter(
         (position) =>
           position !== "BN" &&
           !INACTIVE_POSITION_LIST.includes(position) &&
-          unfilledPositions[position] > 0
+          unfilledPositionsCounter[position] > 0
       );
-    }
-
-    function arePositionsOverfilled() {
-      for (const position of Object.keys(unfilledPositions)) {
-        if (position !== "BN" && unfilledPositions[position] < 0) {
-          console.error(
-            `too many players at position ${position} for team ${this.roster.team_key}`
-          );
-          return true;
-        }
-      }
-      return false;
     }
   }
 }
 
-interface LOPlayer extends Player {}
-class LOPlayer implements Player {
-  // TODO: Add comparison methods for sorting
+function transferPlayers(
+  illegalPlayers: Player[],
+  legalPlayers: Player[],
+  unfilledPositionsCounter: { [key: string]: number },
+  boolean: boolean = false
+) {
+  throw new Error("Function not implemented.");
 }
+
+function internalDirectPlayerSwap(illegalPlayers: Player[]) {
+  throw new Error("Function not implemented.");
+}
+// interface LOPlayer extends Player {}
+// class LOPlayer implements Player {
+//   // TODO: Add comparison methods for sorting
+// }

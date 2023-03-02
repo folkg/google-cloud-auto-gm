@@ -3,14 +3,7 @@ import { Player } from "../interfaces/Player";
 
 export class Roster {
   private _allPlayers: Player[];
-  public get allPlayers(): Player[] {
-    return this._allPlayers;
-  }
-
   private _editablePlayers: Player[];
-  public get editablePlayers(): Player[] {
-    return this._editablePlayers;
-  }
 
   constructor(
     players: Player[],
@@ -24,12 +17,32 @@ export class Roster {
     });
   }
 
+  /**
+   * Sorts players in place by score, lowest to highest
+   *
+   * @static
+   * @param {Player[]} players - array of players to sort
+   */
   static sortAscendingByScore(players: Player[]) {
     players.sort((a, b) => a.score - b.score);
   }
 
+  /**
+   * Sorts players in place by score, highest to lowest
+   *
+   * @static
+   * @param {Player[]} players - array of players to sort
+   */
   static sortDescendingByScore(players: Player[]) {
     players.sort((a, b) => b.score - a.score);
+  }
+
+  public get allPlayers(): Player[] {
+    return this._allPlayers;
+  }
+
+  public get editablePlayers(): Player[] {
+    return this._editablePlayers;
   }
 
   public get illegalPlayers(): Player[] {
