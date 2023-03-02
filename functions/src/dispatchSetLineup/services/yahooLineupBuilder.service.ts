@@ -1,5 +1,6 @@
 import { getChild } from "../../common/services/utilities.service";
-import { Player, Roster } from "../interfaces/roster";
+import { Team } from "../interfaces/Team";
+import { Player } from "../interfaces/Player";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**
@@ -9,14 +10,14 @@ import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.serv
  * @async
  * @param {string[]} teams The team keys
  * @param {string} uid The firebase uid of the user
- * @return {Promise<Roster[]>} The roster objects
+ * @return {Promise<Team[]>} The roster objects
  */
 export async function fetchRostersFromYahoo(
   teams: string[],
   uid: string
-): Promise<Roster[]> {
+): Promise<Team[]> {
   const yahooRostersJSON = await getRostersByTeamID(teams, uid);
-  const rosters: Roster[] = [];
+  const rosters: Team[] = [];
   const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
   // console.log(games); //use this to debug the JSON object and see all data
   // Loop through each "game" (nfl, nhl, nba, mlb)
@@ -44,7 +45,7 @@ export async function fetchRostersFromYahoo(
             usersTeamRoster[0].players
           );
 
-          const rosterObj: Roster = {
+          const rosterObj: Team = {
             team_key: getChild(usersTeam.team[0], "team_key"),
             players: players,
             coverage_type: coverageType,

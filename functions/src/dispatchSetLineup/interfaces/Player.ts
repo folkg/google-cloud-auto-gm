@@ -1,13 +1,3 @@
-export interface Roster {
-  team_key: string;
-  players: Player[];
-  coverage_type: string;
-  coverage_period: string;
-  weekly_deadline: string;
-  game_code: string;
-  roster_positions: { [key: string]: number };
-}
-
 export interface Player {
   addDropScore?: any;
   player_key: string;
@@ -24,11 +14,4 @@ export interface Player {
   rank_next7days: number;
   rank_projected_week: number;
   score: number;
-}
-
-export interface RosterModification {
-  teamKey: string;
-  coverageType: string;
-  coveragePeriod: string;
-  newPlayerPositions: { [key: string]: string };
 }

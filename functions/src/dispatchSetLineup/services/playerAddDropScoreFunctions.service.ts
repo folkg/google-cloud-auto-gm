@@ -1,4 +1,4 @@
-import { Player } from "../interfaces/roster";
+import { Player } from "../interfaces/Player";
 
 /**
  * Add drop score function

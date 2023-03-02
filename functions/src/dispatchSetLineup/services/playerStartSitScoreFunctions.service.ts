@@ -1,4 +1,4 @@
-import { Player } from "../interfaces/roster";
+import { Player } from "../interfaces/Player";
 import { HEALTHY_STATUS_LIST } from "../helpers/constants";
 import { NHL_STARTING_GOALIES } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 

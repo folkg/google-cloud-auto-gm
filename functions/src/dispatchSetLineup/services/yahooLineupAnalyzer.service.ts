@@ -1,14 +1,15 @@
-import { Player, Roster } from "../interfaces/roster";
+import { Team } from "../interfaces/Team";
+import { Player } from "../interfaces/Player";
 import { addDropScoreFunction } from "./playerAddDropScoreFunctions.service";
 
 /**
  * Get the strength of the roster for the given team
  *
- * @param {Roster} roster
+ * @param {Team} roster
  * @return {[Record<string, number>, Record<string, number>]}
  */
 export function getRosterStrength(
-  roster: Roster
+  roster: Team
 ): [Record<string, number>, Record<string, number>] {
   const { players, roster_positions: positionDelta } = roster;
   // const EXEMPT_POSITIONS = ["DEF", "K"]; // positions that don't count towards the roster strength

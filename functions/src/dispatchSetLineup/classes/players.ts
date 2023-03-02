@@ -1,5 +1,5 @@
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { Player } from "../interfaces/roster";
+import { Player } from "../interfaces/Player";
 
 export class Players {
   private _allPlayers: Player[];
@@ -32,25 +32,25 @@ export class Players {
     players.sort((a, b) => b.score - a.score);
   }
 
-  public getIllegalPlayers(): Player[] {
+  public get illegalPlayers(): Player[] {
     return this.editablePlayers.filter(
       (player) => !player.eligible_positions.includes(player.selected_position)
     );
   }
 
-  public getLegalPlayers(): Player[] {
+  public get legalPlayers(): Player[] {
     return this.editablePlayers.filter((player) =>
       player.eligible_positions.includes(player.selected_position)
     );
   }
 
-  public getBenchPlayers() {
+  public get benchPlayers() {
     return this.editablePlayers.filter(
       (player) => player.selected_position === "BN"
     );
   }
 
-  public getRosterPlayers() {
+  public get rosterPlayers() {
     return this.editablePlayers.filter(
       (player) =>
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
@@ -58,7 +58,7 @@ export class Players {
     );
   }
 
-  public getBenchPlayersWithGameToday() {
+  public get benchPlayersWithGameToday() {
     return this.editablePlayers.filter(
       (player) => player.selected_position === "BN" && player.is_playing
     );

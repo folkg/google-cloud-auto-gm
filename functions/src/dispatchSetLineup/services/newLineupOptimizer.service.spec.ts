@@ -1,4 +1,4 @@
-import { Roster } from "../interfaces/roster";
+import { Team } from "../interfaces/Team";
 import { optimizeStartingLineup2 } from "./newLineupOptimizer.service";
 
 // mock firebase-admin
@@ -13,7 +13,7 @@ describe("test NHL optimizeStartingLineup2", function () {
   });
 
   it("test already optimal roster", async function () {
-    const roster: Roster = require("./testRosters/optimalRoster.json");
+    const roster: Team = require("./testRosters/optimalRoster.json");
     const npp = {};
     const result = await optimizeStartingLineup2(roster);
     expect(result.newPlayerPositions).toEqual(npp);
@@ -21,7 +21,7 @@ describe("test NHL optimizeStartingLineup2", function () {
   });
 
   it("test one active C on bench, spare C slot", async function () {
-    const roster: Roster = require("./testRosters/oneMoveRequired.json");
+    const roster: Team = require("./testRosters/oneMoveRequired.json");
     const npp = { "419.p.3737": "C" };
     const result = await optimizeStartingLineup2(roster);
     // expect(result.newPlayerPositions).toMatchObject(npp);
@@ -31,7 +31,7 @@ describe("test NHL optimizeStartingLineup2", function () {
   });
 
   it("test one active C on bench, one non-active C on roster", async function () {
-    const roster: Roster = require("./testRosters/oneSwapRequired.json");
+    const roster: Team = require("./testRosters/oneSwapRequired.json");
     const npp = { "419.p.6726": "BN", "419.p.3737": "C" };
     const result = await optimizeStartingLineup2(roster);
     expect(result.newPlayerPositions).toEqual(npp);
@@ -39,7 +39,7 @@ describe("test NHL optimizeStartingLineup2", function () {
   });
 
   it("test different active C on bench, one non-active C on roster", async function () {
-    const roster: Roster = require("./testRosters/oneSwapRequired2.json");
+    const roster: Team = require("./testRosters/oneSwapRequired2.json");
     const npp = { "419.p.6726": "BN", "419.p.7528": "C" };
     const result = await optimizeStartingLineup2(roster);
     expect(result.newPlayerPositions).toEqual(npp);
@@ -47,7 +47,7 @@ describe("test NHL optimizeStartingLineup2", function () {
   });
 
   it("test all players on bench", async function () {
-    const roster: Roster = require("./testRosters/allPlayersBN.json");
+    const roster: Team = require("./testRosters/allPlayersBN.json");
     const result = await optimizeStartingLineup2(roster);
     expect(Object.values(result.newPlayerPositions)).not.toContain("BN");
     expect(result.newPlayerPositions).not.toHaveProperty("419.p.6370"); // on IR+, should not be moved
@@ -73,7 +73,7 @@ describe("test NHL optimizeStartingLineup2", function () {
   });
 
   it("test no players with games on active roster", async function () {
-    const roster: Roster = require("./testRosters/allRosterPlayersHaveNoGames.json");
+    const roster: Team = require("./testRosters/allRosterPlayersHaveNoGames.json");
     const result = await optimizeStartingLineup2(roster);
     expect(result.newPlayerPositions).not.toHaveProperty("419.p.6370"); // on IR+, should not be moved
     expect(result.newPlayerPositions["419.p.7163"]).toEqual("G");
@@ -104,7 +104,7 @@ describe("test NHL optimizeStartingLineup2", function () {
   });
 
   it("NBA Problem", async function () {
-    const roster: Roster = require("./testRosters/NBA/potentiallyProblematic.json");
+    const roster: Team = require("./testRosters/NBA/potentiallyProblematic.json");
     const result = await optimizeStartingLineup2(roster);
 
     expect(result.newPlayerPositions["418.p.5482"]).toBeDefined();

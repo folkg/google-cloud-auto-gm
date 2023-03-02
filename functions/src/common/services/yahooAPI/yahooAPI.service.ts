@@ -1,5 +1,5 @@
 import { httpGetAxios, httpPostAxios, httpPutAxios } from "./yahooHttp.service";
-import { RosterModification } from "../../../dispatchSetLineup/interfaces/roster";
+import { RosterModification } from "../../../dispatchSetLineup/interfaces/RosterModification";
 import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
 import { AxiosError } from "axios";
 import { updateFirestoreTimestamp } from "../firebase/firestore.service";

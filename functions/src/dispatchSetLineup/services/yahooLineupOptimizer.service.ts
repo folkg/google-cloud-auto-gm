@@ -1,4 +1,6 @@
-import { Player, Roster, RosterModification } from "../interfaces/roster";
+import { Team } from "../interfaces/Team";
+import { Player } from "../interfaces/Player";
+import { RosterModification } from "../interfaces/RosterModification";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 import { postRosterModifications } from "../../common/services/yahooAPI/yahooAPI.service";
 
@@ -55,10 +57,10 @@ export async function setUsersLineup(
  * Will optimize the starting lineup for a given roster
  *
  * @export
- * @param {Roster} teamRoster - The roster to optimize
+ * @param {Team} teamRoster - The roster to optimize
  * @return {*} {RosterModification} - The roster modification to make
  */
-export function optimizeStartingLineup(teamRoster: Roster): RosterModification {
+export function optimizeStartingLineup(teamRoster: Team): RosterModification {
   const {
     team_key: teamKey,
     players,

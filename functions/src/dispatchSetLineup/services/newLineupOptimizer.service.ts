@@ -1,4 +1,6 @@
-import { Player, Roster, RosterModification } from "../interfaces/roster";
+import { Team } from "../interfaces/Team";
+import { Player } from "../interfaces/Player";
+import { RosterModification } from "../interfaces/RosterModification";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 import { postRosterModifications } from "../../common/services/yahooAPI/yahooAPI.service";
 import { HttpsError } from "firebase-functions/v2/https";
@@ -84,11 +86,11 @@ async function getRosterModifications(
  * Will optimize the starting lineup for a given roster
  *
  * @export
- * @param {Roster} teamRoster - The roster to optimize
+ * @param {Team} teamRoster - The roster to optimize
  * @return {*} {RosterModification} - The roster modification to make
  */
 export async function optimizeStartingLineup2(
-  teamRoster: Roster
+  teamRoster: Team
 ): Promise<RosterModification> {
   const {
     team_key: teamKey,

@@ -1,11 +1,12 @@
-import { partitionArray } from "../../common/services/utilities.service";
 import { Players } from "./players";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { Player, Roster, RosterModification } from "../interfaces/roster";
+import { Team } from "../interfaces/Team";
+import { Player } from "../interfaces/Player";
+import { RosterModification } from "../interfaces/RosterModification";
 import { assignPlayerStartSitScoreFunction } from "../services/playerStartSitScoreFunctions.service";
 
 class LineupOptimizer {
-  private roster: Roster;
+  private roster: Team;
   private players: Players;
   private originalPlayerPositions: { [key: string]: string };
   private unfilledPositions: { [key: string]: number };
@@ -14,7 +15,7 @@ class LineupOptimizer {
     this._verboseLogging = value;
   }
 
-  constructor(roster: Roster) {
+  constructor(roster: Team) {
     this.roster = roster;
 
     this.players = new Players(
@@ -45,9 +46,9 @@ class LineupOptimizer {
     // Attempt to fix illegal players by swapping them with all eligible players
     // Illegal players are players that are not eligible for their selected position
     // For example, any player in an IR position that is now healthy, IR+, or NA
-    const illegalPlayers = this.players.getIllegalPlayers();
+    const illegalPlayers = this.players.illegalPlayers;
     if (illegalPlayers.length > 0) {
-      const legalPlayers = this.players.getLegalPlayers();
+      const legalPlayers = this.players.legalPlayers;
       Players.sortAscendingByScore(legalPlayers);
       Players.sortDescendingByScore(illegalPlayers);
       // first check if a simple swap is possible between any two players on illelegalPlayers
@@ -58,19 +59,15 @@ class LineupOptimizer {
 
       this.verbose && console.info("swapping illegalPlayer / legalPlayers:");
       // illegalPlayers  will be sorted high to low, legalPlayers will be sorted low to high
-      swapPlayers(
-        illegalPlayers,
-        this.players.getLegalPlayers(),
-        this.unfilledPositions
-      );
+      swapPlayers(illegalPlayers, legalPlayers, this.unfilledPositions);
     }
 
     // TODO: Move all injured players to InactiveList if possible
     // TODO: Add new players from FA if there are empty roster spots
 
     this.verbose && console.info("swapping bench / roster:");
-    const benchPlayers = this.players.getBenchPlayers();
-    const rosterPlayers = this.players.getRosterPlayers();
+    const benchPlayers = this.players.benchPlayers;
+    const rosterPlayers = this.players.rosterPlayers;
     Players.sortDescendingByScore(benchPlayers);
     Players.sortAscendingByScore(rosterPlayers);
     swapPlayers(benchPlayers, rosterPlayers, this.unfilledPositions, true);
