@@ -65,7 +65,10 @@ async function getRosterModifications(
   console.log(
     "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
   );
+  console.log(JSON.stringify(rosters));
+
   for (const roster of rosters) {
+    console.log(JSON.stringify(roster));
     const rm = await optimizeStartingLineup2(roster);
     console.info(
       "rm for team " + roster.team_key + " is " + JSON.stringify(rm)
@@ -96,14 +99,9 @@ export async function optimizeStartingLineup2(
     roster_positions: rosterPositions,
   } = teamRoster;
 
-  const unfilledPositions = getUnfilledPositions(players, rosterPositions);
-  let newPlayerPositions: { [key: string]: string } = {};
+  const originalPlayerPositions = createPlayerPositionDict(players);
 
-  const genPlayerScore: (player: Player) => number =
-    await assignPlayerStartSitScoreFunction(
-      teamRoster.game_code,
-      weeklyDeadline
-    );
+  const unfilledPositions = getUnfilledPositions(players, rosterPositions);
 
   const editablePlayers = players.filter((player) => player.is_editable);
   if (editablePlayers.length === 0) {
@@ -111,18 +109,23 @@ export async function optimizeStartingLineup2(
       console.info("no players to optimize for team " + teamKey);
     return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
   }
+
+  const genPlayerScore: (player: Player) => number =
+    await assignPlayerStartSitScoreFunction(
+      teamRoster.game_code,
+      weeklyDeadline
+    );
   editablePlayers.forEach((player) => {
     player.score = genPlayerScore(player);
     player.eligible_positions.push("BN"); // not included by default in Yahoo
   });
-  // sort lower to higher
+  // sort lower score to higher score
   editablePlayers.sort((a, b) => a.score - b.score);
 
   // Attempt to fix illegal players by swapping them with all eligible players
   // Illegal players are players that are not eligible for their selected position
   // For example, any player in an IR position that is now healthy, IR+, or NA
 
-  // TODO: Assumption was that "BN" is on player's eligible positions. It's not. Could cause bugs.
   // TODO: This isn't quite right. Need to check health status as well in roster. We need more filters/partitions.
 
   const [illegalPlayers, legalPlayers] = partitionArray(
@@ -135,22 +138,11 @@ export async function optimizeStartingLineup2(
     // if not, then call swapPlayer()
     verboseLogging &&
       console.info("swapping illegalPlayers amongst themselves:");
-    newPlayerPositions = internalDirectPlayerSwap(illegalPlayers);
-    verboseLogging &&
-      console.info(
-        "after internalDirectPlayerSwap: " + JSON.stringify(newPlayerPositions)
-      );
+    internalDirectPlayerSwap(illegalPlayers);
 
     verboseLogging && console.info("swapping illegalPlayer / legalPlayers:");
-    newPlayerPositions = {
-      ...newPlayerPositions,
-      ...swapPlayers(illegalPlayers, legalPlayers, unfilledPositions),
-    };
-    verboseLogging &&
-      console.info(
-        "after swapPlayers illegalPlayer / legalPlayers: " +
-          JSON.stringify(newPlayerPositions)
-      );
+    // illegalPlayers  will be sorted high to low, legalPlayers will be sorted low to high
+    swapPlayers(illegalPlayers, legalPlayers, unfilledPositions);
   }
 
   // TODO: Move all injured players to InactiveList if possible
@@ -171,35 +163,120 @@ export async function optimizeStartingLineup2(
   );
 
   verboseLogging && console.info("swapping bench / roster:");
-  newPlayerPositions = {
-    ...newPlayerPositions,
-    ...swapPlayers(bench, roster, unfilledPositions),
-  };
-  verboseLogging &&
-    console.info(
-      "after swapPlayers bench / roster: " + JSON.stringify(newPlayerPositions)
-    );
+  // bench will be sorted high to low, roster will be sorted low to high
+  bench.reverse();
+  swapPlayers(bench, roster, unfilledPositions, true);
+
+  const finalPlayerPositions = createPlayerPositionDict(players);
+  const newPlayerPositions = playerPositionDictDiff(
+    originalPlayerPositions,
+    finalPlayerPositions
+  );
+
+  // helper function to verify that the optimization was successful
+  verifyOptimization();
 
   // Return the roster modification object if there are changes
-  if (Object.keys(newPlayerPositions).length > 0) {
-    const rosterModification: RosterModification = {
-      teamKey,
-      coverageType,
-      coveragePeriod,
-      newPlayerPositions,
-    };
-    return rosterModification;
-  } else {
-    return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
+  const rosterModification: RosterModification = {
+    teamKey,
+    coverageType,
+    coveragePeriod,
+    newPlayerPositions,
+  };
+  return rosterModification;
+
+  /**
+   * Will verify that the optimization was successful
+   *
+   * @return {boolean}
+   */
+  function verifyOptimization(): boolean {
+    const unfilledRosterPositions = Object.keys(unfilledPositions).filter(
+      (position) =>
+        position !== "BN" &&
+        !INACTIVE_POSITION_LIST.includes(position) &&
+        unfilledPositions[position] > 0
+    );
+    if (unfilledRosterPositions.length > 0) {
+      console.error(
+        `unfilledRosterPositions for team ${teamKey}: ${unfilledRosterPositions}`
+      );
+      return false;
+    }
+
+    const [benchPlayers, rosterPlayers] = partitionArray(
+      players,
+      (player) => player.selected_position === "BN"
+    );
+    const benchPlayersWithGame = benchPlayers.filter(
+      (player) => player.is_playing
+    );
+
+    if (benchPlayersWithGame.length === 0) return true;
+    // loop through each bench player and check if there are any roster players with a lower score
+    for (const benchPlayer of benchPlayersWithGame) {
+      for (const rosterPlayer of rosterPlayers) {
+        if (
+          benchPlayer.eligible_positions.includes(
+            rosterPlayer.selected_position
+          ) &&
+          benchPlayer.score > rosterPlayer.score
+        ) {
+          console.error(
+            `benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${teamKey}`
+          );
+          return false;
+        }
+      }
+    }
+    return true;
   }
+}
+
+/**
+ * Creates a dictionary of player keys to their original selected positions
+ *
+ * @param {Player[]} players - The players on the roster
+ * @return {{}} - The dictionary of player keys to their original selected positions
+ */
+function createPlayerPositionDict(players: Player[]): {
+  [key: string]: string;
+} {
+  const result: { [key: string]: string } = {};
+  players.forEach((player) => {
+    result[player.player_key] = player.selected_position;
+  });
+  return result;
+}
+
+/**
+ * Will calculate the difference between the original player positions and the final player positions
+ *
+ * @param {{}} originalPlayerPositions - The original player positions
+ * @param {{}} finalPlayerPositions - The final player positions
+ * @return {{}} - The difference between the original player positions and the final player positions
+ */
+function playerPositionDictDiff(
+  originalPlayerPositions: { [key: string]: string },
+  finalPlayerPositions: { [key: string]: string }
+): { [key: string]: string } {
+  const result: { [key: string]: string } = {};
+  Object.keys(originalPlayerPositions).forEach((playerKey) => {
+    if (
+      originalPlayerPositions[playerKey] !== finalPlayerPositions[playerKey]
+    ) {
+      result[playerKey] = finalPlayerPositions[playerKey];
+    }
+  });
+  return result;
 }
 
 /**
  * Will calculate the number of unfilled positions for a given roster
  *
  * @param {Player[]} players - The players on the roster
- * @param {{ [key: string]: number }} rosterPositions - The roster positions
- * @returns {{ [key: string]: number }} - The number of unfilled positions
+ * @param {{}} rosterPositions - The roster positions
+ * @return {{}} - The number of unfilled positions
  */
 function getUnfilledPositions(
   players: Player[],
@@ -213,31 +290,11 @@ function getUnfilledPositions(
 }
 
 /**
- * Will swap players between two arrays of players
- *
- * @param {Player} player - The player to swap
- * @param {string} position - The position to swap the player to
- * @param {{}} newPlayerPositions - The dictionary of players to move
- */
-function movePlayerToPosition(
-  player: Player,
-  position: string,
-  newPlayerPositions: { [key: string]: string }
-) {
-  player.selected_position = position;
-  newPlayerPositions[player.player_key] = position;
-}
-
-/**
  * Make direct swaps between players in the playersArr array
  *
  * @param {Player[]} playersArr - The array of players to swap
- * @return {{}} - dictionary of players moved to new positions
  */
-function internalDirectPlayerSwap(playersArr: Player[]): {
-  [key: string]: string;
-} {
-  const newPlayerPositions: { [key: string]: string } = {};
+function internalDirectPlayerSwap(playersArr: Player[]): void {
   for (const playerA of playersArr) {
     for (const playerB of playersArr) {
       if (
@@ -245,17 +302,27 @@ function internalDirectPlayerSwap(playersArr: Player[]): {
         playerB.eligible_positions.includes(playerA.selected_position) &&
         playerA.eligible_positions.includes(playerB.selected_position)
       ) {
+        verboseLogging &&
+          console.info(
+            `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
+          );
         const temp = playerB.selected_position;
-        movePlayerToPosition(
-          playerB,
-          playerA.selected_position,
-          newPlayerPositions
-        );
-        movePlayerToPosition(playerA, temp, newPlayerPositions);
+        movePlayerToPosition(playerB, playerA.selected_position);
+        movePlayerToPosition(playerA, temp);
       }
     }
   }
-  return newPlayerPositions;
+
+  /**
+   * Will swap players between two arrays of players
+   *
+   * @param {Player} player - The player to swap
+   * @param {string} position - The position to swap the player to
+   * @param {{}} newPlayerPositions - The dictionary of players to move
+   */
+  function movePlayerToPosition(player: Player, position: string) {
+    player.selected_position = position;
+  }
 }
 
 /**
@@ -267,28 +334,22 @@ function internalDirectPlayerSwap(playersArr: Player[]): {
  * @param {Player[]} source - array of players to move from
  * @param {Player[]} target - array of players to move to
  * @param {{}} unfilledPositions - dictionary of unfilled positions
- * @return {{}} - dictionary of players moved to new positions
+ * @param {boolean} isMaximizingScore - whether to maximize score on target array
  */
 function swapPlayers(
   source: Player[],
   target: Player[],
-  unfilledPositions: { [key: string]: number }
+  unfilledPositions: { [key: string]: number },
+  isMaximizingScore = false
 ) {
   // temp variables, to be user settings later
   const addPlayersToRoster = false;
   // const dropPlayersFromRoster = false;
   // intialize variables
-  const newPlayerPositions: { [key: string]: string } = {};
   let isPlayerAActiveRoster = false;
   let isPlayerBActiveRoster = false;
-  const isMaximizingScore = () => {
-    return isPlayerAActiveRoster && isPlayerBActiveRoster;
-  };
   const isSwappingILToRoster = () => {
     return !isPlayerAActiveRoster && isPlayerBActiveRoster;
-  };
-  const movePlayerTo = (player: Player, position: string) => {
-    movePlayerToPosition(player, position, newPlayerPositions);
   };
 
   // example: source = bench, target = roster, unfilledPositions = { LW: 1, RW: 1 }
@@ -315,10 +376,52 @@ function swapPlayers(
     isPlayerAActiveRoster = !INACTIVE_POSITION_LIST.includes(
       playerA.selected_position
     );
+
+    const unfilledPosition: string | undefined =
+      availableUnfilledPosition(playerA);
+    if (unfilledPosition) {
+      // if there is an unfilled position, then we will move the player to that position
+      verboseLogging &&
+        console.info(
+          "Moving player " + playerA.player_name + " to unfilled position: ",
+          unfilledPosition
+        );
+      // modify the unfilled positions
+      verboseLogging &&
+        console.info(
+          "unfilledPositions before: ",
+          JSON.stringify(unfilledPositions)
+        );
+      unfilledPositions[playerA.selected_position] += 1;
+      unfilledPositions[unfilledPosition] -= 1;
+      verboseLogging &&
+        console.info(
+          "unfilledPositions after: ",
+          JSON.stringify(unfilledPositions)
+        );
+
+      movePlayerToPosition(playerA, unfilledPosition);
+      // splice the player from source and add to target
+      const idx = source.indexOf(playerA);
+      target.push(source.splice(idx, 1)[0]);
+
+      // continue without incrementing i if a swap was made
+      continue;
+    }
+
+    if (
+      isMaximizingScore &&
+      playerA.score < Math.min(...target.map((tp) => tp.score))
+    ) {
+      i++;
+      continue;
+    }
     // Note: eligibleTargetPlayers will be all players when moving bench to roster
+
     const eligibleTargetPlayers = target.filter((targetPlayer) =>
       targetPlayer.eligible_positions.includes(playerA.selected_position)
     );
+
     if (eligibleTargetPlayers.length > 0) {
       verboseLogging &&
         console.info(
@@ -339,20 +442,28 @@ function swapPlayers(
         isPlayerBActiveRoster = !INACTIVE_POSITION_LIST.includes(
           playerB.selected_position
         );
-        // if BN -> Roster, check playerA can move to playerB
-        //  if not position, move to next playerB
-        //    if position, then check score
-        //      if score, then two way swap
-        //      if not score, then three way swap
-        // if IR -> ActiveRoster, make two way swap
+
         if (isSwappingILToRoster()) {
-          movePlayerTo(playerB, "BN");
-          swapPlayers(playerA, playerB);
+          // TODO: This is the same as moving playerB to playerA's position, and moving playerA to unfilled position
+          // we can re-use the code from above if we extract it as a function instead
+          verboseLogging &&
+            console.info(
+              `Swapping ${playerA.player_name} ${playerA.selected_position} to BN, and ${playerB.player_name} ${playerB.selected_position} to ${playerA.selected_position}`
+            );
+
+          const idx = source.indexOf(playerA);
+          target.push(source.splice(idx, 1)[0]);
+
+          movePlayerToPosition(playerB, playerA.selected_position);
+          movePlayerToPosition(playerA, "BN");
+
+          isPlayerASwapped = true;
+
           break;
         }
 
         if (playerA.eligible_positions.includes(playerB.selected_position)) {
-          if (isMaximizingScore() && playerB.score >= playerA.score) {
+          if (isMaximizingScore && playerB.score >= playerA.score) {
             // if maximizing score, we will only swap directly if sourcePlayer.score > targetPlayer.score
             verboseLogging &&
               console.info(
@@ -403,9 +514,20 @@ function swapPlayers(
     if (isPlayerASwapped) continue;
     verboseLogging &&
       console.info("No swaps for player " + playerA.player_name);
+    i++;
+    verboseLogging &&
+      console.info("i: " + i + " source.length: " + source.length);
+  }
 
-    // TODO: Refactor this into a function
-    // Finally, if there are no eligible player swaps, then we will look for an unfilled position
+  return;
+
+  /**
+   * Returns the unfilled position if there is one, otherwise returns undefined
+   *
+   * @param {Player} playerA - the player to find an unfilled position for
+   * @return {string} - the unfilled position
+   */
+  function availableUnfilledPosition(playerA: Player) {
     let unfilledPosition: string | undefined;
     if (!isPlayerAActiveRoster) {
       const numEmptyRosterSpots = Object.keys(unfilledPositions).reduce(
@@ -435,42 +557,8 @@ function swapPlayers(
         return predicate;
       });
     }
-
-    if (unfilledPosition) {
-      // if there is an unfilled position, then we will move the player to that position
-      verboseLogging &&
-        console.info(
-          "Moving player " + playerA.player_name + " to unfilled position: ",
-          unfilledPosition
-        );
-      // modify the unfilled positions
-      verboseLogging &&
-        console.info(
-          "unfilledPositions before: ",
-          JSON.stringify(unfilledPositions)
-        );
-      unfilledPositions[playerA.selected_position] += 1;
-      unfilledPositions[unfilledPosition] -= 1;
-      verboseLogging &&
-        console.info(
-          "unfilledPositions after: ",
-          JSON.stringify(unfilledPositions)
-        );
-
-      movePlayerTo(playerA, unfilledPosition);
-      // splice the player from source and add to target
-      const idx = source.indexOf(playerA);
-      target.push(source.splice(idx, 1)[0]);
-
-      // continue without incrementing i if a swap was made
-      continue;
-    }
-    i++;
-    verboseLogging &&
-      console.info("i: " + i + " source.length: " + source.length);
+    return unfilledPosition;
   }
-
-  return newPlayerPositions;
 
   /**
    * Finds a third player that can be moved to the position of playerB
@@ -484,7 +572,7 @@ function swapPlayers(
       (thirdPlayer: Player) =>
         thirdPlayer.player_key !== playerB.player_key &&
         playerB.eligible_positions.includes(thirdPlayer.selected_position) &&
-        (isMaximizingScore() ? thirdPlayer.score < playerA.score : true)
+        (isMaximizingScore ? thirdPlayer.score < playerA.score : true)
     );
     return eligibleThirdPlayer;
   }
@@ -498,16 +586,35 @@ function swapPlayers(
   function swapPlayers(playerOne: Player, playerTwo: Player): void {
     // TODO: Don't want to move to other array if it is all the players. Only if it is a subset of the players.
     verboseLogging &&
-      console.info("swapping", playerOne.player_name, playerTwo.player_name);
+      console.info(
+        `swapping ${playerOne.player_name} ${playerOne.selected_position} with ${playerTwo.player_name} ${playerTwo.selected_position}`
+      );
     const idxOne = source.indexOf(playerOne);
     const idxTwo = target.indexOf(playerTwo);
     source[idxOne] = playerTwo;
     target[idxTwo] = playerOne;
 
     const tempPosition = playerOne.selected_position;
-    movePlayerTo(playerOne, playerTwo.selected_position);
-    movePlayerTo(playerTwo, tempPosition);
+    movePlayerToPosition(playerOne, playerTwo.selected_position);
+    movePlayerToPosition(playerTwo, tempPosition);
 
     isPlayerASwapped = true;
+  }
+
+  /**
+   * Will swap players between two arrays of players
+   *
+   * @param {Player} player - The player to swap
+   * @param {string} position - The position to swap the player to
+   * @param {{}} newPlayerPositions - The dictionary of players to move
+   */
+  function movePlayerToPosition(player: Player, position: string) {
+    // console.log(
+    //   "movePlayerToPosition",
+    //   player.player_name,
+    //   player.selected_position,
+    //   position
+    // );
+    player.selected_position = position;
   }
 }

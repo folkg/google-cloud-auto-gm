@@ -167,6 +167,7 @@ async function getStartingGoaliesFromFirestore(): Promise<string[]> {
  * @return {Promise<void>}
  */
 export async function initStartingGoalies(): Promise<void> {
+  // TODO: Ensure there are NHL games being played in next hour before fetching starting goalies
   if (!NHL_STARTING_GOALIES) {
     NHL_STARTING_GOALIES = await getStartingGoaliesFromFirestore();
     console.log(
