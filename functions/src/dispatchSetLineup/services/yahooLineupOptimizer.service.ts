@@ -211,8 +211,8 @@ export function optimizeStartingLineup(teamRoster: Roster): RosterModification {
  * Will calculate the number of unfilled positions for a given roster
  *
  * @param {Player[]} players - The players on the roster
- * @param {{ [key: string]: number }} rosterPositions - The roster positions
- * @returns {{ [key: string]: number }} - The number of unfilled positions
+ * @param {{}} rosterPositions - The roster positions
+ * @return {{}} - The number of unfilled positions
  */
 function getUnfilledPositions(
   players: Player[],
