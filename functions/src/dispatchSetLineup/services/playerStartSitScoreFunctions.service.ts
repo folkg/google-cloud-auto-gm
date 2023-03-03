@@ -45,6 +45,10 @@ export function dailyScoreFunction(): (player: Player) => number {
     // TODO: is_starting to be more specific (basketball G, baseball players)
     // Maybe boost the score of players who are starting instead of penalizing?
     let score = player.percent_started;
+    if (!score) {
+      // percent_started has been broken before, so this is a backup
+      score = player.percent_owned;
+    }
     if (!player.is_playing) {
       // If a player is not playing, set their score to a minimal value
       score *= NOT_PLAYING_FACTOR;
@@ -74,6 +78,10 @@ export function nhlScoreFunction(): (player: Player) => number {
     const STARTING_FACTOR = 100;
     // The score will be percent_started
     let score = player.percent_started;
+    if (!score) {
+      // percent_started has been broken before, so this is a backup
+      score = player.percent_owned;
+    }
     const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
     const isStartingGoalie = player.eligible_positions.includes("G")
       ? checkStartingGoalie()
@@ -118,7 +126,12 @@ export function nflScoreFunction(): (player: Player) => number {
     // The score will be percent_started / rank_projected_week
     // TODO: Does rank_projected_week factor in injury status already?
     // Are we double counting?
-    let score = (player.percent_started / player.rank_projected_week) * 100;
+    let score = player.percent_started;
+    if (!score) {
+      // percent_started has been broken before, so this is a backup
+      score = player.percent_owned;
+    }
+    score = (score / player.rank_projected_week) * 100;
     if (!player.is_playing) {
       // If a player is not playing, set their score to a minimal value
       score *= NOT_PLAYING_FACTOR;
