@@ -9,6 +9,7 @@ import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { partitionArray } from "../../common/services/utilities.service";
 import { assignPlayerStartSitScoreFunction } from "./playerStartSitScoreFunctions.service";
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
+import { LineupOptimizer } from "../classes/LineupOptimizer";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -67,11 +68,12 @@ async function getRosterModifications(
   console.log(
     "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
   );
-  console.log(JSON.stringify(rosters));
 
   for (const roster of rosters) {
-    console.log(JSON.stringify(roster));
-    const rm = await optimizeStartingLineup2(roster);
+    const lo = new LineupOptimizer(roster);
+    const rm = await lo.optimizeStartingLineup();
+    lo.isSuccessfullyOptimized(); // will log any errors
+    // const rm = await optimizeStartingLineup2(roster);
     console.info(
       "rm for team " + roster.team_key + " is " + JSON.stringify(rm)
     );

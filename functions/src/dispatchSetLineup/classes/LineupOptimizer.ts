@@ -124,10 +124,11 @@ export class LineupOptimizer {
   public isSuccessfullyOptimized(): boolean {
     // TODO: Refactor this further. Maybe we can pull out code into a separate function
     const unfilledPositionsCounter = this.unfilledPositionsCounter;
+    const benchPlayers = this.roster.benchPlayers;
 
     if (unfilledActiveRosterPositions().length > 0) {
       console.error(
-        `unfilledRosterPositions for team ${
+        `Suboptimal Lineup: unfilledRosterPositions for team ${
           this.team.team_key
         }: ${unfilledActiveRosterPositions()}`
       );
@@ -138,7 +139,7 @@ export class LineupOptimizer {
     for (const position of unfilledPositions) {
       if (position !== "BN" && unfilledPositionsCounter[position] < 0) {
         console.error(
-          `too many players at position ${position} for team ${this.team.team_key}`
+          `Illegal Lineup: Too many players at position ${position} for team ${this.team.team_key}`
         );
         return false;
       }
@@ -152,7 +153,7 @@ export class LineupOptimizer {
     );
     if (illegallyMovedPlayers.length > 0) {
       console.error(
-        `illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`
+        `Illegal Lineup: illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`
       );
       return false;
     }
@@ -161,7 +162,7 @@ export class LineupOptimizer {
       for (const rosterPlayer of this.roster.rosterPlayers) {
         if (eligibleReplacementPlayerHasLowerScore(benchPlayer, rosterPlayer)) {
           console.error(
-            `benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
+            `Suboptimal Lineup: benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
           );
           return false;
         }
@@ -186,12 +187,25 @@ export class LineupOptimizer {
 
     // TODO: Will we need this in the transferPlayers() function?
     function unfilledActiveRosterPositions() {
-      return Object.keys(unfilledPositionsCounter).filter(
+      // get all unfilled positions except for BN and INACTIVE_POSITION_LIST
+      const unfilledRosterPositions = Object.keys(
+        unfilledPositionsCounter
+      ).filter(
         (position) =>
           position !== "BN" &&
           !INACTIVE_POSITION_LIST.includes(position) &&
           unfilledPositionsCounter[position] > 0
       );
+      // check if there are any players on bench that can be moved to the unfilled positions
+      const result: string[] = [];
+      for (const benchPlayer of benchPlayers) {
+        for (const unfilledPosition of unfilledRosterPositions) {
+          if (benchPlayer.eligible_positions.includes(unfilledPosition)) {
+            result.push(unfilledPosition);
+          }
+        }
+      }
+      return result;
     }
   }
 
