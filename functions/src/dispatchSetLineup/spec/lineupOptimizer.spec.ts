@@ -171,6 +171,42 @@ describe("Test LineupOptimizer Class NHL", function () {
       "BN"
     );
   });
+
+  it("Lineup with worst players on roster, best players on bench", async function () {
+    const roster: Team = require("./testRosters/NHL/BadOnRosterGoodOnBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    console.log(rosterModification.newPlayerPositions);
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+
+    expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
+    expect(["IR", "IR+", "BN"]).not.toContain(
+      rosterModification.newPlayerPositions["419.p.3737"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("BN");
+
+    expect(rosterModification.newPlayerPositions["419.p.5992"]).toBeDefined();
+    expect(["IR", "IR+", "BN"]).not.toContain(
+      rosterModification.newPlayerPositions["419.p.5992"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.5376"]).toBeDefined();
+    expect(["IR", "IR+", "BN"]).not.toContain(
+      rosterModification.newPlayerPositions["419.p.5376"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.4699"]).toBeDefined();
+    expect(["IR", "IR+", "BN"]).not.toContain(
+      rosterModification.newPlayerPositions["419.p.4699"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.5441"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6060"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.7528"]).toEqual("BN");
+  });
 });
 
 describe("Test LineupOptimizer Class NBA", function () {
@@ -179,11 +215,15 @@ describe("Test LineupOptimizer Class NBA", function () {
   });
 
   it("One healthy on IL, one IL on IL, one injured on roster", async function () {
-    const roster: Team = require("./testRosters/NBA/potentiallyProblematic.json");
+    const roster: Team = require("./testRosters/NBA/1HonIL+1ILonRoster.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
+      "419.p.6370"
+    ); // on IR+, should not be moved
 
     expect(rosterModification.newPlayerPositions["418.p.5482"]).toBeDefined();
     expect(["IL", "IL+", "BN"]).not.toContain(

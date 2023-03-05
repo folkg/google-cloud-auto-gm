@@ -326,7 +326,7 @@
       "player_name": "Sam Bennett",
       "eligible_positions": ["C", "Util", "IR+"],
       "selected_position": "IR+",
-      "is_editable": false,
+      "is_editable": true,
       "is_playing": true,
       "injury_status": "Out",
       "percent_started": 6,
