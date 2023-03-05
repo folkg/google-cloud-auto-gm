@@ -31,6 +31,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     expect(
       rosterModification.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -303,6 +306,37 @@ describe("Test LineupOptimizer Class NHL", function () {
       rosterModification.newPlayerPositions["419.p.6370"]
     );
     expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
+  });
+
+  it("Healthy on IR, IR on BN, and empty roster spot", async function () {
+    const roster: Team = require("./testRosters/NHL/HonIR&EmptyRosterSpot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    console.log(rosterModification.newPlayerPositions);
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      1
+    );
+  });
+
+  it("Healthy high score on IR, IR on BN, and empty roster spot", async function () {
+    const roster: Team = require("./testRosters/NHL/HHighScoreonIR&EmptyRosterSpot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toBeDefined();
+    expect(["IR", "IR+", "BN"]).not.toContain(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    );
+    expect(
+      Object.keys(rosterModification.newPlayerPositions).length
+    ).toBeGreaterThan(1);
   });
 });
 
