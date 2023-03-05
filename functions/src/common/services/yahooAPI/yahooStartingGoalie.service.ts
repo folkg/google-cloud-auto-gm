@@ -13,7 +13,10 @@ import { getStartingGoalies } from "./yahooAPI.service";
  *
  * @type {Promise<string[]>}
  */
-export let NHL_STARTING_GOALIES: string[];
+let NHL_STARTING_GOALIES: string[];
+export function getNHLStartingGoalies(): string[] {
+  return NHL_STARTING_GOALIES;
+}
 
 /**
  * Fetches the starting goalies from Yahoo API

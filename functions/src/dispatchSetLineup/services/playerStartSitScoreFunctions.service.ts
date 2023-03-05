@@ -1,6 +1,6 @@
 import { Player } from "../interfaces/Player";
 import { HEALTHY_STATUS_LIST } from "../helpers/constants";
-import { NHL_STARTING_GOALIES } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
+import { getNHLStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 
 /**
  * Returns the proper score function used to compare players to other players
@@ -71,7 +71,7 @@ export function dailyScoreFunction(): (player: Player) => number {
  *  returns a score.
  */
 export function nhlScoreFunction(): (player: Player) => number {
-  const starters = NHL_STARTING_GOALIES ? NHL_STARTING_GOALIES : [];
+  const starters = getNHLStartingGoalies() ? getNHLStartingGoalies() : [];
   return (player: Player) => {
     const NOT_PLAYING_FACTOR = 0.0001;
     const NOT_STARTING_FACTOR = 0.01;
