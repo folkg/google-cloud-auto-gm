@@ -314,8 +314,6 @@ describe("Test LineupOptimizer Class NHL", function () {
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    console.log(rosterModification.newPlayerPositions);
-
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
     expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
@@ -338,9 +336,151 @@ describe("Test LineupOptimizer Class NHL", function () {
       Object.keys(rosterModification.newPlayerPositions).length
     ).toBeGreaterThan(1);
   });
+
+  //TODO: FAIL: This test is failing, but it should be passing. Need to fix
+  it("Healthy player on IR, and IR+ on Bench with open IR+ slot", async function () {
+    const roster: Team = require("./testRosters/NHL/HonIR&IR+OnRoster.json");
+    const lo = new LineupOptimizer(roster);
+    // lo.verbose = true;
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR+");
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+  });
+
+  it("Healthy player on IR, and IR+ on Bench with no open IR+ slot", async function () {
+    const roster: Team = require("./testRosters/NHL/HonIR&IR+OnRosterNoOpenSlot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      0
+    );
+  });
+
+  //TODO: FAIL: This test is failing, but it should be passing. Need to fix
+  it("Healthy player on IR+, and IR on Bench with open IR slot", async function () {
+    const roster: Team = require("./testRosters/NHL/HonIR+&IROnRoster.json");
+    const lo = new LineupOptimizer(roster);
+    // lo.verbose = true;
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+  });
+
+  it("Healthy player on IR+, and IR on Bench with no open IR slot", async function () {
+    const roster: Team = require("./testRosters/NHL/HonIR+&IROnRosterNoOpenSlot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      0
+    );
+  });
+
+  //TODO: FAIL: This test is failing, but it should be passing. Need to fix
+  it("IR+ player on IR, open IR+ slot", async function () {
+    const roster: Team = require("./testRosters/NHL/IR+onIR&OpenIR+Slot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    console.log(rosterModification.newPlayerPositions);
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("IR+");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      1
+    );
+  });
+
+  it("IR+ player on IR, no open IR+ slot", async function () {
+    const roster: Team = require("./testRosters/NHL/IR+onIR&NoOpenIR+Slot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      0
+    );
+  });
+
+  it("IR+ player on IR, no open IR+ slot, IR player on BN", async function () {
+    const roster: Team = require("./testRosters/NHL/IR+onIR&NoOpenIR+Slot&IRonBN.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      2
+    );
+  });
+
+  it("NA player on IR, no NA slots on roster", async function () {
+    const roster: Team = require("./testRosters/NHL/NAonIR&NoNASlotsOnRoster.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      0
+    );
+  });
+
+  it("NA player on IR, no NA slots on roster, empty roster position", async function () {
+    const roster: Team = require("./testRosters/NHL/NAonIR&NoNASlotsOnRoster&EmptyRosterPosition.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      1
+    );
+  });
+
+  //TODO: FAIL: This test is failing, but it should be passing. Need to fix
+  it("NA player on IR, open NA slot on roster", async function () {
+    const roster: Team = require("./testRosters/NHL/NAonIR&OpenNASlotOnRoster.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    console.log(rosterModification.newPlayerPositions);
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("NA");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      1
+    );
+  });
+
+  // NA player on IR, no open NA slot on roster, IR player on BN
+  // NA player on IR, no open NA slot on roster, IR+ player on BN
+  // Two healthy players on IR, one empty roster spot
+  // Two healthy players on IR, one empty roster spot, one IR player on BN
+  // Two healthy players on IR, one IR player on BN
+  // Two healthy players on IR, one IR+ player on BN
+  // Two healthy players on IR, one IR player on IR+
 });
 
 describe("Test LineupOptimizer Class NBA", function () {
+  // NBA should be very similar to NHL, so we'll just test a few things
   beforeEach(() => {
     jest.resetModules();
   });
