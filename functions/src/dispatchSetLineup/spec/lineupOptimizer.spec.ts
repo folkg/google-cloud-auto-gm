@@ -7,13 +7,13 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
-describe("test LineupOptimizer Class", function () {
+describe("Test LineupOptimizer Class NHL", function () {
   beforeEach(() => {
     jest.resetModules();
   });
 
   it("test already optimal roster", async function () {
-    const roster: Team = require("./testRosters/optimalRoster.json");
+    const roster: Team = require("./testRosters/NHL/optimalRoster.json");
     const npp = {};
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
@@ -26,7 +26,7 @@ describe("test LineupOptimizer Class", function () {
   });
 
   it("test one active C on bench, spare C slot", async function () {
-    const roster: Team = require("./testRosters/oneMoveRequired.json");
+    const roster: Team = require("./testRosters/NHL/oneMoveRequired.json");
     const npp = { "419.p.3737": "C" };
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
@@ -43,7 +43,7 @@ describe("test LineupOptimizer Class", function () {
   });
 
   it("test one active C on bench, one non-active C on roster", async function () {
-    const roster: Team = require("./testRosters/oneSwapRequired.json");
+    const roster: Team = require("./testRosters/NHL/oneSwapRequired.json");
     const npp = { "419.p.6726": "BN", "419.p.3737": "C" };
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
@@ -56,7 +56,7 @@ describe("test LineupOptimizer Class", function () {
   });
 
   it("test different active C on bench, one non-active C on roster", async function () {
-    const roster: Team = require("./testRosters/oneSwapRequired2.json");
+    const roster: Team = require("./testRosters/NHL/oneSwapRequired2.json");
     const npp = { "419.p.6726": "BN", "419.p.7528": "C" };
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
@@ -69,7 +69,7 @@ describe("test LineupOptimizer Class", function () {
   });
 
   it("test all players on bench", async function () {
-    const roster: Team = require("./testRosters/allPlayersBN.json");
+    const roster: Team = require("./testRosters/NHL/allPlayersBN.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -113,7 +113,7 @@ describe("test LineupOptimizer Class", function () {
   });
 
   it("test no players with games on active roster", async function () {
-    const roster: Team = require("./testRosters/allRosterPlayersHaveNoGames.json");
+    const roster: Team = require("./testRosters/NHL/allRosterPlayersHaveNoGames.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -171,8 +171,14 @@ describe("test LineupOptimizer Class", function () {
       "BN"
     );
   });
+});
 
-  it("NBA Problem", async function () {
+describe("Test LineupOptimizer Class NBA", function () {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  it("One healthy on IL, one IL on IL, one injured on roster", async function () {
     const roster: Team = require("./testRosters/NBA/potentiallyProblematic.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
