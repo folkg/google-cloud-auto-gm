@@ -28,9 +28,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(rosterModification.newPlayerPositions).toEqual(npp);
-    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
-      "419.p.6370"
-    ); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -45,9 +45,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     expect(Object.values(rosterModification.newPlayerPositions)).not.toContain(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
-      "419.p.6370"
-    ); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -59,9 +59,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual(npp);
-    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
-      "419.p.6370"
-    ); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
   });
 
   it("test different active C on bench, one non-active C on roster", async function () {
@@ -72,9 +72,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual(npp);
-    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
-      "419.p.6370"
-    ); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
   });
 
   it("test all players on bench", async function () {
@@ -86,9 +86,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     expect(Object.values(rosterModification.newPlayerPositions)).not.toContain(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
-      "419.p.6370"
-    ); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
     expect(
       Object.values(rosterModification.newPlayerPositions).filter(
         (v) => v === "C"
@@ -127,9 +127,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
-      "419.p.6370"
-    ); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
     expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
     expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
     expect(rosterModification.newPlayerPositions["419.p.3737"]).not.toEqual(
@@ -187,9 +187,11 @@ describe("Test LineupOptimizer Class NHL", function () {
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    console.log(rosterModification.newPlayerPositions);
-
     expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
 
     expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
@@ -233,6 +235,9 @@ describe("Test LineupOptimizer Class NHL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
     expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
@@ -250,16 +255,54 @@ describe("Test LineupOptimizer Class NHL", function () {
     ).not.toBeDefined();
 
     expect(isSuccessfullyOptimized).toEqual(true);
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
     expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
   });
 
   it("One three way swap, specific result expected", async function () {
-    // const roster: Team = require("./testRosters/NHL/startingGoaliesOnBench.json");
-    // const lo = new LineupOptimizer(roster);
-    // const rosterModification = await lo.optimizeStartingLineup();
-    // const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    const roster: Team = require("./testRosters/NHL/OneThreeWay.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
+
+    expect(rosterModification.newPlayerPositions["419.p.6060"]).toEqual("RW");
+    expect(rosterModification.newPlayerPositions["419.p.5020"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.5376"]).toEqual("Util");
+  });
+
+  // The following tests involve injured player swaps
+  it("Healthy not playing-player on IR, and IR on Bench", async function () {
+    const roster: Team = require("./testRosters/NHL/HonIR&IRonBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+  });
+
+  it("Healthy high score on IR, and IR on Bench", async function () {
+    const roster: Team = require("./testRosters/NHL/HHighScoreonIR&IRonBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toBeDefined();
+    expect(["IR", "IR+", "BN"]).not.toContain(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
   });
 });
 
@@ -275,9 +318,9 @@ describe("Test LineupOptimizer Class NBA", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 
-    expect(rosterModification.newPlayerPositions).not.toHaveProperty(
-      "419.p.6370"
-    ); // on IR+, should not be moved
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
 
     expect(rosterModification.newPlayerPositions["418.p.5482"]).toBeDefined();
     expect(["IL", "IL+", "BN"]).not.toContain(
