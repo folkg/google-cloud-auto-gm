@@ -158,7 +158,7 @@ export class LineupOptimizer {
       return false;
     }
 
-    for (const benchPlayer of this.roster.benchPlayersWithGameToday) {
+    for (const benchPlayer of this.roster.benchPlayers) {
       for (const rosterPlayer of this.roster.rosterPlayers) {
         if (eligibleReplacementPlayerHasLowerScore(benchPlayer, rosterPlayer)) {
           console.error(

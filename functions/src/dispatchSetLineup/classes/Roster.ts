@@ -70,10 +70,4 @@ export class Roster {
         player.selected_position !== "BN"
     );
   }
-
-  public get benchPlayersWithGameToday() {
-    return this.editablePlayers.filter(
-      (player) => player.selected_position === "BN" && player.is_playing
-    );
-  }
 }
