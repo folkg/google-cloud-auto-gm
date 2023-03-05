@@ -7,9 +7,18 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
+// Use this to mock the global NHL_STARTING_GOALIES array where needed
+const yahooStartingGoalieService = require("../../common/services/yahooAPI/yahooStartingGoalie.service");
+jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service");
+
 describe("Test LineupOptimizer Class NHL", function () {
   beforeEach(() => {
     jest.resetModules();
+  });
+
+  afterEach(() => {
+    // restore the spy created with spyOn
+    jest.restoreAllMocks();
   });
 
   it("test already optimal roster", async function () {
@@ -206,6 +215,51 @@ describe("Test LineupOptimizer Class NHL", function () {
     expect(rosterModification.newPlayerPositions["419.p.5441"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.6060"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.7528"]).toEqual("BN");
+  });
+
+  it("Starting Goalies on Bench using NHL_STARTING_GOALIES array", async function () {
+    const roster: Team = require("./testRosters/NHL/startingGoaliesOnBench2.json");
+    // mock NHL_STARTING_GOALIES array
+    jest
+      .spyOn(yahooStartingGoalieService, "getNHLStartingGoalies")
+      .mockReturnValue(["419.p.7593", "419.p.7163"]);
+    expect(yahooStartingGoalieService.getNHLStartingGoalies()).toEqual([
+      "419.p.7593",
+      "419.p.7163",
+    ]);
+
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
+  });
+
+  it("Starting Goalies on Bench with no NHL_STARTING_GOALIES array set", async function () {
+    const roster: Team = require("./testRosters/NHL/startingGoaliesOnBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    // starting goalies array should not be defined since it was never set
+    expect(
+      yahooStartingGoalieService.getNHLStartingGoalies()
+    ).not.toBeDefined();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
+  });
+
+  it("One three way swap, specific result expected", async function () {
+    // const roster: Team = require("./testRosters/NHL/startingGoaliesOnBench.json");
+    // const lo = new LineupOptimizer(roster);
+    // const rosterModification = await lo.optimizeStartingLineup();
+    // const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
   });
 });
 
