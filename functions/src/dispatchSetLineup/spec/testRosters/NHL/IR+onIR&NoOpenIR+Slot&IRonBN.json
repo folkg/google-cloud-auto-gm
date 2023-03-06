@@ -260,7 +260,7 @@
     {
       "player_key": "419.p.6726",
       "player_name": "Evan Rodrigues",
-      "eligible_positions": ["C", "LW", "RW", "Util", "IR"],
+      "eligible_positions": ["C", "LW", "RW", "Util", "IR", "IR+"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": false,

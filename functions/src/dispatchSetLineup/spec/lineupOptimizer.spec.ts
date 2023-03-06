@@ -394,8 +394,6 @@ describe("Test LineupOptimizer Class NHL", function () {
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    console.log(rosterModification.newPlayerPositions);
-
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("IR+");
     expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
@@ -461,8 +459,6 @@ describe("Test LineupOptimizer Class NHL", function () {
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    console.log(rosterModification.newPlayerPositions);
-
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("NA");
     expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
@@ -484,7 +480,6 @@ describe("Test LineupOptimizer Class NHL", function () {
     );
   });
 
-  // Two healthy players on IR, one empty roster spot
   it("Two healthy players on IR, one empty roster spot", async function () {
     const roster: Team = require("./testRosters/NHL/2HealthyOnIR&1EmptyRosterSpot.json");
     const lo = new LineupOptimizer(roster);
@@ -492,16 +487,120 @@ describe("Test LineupOptimizer Class NHL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("IR");
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      1
+    );
+  });
+
+  it("Two healthy players on IR, one empty roster spot, one IR player on BN", async function () {
+    const roster: Team = require("./testRosters/NHL/2HealthyOnIR&1EmptyRosterSpot&1IRonBN.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      3
+    );
+  });
+
+  it("Two healthy players on IR, two IR on bench", async function () {
+    const roster: Team = require("./testRosters/NHL/2HealthyOnIR&2IRonBN.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      4
+    );
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR");
     expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
+  });
+
+  it("Two healthy players on IR, one IR player on BN", async function () {
+    const roster: Team = require("./testRosters/NHL/2HealthyOnIR&1IRonBN.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR");
     expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
       2
     );
   });
-  // Two healthy players on IR, one empty roster spot, one IR player on BN
-  // Two healthy players on IR, one IR player on BN
-  // Two healthy players on IR, one IR+ player on BN
-  // Two healthy players on IR, one IR player on IR+
+
+  // TODO: FAIL: This test is failing, but it should be passing. Need to fix
+  it("Two healthy players on IR, one IR+ player on BN", async function () {
+    const roster: Team = require("./testRosters/NHL/2HealthyOnIR&1IR+onBN.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR+");
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      2
+    );
+  });
+
+  // TODO: FAIL: This test is failing, but it should be passing. Need to fix
+  it("Two healthy players on IR, two IR+ player on BN", async function () {
+    const roster: Team = require("./testRosters/NHL/2HealthyOnIR&2IR+onBN.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      4
+    );
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR+");
+    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR+");
+  });
+
+  it("One healthy player on IR, one IR+ player on BN, one IR player on IR+, no spare IR+ slot", async function () {
+    const roster: Team = require("./testRosters/NHL/1HealthyOnIR&1IR+onBN&1IRonIR+&NoSpareIR+Slot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      3
+    );
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR+");
+    expect(rosterModification.newPlayerPositions["419.p.63702"]).toEqual("IR");
+  });
+
+  it("One healthy player on IR, one IR player on BN, one IR+ player on IR, one spare IR+ slot", async function () {
+    const roster: Team = require("./testRosters/NHL/1HealthyOnIR&1IRonBN&1IR+onIR&1SpareIR+Slot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      3
+    );
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR");
+    expect(rosterModification.newPlayerPositions["419.p.63702"]).toEqual("IR+");
+  });
+
+  // TODO: Can we think of any more complex scenarios?
 });
 
 describe("Test LineupOptimizer Class NBA", function () {

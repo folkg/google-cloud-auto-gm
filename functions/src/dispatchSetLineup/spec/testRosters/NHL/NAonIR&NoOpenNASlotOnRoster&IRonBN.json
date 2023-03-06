@@ -292,7 +292,7 @@
     {
       "player_key": "419.p.7163",
       "player_name": "Filip Gustavsson",
-      "eligible_positions": ["G", "IR"],
+      "eligible_positions": ["G", "IR", "IR+"],
       "selected_position": "G",
       "is_editable": true,
       "is_playing": true,
