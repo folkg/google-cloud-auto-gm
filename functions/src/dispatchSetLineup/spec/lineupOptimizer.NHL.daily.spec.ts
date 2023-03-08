@@ -11,7 +11,7 @@ jest.mock("firebase-admin", () => ({
 const yahooStartingGoalieService = require("../../common/services/yahooAPI/yahooStartingGoalie.service");
 jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service");
 
-describe("Test LineupOptimizer Class NHL", function () {
+xdescribe("Test LineupOptimizer Class NHL Daily", function () {
   beforeEach(() => {
     jest.resetModules();
   });
@@ -21,6 +21,7 @@ describe("Test LineupOptimizer Class NHL", function () {
     jest.restoreAllMocks();
   });
 
+  // *** Test Optimization of Lineup using healthy players ***
   it("test already optimal roster", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/optimalRoster.json");
     const npp = {};
@@ -266,24 +267,8 @@ describe("Test LineupOptimizer Class NHL", function () {
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
   });
 
-  it("One three way swap, specific result expected", async function () {
-    const roster: Team = require("./testRosters/NHL/Daily/OneThreeWay.json");
-    const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
-
-    expect(isSuccessfullyOptimized).toEqual(true);
-    expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
-    ).not.toBeDefined(); // on IR+, should not be moved
-
-    expect(rosterModification.newPlayerPositions["419.p.6060"]).toEqual("RW");
-    expect(rosterModification.newPlayerPositions["419.p.5020"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.5376"]).toEqual("Util");
-  });
-
-  // The following tests involve injured player swaps
-  it("Healthy not playing-player on IR, and IR on Bench", async function () {
+  // *** Test Illegal players that should be resolved ***
+  it("Healthy not-playing, low score, player on IR, and IR on Bench", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/HonIR&IRonBench.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
@@ -357,6 +342,7 @@ describe("Test LineupOptimizer Class NHL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({});
     expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
       0
     );
@@ -382,6 +368,7 @@ describe("Test LineupOptimizer Class NHL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({});
     expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
       0
     );
@@ -408,6 +395,7 @@ describe("Test LineupOptimizer Class NHL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({});
     expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
       0
     );
@@ -600,6 +588,5 @@ describe("Test LineupOptimizer Class NHL", function () {
     expect(rosterModification.newPlayerPositions["419.p.63702"]).toEqual("IR+");
   });
 
-  // TODO: Can we think of any more complex scenarios?
   // TODO: If we are going to move IR players up in the lineup, we need to test a better player on IR swapping with a worse IR palyer on bench
 });

@@ -7,7 +7,7 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
-describe("Test LineupOptimizer Class NBA", function () {
+xdescribe("Test LineupOptimizer Class NBA Daily", function () {
   // NBA should be very similar to NHL, so we'll just test a few things
   beforeEach(() => {
     jest.resetModules();

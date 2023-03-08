@@ -20,9 +20,6 @@ exports.sendfeedbackemail = sendfeedbackemail;
 import { onRequest } from "firebase-functions/v2/https";
 import { setUsersLineup2 } from "./dispatchSetLineup/services/newLineupOptimizer.service";
 exports.testsetlineups = onRequest(async (req, res) => {
-  const uid = "uEpfgzzrr1aVSOI8Qnd4SGE2r9n2"; // Drew
-  const teams = ["418.l.9354.t.10"];
-
   // const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1"; // Graeme Folk
   // const teams = [
   //   // "414.l.240994.t.12",
@@ -33,14 +30,14 @@ exports.testsetlineups = onRequest(async (req, res) => {
   //   // "419.l.59985.t.12",
   // ]; // Graeme Folk
 
-  // const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
-  // const teams = [
-  //   "414.l.358976.t.4",
-  //   "419.l.91560.t.5",
-  //   "419.l.91564.t.11",
-  //   "418.l.201581.t.1",
-  //   "418.l.200641.t.9",
-  // ]; // Jeff Barnes
+  const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
+  const teams = [
+    // "414.l.358976.t.4",
+    // "419.l.91560.t.5",
+    // "419.l.91564.t.11",
+    "418.l.201581.t.1",
+    // "418.l.200641.t.9",
+  ]; // Jeff Barnes
 
   try {
     return await setUsersLineup2(uid, teams);
