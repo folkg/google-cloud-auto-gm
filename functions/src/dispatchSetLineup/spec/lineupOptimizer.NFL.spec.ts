@@ -7,13 +7,13 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
-describe("Test LineupOptimizer Class NBA Weekly", function () {
+xdescribe("Test LineupOptimizer Class NFL", function () {
   beforeEach(() => {
     jest.resetModules();
   });
 
   it("Optimal Lineup", async function () {
-    const roster: Team = require("./testRosters/NBA/Weekly/optimalRoster.json");
+    const roster: Team = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -31,6 +31,18 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   // all players on bench
   // lineup with worst players on roster, best players on bench
 
+  // *** Test Optimization of Lineup using players on Bye Week ***
+  // player on roster on bye week, player on bench with high score (expect swap)
+  // player on roster on bye week, player on bench with low score (expect swap)
+  // two players on roster on bye week, two players on bench with low score (expect swap)
+  // player on bench with bye week, empty roster spot (expect move onto roster)
+
+  // *** Test Optimization of Lineup using some Taysom Hill cases ***
+  // Player with high percent started, low rank_projected_week on bench, player with low percent started, high rank_projected_week on roster (?)
+  // Player with high percent started, low rank_projected_week on bench, player with medium percent started, high rank_projected_week on roster (expect swap)
+  // Player with high percent started, medium rank_projected_week on bench, player with medium percent started, high rank_projected_week on roster (?)
+
+  // TODO: Maybe we can remove some of these redundant tests if they are thoroughly covered in NHL and NBA
   // *** Test Optimization of Lineup using injured players ***
   // high score IL player on IL, low score IL player on bench, no spare IL slot (expect swap)
   // high score IL+ player on IL+, low score IL+ player on bench, one spare IL+ slot (expect swap)

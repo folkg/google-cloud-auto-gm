@@ -81,6 +81,9 @@ xdescribe("Test LineupOptimizer Class NHL Daily", function () {
     ).not.toBeDefined(); // on IR+, should not be moved
   });
 
+  // TODO: two swaps required
+  // TODO: 1 swap required, 1 player to move into 1 empty roster spot
+
   it("test all players on bench", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/allPlayersBN.json");
     const lo = new LineupOptimizer(roster);
