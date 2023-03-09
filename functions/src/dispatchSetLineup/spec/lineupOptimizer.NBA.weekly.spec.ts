@@ -140,6 +140,27 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     );
   });
   // lineup with worst players on roster, best players on bench
+  it("lineup with worst players on roster, best players on bench", async function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/lineupWithWorstPlayersOnRosterBestPlayersOnBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(["PG", "SG", "G", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6404"]
+    );
+    expect(["PG", "SG", "G", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5826"]
+    );
+    expect(["SG", "G", "SF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6021"]
+    );
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "418.p.4725": "BN",
+      "418.p.3930": "BN",
+      "418.p.6035": "BN",
+    });
+  });
 
   // *** Test Optimization of Lineup using injured players ***
   // high score IL player on IL, low score IL player on bench, no spare IL slot (expect swap)
