@@ -6,7 +6,7 @@ import { RosterModification } from "../interfaces/RosterModification";
 import { assignPlayerStartSitScoreFunction } from "../services/playerStartSitScoreFunctions.service";
 
 export class LineupOptimizer {
-  private team: Team;
+  private readonly team: Team;
   private roster: Roster;
   private originalPlayerPositions: { [key: string]: string };
   private newPlayerPositions: { [key: string]: string } = {};

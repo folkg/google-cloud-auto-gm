@@ -9,8 +9,10 @@ export class Roster {
     players: Player[],
     playerSitStartScoreFunction: (player: Player) => number
   ) {
-    this._allPlayers = players;
-    this._editablePlayers = players.filter((player) => player.is_editable);
+    this._allPlayers = [...players];
+    this._editablePlayers = this._allPlayers.filter(
+      (player) => player.is_editable
+    );
     this.editablePlayers.forEach((player) => {
       player.score = playerSitStartScoreFunction(player);
       player.eligible_positions.push("BN"); // not included by default in Yahoo
@@ -46,25 +48,25 @@ export class Roster {
   }
 
   public get illegalPlayers(): Player[] {
-    return this.editablePlayers.filter(
+    return this._editablePlayers.filter(
       (player) => !player.eligible_positions.includes(player.selected_position)
     );
   }
 
   public get legalPlayers(): Player[] {
-    return this.editablePlayers.filter((player) =>
+    return this._editablePlayers.filter((player) =>
       player.eligible_positions.includes(player.selected_position)
     );
   }
 
   public get benchPlayers() {
-    return this.editablePlayers.filter(
+    return this._editablePlayers.filter(
       (player) => player.selected_position === "BN"
     );
   }
 
   public get rosterPlayers() {
-    return this.editablePlayers.filter(
+    return this._editablePlayers.filter(
       (player) =>
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
         player.selected_position !== "BN"
