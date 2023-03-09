@@ -12,14 +12,14 @@ const yahooStartingGoalieService = require("../../common/services/yahooAPI/yahoo
 jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service");
 
 describe("Test LineupOptimizer Class NHL Daily", function () {
-  beforeEach(() => {
-    jest.resetModules();
-  });
+  // beforeEach(() => {
+  //   jest.resetModules();
+  // });
 
-  afterEach(() => {
-    // restore the spy created with spyOn
-    jest.restoreAllMocks();
-  });
+  // afterEach(() => {
+  //   // restore the spy created with spyOn
+  //   jest.restoreAllMocks();
+  // });
 
   // *** Test Optimization of Lineup using healthy players ***
   it("test already optimal roster", async function () {
@@ -291,6 +291,11 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
+
+    // reset the mock configuration
+    jest
+      .spyOn(yahooStartingGoalieService, "getNHLStartingGoalies")
+      .mockRestore();
   });
 
   it("Starting Goalies on Bench with no NHL_STARTING_GOALIES array set", async function () {

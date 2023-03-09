@@ -8,9 +8,9 @@ jest.mock("firebase-admin", () => ({
 }));
 
 describe("Test LineupOptimizer Class NBA Weekly", function () {
-  beforeEach(() => {
-    jest.resetModules();
-  });
+  // beforeEach(() => {
+  //   jest.resetModules();
+  // });
 
   it("Optimal Lineup", async function () {
     const roster: Team = require("./testRosters/NBA/Weekly/optimalRoster.json");
@@ -24,8 +24,42 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
 
   // *** Test Optimization of Lineup using healthy players ***
   // 1 player to move into 1 empty roster spot
+  it("1 player to move into 1 empty roster spot", async function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/1PlayerToMoveInto1EmptyRosterSpot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "418.p.5295": "PF",
+    });
+  });
+
   // 1 swap involving 2 players
+  it("1 swap involving 2 players", async function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/1SwapInvolving2Players.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(["SG", "G", "SF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6021"]
+    );
+    expect(rosterModification.newPlayerPositions["418.p.3930"]).toEqual("BN");
+  });
+
   // different 1 swap involving 2 players
+  it("differet 1 swap involving 2 players", async function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/1SwapInvolving2Players(2).json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(["SF", "PF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5295"]
+    );
+    expect(rosterModification.newPlayerPositions["418.p.4725"]).toEqual("BN");
+  });
   // two swaps required
   // 1 swap required, 1 player to move into 1 empty roster spot
   // all players on bench

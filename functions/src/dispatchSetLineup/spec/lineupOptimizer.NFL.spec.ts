@@ -8,9 +8,9 @@ jest.mock("firebase-admin", () => ({
 }));
 
 xdescribe("Test LineupOptimizer Class NFL", function () {
-  beforeEach(() => {
-    jest.resetModules();
-  });
+  // beforeEach(() => {
+  //   jest.resetModules();
+  // });
 
   it("Optimal Lineup", async function () {
     const roster: Team = require("./testRosters/NFL/optimalRoster.json");
