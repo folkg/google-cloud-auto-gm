@@ -60,9 +60,85 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     );
     expect(rosterModification.newPlayerPositions["418.p.4725"]).toEqual("BN");
   });
+
   // two swaps required
+  it("two swaps required", async function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/2SwapsRequired.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(["SF", "PF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5295"]
+    );
+    expect(rosterModification.newPlayerPositions["418.p.4725"]).toEqual("BN");
+    expect(["SG", "G", "SF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6021"]
+    );
+    expect(rosterModification.newPlayerPositions["418.p.3930"]).toEqual("BN");
+  });
+
   // 1 swap required, 1 player to move into 1 empty roster spot
+  it("1 swap required, 1 player to move into 1 empty roster spot", async function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/1SwapRequired1PlayerToMoveInto1EmptyRosterSpot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "418.p.5295": "PF",
+      "418.p.4725": "BN",
+      "418.p.6021": "G",
+    });
+    expect(["SF", "PF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5295"]
+    );
+    expect(rosterModification.newPlayerPositions["418.p.4725"]).toEqual("BN");
+    expect(["SG", "G", "SF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6021"]
+    );
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      3
+    );
+  });
   // all players on bench
+  it("all players on bench", async function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/allPlayersOnBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(["PG", "SG", "G", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6404"]
+    );
+    expect(["PG", "SG", "G", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5826"]
+    );
+    expect(["SG", "G", "SF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6021"]
+    );
+    expect(["SF", "PF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6025"]
+    );
+    expect(["SF", "PF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5295"]
+    );
+    expect(["PF", "F", "C", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6018"]
+    );
+    expect(["C", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5352"]
+    );
+    expect(["C", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.5471"]
+    );
+    expect(["SF", "PF", "F", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.4901"]
+    );
+    expect(["C", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6047"]
+    );
+  });
   // lineup with worst players on roster, best players on bench
 
   // *** Test Optimization of Lineup using injured players ***
