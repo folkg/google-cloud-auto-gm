@@ -11,7 +11,7 @@ jest.mock("firebase-admin", () => ({
 const yahooStartingGoalieService = require("../../common/services/yahooAPI/yahooStartingGoalie.service");
 jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service");
 
-xdescribe("Test LineupOptimizer Class NHL Daily", function () {
+describe("Test LineupOptimizer Class NHL Daily", function () {
   beforeEach(() => {
     jest.resetModules();
   });
@@ -57,12 +57,14 @@ xdescribe("Test LineupOptimizer Class NHL Daily", function () {
 
   it("test one active C on bench, one non-active C on roster", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/oneSwapRequired.json");
-    const npp = { "419.p.6726": "BN", "419.p.3737": "C" };
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual(npp);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6726": "BN",
+      "419.p.3737": "C",
+    });
     expect(
       rosterModification.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
@@ -70,19 +72,60 @@ xdescribe("Test LineupOptimizer Class NHL Daily", function () {
 
   it("test different active C on bench, one non-active C on roster", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/oneSwapRequired2.json");
-    const npp = { "419.p.6726": "BN", "419.p.7528": "C" };
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual(npp);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6726": "BN",
+      "419.p.7528": "C",
+    });
     expect(
       rosterModification.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
   });
 
-  // TODO: two swaps required
-  // TODO: 1 swap required, 1 player to move into 1 empty roster spot
+  it("test two active players on bench, two non-active players on roster", async function () {
+    const roster: Team = require("./testRosters/NHL/Daily/twoSwapsRequired.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
+    expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
+    expect(rosterModification.newPlayerPositions["419.p.3737"]).not.toEqual(
+      "BN"
+    );
+    expect(rosterModification.newPlayerPositions["419.p.5992"]).toBeDefined();
+    expect(rosterModification.newPlayerPositions["419.p.5992"]).not.toEqual(
+      "BN"
+    );
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "419.p.6726": "BN",
+      "419.p.6385": "BN",
+    });
+  });
+
+  it("test two active players on bench, one non-active player on roster, one empty roster spot", async function () {
+    const roster: Team = require("./testRosters/NHL/Daily/oneSwapOneMoveRequired.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = await lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "419.p.6726": "BN",
+      "419.p.6877": "LW",
+    });
+    expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
+    expect(rosterModification.newPlayerPositions["419.p.3737"]).not.toEqual(
+      "BN"
+    );
+  });
 
   it("test all players on bench", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/allPlayersBN.json");
