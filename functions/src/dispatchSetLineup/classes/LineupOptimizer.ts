@@ -209,6 +209,10 @@ export class LineupOptimizer {
     }
   }
 
+  private movePlayerToPosition(player: Player, position: string) {
+    player.selected_position = position;
+  }
+
   private internalDirectPlayerSwap(playersArr: Player[]): void {
     for (const playerA of playersArr) {
       for (const playerB of playersArr) {
@@ -222,14 +226,10 @@ export class LineupOptimizer {
               `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
             );
           const temp = playerB.selected_position;
-          movePlayerToPosition(playerB, playerA.selected_position);
-          movePlayerToPosition(playerA, temp);
+          this.movePlayerToPosition(playerB, playerA.selected_position);
+          this.movePlayerToPosition(playerA, temp);
         }
       }
-    }
-
-    function movePlayerToPosition(player: Player, position: string) {
-      player.selected_position = position;
     }
   }
 
