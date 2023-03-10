@@ -8,4 +8,6 @@ export interface Team {
   weekly_deadline: string;
   game_code: string;
   roster_positions: { [key: string]: number };
+  allow_dropping?: any;
+  allow_adding?: any;
 }

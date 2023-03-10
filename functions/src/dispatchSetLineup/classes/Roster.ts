@@ -72,4 +72,16 @@ export class Roster {
         player.selected_position !== "BN"
     );
   }
+
+  public get inactivePlayers() {
+    return this._editablePlayers.filter((player) =>
+      INACTIVE_POSITION_LIST.includes(player.selected_position)
+    );
+  }
+
+  public get activePlayers() {
+    return this._editablePlayers.filter(
+      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
+    );
+  }
 }

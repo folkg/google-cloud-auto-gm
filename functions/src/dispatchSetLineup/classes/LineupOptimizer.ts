@@ -38,34 +38,45 @@ export class LineupOptimizer {
       return this.aRosterModification({});
     }
 
+    const optimizeListAtoListB = (listA: Player[], listB: Player[]) => {
+      Roster.sortDescendingByScore(listA);
+      Roster.sortAscendingByScore(listB);
+      this.transferPlayers(listA, listB, true);
+    };
+
+    const inactivePlayers = this.roster.inactivePlayers;
+    const activePlayers = this.roster.activePlayers;
+    optimizeListAtoListB(inactivePlayers, activePlayers);
+
     // Attempt to fix illegal players by swapping them with all eligible players
     // Illegal players are players that are not eligible for their selected position
     // For example, any player in an IR position that is now healthy, IR+, or NA
-    const illegalPlayers = this.roster.illegalPlayers;
-    if (illegalPlayers.length > 0) {
-      const legalPlayers = this.roster.legalPlayers;
-      Roster.sortDescendingByScore(illegalPlayers);
-      Roster.sortAscendingByScore(legalPlayers);
-      // first check if a simple swap is possible between any two players on illelegalPlayers
-      // if not, then call swapPlayer()
-      this._verbose &&
-        console.info("swapping illegalPlayers amongst themselves:");
-      this.internalDirectPlayerSwap(illegalPlayers);
+    const isAllowingTransactions =
+      this.team.allow_adding || this.team.allow_dropping;
+    if (isAllowingTransactions) {
+      const illegalPlayers = this.roster.illegalPlayers;
+      if (illegalPlayers.length > 0) {
+        const legalPlayers = this.roster.legalPlayers;
+        Roster.sortDescendingByScore(illegalPlayers);
+        Roster.sortAscendingByScore(legalPlayers);
+        // first check if a simple swap is possible between any two players on illelegalPlayers
+        // if not, then call swapPlayer()
+        this._verbose &&
+          console.info("swapping illegalPlayers amongst themselves:");
+        this.internalDirectPlayerSwap(illegalPlayers);
 
-      this._verbose && console.info("swapping illegalPlayer / legalPlayers:");
-      // illegalPlayers  will be sorted high to low, legalPlayers will be sorted low to high
-      this.transferPlayers(illegalPlayers, legalPlayers);
+        this._verbose && console.info("swapping illegalPlayer / legalPlayers:");
+        // illegalPlayers  will be sorted high to low, legalPlayers will be sorted low to high
+        this.transferPlayers(illegalPlayers, legalPlayers);
+      }
     }
 
     // TODO: Move all injured players to InactiveList if possible
     // TODO: Add new players from FA if there are empty roster spots
 
-    this._verbose && console.info("swapping bench / roster:");
     const benchPlayers = this.roster.benchPlayers;
     const rosterPlayers = this.roster.rosterPlayers;
-    Roster.sortDescendingByScore(benchPlayers);
-    Roster.sortAscendingByScore(rosterPlayers);
-    this.transferPlayers(benchPlayers, rosterPlayers, true);
+    optimizeListAtoListB(benchPlayers, rosterPlayers);
 
     this.newPlayerPositions = this.diffPlayerPositionDictionary(
       this.originalPlayerPositions,
@@ -158,11 +169,14 @@ export class LineupOptimizer {
       return false;
     }
 
-    for (const benchPlayer of this.roster.benchPlayers) {
+    const idlePlayers = this.roster.benchPlayers.concat(
+      this.roster.inactivePlayers
+    );
+    for (const idlePlayer of idlePlayers) {
       for (const rosterPlayer of this.roster.rosterPlayers) {
-        if (eligibleReplacementPlayerHasLowerScore(benchPlayer, rosterPlayer)) {
+        if (eligibleReplacementPlayerHasLowerScore(idlePlayer, rosterPlayer)) {
           console.error(
-            `Suboptimal Lineup: benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
+            `Suboptimal Lineup: benchPlayer ${idlePlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
           );
           return false;
         }
@@ -175,13 +189,13 @@ export class LineupOptimizer {
 
     // TODO: Can we move this into Player class?
     function eligibleReplacementPlayerHasLowerScore(
-      benchPlayer: Player,
-      rosterPlayer: Player
+      playerA: Player,
+      playerB: Player
     ) {
       return (
-        benchPlayer.eligible_positions.includes(
-          rosterPlayer.selected_position
-        ) && benchPlayer.score > rosterPlayer.score
+        playerA.eligible_positions.includes(playerB.selected_position) &&
+        playerB.eligible_positions.includes(playerA.selected_position) &&
+        playerA.score > playerB.score
       );
     }
 
@@ -245,10 +259,10 @@ export class LineupOptimizer {
     const unfilledPositions = this.unfilledPositionsCounter;
     const verbose = this._verbose;
     let isPlayerAActiveRoster = false;
-    let isPlayerBActiveRoster = false;
-    const isSwappingILToRoster = () => {
-      return !isPlayerAActiveRoster && isPlayerBActiveRoster;
-    };
+    // let isPlayerBActiveRoster = false;
+    // const isSwappingILToRoster = () => {
+    //   return !isPlayerAActiveRoster && isPlayerBActiveRoster;
+    // };
 
     // example: source = bench, target = roster, unfilledPositions = { LW: 1, RW: 1 }
     // example: source = healthyOnIL, target = activeRoster, unfilledPositions = {}
@@ -337,28 +351,28 @@ export class LineupOptimizer {
               playerB.score
             );
 
-          isPlayerBActiveRoster = !INACTIVE_POSITION_LIST.includes(
-            playerB.selected_position
-          );
+          // isPlayerBActiveRoster = !INACTIVE_POSITION_LIST.includes(
+          //   playerB.selected_position
+          // );
 
-          if (isSwappingILToRoster()) {
-            // TODO: This is the same as moving playerB to playerA's position, and moving playerA to unfilled position
-            // we can re-use the code from above if we extract it as a function instead
-            verbose &&
-              console.info(
-                `Swapping ${playerA.player_name} ${playerA.selected_position} to BN, and ${playerB.player_name} ${playerB.selected_position} to ${playerA.selected_position}`
-              );
+          // if (isSwappingILToRoster()) {
+          //   // TODO: This is the same as moving playerB to playerA's position, and moving playerA to unfilled position
+          //   // we can re-use the code from above if we extract it as a function instead
+          //   verbose &&
+          //     console.info(
+          //       `Swapping ${playerA.player_name} ${playerA.selected_position} to BN, and ${playerB.player_name} ${playerB.selected_position} to ${playerA.selected_position}`
+          //     );
 
-            const idx = source.indexOf(playerA);
-            target.push(source.splice(idx, 1)[0]);
+          //   const idx = source.indexOf(playerA);
+          //   target.push(source.splice(idx, 1)[0]);
 
-            movePlayerToPosition(playerB, playerA.selected_position);
-            movePlayerToPosition(playerA, "BN");
+          //   movePlayerToPosition(playerB, playerA.selected_position);
+          //   movePlayerToPosition(playerA, "BN");
 
-            isPlayerASwapped = true;
+          //   isPlayerASwapped = true;
 
-            break;
-          }
+          //   break;
+          // }
 
           if (playerA.eligible_positions.includes(playerB.selected_position)) {
             if (isMaximizingScore && playerB.score >= playerA.score) {
@@ -463,13 +477,14 @@ export class LineupOptimizer {
      * @return {(Player | undefined)} - The player that can be moved to playerB's position
      */
     function findPlayerC(playerA: Player, playerB: Player): Player | undefined {
-      const eligibleThirdPlayer = target.find(
-        (thirdPlayer: Player) =>
-          thirdPlayer.player_key !== playerB.player_key &&
-          playerB.eligible_positions.includes(thirdPlayer.selected_position) &&
-          (isMaximizingScore ? thirdPlayer.score < playerA.score : true)
+      const eligiblePlayerC = target.find(
+        (playerC: Player) =>
+          playerC.player_key !== playerB.player_key &&
+          playerB.eligible_positions.includes(playerC.selected_position) &&
+          playerC.eligible_positions.includes(playerA.selected_position) &&
+          (isMaximizingScore ? playerC.score < playerA.score : true)
       );
-      return eligibleThirdPlayer;
+      return eligiblePlayerC;
     }
 
     /**
