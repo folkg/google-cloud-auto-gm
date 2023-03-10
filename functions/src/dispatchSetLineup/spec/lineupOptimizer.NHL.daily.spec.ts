@@ -24,35 +24,30 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
   // *** Test Optimization of Lineup using healthy players ***
   it("test already optimal roster", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/optimalRoster.json");
-    const npp = {};
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
-    expect(rosterModification.newPlayerPositions).toEqual(npp);
-    expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
-    ).not.toBeDefined(); // on IR+, should not be moved
-    expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
-    ).not.toBeDefined(); // on IR+, should not be moved
     expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
   });
 
   it("test one active C on bench, spare C slot", async function () {
     const roster: Team = require("./testRosters/NHL/Daily/oneMoveRequired.json");
-    const npp = { "419.p.3737": "C" };
     const lo = new LineupOptimizer(roster);
     const rosterModification = await lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     // expect(rosterModification.newPlayerPositions).toMatchObject(npp);
-    expect(rosterModification.newPlayerPositions).toEqual(npp);
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.3737": "C",
+    });
     expect(Object.values(rosterModification.newPlayerPositions)).not.toContain(
       "BN"
     );
-    expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
-    ).not.toBeDefined(); // on IR+, should not be moved
-    expect(isSuccessfullyOptimized).toEqual(true);
   });
 
   it("test one active C on bench, one non-active C on roster", async function () {
