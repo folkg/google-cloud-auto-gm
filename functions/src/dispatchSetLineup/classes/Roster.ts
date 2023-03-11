@@ -1,15 +1,16 @@
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { Player } from "../interfaces/Player";
+import { OptimizationPlayer } from "./OptimizationPlayer";
 
 export class Roster {
-  private _allPlayers: Player[];
-  private _editablePlayers: Player[];
+  private _allPlayers: OptimizationPlayer[];
+  private _editablePlayers: OptimizationPlayer[];
 
   constructor(
     players: Player[],
-    playerSitStartScoreFunction: (player: Player) => number
+    playerSitStartScoreFunction: (player: OptimizationPlayer) => number
   ) {
-    this._allPlayers = [...players];
+    this._allPlayers = players.map((player) => new OptimizationPlayer(player));
     this._editablePlayers = this._allPlayers.filter(
       (player) => player.is_editable
     );
@@ -23,9 +24,9 @@ export class Roster {
    * Sorts players in place by score, lowest to highest
    *
    * @static
-   * @param {Player[]} players - array of players to sort
+   * @param {OptimizationPlayer[]} players - array of players to sort
    */
-  static sortAscendingByScore(players: Player[]) {
+  static sortAscendingByScore(players: OptimizationPlayer[]) {
     players.sort((a, b) => a.score - b.score);
   }
 
@@ -33,27 +34,27 @@ export class Roster {
    * Sorts players in place by score, highest to lowest
    *
    * @static
-   * @param {Player[]} players - array of players to sort
+   * @param {OptimizationPlayer[]} players - array of players to sort
    */
-  static sortDescendingByScore(players: Player[]) {
+  static sortDescendingByScore(players: OptimizationPlayer[]) {
     players.sort((a, b) => b.score - a.score);
   }
 
-  public get allPlayers(): Player[] {
+  public get allPlayers(): OptimizationPlayer[] {
     return this._allPlayers;
   }
 
-  public get editablePlayers(): Player[] {
+  public get editablePlayers(): OptimizationPlayer[] {
     return this._editablePlayers;
   }
 
-  public get illegalPlayers(): Player[] {
+  public get illegalPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) => !player.eligible_positions.includes(player.selected_position)
     );
   }
 
-  public get legalPlayers(): Player[] {
+  public get legalPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter((player) =>
       player.eligible_positions.includes(player.selected_position)
     );
@@ -73,15 +74,25 @@ export class Roster {
     );
   }
 
+  public get activePlayers() {
+    return this._editablePlayers.filter(
+      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
+    );
+  }
+
   public get inactivePlayers() {
     return this._editablePlayers.filter((player) =>
       INACTIVE_POSITION_LIST.includes(player.selected_position)
     );
   }
 
-  public get activePlayers() {
+  public get inactiveOnRosterPlayers() {
     return this._editablePlayers.filter(
-      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
+      (player) =>
+        !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
+        player.eligible_positions.some((position) =>
+          INACTIVE_POSITION_LIST.includes(position)
+        )
     );
   }
 }
