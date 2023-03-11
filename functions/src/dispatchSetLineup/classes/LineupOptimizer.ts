@@ -14,6 +14,9 @@ export class LineupOptimizer {
   public set verbose(value: boolean) {
     this._verbose = value;
   }
+  private logInfo(...args: any[]) {
+    if (this._verbose) console.info(...args);
+  }
 
   constructor(team: Team) {
     this.team = team;
@@ -29,8 +32,7 @@ export class LineupOptimizer {
 
   public async optimizeStartingLineup(): Promise<RosterModification> {
     if (this.roster.editablePlayers.length === 0) {
-      this._verbose &&
-        console.info("no players to optimize for team " + this.team.team_key);
+      this.logInfo("no players to optimize for team " + this.team.team_key);
       return this.aRosterModification({});
     }
 
@@ -289,10 +291,9 @@ export class LineupOptimizer {
   ) {
     for (const playerB of playersList) {
       if (playerA.isEligibleToSwapWith(playerB)) {
-        this._verbose &&
-          console.info(
-            `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
-          );
+        this.logInfo(
+          `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
+        );
         const temp = playerB.selected_position;
         this.movePlayerToPosition(playerB, playerA.selected_position);
         this.movePlayerToPosition(playerA, temp);
@@ -314,8 +315,8 @@ export class LineupOptimizer {
 
     let isPlayerASwapped;
     let i = 0;
-    verbose && console.info("source: " + source.map((p) => p.player_name));
-    verbose && console.info("target: " + target.map((p) => p.player_name));
+    this.logInfo("source: " + source.map((p) => p.player_name));
+    this.logInfo("target: " + target.map((p) => p.player_name));
     // TODO: if we are always maximizing score now, can we borrow the optimization algorithm from the optimizer?
     while (i < source.length) {
       const playerA = source[i];
@@ -328,11 +329,10 @@ export class LineupOptimizer {
 
       if (unfilledPosition) {
         // if there is an unfilled position, then we will move the player to that position
-        verbose &&
-          console.info(
-            "Moving player " + playerA.player_name + " to unfilled position: ",
-            unfilledPosition
-          );
+        this.logInfo(
+          "Moving player " + playerA.player_name + " to unfilled position: ",
+          unfilledPosition
+        );
 
         movePlayerToPosition(playerA, unfilledPosition);
         // splice the player from source and add to target
@@ -356,39 +356,36 @@ export class LineupOptimizer {
       );
 
       if (eligibleTargetPlayers.length > 0) {
-        verbose &&
-          console.info(
-            "eligibleTargetPlayers for player " +
-              playerA.player_name +
-              ": " +
-              eligibleTargetPlayers.map((p) => p.player_name)
-          );
+        this.logInfo(
+          "eligibleTargetPlayers for player " +
+            playerA.player_name +
+            ": " +
+            eligibleTargetPlayers.map((p) => p.player_name)
+        );
 
         for (const playerB of eligibleTargetPlayers) {
-          verbose &&
-            console.info(
-              "comparing playerA " + playerA.player_name,
-              playerA.start_score + " to playerB " + playerB.player_name,
-              playerB.start_score
-            );
+          this.logInfo(
+            "comparing playerA " + playerA.player_name,
+            playerA.start_score + " to playerB " + playerB.player_name,
+            playerB.start_score
+          );
 
           if (playerA.eligible_positions.includes(playerB.selected_position)) {
             if (playerB.start_score >= playerA.start_score) {
               // if maximizing score, we will only swap directly if sourcePlayer.score > targetPlayer.score
-              verbose &&
-                console.info(
-                  "Need to find a three way swap since sourcePlayer.score < targetPlayer.score"
-                );
+              this.logInfo(
+                "Need to find a three way swap since sourcePlayer.score < targetPlayer.score"
+              );
               const playerC = findPlayerC(playerA, playerB);
               if (playerC) {
-                verbose && console.info("Found three way swap");
+                this.logInfo("Found three way swap");
                 swapPlayers(playerA, playerB);
                 swapPlayers(playerB, playerC);
                 break;
               }
-              verbose && console.info("No three way swap found");
+              this.logInfo("No three way swap found");
             } else {
-              verbose && console.info("Direct swap");
+              this.logInfo("Direct swap");
               swapPlayers(playerA, playerB);
               break;
             }
@@ -403,28 +400,27 @@ export class LineupOptimizer {
             sourcePlayer.eligible_positions.includes(playerA.selected_position)
         );
         if (eligibleSourcePlayers.length > 0) {
-          verbose &&
-            console.info(
-              "looking for three way swap to move inactive player to active roster"
-            );
+          this.logInfo(
+            "looking for three way swap to move inactive player to active roster"
+          );
           for (const playerB of eligibleSourcePlayers) {
             const playerC = findPlayerC(playerA, playerB);
             if (playerC) {
-              verbose && console.info("Found three way swap");
+              this.logInfo("Found three way swap");
               swapPlayers(playerB, playerC);
               swapPlayers(playerA, playerB);
               break;
             }
-            verbose && console.info("No three way swap found");
+            this.logInfo("No three way swap found");
           }
         }
       }
       // continue without incrementing i if a swap was made
       // this is to ensure we recheck the player swapped to bench for other swaps
       if (isPlayerASwapped) continue;
-      verbose && console.info("No swaps for player " + playerA.player_name);
+      this.logInfo("No swaps for player " + playerA.player_name);
       i++;
-      verbose && console.info("i: " + i + " source.length: " + source.length);
+      this.logInfo("i: " + i + " source.length: " + source.length);
     }
 
     return;
