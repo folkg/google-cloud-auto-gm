@@ -61,7 +61,7 @@ export class LineupOptimizer {
     // TODO: Add new players from FA if there are empty roster spots
 
     const benchPlayers = this.roster.benchPlayers;
-    const rosterPlayers = this.roster.rosterPlayers;
+    const rosterPlayers = this.roster.activeRosterPlayers;
     optimizeListAtoListB(benchPlayers, rosterPlayers);
 
     this.newPlayerPositions = this.diffPlayerPositionDictionary(
@@ -107,6 +107,10 @@ export class LineupOptimizer {
     return result;
   }
 
+  private movePlayerToPosition(player: OptimizationPlayer, position: string) {
+    player.selected_position = position;
+  }
+
   public isSuccessfullyOptimized(): boolean {
     // TODO: Refactor this further. Maybe we can pull out code into a separate function
     const unfilledPositionsCounter = this.roster.unfilledPositionCounter;
@@ -121,6 +125,7 @@ export class LineupOptimizer {
       return false;
     }
 
+    // TODO: Move this into Roster class
     const unfilledPositions = Object.keys(unfilledPositionsCounter);
     for (const position of unfilledPositions) {
       if (position !== "BN" && unfilledPositionsCounter[position] < 0) {
@@ -148,7 +153,7 @@ export class LineupOptimizer {
       this.roster.inactivePlayers
     );
     for (const idlePlayer of idlePlayers) {
-      for (const rosterPlayer of this.roster.rosterPlayers) {
+      for (const rosterPlayer of this.roster.activeRosterPlayers) {
         if (eligibleReplacementPlayerHasLowerScore(idlePlayer, rosterPlayer)) {
           console.error(
             `Suboptimal Lineup: benchPlayer ${idlePlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
@@ -198,10 +203,6 @@ export class LineupOptimizer {
     }
   }
 
-  private movePlayerToPosition(player: OptimizationPlayer, position: string) {
-    player.selected_position = position;
-  }
-
   resolveIllegalPlayers() {
     const illegalPlayers = this.roster.illegalPlayers;
     if (illegalPlayers.length === 0) return;
@@ -222,7 +223,7 @@ export class LineupOptimizer {
       resolved = this.attemptSwapWith(illegalPlayer, legalPlayers);
       if (resolved) continue;
 
-      const unfilledRosterPositions = this.roster.unfilledRosterPositions;
+      const unfilledRosterPositions = this.roster.unfilledActivePositions;
       if (unfilledRosterPositions.length > 0) {
         // check if player is eligible to move to any of the unfilled positions
         const eligiblePosition = unfilledRosterPositions.find((position) =>
@@ -239,6 +240,47 @@ export class LineupOptimizer {
       // check again
       // free up more positions if needed
     }
+  }
+
+  private findEligibleUnfilledPositions(
+    player: OptimizationPlayer,
+    unfilledPositionsList: string[]
+  ) {
+    const result: string[] = player.eligible_positions.filter(
+      (position) =>
+        position !== player.selected_position &&
+        unfilledPositionsList.includes(position)
+    );
+
+    if (
+      !unfilledPositionsList.includes("BN") &&
+      this.roster.numEmptyRosterSpots > 0
+    ) {
+      result.push("BN");
+    }
+    return result;
+  }
+
+  public openOneRosterSpot(): boolean {
+    const unfilledInactivePositions: string[] =
+      this.roster.unfilledInactivePositions;
+    if (unfilledInactivePositions.length === 0) return false;
+
+    const inactivePlayersOnRoster: OptimizationPlayer[] =
+      this.roster.inactiveOnRosterPlayers;
+    Roster.sortAscendingByScore(inactivePlayersOnRoster);
+
+    for (const inactivePlayer of inactivePlayersOnRoster) {
+      const eligiblePositions = this.findEligibleUnfilledPositions(
+        inactivePlayer,
+        unfilledInactivePositions
+      );
+      if (eligiblePositions) {
+        this.movePlayerToPosition(inactivePlayer, eligiblePositions[0]);
+        return true;
+      }
+    }
+    return false;
   }
 
   private attemptSwapWith(
@@ -265,12 +307,10 @@ export class LineupOptimizer {
     target: OptimizationPlayer[]
   ): void {
     // temp variables, to be user settings later
-    const addPlayersToRoster = false;
+    // const addPlayersToRoster = false;
     // const dropPlayersFromRoster = false;
     // intialize variables
-    const unfilledPositions = this.roster.unfilledPositionCounter;
     const verbose = this._verbose;
-    let isPlayerAActiveRoster = false;
 
     let isPlayerASwapped;
     let i = 0;
@@ -281,31 +321,17 @@ export class LineupOptimizer {
       const playerA = source[i];
       isPlayerASwapped = false;
 
-      isPlayerAActiveRoster = !INACTIVE_POSITION_LIST.includes(
-        playerA.selected_position
-      );
+      const unfilledPosition = this.findEligibleUnfilledPositions(
+        playerA,
+        this.roster.unfilledActivePositions
+      )[0];
 
-      const unfilledPosition: string | undefined =
-        availableUnfilledPosition(playerA);
       if (unfilledPosition) {
         // if there is an unfilled position, then we will move the player to that position
         verbose &&
           console.info(
             "Moving player " + playerA.player_name + " to unfilled position: ",
             unfilledPosition
-          );
-        // modify the unfilled positions
-        verbose &&
-          console.info(
-            "unfilledPositions before: ",
-            JSON.stringify(unfilledPositions)
-          );
-        unfilledPositions[playerA.selected_position] += 1;
-        unfilledPositions[unfilledPosition] -= 1;
-        verbose &&
-          console.info(
-            "unfilledPositions after: ",
-            JSON.stringify(unfilledPositions)
           );
 
         movePlayerToPosition(playerA, unfilledPosition);
@@ -402,44 +428,6 @@ export class LineupOptimizer {
     }
 
     return;
-
-    /**
-     * Returns the unfilled position if there is one, otherwise returns undefined
-     *
-     * @param {OptimizationPlayer} playerA - the player to find an unfilled position for
-     * @return {string} - the unfilled position
-     */
-    function availableUnfilledPosition(playerA: OptimizationPlayer) {
-      let unfilledPosition: string | undefined;
-      if (!isPlayerAActiveRoster) {
-        const numEmptyRosterSpots = Object.keys(unfilledPositions).reduce(
-          (acc, key) => {
-            if (!INACTIVE_POSITION_LIST.includes(key))
-              acc += unfilledPositions[key];
-            return acc;
-          },
-          0
-        );
-        verbose && console.info("numEmptyRosterSpots: ", numEmptyRosterSpots);
-        if (numEmptyRosterSpots > 0) {
-          unfilledPosition = "BN";
-        }
-        // TODO: else Drop players to make room for playerA
-      } else {
-        unfilledPosition = Object.keys(unfilledPositions).find((position) => {
-          let predicate: boolean =
-            position !== playerA.selected_position &&
-            unfilledPositions[position] > 0 &&
-            playerA.eligible_positions.includes(position);
-          if (!addPlayersToRoster) {
-            // if we are not adding players to the roster, do not move players to inactive positions
-            predicate &&= !INACTIVE_POSITION_LIST.includes(position);
-          }
-          return predicate;
-        });
-      }
-      return unfilledPosition;
-    }
 
     /**
      * Finds a third player that can be moved to the position of playerB

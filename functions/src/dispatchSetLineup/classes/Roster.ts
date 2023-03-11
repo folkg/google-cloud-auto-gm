@@ -109,7 +109,7 @@ export class Roster {
     return result;
   }
 
-  public get unfilledRosterPositions(): string[] {
+  public get unfilledActivePositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         !INACTIVE_POSITION_LIST.includes(position) &&
@@ -123,5 +123,14 @@ export class Roster {
         INACTIVE_POSITION_LIST.includes(position) &&
         this.unfilledPositionCounter[position] > 0
     );
+  }
+
+  public get numEmptyRosterSpots(): number {
+    const unfilledPositions = this.unfilledPositionCounter;
+    return Object.keys(unfilledPositions).reduce((acc, position) => {
+      if (!INACTIVE_POSITION_LIST.includes(position))
+        acc += unfilledPositions[position];
+      return acc;
+    }, 0);
   }
 }
