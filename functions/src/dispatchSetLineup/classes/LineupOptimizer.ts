@@ -43,11 +43,14 @@ export class LineupOptimizer {
       this.transferPlayers(listA, listB);
     };
 
-    // player objects within these filtered roster objects are mutable, so changes
-    // to these objects will be maintained in the original roster object
-    const inactivePlayers = this.roster.inactivePlayers;
-    const activePlayers = this.roster.activePlayers;
-    optimizeListAtoListB(inactivePlayers, activePlayers);
+    const isWeeklyDeadline =
+      this.team.weekly_deadline !== "intraday" &&
+      this.team.weekly_deadline !== "";
+    if (isWeeklyDeadline) {
+      const inactivePlayers = this.roster.inactivePlayers;
+      const activePlayers = this.roster.activePlayers;
+      optimizeListAtoListB(inactivePlayers, activePlayers);
+    }
 
     // Attempt to fix illegal players by swapping them with all eligible players
     // Illegal players are players that are not eligible for their selected position
@@ -208,56 +211,53 @@ export class LineupOptimizer {
     Roster.sortDescendingByScore(illegalPlayers);
     Roster.sortAscendingByScore(legalPlayers);
 
-    const swapWithOtherIllegalPlayers = (playerA: OptimizationPlayer) => {
-      for (const playerB of illegalPlayers) {
-        if (playerA.isEligibleToSwapWith(playerB)) {
-          this._verbose &&
-            console.info(
-              `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
-            );
-          const temp = playerB.selected_position;
-          this.movePlayerToPosition(playerB, playerA.selected_position);
-          this.movePlayerToPosition(playerA, temp);
-          return true;
-        }
-      }
-      return false;
-    };
-
-    const swapWithLegalPlayers = (playerA: OptimizationPlayer) => {
-      for (const playerB of legalPlayers) {
-        if (playerA.isEligibleToSwapWith(playerB)) {
-          this._verbose &&
-            console.info(
-              `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
-            );
-          const temp = playerB.selected_position;
-          this.movePlayerToPosition(playerB, playerA.selected_position);
-          this.movePlayerToPosition(playerA, temp);
-          return true;
-        }
-      }
-      return false;
-    };
-
     // const freeUpRosterSpot = (playerA: OptimizationPlayer) => {
     // function should free up only one position, we will call multiple times if more are required
     // };
 
     for (const illegalPlayer of illegalPlayers) {
-      let resolved = swapWithOtherIllegalPlayers(illegalPlayer);
+      let resolved = this.attemptSwapWith(illegalPlayer, illegalPlayers);
       if (resolved) continue;
 
-      resolved = swapWithLegalPlayers(illegalPlayer);
-      // TODO: Three way swap?
+      resolved = this.attemptSwapWith(illegalPlayer, legalPlayers);
       if (resolved) continue;
 
-      // TODO: get list of unfilled positions
+      const unfilledRosterPositions = this.roster.unfilledRosterPositions;
+      if (unfilledRosterPositions.length > 0) {
+        // check if player is eligible to move to any of the unfilled positions
+        const eligiblePosition = unfilledRosterPositions.find((position) =>
+          illegalPlayer.eligible_positions.includes(position)
+        );
+        if (eligiblePosition) {
+          this.movePlayerToPosition(illegalPlayer, eligiblePosition);
+          continue;
+        }
+      }
+
       // check if there are any players on bench that can be moved to the unfilled positions
       // if not, free up one position
       // check again
       // free up more positions if needed
     }
+  }
+
+  private attemptSwapWith(
+    playerA: OptimizationPlayer,
+    playersList: OptimizationPlayer[]
+  ) {
+    for (const playerB of playersList) {
+      if (playerA.isEligibleToSwapWith(playerB)) {
+        this._verbose &&
+          console.info(
+            `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
+          );
+        const temp = playerB.selected_position;
+        this.movePlayerToPosition(playerB, playerA.selected_position);
+        this.movePlayerToPosition(playerA, temp);
+        return true;
+      }
+    }
+    return false;
   }
 
   private transferPlayers(
