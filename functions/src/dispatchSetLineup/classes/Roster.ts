@@ -5,7 +5,7 @@ import { OptimizationPlayer } from "./OptimizationPlayer";
 export class Roster {
   private _allPlayers: OptimizationPlayer[];
   private _editablePlayers: OptimizationPlayer[];
-  private _unfilledPositionCounter: { [key: string]: number };
+  private _rosterPositions: { [key: string]: number };
 
   constructor(
     players: Player[],
@@ -22,11 +22,7 @@ export class Roster {
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
-    const positionCounter = { ...rosterPositions };
-    this._allPlayers.forEach((player) => {
-      positionCounter[player.selected_position]--;
-    });
-    this._unfilledPositionCounter = positionCounter;
+    this._rosterPositions = { ...rosterPositions };
   }
 
   /**
@@ -69,23 +65,23 @@ export class Roster {
     );
   }
 
+  public get activePlayers(): OptimizationPlayer[] {
+    return this._editablePlayers.filter(
+      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
+    );
+  }
+
   public get benchPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) => player.selected_position === "BN"
     );
   }
 
-  public get rosterPlayers(): OptimizationPlayer[] {
+  public get activeRosterPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) =>
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
         player.selected_position !== "BN"
-    );
-  }
-
-  public get activePlayers(): OptimizationPlayer[] {
-    return this._editablePlayers.filter(
-      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
     );
   }
 
@@ -106,22 +102,26 @@ export class Roster {
   }
 
   public get unfilledPositionCounter(): { [key: string]: number } {
-    return this._unfilledPositionCounter;
+    const result = { ...this._rosterPositions };
+    this._allPlayers.forEach((player) => {
+      result[player.selected_position]--;
+    });
+    return result;
   }
 
   public get unfilledRosterPositions(): string[] {
-    return Object.keys(this._unfilledPositionCounter).filter(
+    return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         !INACTIVE_POSITION_LIST.includes(position) &&
-        this._unfilledPositionCounter[position] > 0
+        this.unfilledPositionCounter[position] > 0
     );
   }
 
   public get unfilledInactivePositions(): string[] {
-    return Object.keys(this._unfilledPositionCounter).filter(
+    return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         INACTIVE_POSITION_LIST.includes(position) &&
-        this._unfilledPositionCounter[position] > 0
+        this.unfilledPositionCounter[position] > 0
     );
   }
 }
