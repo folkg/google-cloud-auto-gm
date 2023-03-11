@@ -69,13 +69,13 @@ export class Roster {
     );
   }
 
-  public get benchPlayers() {
+  public get benchPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) => player.selected_position === "BN"
     );
   }
 
-  public get rosterPlayers() {
+  public get rosterPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) =>
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
@@ -83,19 +83,19 @@ export class Roster {
     );
   }
 
-  public get activePlayers() {
+  public get activePlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
     );
   }
 
-  public get inactivePlayers() {
+  public get inactivePlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter((player) =>
       INACTIVE_POSITION_LIST.includes(player.selected_position)
     );
   }
 
-  public get inactiveOnRosterPlayers() {
+  public get inactiveOnRosterPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) =>
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
@@ -105,7 +105,23 @@ export class Roster {
     );
   }
 
-  public get unfilledPositionCounter() {
+  public get unfilledPositionCounter(): { [key: string]: number } {
     return this._unfilledPositionCounter;
+  }
+
+  public get unfilledRosterPositions(): string[] {
+    return Object.keys(this._unfilledPositionCounter).filter(
+      (position) =>
+        !INACTIVE_POSITION_LIST.includes(position) &&
+        this._unfilledPositionCounter[position] > 0
+    );
+  }
+
+  public get unfilledInactivePositions(): string[] {
+    return Object.keys(this._unfilledPositionCounter).filter(
+      (position) =>
+        INACTIVE_POSITION_LIST.includes(position) &&
+        this._unfilledPositionCounter[position] > 0
+    );
   }
 }
