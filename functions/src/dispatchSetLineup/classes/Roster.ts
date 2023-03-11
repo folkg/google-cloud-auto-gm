@@ -18,7 +18,7 @@ export class Roster {
       (player) => player.is_editable
     );
     this.editablePlayers.forEach((player) => {
-      player.score = playerSitStartScoreFunction(player);
+      player.start_score = playerSitStartScoreFunction(player);
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
@@ -36,7 +36,7 @@ export class Roster {
    * @param {OptimizationPlayer[]} players - array of players to sort
    */
   static sortAscendingByScore(players: OptimizationPlayer[]) {
-    players.sort((a, b) => a.score - b.score);
+    players.sort((a, b) => a.start_score - b.start_score);
   }
 
   /**
@@ -46,7 +46,7 @@ export class Roster {
    * @param {OptimizationPlayer[]} players - array of players to sort
    */
   static sortDescendingByScore(players: OptimizationPlayer[]) {
-    players.sort((a, b) => b.score - a.score);
+    players.sort((a, b) => b.start_score - a.start_score);
   }
 
   public get allPlayers(): OptimizationPlayer[] {

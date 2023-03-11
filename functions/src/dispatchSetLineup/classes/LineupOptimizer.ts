@@ -2,7 +2,7 @@ import { Roster as Roster } from "./Roster";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { Team } from "../interfaces/Team";
 import { RosterModification } from "../interfaces/RosterModification";
-import { assignPlayerStartSitScoreFunction } from "../services/playerStartSitScoreFunctions.service";
+import { assignPlayerStartScoreFunction } from "../services/playerStartScoreFunctions.service";
 import { OptimizationPlayer } from "./OptimizationPlayer";
 
 export class LineupOptimizer {
@@ -20,7 +20,7 @@ export class LineupOptimizer {
     this.roster = new Roster(
       team.players,
       team.roster_positions,
-      assignPlayerStartSitScoreFunction(team.game_code, team.weekly_deadline)
+      assignPlayerStartScoreFunction(team.game_code, team.weekly_deadline)
     );
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.roster.editablePlayers
@@ -167,7 +167,7 @@ export class LineupOptimizer {
       return (
         playerA.eligible_positions.includes(playerB.selected_position) &&
         playerB.eligible_positions.includes(playerA.selected_position) &&
-        playerA.score > playerB.score
+        playerA.start_score > playerB.start_score
       );
     }
 
@@ -317,7 +317,9 @@ export class LineupOptimizer {
         continue;
       }
 
-      if (playerA.score < Math.min(...target.map((tp) => tp.score))) {
+      if (
+        playerA.start_score < Math.min(...target.map((tp) => tp.start_score))
+      ) {
         i++;
         continue;
       }
@@ -340,12 +342,12 @@ export class LineupOptimizer {
           verbose &&
             console.info(
               "comparing playerA " + playerA.player_name,
-              playerA.score + " to playerB " + playerB.player_name,
-              playerB.score
+              playerA.start_score + " to playerB " + playerB.player_name,
+              playerB.start_score
             );
 
           if (playerA.eligible_positions.includes(playerB.selected_position)) {
-            if (playerB.score >= playerA.score) {
+            if (playerB.start_score >= playerA.start_score) {
               // if maximizing score, we will only swap directly if sourcePlayer.score > targetPlayer.score
               verbose &&
                 console.info(
@@ -455,7 +457,7 @@ export class LineupOptimizer {
           playerC.player_key !== playerB.player_key &&
           playerB.eligible_positions.includes(playerC.selected_position) &&
           playerC.eligible_positions.includes(playerA.selected_position) &&
-          playerC.score < playerA.score
+          playerC.start_score < playerA.start_score
       );
       return eligiblePlayerC;
     }

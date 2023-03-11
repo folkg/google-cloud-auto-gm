@@ -1,6 +1,9 @@
 import { Player } from "../interfaces/Player";
 
-export interface OptimizationPlayer extends Player {}
+export interface OptimizationPlayer extends Player {
+  start_score: number;
+  ownership_score: number;
+}
 
 /**
  * A class that extends the Player interface to add useful methods for

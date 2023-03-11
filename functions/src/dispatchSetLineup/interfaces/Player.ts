@@ -13,5 +13,5 @@ export interface Player {
   is_starting: number | string;
   rank_next7days: number;
   rank_projected_week: number;
-  score: number;
+  start_score: number; // TODO: Remove this once we move over to new lineup optimizer
 }

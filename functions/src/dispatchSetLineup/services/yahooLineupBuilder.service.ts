@@ -137,7 +137,7 @@ function getPlayersFromRoster(playersJSON: any): Player[] {
           : "N/A",
         rank_next7days: rankNext7Days,
         rank_projected_week: rankProjectedWeek,
-        score: 0,
+        start_score: 0, // TODO: Remove this once we move over to new lineup optimizer
       };
 
       // push the player to the object

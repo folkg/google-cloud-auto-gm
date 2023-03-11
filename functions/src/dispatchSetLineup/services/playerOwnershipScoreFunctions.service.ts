@@ -4,10 +4,10 @@ import { Player } from "../interfaces/Player";
  * Add drop score function
  *
  * @export
- * @param {Player} player - The player to score
+ * @param {OptimizationPlayer} player - The player to score
  * @return {number} - The score
  */
-export function addDropScoreFunction(player: Player): number {
+export function ownershipScoreFunction(player: Player): number {
   // score will be based on players transaction_delta, percent_owned, and rank_lat14days
   // transaction_delta and percent_owned should higher is better
   // rank_last14days lower is better

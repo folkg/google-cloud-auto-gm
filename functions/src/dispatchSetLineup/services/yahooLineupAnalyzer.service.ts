@@ -1,6 +1,6 @@
 import { Team } from "../interfaces/Team";
+import { ownershipScoreFunction } from "./playerOwnershipScoreFunctions.service";
 import { Player } from "../interfaces/Player";
-import { addDropScoreFunction } from "./playerAddDropScoreFunctions.service";
 
 /**
  * Get the strength of the roster for the given team
@@ -16,7 +16,7 @@ export function getRosterStrength(
 
   const positionScores: Record<string, number> = {};
   players.forEach((player: Player) => {
-    player.addDropScore = addDropScoreFunction(player);
+    player.addDropScore = ownershipScoreFunction(player);
     player.eligible_positions.forEach((position: string) => {
       if (positionScores[position]) {
         positionScores[position] += player.addDropScore;

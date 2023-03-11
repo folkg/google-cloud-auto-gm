@@ -13,7 +13,7 @@ import {
   weeklyLineupScoreFunction,
   nhlScoreFunction,
   dailyScoreFunction,
-} from "./playerStartSitScoreFunctions.service";
+} from "./playerStartScoreFunctions.service";
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 
 /**
@@ -245,7 +245,7 @@ function fillRosterArrays(
   const injuredOnRoster: Player[] = [];
   players.forEach((player) => {
     if (player.is_editable) {
-      player.score = genPlayerScore(player);
+      player.start_score = genPlayerScore(player);
 
       if (INACTIVE_POSITION_LIST.includes(player.selected_position)) {
         if (HEALTHY_STATUS_LIST.includes(player.injury_status)) {
@@ -280,7 +280,7 @@ function fillRosterArrays(
  * @return {number} - A number indicating the relative order of the two players.
  */
 function playerCompareFunction(a: Player, b: Player): number {
-  return a.score - b.score;
+  return a.start_score - b.start_score;
 }
 
 /**

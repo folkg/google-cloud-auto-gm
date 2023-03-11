@@ -7,7 +7,7 @@ import { HttpsError } from "firebase-functions/v2/https";
 
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { partitionArray } from "../../common/services/utilities.service";
-import { assignPlayerStartSitScoreFunction } from "./playerStartSitScoreFunctions.service";
+import { assignPlayerStartScoreFunction } from "./playerStartScoreFunctions.service";
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
 
@@ -116,16 +116,13 @@ export async function optimizeStartingLineup2(
   }
 
   const genPlayerScore: (player: Player) => number =
-    await assignPlayerStartSitScoreFunction(
-      teamRoster.game_code,
-      weeklyDeadline
-    );
+    assignPlayerStartScoreFunction(teamRoster.game_code, weeklyDeadline);
   editablePlayers.forEach((player) => {
-    player.score = genPlayerScore(player);
+    player.start_score = genPlayerScore(player);
     player.eligible_positions.push("BN"); // not included by default in Yahoo
   });
   // sort lower score to higher score
-  editablePlayers.sort((a, b) => a.score - b.score);
+  editablePlayers.sort((a, b) => a.start_score - b.start_score);
 
   // Attempt to fix illegal players by swapping them with all eligible players
   // Illegal players are players that are not eligible for their selected position
@@ -225,7 +222,7 @@ export async function optimizeStartingLineup2(
           benchPlayer.eligible_positions.includes(
             rosterPlayer.selected_position
           ) &&
-          benchPlayer.score > rosterPlayer.score
+          benchPlayer.start_score > rosterPlayer.start_score
         ) {
           console.error(
             `benchPlayer ${benchPlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${teamKey}`
@@ -416,7 +413,7 @@ function swapPlayers(
 
     if (
       isMaximizingScore &&
-      playerA.score < Math.min(...target.map((tp) => tp.score))
+      playerA.start_score < Math.min(...target.map((tp) => tp.start_score))
     ) {
       i++;
       continue;
@@ -440,8 +437,8 @@ function swapPlayers(
         verboseLogging &&
           console.info(
             "comparing playerA " + playerA.player_name,
-            playerA.score + " to playerB " + playerB.player_name,
-            playerB.score
+            playerA.start_score + " to playerB " + playerB.player_name,
+            playerB.start_score
           );
 
         isPlayerBActiveRoster = !INACTIVE_POSITION_LIST.includes(
@@ -468,7 +465,7 @@ function swapPlayers(
         }
 
         if (playerA.eligible_positions.includes(playerB.selected_position)) {
-          if (isMaximizingScore && playerB.score >= playerA.score) {
+          if (isMaximizingScore && playerB.start_score >= playerA.start_score) {
             // if maximizing score, we will only swap directly if sourcePlayer.score > targetPlayer.score
             verboseLogging &&
               console.info(
@@ -577,7 +574,9 @@ function swapPlayers(
       (thirdPlayer: Player) =>
         thirdPlayer.player_key !== playerB.player_key &&
         playerB.eligible_positions.includes(thirdPlayer.selected_position) &&
-        (isMaximizingScore ? thirdPlayer.score < playerA.score : true)
+        (isMaximizingScore
+          ? thirdPlayer.start_score < playerA.start_score
+          : true)
     );
     return eligibleThirdPlayer;
   }

@@ -3,8 +3,8 @@ import { HEALTHY_STATUS_LIST } from "../helpers/constants";
 import { getNHLStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 
 /**
- * Returns the proper score function used to compare players to other players
- * on the same fantasy roster based on the league settings
+ * Returns the proper score function used to compare players on the same
+ * fantasy roster in order to decide who to start and who to sit.
  *
  * @export
  * @async
@@ -12,22 +12,19 @@ import { getNHLStartingGoalies } from "../../common/services/yahooAPI/yahooStart
  * @param {string} weeklyDeadline - The weekly deadline for the league
  * @return {()} - A function that takes a player and returns a score.
  */
-export function assignPlayerStartSitScoreFunction(
+export function assignPlayerStartScoreFunction(
   gameCode: string,
   weeklyDeadline: string
 ) {
-  let playerScoreFunction: (player: Player) => number;
   if (gameCode === "nfl") {
-    playerScoreFunction = nflScoreFunction();
+    return nflScoreFunction();
   } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
     // weeklyDeadline will be something like "1" to represent Monday
-    playerScoreFunction = weeklyLineupScoreFunction();
+    return weeklyLineupScoreFunction();
   } else if (gameCode === "nhl") {
-    playerScoreFunction = nhlScoreFunction();
-  } else {
-    playerScoreFunction = dailyScoreFunction();
+    return nhlScoreFunction();
   }
-  return playerScoreFunction;
+  return dailyScoreFunction();
 }
 
 /**
