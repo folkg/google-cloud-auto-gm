@@ -5,12 +5,15 @@ import { OptimizationPlayer } from "./OptimizationPlayer";
 export class Roster {
   private _allPlayers: OptimizationPlayer[];
   private _editablePlayers: OptimizationPlayer[];
+  private _unfilledPositionCounter: { [key: string]: number };
 
   constructor(
     players: Player[],
+    rosterPositions: { [key: string]: number },
     playerSitStartScoreFunction: (player: OptimizationPlayer) => number
   ) {
     this._allPlayers = players.map((player) => new OptimizationPlayer(player));
+
     this._editablePlayers = this._allPlayers.filter(
       (player) => player.is_editable
     );
@@ -18,6 +21,12 @@ export class Roster {
       player.score = playerSitStartScoreFunction(player);
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
+
+    const positionCounter = { ...rosterPositions };
+    this._allPlayers.forEach((player) => {
+      positionCounter[player.selected_position]--;
+    });
+    this._unfilledPositionCounter = positionCounter;
   }
 
   /**
@@ -94,5 +103,9 @@ export class Roster {
           INACTIVE_POSITION_LIST.includes(position)
         )
     );
+  }
+
+  public get unfilledPositionCounter() {
+    return this._unfilledPositionCounter;
   }
 }

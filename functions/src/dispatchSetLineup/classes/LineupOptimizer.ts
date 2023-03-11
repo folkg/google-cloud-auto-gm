@@ -10,7 +10,6 @@ export class LineupOptimizer {
   private roster: Roster;
   private originalPlayerPositions: { [key: string]: string };
   private newPlayerPositions: { [key: string]: string } = {};
-  private unfilledPositionsCounter: { [key: string]: number };
   private _verbose = false;
   public set verbose(value: boolean) {
     this._verbose = value;
@@ -20,14 +19,11 @@ export class LineupOptimizer {
     this.team = team;
     this.roster = new Roster(
       team.players,
+      team.roster_positions,
       assignPlayerStartSitScoreFunction(team.game_code, team.weekly_deadline)
     );
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.roster.editablePlayers
-    );
-    this.unfilledPositionsCounter = this.getUnfilledRosterPositions(
-      this.roster.allPlayers,
-      team.roster_positions
     );
   }
 
@@ -108,20 +104,9 @@ export class LineupOptimizer {
     return result;
   }
 
-  private getUnfilledRosterPositions(
-    players: OptimizationPlayer[],
-    rosterPositions: { [key: string]: number }
-  ) {
-    const result: { [key: string]: number } = { ...rosterPositions };
-    players.forEach((player) => {
-      result[player.selected_position]--;
-    });
-    return result;
-  }
-
   public isSuccessfullyOptimized(): boolean {
     // TODO: Refactor this further. Maybe we can pull out code into a separate function
-    const unfilledPositionsCounter = this.unfilledPositionsCounter;
+    const unfilledPositionsCounter = this.roster.unfilledPositionCounter;
     const benchPlayers = this.roster.benchPlayers;
 
     if (unfilledActiveRosterPositions().length > 0) {
@@ -255,7 +240,9 @@ export class LineupOptimizer {
       return false;
     };
 
-    const freeUpRosterSpots = (playerA: OptimizationPlayer) => {};
+    // const freeUpRosterSpot = (playerA: OptimizationPlayer) => {
+    // function should free up only one position, we will call multiple times if more are required
+    // };
 
     for (const illegalPlayer of illegalPlayers) {
       let resolved = swapWithOtherIllegalPlayers(illegalPlayer);
@@ -265,7 +252,11 @@ export class LineupOptimizer {
       // TODO: Three way swap?
       if (resolved) continue;
 
-      // get list of unfilled positions
+      // TODO: get list of unfilled positions
+      // check if there are any players on bench that can be moved to the unfilled positions
+      // if not, free up one position
+      // check again
+      // free up more positions if needed
     }
   }
 
@@ -277,7 +268,7 @@ export class LineupOptimizer {
     const addPlayersToRoster = false;
     // const dropPlayersFromRoster = false;
     // intialize variables
-    const unfilledPositions = this.unfilledPositionsCounter;
+    const unfilledPositions = this.roster.unfilledPositionCounter;
     const verbose = this._verbose;
     let isPlayerAActiveRoster = false;
 
@@ -285,6 +276,7 @@ export class LineupOptimizer {
     let i = 0;
     verbose && console.info("source: " + source.map((p) => p.player_name));
     verbose && console.info("target: " + target.map((p) => p.player_name));
+    // TODO: if we are always maximizing score now, can we borrow the optimization algorithm from the optimizer?
     while (i < source.length) {
       const playerA = source[i];
       isPlayerASwapped = false;
@@ -516,7 +508,3 @@ export class LineupOptimizer {
     }
   }
 }
-// interface LOPlayer extends Player {}
-// class LOPlayer implements Player {
-//   // TODO: Add comparison methods for sorting
-// }
