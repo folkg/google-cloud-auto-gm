@@ -36,7 +36,8 @@ export function assignPlayerStartScoreFunction(
  */
 export function dailyScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    const PENALTY_FACTOR = 0.01;
+    const NOT_PLAYING_FACTOR = 0.01;
+    const INJURY_FACTOR = 0.001;
     // The score will be percent_started
     // TODO: is_starting to be more specific (basketball G, baseball players)
     // Maybe boost the score of players who are starting instead of penalizing?
@@ -45,17 +46,14 @@ export function dailyScoreFunction(): (player: Player) => number {
       // percent_started has been broken before, so this is a backup
       score = player.percent_owned;
     }
-    if (!player.is_playing) {
+    if (!player.is_playing || player.is_starting === 0) {
       // If a player is not playing, set their score to a minimal value
-      score *= PENALTY_FACTOR;
+      score *= NOT_PLAYING_FACTOR;
     }
-    if (
-      player.is_starting === 0 ||
-      !HEALTHY_STATUS_LIST.includes(player.injury_status)
-    ) {
+    if (!HEALTHY_STATUS_LIST.includes(player.injury_status)) {
       // If a player is not starting or hurt, factor their score such that it
       // falls below all healthy players, but above players not playing.
-      score *= PENALTY_FACTOR;
+      score *= INJURY_FACTOR;
     }
     return score;
   };
@@ -70,7 +68,8 @@ export function dailyScoreFunction(): (player: Player) => number {
 export function nhlScoreFunction(): (player: Player) => number {
   const starters = getNHLStartingGoalies() ? getNHLStartingGoalies() : [];
   return (player: Player) => {
-    const PENALTY_FACTOR = 0.01;
+    const NOT_PLAYING_FACTOR = 0.01;
+    const INJURY_FACTOR = 0.001;
     const STARTING_FACTOR = 100;
     // The score will be percent_started
     let score = player.percent_started;
@@ -83,10 +82,10 @@ export function nhlScoreFunction(): (player: Player) => number {
       ? checkStartingGoalie()
       : false;
     if (!player.is_playing) {
-      score *= PENALTY_FACTOR;
+      score *= NOT_PLAYING_FACTOR;
     }
     if (isPlayerInjured) {
-      score *= PENALTY_FACTOR;
+      score *= INJURY_FACTOR;
     }
     if (isStartingGoalie) {
       score *= STARTING_FACTOR;
@@ -119,7 +118,8 @@ export function nhlScoreFunction(): (player: Player) => number {
  */
 export function nflScoreFunction(): (player: Player) => number {
   return (player: Player) => {
-    const PENALTY_FACTOR = 0.01;
+    const NOT_PLAYING_FACTOR = 0.01;
+    const INJURY_FACTOR = 0.001;
     // The score will be percent_started / rank_projected_week
     // TODO: Does rank_projected_week factor in injury status already?
     // Are we double counting?
@@ -131,12 +131,12 @@ export function nflScoreFunction(): (player: Player) => number {
     score = (score / player.rank_projected_week) * 100;
     if (!player.is_playing) {
       // If a player is not playing, set their score to a minimal value
-      score *= PENALTY_FACTOR;
+      score *= NOT_PLAYING_FACTOR;
     }
     if (!HEALTHY_STATUS_LIST.includes(player.injury_status)) {
       // If a player is not starting or hurt, factor their score such that it
       // falls below all healthy players, but above players not playing.
-      score *= PENALTY_FACTOR;
+      score *= INJURY_FACTOR;
     }
 
     return score;
