@@ -194,24 +194,15 @@ export class LineupOptimizer {
     }
   }
 
-  private getEligibleUnfilledPositions(
+  private getEligiblePositions(
     player: OptimizationPlayer,
-    unfilledPositionsList: string[]
+    positionsList: string[]
   ) {
-    const result: string[] = player.eligible_positions.filter(
+    return player.eligible_positions.filter(
       (position) =>
         position !== player.selected_position &&
-        unfilledPositionsList.includes(position)
+        positionsList.includes(position)
     );
-
-    // TODO: This would be bad if we are looking at INACTIVE_POSITION_LIST
-    if (
-      player.selected_position !== "BN" &&
-      this.roster.numEmptyRosterSpots > 0
-    ) {
-      result.push("BN");
-    }
-    return result;
   }
 
   public openOneRosterSpot(): boolean {
@@ -224,7 +215,7 @@ export class LineupOptimizer {
     Roster.sortAscendingByScore(inactivePlayersOnRoster);
 
     for (const inactivePlayer of inactivePlayersOnRoster) {
-      const eligiblePositions: string[] = this.getEligibleUnfilledPositions(
+      const eligiblePositions: string[] = this.getEligiblePositions(
         inactivePlayer,
         unfilledInactivePositions
       );
@@ -241,13 +232,13 @@ export class LineupOptimizer {
     if (illegalPlayers.length === 0) return;
 
     const legalPlayers = this.roster.legalPlayers;
-    // const inactiveOnRoster = this.roster.inactiveOnRosterPlayers;
     Roster.sortDescendingByScore(illegalPlayers);
     Roster.sortAscendingByScore(legalPlayers);
 
-    // const freeUpRosterSpot = (playerA: OptimizationPlayer) => {
-    // function should free up only one position, we will call multiple times if more are required
-    // };
+    this.logInfo(
+      "Resolving illegal players:" +
+        illegalPlayers.map((p) => p.player_name).join(", ")
+    );
 
     for (const player of illegalPlayers) {
       let resolved = this.attemptMoveToUnfilledPosition(player);
@@ -256,29 +247,30 @@ export class LineupOptimizer {
       resolved = this.attemptSwapWithList(player, illegalPlayers);
       if (resolved) continue;
 
-      resolved = this.attemptSwapWithList(player, legalPlayers, illegalPlayers);
+      this.attemptSwapWithList(player, legalPlayers, illegalPlayers);
     }
   }
 
   private attemptMoveToUnfilledPosition(
     illegalPlayer: OptimizationPlayer
   ): boolean {
-    let eligiblePosition = this.getEligibleUnfilledPositions(
+    let unfilledPosition = this.getEligiblePositions(
       illegalPlayer,
-      this.roster.unfilledActivePositions
+      this.roster.unfilledInactivePositions
     )[0];
-    if (!eligiblePosition) {
-      this.openOneRosterSpot();
-      eligiblePosition = this.getEligibleUnfilledPositions(
-        illegalPlayer,
-        this.roster.unfilledActivePositions
-      )[0];
-    }
-    if (eligiblePosition) {
-      this.movePlayerToPosition(illegalPlayer, eligiblePosition);
+
+    if (unfilledPosition) {
+      this.movePlayerToPosition(illegalPlayer, unfilledPosition);
       return true;
     }
-    return false;
+
+    if (this.roster.numEmptyRosterSpots === 0) {
+      const result = this.openOneRosterSpot();
+      if (!result) return false;
+    }
+
+    this.movePlayerToPosition(illegalPlayer, "BN");
+    return true;
   }
 
   private attemptSwapWithList(
@@ -362,14 +354,13 @@ export class LineupOptimizer {
 
       let unfilledPosition;
       if (playerA.isActiveRoster()) {
-        unfilledPosition = this.getEligibleUnfilledPositions(
+        unfilledPosition = this.getEligiblePositions(
           playerA,
           this.roster.unfilledActivePositions
         )[0];
       } else if (this.roster.numEmptyRosterSpots > 0) {
         unfilledPosition = "BN";
       }
-
       if (unfilledPosition) {
         this.logInfo(
           "Moving player " + playerA.player_name + " to unfilled position: ",
