@@ -327,7 +327,7 @@
       "eligible_positions": ["C", "Util"],
       "selected_position": "IR",
       "is_editable": true,
-      "is_playing": true,
+      "is_playing": false,
       "injury_status": "Healthy",
       "percent_started": 6,
       "percent_owned": 31,

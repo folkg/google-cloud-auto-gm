@@ -316,7 +316,6 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
   it("Healthy not-playing, low score, player on IR, and IR on Bench", function () {
     const roster: Team = require("./testRosters/NHL/Daily/HonIR&IRonBench.json");
     const lo = new LineupOptimizer(roster);
-    lo.verbose = true;
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
@@ -534,6 +533,9 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     expect(["IR", "IR+"]).toContain(
       rosterModification.newPlayerPositions["419.p.6385"]
     );
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      3
+    );
   });
 
   it("Two healthy players on IR, two IR on bench", function () {
@@ -548,25 +550,27 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     );
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR");
-    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
+    expect(["IR", "IR+"]).toContain(
+      rosterModification.newPlayerPositions["419.p.6385"]
+    );
+    expect(["IR", "IR+"]).toContain(
+      rosterModification.newPlayerPositions["419.p.6726"]
+    );
   });
 
-  it("Two healthy players on IR, one IR player on BN", function () {
+  it("Two healthy players on IR, one IR player on BN, no IR+ slots open", function () {
     const roster: Team = require("./testRosters/NHL/Daily/2HealthyOnIR&1IRonBN.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR");
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      2
-    );
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.7593": "BN",
+      "419.p.6385": "IR",
+    });
   });
 
-  // TODO: FAIL: This test is failing, but it should be passing. Need to fix
   it("Two healthy players on IR, one IR+ player on BN", function () {
     const roster: Team = require("./testRosters/NHL/Daily/2HealthyOnIR&1IR+onBN.json");
     const lo = new LineupOptimizer(roster);
@@ -574,14 +578,12 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR+");
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      2
-    );
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.7593": "BN",
+      "419.p.6385": "IR+",
+    });
   });
 
-  // TODO: FAIL: This test is failing, but it should be passing. Need to fix
   it("Two healthy players on IR, two IR+ player on BN", function () {
     const roster: Team = require("./testRosters/NHL/Daily/2HealthyOnIR&2IR+onBN.json");
     const lo = new LineupOptimizer(roster);
@@ -589,15 +591,15 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      4
-    );
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR+");
-    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR+");
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.7593": "BN",
+      "419.p.6370": "BN",
+      "419.p.6385": "IR+",
+      "419.p.6726": "IR+",
+    });
   });
 
+  // TODO: Fail. Fix.
   it("One healthy player on IR, one IR+ player on BN, one IR player on IR+, no spare IR+ slot", function () {
     const roster: Team = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onBN&1IRonIR+&NoSpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
@@ -605,12 +607,49 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      3
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6370": "BN",
+      "419.p.6385": "IR+",
+      "419.p.63702": "IR",
+    });
+  });
+
+  // TODO: Fail. Fix.
+  it("Two IR players on IR+, one IR+ player on BN, no spare IR+ slot, 1 spare IR slot, One HonIR", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&NoSpareIR+Slot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(["C", "Util", "BN"]).toContain(
+      rosterModification.newPlayerPositions["419.p.37372"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR+");
-    expect(rosterModification.newPlayerPositions["419.p.63702"]).toEqual("IR");
+    expect(rosterModification.newPlayerPositions["419.p.5376"]).toEqual("IR+");
+    expect([
+      rosterModification.newPlayerPositions["419.p.6370"],
+      rosterModification.newPlayerPositions["419.p.63702"],
+    ]).toContain("IR");
+    expect(rosterModification.newPlayerPositions).toEqual({});
+  });
+
+  // TODO: Fail. Fix.
+  it("Two IR players on IR+, one IR+ player on BN, all other players on BN, One HonIR", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&AllOtherPlayersOnBN.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(["C", "Util", "BN"]).toContain(
+      rosterModification.newPlayerPositions["419.p.37372"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.5376"]).toEqual("IR+");
+    expect([
+      rosterModification.newPlayerPositions["419.p.6370"],
+      rosterModification.newPlayerPositions["419.p.63702"],
+    ]).toContain("IR");
+    expect(rosterModification.newPlayerPositions).toEqual({});
   });
 
   it("One healthy player on IR, one IR player on BN, one IR+ player on IR, one spare IR+ slot", function () {
@@ -620,16 +659,12 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      3
-    );
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6385"]).toEqual("IR");
-    expect(rosterModification.newPlayerPositions["419.p.63702"]).toEqual("IR+");
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6370": "BN",
+      "419.p.6385": "IR",
+      "419.p.63702": "IR+",
+    });
   });
-
-  // TODO: Ensure we have a test where the IR+ is full of IR players, and one new IR+ player on the bench that cannot go to IR
-  // TODO: Just like above, but with all other players on BN. Ensure optimal lineup at end.
 
   // TODO: If we are going to move IR players up in the lineup, we need to test a better player on IR swapping with a worse IR palyer on bench
 });

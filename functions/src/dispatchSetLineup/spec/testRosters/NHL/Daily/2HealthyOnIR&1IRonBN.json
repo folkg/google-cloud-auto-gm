@@ -228,11 +228,11 @@
     {
       "player_key": "419.p.5376",
       "player_name": "J.T. Miller",
-      "eligible_positions": ["C", "LW", "RW", "Util", "IR+"],
+      "eligible_positions": ["C", "LW", "RW", "Util"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": false,
-      "injury_status": "Out",
+      "injury_status": "Healthy",
       "percent_started": 34,
       "percent_owned": 98,
       "transactions_delta": -9,
@@ -366,7 +366,6 @@
     "Util": 3,
     "G": 2,
     "BN": 5,
-    "IR": 2,
-    "IR+": 2
+    "IR": 2
   }
 }
