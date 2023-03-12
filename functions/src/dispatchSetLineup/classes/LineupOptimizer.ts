@@ -352,18 +352,9 @@ export class LineupOptimizer {
       playerOne: OptimizationPlayer,
       playerTwo: OptimizationPlayer
     ): void => {
-      this.logInfo(
-        `swapping ${playerOne.player_name} ${playerOne.selected_position} with ${playerTwo.player_name} ${playerTwo.selected_position}`
-      );
-      const idxOne = source.indexOf(playerOne);
-      const idxTwo = target.indexOf(playerTwo);
-      source[idxOne] = playerTwo;
-      target[idxTwo] = playerOne;
-
-      const tempPosition = playerOne.selected_position;
-      this.movePlayerToPosition(playerOne, playerTwo.selected_position);
-      this.movePlayerToPosition(playerTwo, tempPosition);
-
+      this.swapPlayers(playerOne, playerTwo);
+      source[source.indexOf(playerOne)] = playerTwo;
+      target[target.indexOf(playerTwo)] = playerOne;
       isPlayerASwapped = true;
     };
 
