@@ -107,6 +107,9 @@ export class LineupOptimizer {
   }
 
   private movePlayerToPosition(player: OptimizationPlayer, position: string) {
+    this.logInfo(
+      "moving player " + player.player_name + " to position " + position
+    );
     player.selected_position = position;
   }
 
@@ -220,6 +223,7 @@ export class LineupOptimizer {
         unfilledInactivePositions
       );
       if (eligiblePositions.length > 0) {
+        this.logInfo("freeing up one roster spot:");
         this.movePlayerToPosition(inactivePlayer, eligiblePositions[0]);
         return true;
       }
@@ -247,23 +251,27 @@ export class LineupOptimizer {
       resolved = this.attemptSwapWithList(player, illegalPlayers);
       if (resolved) continue;
 
-      this.attemptSwapWithList(player, legalPlayers, illegalPlayers);
+      resolved = this.attemptSwapWithList(player, legalPlayers, illegalPlayers);
+      if (resolved) continue;
+
+      // resolved = this.attemptMoveToUnfilledPosition(player);
     }
   }
 
   private attemptMoveToUnfilledPosition(
     illegalPlayer: OptimizationPlayer
   ): boolean {
-    let unfilledPosition = this.getEligiblePositions(
+    let unfilledInactivePosition = this.getEligiblePositions(
       illegalPlayer,
       this.roster.unfilledInactivePositions
     )[0];
-
-    if (unfilledPosition) {
-      this.movePlayerToPosition(illegalPlayer, unfilledPosition);
+    this.logInfo("unfilledInactivePosition: " + unfilledInactivePosition);
+    if (unfilledInactivePosition) {
+      this.movePlayerToPosition(illegalPlayer, unfilledInactivePosition);
       return true;
     }
 
+    this.logInfo("numEmptyRosterSpots: " + this.roster.numEmptyRosterSpots);
     if (this.roster.numEmptyRosterSpots === 0) {
       const result = this.openOneRosterSpot();
       if (!result) return false;
@@ -340,8 +348,24 @@ export class LineupOptimizer {
     // const addPlayersToRoster = false;
     // const dropPlayersFromRoster = false;
     // intialize variables
-    const verbose = this._verbose;
-    const movePlayerToPosition = this.movePlayerToPosition;
+    const swapPlayers = (
+      playerOne: OptimizationPlayer,
+      playerTwo: OptimizationPlayer
+    ): void => {
+      this.logInfo(
+        `swapping ${playerOne.player_name} ${playerOne.selected_position} with ${playerTwo.player_name} ${playerTwo.selected_position}`
+      );
+      const idxOne = source.indexOf(playerOne);
+      const idxTwo = target.indexOf(playerTwo);
+      source[idxOne] = playerTwo;
+      target[idxTwo] = playerOne;
+
+      const tempPosition = playerOne.selected_position;
+      this.movePlayerToPosition(playerOne, playerTwo.selected_position);
+      this.movePlayerToPosition(playerTwo, tempPosition);
+
+      isPlayerASwapped = true;
+    };
 
     let isPlayerASwapped;
     let i = 0;
@@ -367,7 +391,7 @@ export class LineupOptimizer {
           unfilledPosition
         );
 
-        movePlayerToPosition(playerA, unfilledPosition);
+        this.movePlayerToPosition(playerA, unfilledPosition);
         // splice the player from source and add to target array
         const idx = source.indexOf(playerA);
         target.push(source.splice(idx, 1)[0]);
@@ -432,25 +456,5 @@ export class LineupOptimizer {
     }
 
     return;
-
-    function swapPlayers(
-      playerOne: OptimizationPlayer,
-      playerTwo: OptimizationPlayer
-    ): void {
-      verbose &&
-        console.info(
-          `swapping ${playerOne.player_name} ${playerOne.selected_position} with ${playerTwo.player_name} ${playerTwo.selected_position}`
-        );
-      const idxOne = source.indexOf(playerOne);
-      const idxTwo = target.indexOf(playerTwo);
-      source[idxOne] = playerTwo;
-      target[idxTwo] = playerOne;
-
-      const tempPosition = playerOne.selected_position;
-      movePlayerToPosition(playerOne, playerTwo.selected_position);
-      movePlayerToPosition(playerTwo, tempPosition);
-
-      isPlayerASwapped = true;
-    }
   }
 }
