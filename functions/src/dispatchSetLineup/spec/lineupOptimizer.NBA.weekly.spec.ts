@@ -12,10 +12,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   //   jest.resetModules();
   // });
 
-  it("Optimal Lineup", async function () {
+  it("Optimal Lineup", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 
@@ -24,10 +24,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
 
   // *** Test Optimization of Lineup using healthy players ***
   // 1 player to move into 1 empty roster spot
-  it("1 player to move into 1 empty roster spot", async function () {
+  it("1 player to move into 1 empty roster spot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/1PlayerToMoveInto1EmptyRosterSpot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -36,10 +36,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   });
 
   // 1 swap involving 2 players
-  it("1 swap involving 2 players", async function () {
+  it("1 swap involving 2 players", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/1SwapInvolving2Players.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["SG", "G", "SF", "F", "Util"]).toContain(
@@ -49,10 +49,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   });
 
   // different 1 swap involving 2 players
-  it("differet 1 swap involving 2 players", async function () {
+  it("differet 1 swap involving 2 players", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/1SwapInvolving2Players(2).json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["SF", "PF", "F", "Util"]).toContain(
@@ -62,10 +62,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   });
 
   // two swaps required
-  it("two swaps required", async function () {
+  it("two swaps required", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/2SwapsRequired.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["SF", "PF", "F", "Util"]).toContain(
@@ -79,10 +79,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   });
 
   // 1 swap required, 1 player to move into 1 empty roster spot
-  it("1 swap required, 1 player to move into 1 empty roster spot", async function () {
+  it("1 swap required, 1 player to move into 1 empty roster spot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/1SwapRequired1PlayerToMoveInto1EmptyRosterSpot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -102,10 +102,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     );
   });
   // all players on bench
-  it("all players on bench", async function () {
+  it("all players on bench", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/allPlayersOnBench.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["PG", "SG", "G", "Util"]).toContain(
@@ -140,10 +140,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     );
   });
   // lineup with worst players on roster, best players on bench
-  it("lineup with worst players on roster, best players on bench", async function () {
+  it("lineup with worst players on roster, best players on bench", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/lineupWithWorstPlayersOnRosterBestPlayersOnBench.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["PG", "SG", "G", "Util"]).toContain(
@@ -164,10 +164,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
 
   // *** Test Optimization of Lineup using injured players ***
   // high score IL player on IL, low score IL player on bench, no spare IL slot
-  xit("high score IL player on IL, low score IL player on bench, no spare IL slot", async function () {
+  xit("high score IL player on IL, low score IL player on bench, no spare IL slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreILPlayerOnBenchNoSpareILSlot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -176,10 +176,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     });
   });
   // high score IL player on IL, low score IL player on roster, no spare IL slot
-  xit("high score IL player on IL, low score IL player on roster, no spare IL slot", async function () {
+  xit("high score IL player on IL, low score IL player on roster, no spare IL slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreILPlayerOnRosterNoSpareILSlot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -192,10 +192,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   });
 
   // high score IL+ player on IL+, low score IL+ player on bench, one spare IL+ slot
-  xit("high score IL+ player on IL+, low score IL+ player on bench, one spare IL+ slot", async function () {
+  xit("high score IL+ player on IL+, low score IL+ player on bench, one spare IL+ slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreIL+PlayerOnBenchOneSpareIL+Slot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -206,10 +206,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     );
   });
   // high score IL+ player on IL+, low score IL player on bench, no spare IL+ slot (expect swap)
-  xit("high score IL+ player on IL+, low score IL player on bench, one spare IL slot", async function () {
+  xit("high score IL+ player on IL+, low score IL player on bench, one spare IL slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreILPlayerOnBenchOneSpareILSlot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -220,10 +220,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     );
   });
   // high score IL+ player on IL+, low score IL player on bench, one spare IL
-  xit("high score IL+ player on IL+, low score IL player on bench, one spare IL", async function () {
+  xit("high score IL+ player on IL+, low score IL player on bench, one spare IL", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreILPlayerOnBenchOneSpareILAndOneIL+Slot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -232,10 +232,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     });
   });
   // high score IL player on IL, low score IL+ player on bench, one spare IL+ slot (expect IL+ player to IL+, IL player to bench)
-  xit("high score IL player on IL, low score IL+ player on bench, one spare IL+ slot", async function () {
+  xit("high score IL player on IL, low score IL+ player on bench, one spare IL+ slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreIL+PlayerOnBenchOneSpareIL+Slot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
@@ -244,10 +244,10 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     });
   });
   // high score IL player on IL, low score IL player on bench, lower score IL+ on bench, one spare IL+ slot (expect IL+ player to IL+, IL player to bench)
-  xit("high score IL player on IL, low score IL player on bench, lower score IL+ on bench, one spare IL+ slot", async function () {
+  xit("high score IL player on IL, low score IL player on bench, lower score IL+ on bench, one spare IL+ slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreILPlayerOnBenchLowerScoreIL+OnBenchOneSpareIL+Slot.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({

@@ -72,7 +72,7 @@ async function getRosterModifications(
   for (const roster of rosters) {
     console.log(JSON.stringify(roster));
     const lo = new LineupOptimizer(roster);
-    const rm = await lo.optimizeStartingLineup();
+    const rm = lo.optimizeStartingLineup();
     lo.isSuccessfullyOptimized(); // will log any errors
     // const rm = await optimizeStartingLineup2(roster);
     console.info(

@@ -30,7 +30,7 @@ export class LineupOptimizer {
     );
   }
 
-  public async optimizeStartingLineup(): Promise<RosterModification> {
+  public optimizeStartingLineup(): RosterModification {
     if (this.roster.editablePlayers.length === 0) {
       this.logInfo("no players to optimize for team " + this.team.team_key);
       return this.aRosterModification({});
