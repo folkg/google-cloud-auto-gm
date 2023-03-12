@@ -600,6 +600,8 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
   });
 
   // TODO: Fail. Fix.
+  // Sam Bennet should swap with Sam Bennet 3 and Tony Deangelo in 3 player swap
+  // This is an issue with findPlayerC method. Additional notes are in the method.
   it("One healthy player on IR, one IR+ player on BN, one IR player on IR+, no spare IR+ slot", function () {
     const roster: Team = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onBN&1IRonIR+&NoSpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
@@ -614,7 +616,96 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     });
   });
 
-  // TODO: Fail. Fix.
+  it("One healthy player on IR, one IR+ player on LW, one IR player on IR+, no spare IR+ slot", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onLW&1IRonIR+&NoSpareIR+Slot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "419.p.6370": "BN",
+      "419.p.5441": "IR+",
+      "419.p.63702": "IR",
+    });
+  });
+
+  // One healthy on IR, one IR on NA, one NA on Util
+  it("One healthy on IR, one IR on NA, one NA on Util", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/1HealthyOnIR&1IRonNA&1NAonUtil.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "419.p.6370": "BN",
+      "419.p.5980": "NA",
+      "419.p.63702": "IR",
+    });
+  });
+  // One IR+ on IR, one IR on NA, one NA on IR+
+  it("One IR+ on IR, one IR on NA, one NA on IR+", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/1IR+onIR&1IRonNA&1NAonIR+.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6370": "IR+",
+      "419.p.63703": "NA",
+      "419.p.63702": "IR",
+    });
+  });
+  // One IR+ on IR, one IR on NA, one NA on IR+, two other swaps required
+  it("One IR+ on IR, one IR on NA, one NA on IR+, two other swaps required", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/1IR+onIR&1IRonNA&1NAonIR+2More.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "419.p.6370": "IR+",
+      "419.p.63703": "NA",
+      "419.p.63702": "IR",
+    });
+    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
+      7
+    );
+  });
+  // One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+ (expect healthy to remain on IR)
+  it("One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onIR&1IRonNA&1NAonIR+.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6370": "IR+",
+      "419.p.63703": "NA",
+      "419.p.63702": "IR",
+    });
+  });
+  // One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+, one IR on G
+  it("One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+, one IR on G", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onIR&1IRonNA&1NAonIR+&1IRonG.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6370": "IR+",
+      "419.p.63703": "NA",
+      "419.p.63702": "IR",
+      "419.p.6370ns": "BN",
+      "419.p.7593": "IR",
+    });
+  });
+
   it("Two IR players on IR+, one IR+ player on BN, no spare IR+ slot, 1 spare IR slot, One HonIR", function () {
     const roster: Team = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&NoSpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
@@ -622,6 +713,7 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
+
     expect(["C", "Util", "BN"]).toContain(
       rosterModification.newPlayerPositions["419.p.37372"]
     );
@@ -630,17 +722,16 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
       rosterModification.newPlayerPositions["419.p.6370"],
       rosterModification.newPlayerPositions["419.p.63702"],
     ]).toContain("IR");
-    expect(rosterModification.newPlayerPositions).toEqual({});
   });
 
-  // TODO: Fail. Fix.
-  it("Two IR players on IR+, one IR+ player on BN, all other players on BN, One HonIR", function () {
+  it("Two IR players on IR+, one IR+ player on BN, all other players on BN, One HonIR, All other players on BN", function () {
     const roster: Team = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&AllOtherPlayersOnBN.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
+
     expect(["C", "Util", "BN"]).toContain(
       rosterModification.newPlayerPositions["419.p.37372"]
     );
@@ -649,7 +740,6 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
       rosterModification.newPlayerPositions["419.p.6370"],
       rosterModification.newPlayerPositions["419.p.63702"],
     ]).toContain("IR");
-    expect(rosterModification.newPlayerPositions).toEqual({});
   });
 
   it("One healthy player on IR, one IR player on BN, one IR+ player on IR, one spare IR+ slot", function () {
@@ -666,5 +756,47 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     });
   });
 
-  // TODO: If we are going to move IR players up in the lineup, we need to test a better player on IR swapping with a worse IR palyer on bench
+  // ***Test cases where a player randomly ends up in an illegal position? ie. C on LW? Would yahoo ever remove eligibility?
+  it("C stuck on LW, open C position", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/CStuckOnLW.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.3737": "C",
+      "419.p.5441": "LW",
+    });
+  });
+
+  it("C stuck on LW, no open C position", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/CStuckOnLWSwapRequired.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.3737": "C",
+      "419.p.5376": "BN",
+      "419.p.5441": "LW",
+    });
+  });
+
+  it("Worse IR player on bench, better IR player on IR", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/WorseIRPlayerOnBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({});
+    // TODO: If we are going to move IR players up in the lineup, there should be a swap
+    // For now, we are just doing these swaps in weekly leagues
+    // expect(rosterModification.newPlayerPositions).toEqual({
+    //   "419.p.6370": "BN",
+    //   "419.p.5376": "IR",
+    // });
+  });
 });
