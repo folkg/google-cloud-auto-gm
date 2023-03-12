@@ -10,12 +10,10 @@ export class LineupOptimizer {
   private roster: Roster;
   private originalPlayerPositions: { [key: string]: string };
   private newPlayerPositions: { [key: string]: string } = {};
-  private _verbose = false;
-  public set verbose(value: boolean) {
-    this._verbose = value;
-  }
+
+  public verbose = false;
   private logInfo(...args: any[]) {
-    if (this._verbose) console.info(...args);
+    if (this.verbose) console.info(...args);
   }
 
   constructor(team: Team) {
@@ -42,7 +40,7 @@ export class LineupOptimizer {
     ) => {
       Roster.sortDescendingByScore(listA);
       Roster.sortAscendingByScore(listB);
-      this.transferPlayers(listA, listB);
+      this.transferOptimalPlayers(listA, listB);
     };
 
     const isWeeklyDeadline =
@@ -113,90 +111,6 @@ export class LineupOptimizer {
     player.selected_position = position;
   }
 
-  public isSuccessfullyOptimized(): boolean {
-    // TODO: Refactor this further. Maybe we can pull out code into a separate function
-    const unfilledPositionsCounter = this.roster.unfilledPositionCounter;
-    const benchPlayers = this.roster.benchPlayers;
-
-    if (unfilledActiveRosterPositions().length > 0) {
-      console.error(
-        `Suboptimal Lineup: unfilledRosterPositions for team ${
-          this.team.team_key
-        }: ${unfilledActiveRosterPositions()}`
-      );
-      return false;
-    }
-
-    // TODO: Move this into Roster class
-    const unfilledPositions = Object.keys(unfilledPositionsCounter);
-    for (const position of unfilledPositions) {
-      if (position !== "BN" && unfilledPositionsCounter[position] < 0) {
-        console.error(
-          `Illegal Lineup: Too many players at position ${position} for team ${this.team.team_key}`
-        );
-        return false;
-      }
-    }
-
-    const illegallyMovedPlayers = Object.keys(this.newPlayerPositions).filter(
-      (movedPlayerKey) =>
-        this.roster.illegalPlayers.some(
-          (illegalPlayer) => illegalPlayer.player_key === movedPlayerKey
-        )
-    );
-    if (illegallyMovedPlayers.length > 0) {
-      console.error(
-        `Illegal Lineup: illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`
-      );
-      return false;
-    }
-
-    const idlePlayers = this.roster.benchPlayers.concat(
-      this.roster.inactivePlayers
-    );
-    for (const idlePlayer of idlePlayers) {
-      for (const rosterPlayer of this.roster.activeRosterPlayers) {
-        if (
-          idlePlayer.isEligibleToSwapWith(rosterPlayer) &&
-          idlePlayer.start_score > rosterPlayer.start_score
-        ) {
-          console.error(
-            `Suboptimal Lineup: benchPlayer ${idlePlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
-          );
-          return false;
-        }
-      }
-    }
-
-    return true;
-
-    // end of verifyOptimization() function
-
-    // TODO: Will we need this in the transferPlayers() function?
-    function unfilledActiveRosterPositions() {
-      // TODO: Replace this with this.roster.unfilledActiveRosterPositions
-      // get all unfilled positions except for BN and INACTIVE_POSITION_LIST
-      const unfilledRosterPositions = Object.keys(
-        unfilledPositionsCounter
-      ).filter(
-        (position) =>
-          position !== "BN" &&
-          !INACTIVE_POSITION_LIST.includes(position) &&
-          unfilledPositionsCounter[position] > 0
-      );
-      // check if there are any players on bench that can be moved to the unfilled positions
-      const result: string[] = [];
-      for (const benchPlayer of benchPlayers) {
-        for (const unfilledPosition of unfilledRosterPositions) {
-          if (benchPlayer.eligible_positions.includes(unfilledPosition)) {
-            result.push(unfilledPosition);
-          }
-        }
-      }
-      return result;
-    }
-  }
-
   private getEligiblePositions(
     player: OptimizationPlayer,
     positionsList: string[]
@@ -208,7 +122,7 @@ export class LineupOptimizer {
     );
   }
 
-  public openOneRosterSpot(): boolean {
+  private openOneRosterSpot(): boolean {
     const unfilledInactivePositions: string[] =
       this.roster.unfilledInactivePositions;
     if (unfilledInactivePositions.length === 0) return false;
@@ -246,9 +160,9 @@ export class LineupOptimizer {
 
     for (const player of illegalPlayers) {
       const resolved = this.attemptMoveToUnfilledPosition(player);
-      if (resolved) continue;
-
-      this.attemptSwapWithList(player, allEditablePlayers);
+      if (!resolved) {
+        this.attemptSwapWithList(player, allEditablePlayers);
+      }
     }
   }
 
@@ -267,6 +181,8 @@ export class LineupOptimizer {
     this.logInfo("unfilledPosition: " + unfilledPosition);
 
     if (!unfilledPosition) {
+      if (illegalPlayer.isActiveRoster()) return false;
+
       this.logInfo("numEmptyRosterSpots: " + this.roster.numEmptyRosterSpots);
 
       if (this.roster.numEmptyRosterSpots === 0) {
@@ -344,7 +260,7 @@ export class LineupOptimizer {
 
     // If we are moving playerA from inactive to active roster, player B will
     // go to BN as an intermediary step. This ensures that playerA can swap
-    // with anyone, not just players they share a position with.
+    // with anyone, not just players they share an exact position with.
     const playerBPosition =
       playerA.isInactiveList() && playerB.isActiveRoster()
         ? "BN"
@@ -362,7 +278,7 @@ export class LineupOptimizer {
     );
   }
 
-  private transferPlayers(
+  private transferOptimalPlayers(
     source: OptimizationPlayer[],
     target: OptimizationPlayer[]
   ): void {
@@ -460,7 +376,89 @@ export class LineupOptimizer {
       i++;
       this.logInfo("i: " + i + " source.length: " + source.length);
     }
+  }
 
-    return;
+  public isSuccessfullyOptimized(): boolean {
+    // TODO: Refactor this further. Maybe we can pull out code into a separate function
+    const unfilledPositionsCounter = this.roster.unfilledPositionCounter;
+    const benchPlayers = this.roster.benchPlayers;
+
+    if (unfilledActiveRosterPositions().length > 0) {
+      console.error(
+        `Suboptimal Lineup: unfilledRosterPositions for team ${
+          this.team.team_key
+        }: ${unfilledActiveRosterPositions()}`
+      );
+      return false;
+    }
+
+    // TODO: Move this into Roster class
+    const unfilledPositions = Object.keys(unfilledPositionsCounter);
+    for (const position of unfilledPositions) {
+      if (position !== "BN" && unfilledPositionsCounter[position] < 0) {
+        console.error(
+          `Illegal Lineup: Too many players at position ${position} for team ${this.team.team_key}`
+        );
+        return false;
+      }
+    }
+
+    const illegallyMovedPlayers = Object.keys(this.newPlayerPositions).filter(
+      (movedPlayerKey) =>
+        this.roster.illegalPlayers.some(
+          (illegalPlayer) => illegalPlayer.player_key === movedPlayerKey
+        )
+    );
+    if (illegallyMovedPlayers.length > 0) {
+      console.error(
+        `Illegal Lineup: illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`
+      );
+      return false;
+    }
+
+    const idlePlayers = this.roster.benchPlayers.concat(
+      this.roster.inactivePlayers
+    );
+    for (const idlePlayer of idlePlayers) {
+      for (const rosterPlayer of this.roster.activeRosterPlayers) {
+        if (
+          idlePlayer.isEligibleToSwapWith(rosterPlayer) &&
+          idlePlayer.start_score > rosterPlayer.start_score
+        ) {
+          console.error(
+            `Suboptimal Lineup: benchPlayer ${idlePlayer.player_name} has a higher score than rosterPlayer ${rosterPlayer.player_name} for team ${this.team.team_key}`
+          );
+          return false;
+        }
+      }
+    }
+
+    return true;
+
+    // end of verifyOptimization() function
+
+    // TODO: Will we need this in the transferPlayers() function?
+    function unfilledActiveRosterPositions() {
+      // TODO: Replace this with this.roster.unfilledActiveRosterPositions
+      // get all unfilled positions except for BN and INACTIVE_POSITION_LIST
+      const unfilledRosterPositions = Object.keys(
+        unfilledPositionsCounter
+      ).filter(
+        (position) =>
+          position !== "BN" &&
+          !INACTIVE_POSITION_LIST.includes(position) &&
+          unfilledPositionsCounter[position] > 0
+      );
+      // check if there are any players on bench that can be moved to the unfilled positions
+      const result: string[] = [];
+      for (const benchPlayer of benchPlayers) {
+        for (const unfilledPosition of unfilledRosterPositions) {
+          if (benchPlayer.eligible_positions.includes(unfilledPosition)) {
+            result.push(unfilledPosition);
+          }
+        }
+      }
+      return result;
+    }
   }
 }
