@@ -42,7 +42,7 @@ export function dailyScoreFunction(): (player: Player) => number {
     // TODO: is_starting to be more specific (basketball G, baseball players)
     // Maybe boost the score of players who are starting instead of penalizing?
     let score = player.percent_started;
-    if (!score) {
+    if (score == null) {
       // percent_started has been broken before, so this is a backup
       score = player.percent_owned;
     }
@@ -73,7 +73,7 @@ export function nhlScoreFunction(): (player: Player) => number {
     const STARTING_FACTOR = 100;
     // The score will be percent_started
     let score = player.percent_started;
-    if (!score) {
+    if (score == null) {
       // percent_started has been broken before, so this is a backup
       score = player.percent_owned;
     }
@@ -124,7 +124,7 @@ export function nflScoreFunction(): (player: Player) => number {
     // TODO: Does rank_projected_week factor in injury status already?
     // Are we double counting?
     let score = player.percent_started;
-    if (!score) {
+    if (score == null) {
       // percent_started has been broken before, so this is a backup
       score = player.percent_owned;
     }
