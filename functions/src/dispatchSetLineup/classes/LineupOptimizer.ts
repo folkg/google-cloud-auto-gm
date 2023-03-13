@@ -49,6 +49,7 @@ export class LineupOptimizer {
     if (isWeeklyDeadline) {
       const inactivePlayers = this.roster.inactivePlayers;
       const activePlayers = this.roster.activePlayers;
+      this.logInfo("Optimizing inactive players to active players");
       optimizeListAtoListB(inactivePlayers, activePlayers);
     }
 
@@ -59,6 +60,7 @@ export class LineupOptimizer {
 
     const benchPlayers = this.roster.benchPlayers;
     const rosterPlayers = this.roster.activeRosterPlayers;
+    this.logInfo("Optimizing bench players to active roster players");
     optimizeListAtoListB(benchPlayers, rosterPlayers);
 
     this.newPlayerPositions = this.diffPlayerPositionDictionary(
@@ -166,22 +168,17 @@ export class LineupOptimizer {
     }
   }
 
-  private attemptMoveToUnfilledPosition(
-    illegalPlayer: OptimizationPlayer
-  ): boolean {
-    const positionsList = illegalPlayer.isActiveRoster()
-      ? this.roster.unfilledActivePositions
+  private attemptMoveToUnfilledPosition(player: OptimizationPlayer): boolean {
+    const positionsList = player.isActiveRoster()
+      ? this.roster.unfilledActivePositions //could change to this.roster.unfilledPositions for more flexibility
       : this.roster.unfilledInactivePositions;
 
-    let unfilledPosition = this.getEligiblePositions(
-      illegalPlayer,
-      positionsList
-    )[0];
+    let unfilledPosition = this.getEligiblePositions(player, positionsList)[0];
 
     this.logInfo("unfilledPosition: " + unfilledPosition);
 
     if (!unfilledPosition) {
-      if (illegalPlayer.isActiveRoster()) return false;
+      if (player.isActiveRoster()) return false;
 
       this.logInfo("numEmptyRosterSpots: " + this.roster.numEmptyRosterSpots);
 
@@ -192,7 +189,7 @@ export class LineupOptimizer {
       unfilledPosition = "BN";
     }
 
-    this.movePlayerToPosition(illegalPlayer, unfilledPosition);
+    this.movePlayerToPosition(player, unfilledPosition);
     return true;
   }
 
@@ -209,6 +206,7 @@ export class LineupOptimizer {
         this.swapPlayers(playerA, playerB);
         return true;
       } else {
+        this.logInfo("attempting to find a three way swap");
         const playerC = this.findPlayerC(playerA, playerB, playerBList, false);
         if (playerC) {
           this.logInfo("three-way swap found!");
@@ -219,6 +217,12 @@ export class LineupOptimizer {
           this.swapPlayers(playerB, playerC);
           return true;
         }
+        // this.logInfo("attempting to move playerB to unfilled position");
+        // const tempPosition = playerB.selected_position;
+        // const result = this.attemptMoveToUnfilledPosition(playerB);
+        // if (result) {
+        //   this.movePlayerToPosition(playerA, tempPosition);
+        // }
       }
     }
     return false;
@@ -301,6 +305,7 @@ export class LineupOptimizer {
     this.logInfo("source: " + source.map((p) => p.player_name));
     this.logInfo("target: " + target.map((p) => p.player_name));
     // TODO: if we are always maximizing score now, can we borrow the optimization algorithm from the optimizer?
+    // TODO: Can we make this more like the resolveIllegalPlayer function?
     while (i < source.length) {
       const playerA = source[i];
       isPlayerASwapped = false;
@@ -330,6 +335,9 @@ export class LineupOptimizer {
       const isPlayerWorseThanTargetArray =
         playerA.start_score < Math.min(...target.map((tp) => tp.start_score));
       if (isPlayerWorseThanTargetArray) {
+        this.logInfo(
+          `Player ${playerA.player_name} is worse than all players in target array. Skipping.`
+        );
         i++;
         continue;
       }
@@ -337,13 +345,13 @@ export class LineupOptimizer {
       const eligibleTargetPlayers = target.filter((targetPlayer) =>
         targetPlayer.eligible_positions.includes(playerA.selected_position)
       );
+      this.logInfo(
+        `eligibleTargetPlayers for player ${
+          playerA.player_name
+        }: ${eligibleTargetPlayers.map((p) => p.player_name)}`
+      );
 
       if (eligibleTargetPlayers.length > 0) {
-        this.logInfo(
-          `eligibleTargetPlayers for player ${
-            playerA.player_name
-          }: ${eligibleTargetPlayers.map((p) => p.player_name)}`
-        );
         for (const playerB of eligibleTargetPlayers) {
           this.logInfo(
             `comparing ${playerA.player_name} ${playerA.start_score} to ${playerB.player_name} ${playerB.start_score}`
@@ -361,6 +369,13 @@ export class LineupOptimizer {
                 break;
               }
               this.logInfo("No three way swap found");
+              this.logInfo("Trying to move playerB to unfilled position");
+              const tempPosition = playerB.selected_position;
+              const result = this.attemptMoveToUnfilledPosition(playerB);
+              if (result) {
+                this.movePlayerToPosition(playerA, tempPosition);
+                break;
+              }
             } else {
               this.logInfo("Direct swap");
               swapPlayers(playerA, playerB);
