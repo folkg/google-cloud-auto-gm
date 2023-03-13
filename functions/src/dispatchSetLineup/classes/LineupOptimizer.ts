@@ -169,11 +169,15 @@ export class LineupOptimizer {
   }
 
   private attemptMoveToUnfilledPosition(player: OptimizationPlayer): boolean {
-    const positionsList = player.isActiveRoster()
-      ? this.roster.unfilledActivePositions //could change to this.roster.unfilledPositions for more flexibility
+    // TODO: Would passing this in as a parameter be better?
+    const unfilledPositionsList = player.isActiveRoster()
+      ? this.roster.unfilledActivePositions //could change to this.roster.unfilledPositions for more flexibility?
       : this.roster.unfilledInactivePositions;
 
-    let unfilledPosition = this.getEligiblePositions(player, positionsList)[0];
+    let unfilledPosition = this.getEligiblePositions(
+      player,
+      unfilledPositionsList
+    )[0];
 
     this.logInfo("unfilledPosition: " + unfilledPosition);
 
@@ -306,6 +310,7 @@ export class LineupOptimizer {
     this.logInfo("target: " + target.map((p) => p.player_name));
     // TODO: if we are always maximizing score now, can we borrow the optimization algorithm from the optimizer?
     // TODO: Can we make this more like the resolveIllegalPlayer function?
+    // TODO: Can we regenerate the source and target arrays each time to avoid splicing?
     while (i < source.length) {
       const playerA = source[i];
       isPlayerASwapped = false;
@@ -371,6 +376,7 @@ export class LineupOptimizer {
               this.logInfo("No three way swap found");
               this.logInfo("Trying to move playerB to unfilled position");
               const tempPosition = playerB.selected_position;
+              // TODO: Bug - we only want to move playerB to an inactivePosition if A.score > B.score
               const result = this.attemptMoveToUnfilledPosition(playerB);
               if (result) {
                 this.movePlayerToPosition(playerA, tempPosition);
@@ -381,7 +387,7 @@ export class LineupOptimizer {
               swapPlayers(playerA, playerB);
               break;
             }
-          }
+          } // TODO: else - can we move playerB to an unfilled position and do a three way swap?
         }
       }
       // continue without incrementing i if a swap was made

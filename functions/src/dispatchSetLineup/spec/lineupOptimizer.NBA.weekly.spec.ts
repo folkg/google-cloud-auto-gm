@@ -164,7 +164,7 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
 
   // *** Test Optimization of Lineup using injured players ***
   // high score IL player on IL, low score IL player on bench, no spare IL slot
-  xit("high score IL player on IL, low score IL player on bench, no spare IL slot", function () {
+  it("high score IL player on IL, low score IL player on bench, no spare IL slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreILPlayerOnBenchNoSpareILSlot.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
@@ -176,13 +176,13 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     });
   });
   // high score IL player on IL, low score IL player on roster, no spare IL slot
-  xit("high score IL player on IL, low score IL player on roster, no spare IL slot", function () {
+  it("high score IL player on IL, low score IL player on roster, no spare IL slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreILPlayerOnRosterNoSpareILSlot.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification.newPlayerPositions).toMatchObject({
       "418.p.6035": "IL",
       "418.p.6018": "BN",
     });
@@ -192,49 +192,48 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   });
 
   // high score IL+ player on IL+, low score IL+ player on bench, one spare IL+ slot
-  xit("high score IL+ player on IL+, low score IL+ player on bench, one spare IL+ slot", function () {
+  it("high score IL+ player on IL+, low score IL+ player on bench, one spare IL+ slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreIL+PlayerOnBenchOneSpareIL+Slot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["418.p.6035"]).toEqual("IL+");
+    expect(["PF", "F", "C", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6163"]
+    );
+  });
+  // high score IL+ player on IL+, low score IL player on bench, no spare IL+ slot (expect direct swap)
+  it("high score IL+ player on IL+, low score IL player on bench, one spare IL slot, no spare IL+ slot", function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreILPlayerOnBenchOneSpareILSlot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["418.p.6035"]).toEqual("IL+");
+    expect(["PF", "F", "C", "Util"]).toContain(
+      rosterModification.newPlayerPositions["418.p.6163"]
+    );
+  });
+  // high score IL+ player on IL+, low score IL player on bench, one spare IL slot
+  it("medium score IL+ player on IL+, low score IL player on bench, one spare IL+ slot", function () {
+    const roster: Team = require("./testRosters/NBA/Weekly/mediumScoreIL+PlayerOnIL+LowScoreILPlayerOnBenchOneSpareILAndOneIL+Slot.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toEqual({
       "418.p.6035": "IL+",
-    });
-    expect(["PF", "F", "C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6163"]
-    );
-  });
-  // high score IL+ player on IL+, low score IL player on bench, no spare IL+ slot (expect swap)
-  xit("high score IL+ player on IL+, low score IL player on bench, one spare IL slot", function () {
-    const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreILPlayerOnBenchOneSpareILSlot.json");
-    const lo = new LineupOptimizer(roster);
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
-    expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
-      "418.p.6035": "IL",
-    });
-    expect(["PF", "F", "C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6163"]
-    );
-  });
-  // high score IL+ player on IL+, low score IL player on bench, one spare IL
-  xit("high score IL+ player on IL+, low score IL player on bench, one spare IL", function () {
-    const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreILPlayerOnBenchOneSpareILAndOneIL+Slot.json");
-    const lo = new LineupOptimizer(roster);
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
-    expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
-      "418.p.6035": "IL",
       "418.p.6163": "BN",
     });
   });
   // high score IL player on IL, low score IL+ player on bench, one spare IL+ slot (expect IL+ player to IL+, IL player to bench)
-  xit("high score IL player on IL, low score IL+ player on bench, one spare IL+ slot", function () {
+  // TODO: The problem is that we need to move 6035 from BN to IL and 6163 from IL+ to BN in a three way swap to an empty IL+ slot.
+  // We are not capturing this move into the empty position though.
+  it("high score IL player on IL, low score IL+ player on bench, one spare IL+ slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreIL+PlayerOnBenchOneSpareIL+Slot.json");
     const lo = new LineupOptimizer(roster);
+    lo.verbose = true;
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
@@ -244,7 +243,7 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
     });
   });
   // high score IL player on IL, low score IL player on bench, lower score IL+ on bench, one spare IL+ slot (expect IL+ player to IL+, IL player to bench)
-  xit("high score IL player on IL, low score IL player on bench, lower score IL+ on bench, one spare IL+ slot", function () {
+  it("high score IL player on IL, low score IL player on bench, lower score IL+ on bench, one spare IL+ slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreILPlayerOnILLowScoreILPlayerOnBenchLowerScoreIL+OnBenchOneSpareIL+Slot.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
@@ -255,6 +254,9 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
       "418.p.6163": "BN",
     });
   });
+
+  //TODO: Add test where there are empty roster spots, but players on IL. If we are not doing add/drops, we should be moving players from IL to BN with weekly leagues (but not daily leagues)
+  // Add a test to the weekly that should swap, and add a similar test to NHl daily league that should fail
 
   // *** Test Illegal players that should be resolved ***
   // low score healthy player on IL, IL player on bench (expect swap, healthy player to BN)

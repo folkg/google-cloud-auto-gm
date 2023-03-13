@@ -799,4 +799,50 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     //   "419.p.5376": "IR",
     // });
   });
+
+  // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is open spot
+  it("Three way swap with open LW spot", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/threeWaySwapWithOpenLWSpot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.5391": "LW",
+      "419.p.6726": "RW",
+    });
+  });
+
+  // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is open spot
+  // BN has Util eligiblity, Util has RW,LW eligiblity, LW is open spot
+  it("Two three-way swap with two open LW", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/threeWaySwapsWithTwoOpenLWSpot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.5391": "LW",
+      "419.p.6726": "RW",
+      "419.p.5376": "Util",
+      "419.p.5020": "LW",
+    });
+  });
+
+  // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is lower score
+  it("Specific three way swap", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/threeWaySwapSpecific.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.5391": "LW",
+      "419.p.6726": "RW",
+      "419.p.5441": "BN",
+    });
+  });
 });

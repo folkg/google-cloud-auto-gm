@@ -84,7 +84,7 @@
     {
       "player_key": "418.p.6018",
       "player_name": "Wendell Carter Jr.",
-      "eligible_positions": ["PF", "F", "C", "Util", "IL"],
+      "eligible_positions": ["PF", "F", "C", "Util", "IL", "IL+"],
       "selected_position": "F",
       "is_editable": true,
       "is_playing": false,
@@ -257,7 +257,7 @@
     "C": 2,
     "Util": 2,
     "BN": 3,
-    "IL": 3,
+    "IL": 1,
     "IL+": 2
   }
 }
