@@ -85,7 +85,7 @@ export class Roster {
     );
   }
 
-  public get inactivePlayers(): OptimizationPlayer[] {
+  public get inactiveListPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter((player) =>
       INACTIVE_POSITION_LIST.includes(player.selected_position)
     );
