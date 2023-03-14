@@ -1,5 +1,4 @@
 import { Roster as Roster } from "./Roster";
-import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { Team } from "../interfaces/Team";
 import { RosterModification } from "../interfaces/RosterModification";
 import { assignPlayerStartScoreFunction } from "../services/playerStartScoreFunctions.service";
@@ -203,6 +202,7 @@ export class LineupOptimizer {
     playerBList: OptimizationPlayer[]
   ): boolean {
     for (const playerB of playerBList) {
+      if (playerA === playerB) continue;
       this.logInfo(
         `comparing ${playerA.player_name} to ${playerB.player_name}`
       );
@@ -229,7 +229,9 @@ export class LineupOptimizer {
             ? this.roster.unfilledInactivePositions
             : this.roster.unfilledAllPositions;
 
-        this.logInfo("attempting to move playerB to unfilled position");
+        this.logInfo(
+          `attempting to move playerB ${playerB.player_name} to unfilled position`
+        );
         const playerBOriginalPosition = playerB.selected_position;
         const result = this.movePlayerToUnfilledPositionInTargetList(
           playerB,
@@ -237,6 +239,7 @@ export class LineupOptimizer {
         );
         if (result) {
           this.movePlayerToPosition(playerA, playerBOriginalPosition);
+          return true;
         }
       }
     }
@@ -376,7 +379,7 @@ export class LineupOptimizer {
     optimizeScore: boolean = true
   ): OptimizationPlayer | undefined {
     this.logInfo(
-      `Finding playerC for playerA: ${playerA.player_key} ${playerA.start_score}, playerB: ${playerB.player_key} ${playerB.start_score}`
+      `Finding playerC for playerA: ${playerA.player_name} ${playerA.player_key} ${playerA.start_score}, playerB: ${playerB.player_name} ${playerB.player_key} ${playerB.start_score}`
     );
 
     // // If we are moving playerA from inactive to active roster, player B will
@@ -535,28 +538,20 @@ export class LineupOptimizer {
    * @return {boolean}
    */
   public isSuccessfullyOptimized(): boolean {
-    // TODO: Refactor this further. Maybe we can pull out code into a separate function
-    const unfilledPositionsCounter = this.roster.unfilledPositionCounter;
-    const benchPlayers = this.roster.benchPlayers;
-
-    if (unfilledActiveRosterPositions().length > 0) {
+    const unfilledActiveRosterPositions = this.roster.unfilledActivePositions;
+    if (unfilledActiveRosterPositions.length > 0) {
       console.error(
-        `Suboptimal Lineup: unfilledRosterPositions for team ${
-          this.team.team_key
-        }: ${unfilledActiveRosterPositions()}`
+        `Suboptimal Lineup: unfilledRosterPositions for team ${this.team.team_key}: ${unfilledActiveRosterPositions}`
       );
       return false;
     }
 
-    // TODO: Move this into Roster class
-    const unfilledPositions = Object.keys(unfilledPositionsCounter);
-    for (const position of unfilledPositions) {
-      if (unfilledPositionsCounter[position] < 0) {
-        console.error(
-          `Illegal Lineup: Too many players at position ${position} for team ${this.team.team_key}`
-        );
-        return false;
-      }
+    const overfilledPositions = this.roster.overfilledPositions;
+    if (overfilledPositions.length > 0) {
+      console.error(
+        `Illegal Lineup: Too many players at positions: ${overfilledPositions} for team ${this.team.team_key}`
+      );
+      return false;
     }
 
     const illegallyMovedPlayers = Object.keys(this.newPlayerPositions).filter(
@@ -587,31 +582,5 @@ export class LineupOptimizer {
     }
 
     return true;
-
-    // end of verifyOptimization() function
-
-    // TODO: Will we need this in the transferPlayers() function?
-    function unfilledActiveRosterPositions() {
-      // TODO: Replace this with this.roster.unfilledActiveRosterPositions
-      // get all unfilled positions except for BN and INACTIVE_POSITION_LIST
-      const unfilledRosterPositions = Object.keys(
-        unfilledPositionsCounter
-      ).filter(
-        (position) =>
-          position !== "BN" &&
-          !INACTIVE_POSITION_LIST.includes(position) &&
-          unfilledPositionsCounter[position] > 0
-      );
-      // check if there are any players on bench that can be moved to the unfilled positions
-      const result: string[] = [];
-      for (const benchPlayer of benchPlayers) {
-        for (const unfilledPosition of unfilledRosterPositions) {
-          if (benchPlayer.eligible_positions.includes(unfilledPosition)) {
-            result.push(unfilledPosition);
-          }
-        }
-      }
-      return result;
-    }
   }
 }
