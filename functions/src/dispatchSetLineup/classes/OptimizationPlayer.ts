@@ -36,8 +36,19 @@ export class OptimizationPlayer implements OptimizationPlayer {
     return (
       playerB.player_key !== this.player_key &&
       playerB.selected_position !== this.selected_position &&
-      playerB.eligible_positions.includes(this.selected_position) &&
-      this.eligible_positions.includes(playerB.selected_position)
+      this.eligible_positions.includes(playerB.selected_position) &&
+      playerB.eligible_positions.includes(this.selected_position)
+    );
+  }
+
+  getEligibleTargetPlayers(
+    playersList: OptimizationPlayer[]
+  ): OptimizationPlayer[] {
+    return playersList.filter(
+      (targetPlayer) =>
+        targetPlayer.player_key !== this.player_key &&
+        targetPlayer.selected_position !== this.selected_position &&
+        this.eligible_positions.includes(targetPlayer.selected_position)
     );
   }
 
@@ -45,21 +56,6 @@ export class OptimizationPlayer implements OptimizationPlayer {
     return this.eligible_positions.filter(
       (position) =>
         position !== this.selected_position && positionsList.includes(position)
-    );
-  }
-
-  /**
-   * Returns a list of players that are eligible to swap with this player
-   * and have a lower start score than this player.
-   *
-   * @param {OptimizationPlayer[]} playersList
-   * @return {OptimizationPlayer[]}
-   */
-  getDesirableTargets(playersList: OptimizationPlayer[]): OptimizationPlayer[] {
-    return playersList.filter(
-      (player) =>
-        this.eligible_positions.includes(player.selected_position) &&
-        this.start_score > player.start_score
     );
   }
 

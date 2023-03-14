@@ -65,23 +65,39 @@ export class Roster {
     );
   }
 
-  public get activePlayers(): OptimizationPlayer[] {
-    return this._editablePlayers.filter(
-      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
-    );
-  }
-
   public get benchPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) => player.selected_position === "BN"
     );
   }
 
-  public get activeRosterPlayers(): OptimizationPlayer[] {
+  public get startingPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) =>
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
         player.selected_position !== "BN"
+    );
+  }
+
+  /**
+   * players on the reserve list, which includes players on the inactive list
+   * and players on the bench
+   *
+   * @public
+   * @readonly
+   * @type {OptimizationPlayer[]}
+   */
+  public get reservePlayers(): OptimizationPlayer[] {
+    return this._editablePlayers.filter(
+      (player) =>
+        INACTIVE_POSITION_LIST.includes(player.selected_position) ||
+        player.selected_position === "BN"
+    );
+  }
+
+  public get activeListPlayers(): OptimizationPlayer[] {
+    return this._editablePlayers.filter(
+      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
     );
   }
 
@@ -131,7 +147,7 @@ export class Roster {
     );
   }
 
-  public get unfilledRosterPositions(): string[] {
+  public get unfilledStartingPositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         position !== "BN" &&
