@@ -28,6 +28,10 @@ export class OptimizationPlayer implements OptimizationPlayer {
     return INACTIVE_POSITION_LIST.includes(this.selected_position);
   }
 
+  isIllegalPosition(): boolean {
+    return !this.eligible_positions.includes(this.selected_position);
+  }
+
   isEligibleToSwapWith(playerB: OptimizationPlayer): boolean {
     return (
       playerB.player_key !== this.player_key &&

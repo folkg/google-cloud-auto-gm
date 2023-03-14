@@ -134,7 +134,17 @@ export class LineupOptimizer {
     );
 
     for (const player of illegalPlayers) {
-      const resolved = this.attemptMoveToUnfilledPosition(player);
+      // an illegalPlayer may have been resolved in a previous swap
+      if (!player.isIllegalPosition()) continue;
+      const unfilledPositionSourceList =
+        player.isInactiveList() && this.roster.numEmptyRosterSpots === 0
+          ? this.roster.unfilledInactivePositions
+          : this.roster.unfilledAllPositions;
+
+      const resolved = this.attemptMoveToUnfilledPosition(
+        player,
+        unfilledPositionSourceList
+      );
       if (!resolved) {
         this.attemptIllegalPlayerSwaps(player, allEditablePlayers);
       }
@@ -174,21 +184,32 @@ export class LineupOptimizer {
       } else {
         this.logInfo("attempting to find a three way swap");
         const playerC = this.findPlayerC(playerA, playerB, playerBList, false);
+        const isPlayerAMovingILtoActive =
+          playerA.isInactiveList() && playerB.isActiveRoster();
         if (playerC) {
           this.logInfo("three-way swap found!");
-          if (playerA.isInactiveList() && playerB.isActiveRoster()) {
+          if (isPlayerAMovingILtoActive) {
             this.movePlayerToPosition(playerB, "BN");
           }
           this.swapPlayers(playerA, playerB);
           this.swapPlayers(playerB, playerC);
           return true;
         }
-        // this.logInfo("attempting to move playerB to unfilled position");
-        // const tempPosition = playerB.selected_position;
-        // const result = this.attemptMoveToUnfilledPosition(playerB);
-        // if (result) {
-        //   this.movePlayerToPosition(playerA, tempPosition);
-        // }
+
+        const unfilledPositionSourceList =
+          playerA.isInactiveList() && this.roster.numEmptyRosterSpots === 0
+            ? this.roster.unfilledInactivePositions
+            : this.roster.unfilledAllPositions;
+
+        this.logInfo("attempting to move playerB to unfilled position");
+        const playerBOriginalPosition = playerB.selected_position;
+        const result = this.attemptMoveToUnfilledPosition(
+          playerB,
+          unfilledPositionSourceList
+        );
+        if (result) {
+          this.movePlayerToPosition(playerA, playerBOriginalPosition);
+        }
       }
     }
     return false;
@@ -250,7 +271,8 @@ export class LineupOptimizer {
       (playerC: OptimizationPlayer) =>
         playerB.player_key !== playerC.player_key &&
         (optimizeScore
-          ? playerA.start_score > playerC.start_score
+          ? playerA.start_score > playerC.start_score &&
+            playerB.start_score > playerC.start_score
           : playerA.player_key !== playerC.player_key) &&
         playerB.eligible_positions.includes(playerC.selected_position) &&
         playerC.eligible_positions.includes(playerA.selected_position) &&
@@ -258,14 +280,12 @@ export class LineupOptimizer {
     );
   }
 
-  private attemptMoveToUnfilledPosition(player: OptimizationPlayer): boolean {
-    // TODO: Should this code be moved to the caller?
-    const unfilledPositionsList = player.isActiveRoster()
-      ? this.roster.unfilledActivePositions
-      : this.roster.unfilledInactivePositions;
-
+  private attemptMoveToUnfilledPosition(
+    player: OptimizationPlayer,
+    unfilledPositionSourceList: string[]
+  ): boolean {
     let unfilledPosition = player.getEligiblePositionsIn(
-      unfilledPositionsList
+      unfilledPositionSourceList
     )[0];
 
     this.logInfo("unfilledPosition: " + unfilledPosition);
@@ -302,7 +322,13 @@ export class LineupOptimizer {
       this.logInfo(`playerA: ${playerA.player_name}`);
 
       // TODO: Pass in the target array to this function to say where to look for unfilled positions?
-      const result = this.attemptMoveToUnfilledPosition(playerA);
+      const unfilledPositionSourceList = playerA.isInactiveList()
+        ? this.roster.unfilledInactivePositions
+        : this.roster.unfilledActivePositions;
+      const result = this.attemptMoveToUnfilledPosition(
+        playerA,
+        unfilledPositionSourceList
+      );
       if (result) {
         target.push(playerA);
         continue;
@@ -397,7 +423,13 @@ export class LineupOptimizer {
         );
         // TODO: Who do we return here? What about pushing to arrays?
         const playerBOriginalPosition = playerB.selected_position;
-        const result = this.attemptMoveToUnfilledPosition(playerB); // playerCSourceList
+        const unfilledPositionSourceList = isPlayerAMovingILtoRoster
+          ? this.roster.unfilledInactivePositions
+          : this.roster.unfilledActivePositions;
+        const result = this.attemptMoveToUnfilledPosition(
+          playerB,
+          unfilledPositionSourceList
+        );
         if (result) {
           this.movePlayerToPosition(playerA, playerBOriginalPosition);
           return playerB;
@@ -496,7 +528,14 @@ export class LineupOptimizer {
             this.logInfo("Trying to move playerB to unfilled position");
             const tempPosition = playerB.selected_position;
             // TODO: Bug - we only want to move playerB to an inactivePosition if A.score > B.score
-            const result = this.attemptMoveToUnfilledPosition(playerB);
+            const unfilledPositionSourceList: string[] =
+              playerA.isInactiveList()
+                ? this.roster.unfilledInactivePositions
+                : this.roster.unfilledActivePositions;
+            const result = this.attemptMoveToUnfilledPosition(
+              playerB,
+              unfilledPositionSourceList
+            );
             if (result) {
               this.movePlayerToPosition(playerA, tempPosition);
               break;

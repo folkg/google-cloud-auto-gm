@@ -109,7 +109,7 @@ export class Roster {
     return result;
   }
 
-  public get unfilledPositions(): string[] {
+  public get unfilledAllPositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) => this.unfilledPositionCounter[position] > 0
     );
