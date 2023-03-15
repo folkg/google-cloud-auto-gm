@@ -59,8 +59,8 @@ export class OptimizationPlayer implements OptimizationPlayer {
     );
   }
 
-  getEligiblePositionsIn(positionsList: string[]): string[] {
-    return this.eligible_positions.filter(
+  findEligiblePositionIn(positionsList: string[]): string | undefined {
+    return this.eligible_positions.find(
       (position) =>
         position !== this.selected_position && positionsList.includes(position)
     );
