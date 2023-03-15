@@ -45,10 +45,6 @@ export class Roster {
     players.sort((a, b) => b.start_score - a.start_score);
   }
 
-  public get allPlayers(): OptimizationPlayer[] {
-    return this._allPlayers;
-  }
-
   public get editablePlayers(): OptimizationPlayer[] {
     return this._editablePlayers;
   }
@@ -56,18 +52,6 @@ export class Roster {
   public get illegalPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter(
       (player) => !player.eligible_positions.includes(player.selected_position)
-    );
-  }
-
-  public get legalPlayers(): OptimizationPlayer[] {
-    return this._editablePlayers.filter((player) =>
-      player.eligible_positions.includes(player.selected_position)
-    );
-  }
-
-  public get benchPlayers(): OptimizationPlayer[] {
-    return this._editablePlayers.filter(
-      (player) => player.selected_position === "BN"
     );
   }
 
@@ -95,12 +79,6 @@ export class Roster {
     );
   }
 
-  public get activeListPlayers(): OptimizationPlayer[] {
-    return this._editablePlayers.filter(
-      (player) => !INACTIVE_POSITION_LIST.includes(player.selected_position)
-    );
-  }
-
   public get inactiveListPlayers(): OptimizationPlayer[] {
     return this._editablePlayers.filter((player) =>
       INACTIVE_POSITION_LIST.includes(player.selected_position)
@@ -117,7 +95,7 @@ export class Roster {
     );
   }
 
-  public get unfilledPositionCounter(): { [key: string]: number } {
+  private get unfilledPositionCounter(): { [key: string]: number } {
     const result = { ...this._rosterPositions };
     this._allPlayers.forEach((player) => {
       result[player.selected_position]--;
