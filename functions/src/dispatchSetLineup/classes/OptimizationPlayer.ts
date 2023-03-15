@@ -20,12 +20,19 @@ export class OptimizationPlayer implements OptimizationPlayer {
     Object.assign(this, player);
   }
 
+  isInactiveList(): boolean {
+    return INACTIVE_POSITION_LIST.includes(this.selected_position);
+  }
+
   isActiveRoster(): boolean {
     return !INACTIVE_POSITION_LIST.includes(this.selected_position);
   }
 
-  isInactiveList(): boolean {
-    return INACTIVE_POSITION_LIST.includes(this.selected_position);
+  isStartingRoster(): boolean {
+    return (
+      this.selected_position !== "BN" &&
+      !INACTIVE_POSITION_LIST.includes(this.selected_position)
+    );
   }
 
   isIllegalPosition(): boolean {
