@@ -156,6 +156,12 @@ export class Roster {
     );
   }
 
+  public get overfilledPositions(): string[] {
+    return Object.keys(this.unfilledPositionCounter).filter(
+      (position) => this.unfilledPositionCounter[position] < 0
+    );
+  }
+
   public get numEmptyRosterSpots(): number {
     const unfilledPositions = this.unfilledPositionCounter;
     return Object.keys(unfilledPositions).reduce((acc, position) => {

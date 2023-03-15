@@ -162,6 +162,7 @@ export class LineupOptimizer {
     const illegalPlayers = this.roster.illegalPlayers;
     if (illegalPlayers.length === 0) return;
 
+    //TODO: Shouldn't we vet allEditablePlayers to make sure we can valid swap?
     const allEditablePlayers = this.roster.editablePlayers;
     Roster.sortDescendingByScore(illegalPlayers);
     Roster.sortAscendingByScore(allEditablePlayers);
@@ -224,25 +225,30 @@ export class LineupOptimizer {
           return true;
         }
 
-        const unfilledPositionTargetList =
-          playerA.isInactiveList() && this.roster.numEmptyRosterSpots === 0
-            ? this.roster.unfilledInactivePositions
-            : this.roster.unfilledAllPositions;
+        const potentialPlayerAPosition = playerB.isActiveRoster()
+          ? "BN"
+          : playerB.selected_position;
+        if (!playerA.eligible_positions.includes(potentialPlayerAPosition))
+          return false;
 
         this.logInfo(
           `attempting to move playerB ${playerB.player_name} to unfilled position`
         );
-        const playerBOriginalPosition = playerB.selected_position;
+        const unfilledPositionTargetList =
+          playerA.isInactiveList() && this.roster.numEmptyRosterSpots === 0
+            ? this.roster.unfilledInactivePositions
+            : this.roster.unfilledAllPositions;
         const result = this.movePlayerToUnfilledPositionInTargetList(
           playerB,
           unfilledPositionTargetList
         );
         if (result) {
-          this.movePlayerToPosition(playerA, playerBOriginalPosition);
+          this.movePlayerToPosition(playerA, potentialPlayerAPosition);
           return true;
         }
       }
     }
+    this.logInfo(`no swaps found for ${playerA.player_name}`);
     return false;
   }
 
@@ -386,19 +392,10 @@ export class LineupOptimizer {
     // // go to BN as an intermediary step. This ensures that playerA can swap
     // // with anyone, not just players they share an exact position with.
 
-    // // // TODO: Should this code be moved to the caller?
-    // let playerBPosition: string;
-    // let playerCSourceList: OptimizationPlayer[];
-    // if (playerA.isInactiveList() && playerB.isActiveRoster()) {
-    //   playerBPosition = "BN";
-    //   playerCSourceList = this.roster.inactiveListPlayers;
-    // } else {
-    //   playerBPosition = playerB.selected_position;
-    //   playerCSourceList = this.roster.activeListPlayers;
-    // }
-    // if (false) {
-    //   console.log(playerCSourceList.map((p) => p.player_name).join(", "));
-    // }
+    const playerBPosition =
+      playerA.isInactiveList() && playerB.isActiveRoster()
+        ? "BN"
+        : playerB.selected_position;
 
     return playersArray.find(
       (playerC: OptimizationPlayer) =>
@@ -409,125 +406,8 @@ export class LineupOptimizer {
           : playerA.player_key !== playerC.player_key) &&
         playerB.eligible_positions.includes(playerC.selected_position) &&
         playerC.eligible_positions.includes(playerA.selected_position) &&
-        playerA.eligible_positions.includes(playerB.selected_position)
+        playerA.eligible_positions.includes(playerBPosition)
     );
-  }
-
-  public transferOptimalPlayers(
-    source: OptimizationPlayer[],
-    target: OptimizationPlayer[]
-  ): void {
-    // temp variables, to be user settings later
-    // const addPlayersToRoster = false;
-    // const dropPlayersFromRoster = false;
-    // intialize variables
-    const swapPlayers = (
-      playerOne: OptimizationPlayer,
-      playerTwo: OptimizationPlayer
-    ): void => {
-      this.swapPlayers(playerOne, playerTwo);
-      source[source.indexOf(playerOne)] = playerTwo;
-      target[target.indexOf(playerTwo)] = playerOne;
-      isPlayerASwapped = true;
-    };
-
-    let isPlayerASwapped;
-    let i = 0;
-    this.logInfo("source: " + source.map((p) => p.player_name));
-    this.logInfo("target: " + target.map((p) => p.player_name));
-    // TODO: if we are always maximizing score now, can we borrow the optimization algorithm from the optimizer?
-    // TODO: Can we make this more like the resolveIllegalPlayer function?
-    // TODO: Can we regenerate the source and target arrays each time to avoid splicing?
-    while (i < source.length) {
-      const playerA = source[i];
-      isPlayerASwapped = false;
-
-      let unfilledPosition;
-      if (playerA.isActiveRoster()) {
-        unfilledPosition = playerA.getEligiblePositionsIn(
-          this.roster.unfilledActivePositions
-        )[0];
-      } else if (this.roster.numEmptyRosterSpots > 0) {
-        unfilledPosition = "BN";
-      }
-      if (unfilledPosition) {
-        this.logInfo(
-          `Moving player ${playerA.player_name} to unfilled position: ${unfilledPosition}`
-        );
-        this.movePlayerToPosition(playerA, unfilledPosition);
-        // splice the player from source and add to target array
-        const idx = source.indexOf(playerA);
-        target.push(source.splice(idx, 1)[0]);
-
-        // continue without incrementing i if a swap was made
-        continue;
-      }
-
-      const isPlayerWorseThanTargetArray =
-        playerA.start_score < Math.min(...target.map((tp) => tp.start_score));
-      if (isPlayerWorseThanTargetArray) {
-        this.logInfo(
-          `Player ${playerA.player_name} is worse than all players in target array. Skipping.`
-        );
-        i++;
-        continue;
-      }
-
-      const eligibleTargetPlayers = target.filter((targetPlayer) =>
-        playerA.isEligibleToSwapWith(targetPlayer)
-      );
-      this.logInfo(
-        `eligibleTargetPlayers for player ${
-          playerA.player_name
-        }: ${eligibleTargetPlayers.map((p) => p.player_name)}`
-      );
-
-      if (eligibleTargetPlayers.length > 0) {
-        for (const playerB of eligibleTargetPlayers) {
-          this.logInfo(
-            `comparing ${playerA.player_name} ${playerA.start_score} to ${playerB.player_name} ${playerB.start_score}`
-          );
-          if (playerA.start_score <= playerB.start_score) {
-            this.logInfo(
-              "Need to find a three way swap since sourcePlayer.score < targetPlayer.score"
-            );
-            const playerC = this.findPlayerC(playerA, playerB, target);
-            if (playerC) {
-              this.logInfo("Found three way swap");
-              swapPlayers(playerA, playerB);
-              swapPlayers(playerB, playerC);
-              break;
-            }
-            this.logInfo("No three way swap found");
-            this.logInfo("Trying to move playerB to unfilled position");
-            const tempPosition = playerB.selected_position;
-            // TODO: Bug - we only want to move playerB to an inactivePosition if A.score > B.score
-            const unfilledPositionSourceList: string[] =
-              playerA.isInactiveList()
-                ? this.roster.unfilledInactivePositions
-                : this.roster.unfilledActivePositions;
-            const result = this.movePlayerToUnfilledPositionInTargetList(
-              playerB,
-              unfilledPositionSourceList
-            );
-            if (result) {
-              this.movePlayerToPosition(playerA, tempPosition);
-              break;
-            }
-          } else {
-            this.logInfo("Direct swap");
-            swapPlayers(playerA, playerB);
-            break;
-          }
-        } // TODO: else - can we move playerB to an unfilled position and do a three way swap?
-      }
-      // continue without incrementing i if a swap was made
-      // this is to ensure we recheck the player swapped to bench for other swaps
-      if (isPlayerASwapped) continue;
-      this.logInfo("No swaps for player " + playerA.player_name);
-      i++;
-      this.logInfo("i: " + i + " source.length: " + source.length);
-    }
   }
 
   /**
