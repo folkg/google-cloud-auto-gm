@@ -41,10 +41,17 @@ export class OptimizationPlayer implements OptimizationPlayer {
 
   isEligibleToSwapWith(playerB: OptimizationPlayer): boolean {
     return (
-      playerB.player_key !== this.player_key &&
+      playerB !== this &&
       playerB.selected_position !== this.selected_position &&
       this.eligible_positions.includes(playerB.selected_position) &&
       playerB.eligible_positions.includes(this.selected_position)
+    );
+  }
+
+  isEligibleAndHigherScoreThan(playerB: OptimizationPlayer): boolean {
+    return (
+      this.start_score > playerB.start_score &&
+      this.isEligibleToSwapWith(playerB)
     );
   }
 
@@ -53,7 +60,7 @@ export class OptimizationPlayer implements OptimizationPlayer {
   ): OptimizationPlayer[] {
     return playersList.filter(
       (targetPlayer) =>
-        targetPlayer.player_key !== this.player_key &&
+        targetPlayer !== this &&
         targetPlayer.selected_position !== this.selected_position &&
         this.eligible_positions.includes(targetPlayer.selected_position)
     );

@@ -87,9 +87,7 @@ export class LineupOptimizer {
     const illegalPlayers = this.roster.illegalPlayers;
     if (illegalPlayers.length === 0) return;
 
-    const allEditablePlayers = this.roster.editablePlayers;
     Roster.sortDescendingByScore(illegalPlayers);
-    Roster.sortAscendingByScore(allEditablePlayers);
 
     this.logInfo(
       "Resolving illegal players:" +
@@ -119,16 +117,17 @@ export class LineupOptimizer {
       );
       if (success) continue;
 
-      this.attemptIllegalPlayerSwaps(player, allEditablePlayers);
+      this.attemptIllegalPlayerSwaps(player);
     }
   }
 
-  private attemptIllegalPlayerSwaps(
-    playerA: OptimizationPlayer,
-    playerBList: OptimizationPlayer[]
-  ): boolean {
-    for (const playerB of playerBList) {
-      if (playerA === playerB) continue;
+  private attemptIllegalPlayerSwaps(playerA: OptimizationPlayer): boolean {
+    const allEditablePlayers = this.roster.editablePlayers;
+    Roster.sortAscendingByScore(allEditablePlayers);
+
+    if (allEditablePlayers.length === 0) return false;
+
+    for (const playerB of allEditablePlayers) {
       this.logInfo(
         `comparing ${playerA.player_name} to ${playerB.player_name}`
       );
@@ -137,42 +136,59 @@ export class LineupOptimizer {
         this.swapPlayers(playerA, playerB);
         return true;
       } else {
-        this.logInfo("attempting to find a three way swap");
-        const playerC = this.findPlayerC(playerA, playerB, playerBList, false);
-        if (playerC) {
-          this.logInfo("three-way swap found!");
-          if (playerA.isInactiveList() && playerB.isActiveRoster()) {
-            this.movePlayerToPosition(playerB, "BN");
-          }
-          this.swapPlayers(playerA, playerB);
-          this.swapPlayers(playerB, playerC);
-          return true;
-        }
+        const success = this.threeWaySwapIllegalPlayer(playerA, playerB);
+        if (success) return true;
 
-        const potentialPlayerAPosition = playerB.isActiveRoster()
-          ? "BN"
-          : playerB.selected_position;
-        if (!playerA.eligible_positions.includes(potentialPlayerAPosition))
-          continue;
-
-        this.logInfo(
-          `attempting to move playerB ${playerB.player_name} to unfilled position`
-        );
-        const unfilledPositionTargetList =
-          playerA.isInactiveList() && this.roster.numEmptyRosterSpots === 0
-            ? this.roster.unfilledInactivePositions
-            : this.roster.unfilledAllPositions;
-        const success = this.movePlayerToUnfilledPositionInTargetList(
-          playerB,
-          unfilledPositionTargetList
-        );
-        if (success) {
-          this.movePlayerToPosition(playerA, potentialPlayerAPosition);
-          return true;
-        }
+        this.threeWayMoveToUnfilledPositionIllegalPlayer(playerA, playerB);
       }
     }
     this.logInfo(`no swaps found for ${playerA.player_name}`);
+    return false;
+  }
+  threeWayMoveToUnfilledPositionIllegalPlayer(
+    playerA: OptimizationPlayer,
+    playerB: OptimizationPlayer
+  ) {
+    const potentialPlayerAPosition = playerB.isActiveRoster()
+      ? "BN"
+      : playerB.selected_position;
+
+    if (!playerA.eligible_positions.includes(potentialPlayerAPosition)) return;
+
+    this.logInfo(
+      `attempting to move playerB ${playerB.player_name} to unfilled position`
+    );
+    const unfilledPositionTargetList =
+      playerA.isInactiveList() && this.roster.numEmptyRosterSpots === 0
+        ? this.roster.unfilledInactivePositions
+        : this.roster.unfilledAllPositions;
+    const success = this.movePlayerToUnfilledPositionInTargetList(
+      playerB,
+      unfilledPositionTargetList
+    );
+    if (success) {
+      this.movePlayerToPosition(playerA, potentialPlayerAPosition);
+    }
+  }
+  threeWaySwapIllegalPlayer(
+    playerA: OptimizationPlayer,
+    playerB: OptimizationPlayer
+  ): boolean {
+    this.logInfo("attempting to find a three way swap");
+    const playerC = this.findPlayerCforIllegalPlayerA(
+      playerA,
+      playerB,
+      this.roster.editablePlayers
+    );
+    if (playerC) {
+      this.logInfo("three-way swap found!");
+      if (playerA.isInactiveList() && playerB.isActiveRoster()) {
+        this.movePlayerToPosition(playerB, "BN");
+      }
+      this.swapPlayers(playerA, playerB);
+      this.swapPlayers(playerB, playerC);
+      return true;
+    }
     return false;
   }
 
@@ -187,6 +203,7 @@ export class LineupOptimizer {
       if (playerA.isStartingRoster()) continue;
       this.logInfo(`playerA: ${playerA.player_name}`);
 
+      // TODO: This seems convoluted, try to make more clear
       let proceedToLookForUnfilledInStarters = true;
       if (playerA.isInactiveList()) {
         proceedToLookForUnfilledInStarters =
@@ -208,9 +225,7 @@ export class LineupOptimizer {
         // if a player was swapped back into the reserve list, we need to
         // re-evaluate the player we just swapped
         reservePlayers.push(swappedPlayer);
-        continue;
-      }
-      this.logInfo(`No swaps for playerA: ${playerA.player_name}`);
+      } else this.logInfo(`No swaps for playerA: ${playerA.player_name}`);
     }
   }
 
@@ -219,6 +234,7 @@ export class LineupOptimizer {
   ): OptimizationPlayer | undefined {
     const startingPlayersList = this.roster.startingPlayers;
     Roster.sortAscendingByScore(startingPlayersList);
+
     this.logInfo("starting: " + startingPlayersList.map((p) => p.player_name));
     if (playerA.hasLowerScoreThanAllPlayersIn(startingPlayersList)) {
       this.logInfo(
@@ -237,10 +253,7 @@ export class LineupOptimizer {
     if (eligibleTargetPlayers.length === 0) return undefined;
 
     for (const playerB of eligibleTargetPlayers) {
-      if (
-        playerA.start_score > playerB.start_score &&
-        playerB.eligible_positions.includes(playerA.selected_position)
-      ) {
+      if (playerA.isEligibleAndHigherScoreThan(playerB)) {
         this.swapPlayers(playerA, playerB);
         return playerB;
       } else {
@@ -290,7 +303,11 @@ export class LineupOptimizer {
       ? this.roster.inactiveListPlayers
       : this.roster.startingPlayers;
 
-    const playerC = this.findPlayerC(playerA, playerB, playerCTargetList);
+    const playerC = this.findPlayerCforOptimization(
+      playerA,
+      playerB,
+      playerCTargetList
+    );
     if (playerC) {
       this.swapPlayers(playerA, playerB);
       this.swapPlayers(playerB, playerC);
@@ -380,8 +397,8 @@ export class LineupOptimizer {
   }
 
   /**
-   * Find a third player, playerC, who is eligible to facilitate a three-way swap
-   * between playerA and playerB. Return undefined if no such player is found.
+   * Find a list of third players, playerC, who is eligible to facilitate a
+   * three-way swap between playerA and playerB. Return undefined if none found
    *
    * This finds a left-hand rotation swap, i.e. player A ->B -> C
    *
@@ -389,37 +406,53 @@ export class LineupOptimizer {
    * @param {OptimizationPlayer} playerA - player to be swapped out
    * @param {OptimizationPlayer} playerB - player to be swapped in
    * @param {OptimizationPlayer[]} playersArray - array of players to search for playerC
-   * @returns {(OptimizationPlayer | undefined)} playerC or undefined if not found
+   * @return {(OptimizationPlayer[] | undefined)} playerC or undefined if not found
    */
-  private findPlayerC(
+  private getPotentialPlayerCList(
     playerA: OptimizationPlayer,
     playerB: OptimizationPlayer,
-    playersArray: OptimizationPlayer[],
-    optimizeScore: boolean = true
-  ): OptimizationPlayer | undefined {
+    playersArray: OptimizationPlayer[]
+  ): OptimizationPlayer[] | undefined {
     this.logInfo(
       `Finding playerC for playerA: ${playerA.player_name} ${playerA.player_key} ${playerA.selected_position} ${playerA.start_score}, playerB: ${playerB.player_name} ${playerB.player_key} ${playerB.selected_position} ${playerB.start_score}`
     );
 
-    // // If we are moving playerA from inactive to active roster, player B will
-    // // go to BN as an intermediary step. This ensures that playerA can swap
-    // // with anyone, not just players they share an exact position with.
+    // If we are moving playerA from inactive to active roster, player B will
+    // go to BN as an intermediary step. This ensures that playerA can swap
+    // with anyone, not just players they share an exact position with.
 
     const playerBPosition =
       playerA.isInactiveList() && playerB.isActiveRoster()
         ? "BN"
         : playerB.selected_position;
 
-    return playersArray.find(
+    return playersArray.filter(
       (playerC: OptimizationPlayer) =>
         playerB !== playerC &&
-        (optimizeScore
-          ? playerA.start_score > playerC.start_score &&
-            playerB.start_score > playerC.start_score
-          : playerA !== playerC) &&
+        playerA !== playerC &&
         playerB.eligible_positions.includes(playerC.selected_position) &&
         playerC.eligible_positions.includes(playerA.selected_position) &&
         playerA.eligible_positions.includes(playerBPosition)
+    );
+  }
+
+  private findPlayerCforIllegalPlayerA(
+    playerA: OptimizationPlayer,
+    playerB: OptimizationPlayer,
+    playersArray: OptimizationPlayer[]
+  ) {
+    return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.at(0);
+  }
+
+  private findPlayerCforOptimization(
+    playerA: OptimizationPlayer,
+    playerB: OptimizationPlayer,
+    playersArray: OptimizationPlayer[]
+  ): OptimizationPlayer | undefined {
+    return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.find(
+      (playerC: OptimizationPlayer) =>
+        playerA.start_score > playerC.start_score &&
+        playerB.start_score > playerC.start_score
     );
   }
 
@@ -462,10 +495,7 @@ export class LineupOptimizer {
 
     for (const reservePlayer of this.roster.reservePlayers) {
       for (const startingPlayer of this.roster.startingPlayers) {
-        if (
-          reservePlayer.isEligibleToSwapWith(startingPlayer) &&
-          reservePlayer.start_score > startingPlayer.start_score
-        ) {
+        if (reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)) {
           console.error(
             `Suboptimal Lineup: reservePlayer ${reservePlayer.player_name} has a higher score than startingPlayer ${startingPlayer.player_name} for team ${this.team.team_key}`
           );
