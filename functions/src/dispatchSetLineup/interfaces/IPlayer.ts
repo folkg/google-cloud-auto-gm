@@ -1,4 +1,4 @@
-export interface Player {
+export interface IPlayer {
   addDropScore?: any;
   player_key: string;
   player_name: string;

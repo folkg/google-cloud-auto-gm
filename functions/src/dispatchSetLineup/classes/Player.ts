@@ -1,7 +1,7 @@
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { Player } from "../interfaces/Player";
+import { IPlayer } from "../interfaces/IPlayer";
 
-export interface OptimizationPlayer extends Player {
+export interface Player extends IPlayer {
   start_score: number;
   ownership_score: number;
 }
@@ -12,11 +12,11 @@ export interface OptimizationPlayer extends Player {
  *
  * @export
  * @class OptimizationPlayer
- * @typedef {OptimizationPlayer}
- * @implements {Player}
+ * @typedef {Player}
+ * @implements {IPlayer}
  */
-export class OptimizationPlayer implements OptimizationPlayer {
-  constructor(player: Player) {
+export class Player implements Player {
+  constructor(player: IPlayer) {
     Object.assign(this, player);
   }
 
@@ -39,7 +39,7 @@ export class OptimizationPlayer implements OptimizationPlayer {
     return !this.eligible_positions.includes(this.selected_position);
   }
 
-  isEligibleToSwapWith(playerB: OptimizationPlayer): boolean {
+  isEligibleToSwapWith(playerB: Player): boolean {
     return (
       playerB !== this &&
       playerB.selected_position !== this.selected_position &&
@@ -48,16 +48,14 @@ export class OptimizationPlayer implements OptimizationPlayer {
     );
   }
 
-  isEligibleAndHigherScoreThan(playerB: OptimizationPlayer): boolean {
+  isEligibleAndHigherScoreThan(playerB: Player): boolean {
     return (
       this.start_score > playerB.start_score &&
       this.isEligibleToSwapWith(playerB)
     );
   }
 
-  getEligibleTargetPlayers(
-    playersList: OptimizationPlayer[]
-  ): OptimizationPlayer[] {
+  getEligibleTargetPlayers(playersList: Player[]): Player[] {
     return playersList.filter(
       (targetPlayer) =>
         targetPlayer !== this &&
@@ -73,7 +71,7 @@ export class OptimizationPlayer implements OptimizationPlayer {
     );
   }
 
-  hasLowerScoreThanAllPlayersIn(playersList: OptimizationPlayer[]): boolean {
+  hasLowerScoreThanAllPlayersIn(playersList: Player[]): boolean {
     return playersList.every(
       (player) => player.start_score >= this.start_score
     );

@@ -1,4 +1,4 @@
-import { Player } from "../interfaces/Player";
+import { IPlayer } from "../interfaces/IPlayer";
 
 /**
  * Add drop score function
@@ -7,7 +7,7 @@ import { Player } from "../interfaces/Player";
  * @param {OptimizationPlayer} player - The player to score
  * @return {number} - The score
  */
-export function ownershipScoreFunction(player: Player): number {
+export function ownershipScoreFunction(player: IPlayer): number {
   // score will be based on players transaction_delta, percent_owned, and rank_lat14days
   // transaction_delta and percent_owned should higher is better
   // rank_last14days lower is better

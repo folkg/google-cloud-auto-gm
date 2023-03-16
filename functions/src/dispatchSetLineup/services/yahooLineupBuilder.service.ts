@@ -1,6 +1,6 @@
 import { getChild } from "../../common/services/utilities.service";
 import { Team } from "../interfaces/Team";
-import { Player } from "../interfaces/Player";
+import { IPlayer } from "../interfaces/IPlayer";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**
@@ -41,7 +41,7 @@ export async function fetchRostersFromYahoo(
             leaguesJSON,
             key
           );
-          const players: Player[] = getPlayersFromRoster(
+          const players: IPlayer[] = getPlayersFromRoster(
             usersTeamRoster[0].players
           );
 
@@ -90,10 +90,10 @@ function getPositionCounts(leaguesJSON: any, key: string) {
  *
  * @param {*} playersJSON - The players JSON object
  * @param {*} emptyPositions - A map of positions and the number of players
- * @return {Player[]} - An array of Player objects
+ * @return {IPlayer[]} - An array of Player objects
  */
-function getPlayersFromRoster(playersJSON: any): Player[] {
-  const players: Player[] = [];
+function getPlayersFromRoster(playersJSON: any): IPlayer[] {
+  const players: IPlayer[] = [];
 
   // eslint-disable-next-line guard-for-in
   for (const key in playersJSON) {
@@ -118,7 +118,7 @@ function getPlayersFromRoster(playersJSON: any): Player[] {
       // pull the transaction delta out of the JSON
       const transactionDelta = getTransactions(player);
       // Build the player object
-      const playerObj: Player = {
+      const playerObj: IPlayer = {
         player_key: getChild(player[0], "player_key"),
         player_name: getChild(player[0], "name").full,
         eligible_positions: eligiblePositions,

@@ -1,5 +1,5 @@
 import { Team } from "../interfaces/Team";
-import { Player } from "../interfaces/Player";
+import { IPlayer } from "../interfaces/IPlayer";
 import { RosterModification } from "../interfaces/RosterModification";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 import { postRosterModifications } from "../../common/services/yahooAPI/yahooAPI.service";
@@ -115,7 +115,7 @@ export async function optimizeStartingLineup2(
     return { teamKey, coverageType, coveragePeriod, newPlayerPositions: {} };
   }
 
-  const genPlayerScore: (player: Player) => number =
+  const genPlayerScore: (player: IPlayer) => number =
     assignPlayerStartScoreFunction(teamRoster.game_code, weeklyDeadline);
   editablePlayers.forEach((player) => {
     player.start_score = genPlayerScore(player);
@@ -238,10 +238,10 @@ export async function optimizeStartingLineup2(
 /**
  * Creates a dictionary of player keys to their original selected positions
  *
- * @param {Player[]} players - The players on the roster
+ * @param {IPlayer[]} players - The players on the roster
  * @return {{}} - The dictionary of player keys to their original selected positions
  */
-function createPlayerPositionDict(players: Player[]): {
+function createPlayerPositionDict(players: IPlayer[]): {
   [key: string]: string;
 } {
   const result: { [key: string]: string } = {};
@@ -276,12 +276,12 @@ function playerPositionDictDiff(
 /**
  * Will calculate the number of unfilled positions for a given roster
  *
- * @param {Player[]} players - The players on the roster
+ * @param {IPlayer[]} players - The players on the roster
  * @param {{}} rosterPositions - The roster positions
  * @return {{}} - The number of unfilled positions
  */
 function getUnfilledPositions(
-  players: Player[],
+  players: IPlayer[],
   rosterPositions: { [key: string]: number }
 ): { [key: string]: number } {
   const unfilledPositions: { [key: string]: number } = { ...rosterPositions };
@@ -294,9 +294,9 @@ function getUnfilledPositions(
 /**
  * Make direct swaps between players in the playersArr array
  *
- * @param {Player[]} playersArr - The array of players to swap
+ * @param {IPlayer[]} playersArr - The array of players to swap
  */
-function internalDirectPlayerSwap(playersArr: Player[]): void {
+function internalDirectPlayerSwap(playersArr: IPlayer[]): void {
   for (const playerA of playersArr) {
     for (const playerB of playersArr) {
       if (
@@ -318,11 +318,11 @@ function internalDirectPlayerSwap(playersArr: Player[]): void {
   /**
    * Will swap players between two arrays of players
    *
-   * @param {Player} player - The player to swap
+   * @param {IPlayer} player - The player to swap
    * @param {string} position - The position to swap the player to
    * @param {{}} newPlayerPositions - The dictionary of players to move
    */
-  function movePlayerToPosition(player: Player, position: string) {
+  function movePlayerToPosition(player: IPlayer, position: string) {
     player.selected_position = position;
   }
 }
@@ -333,14 +333,14 @@ function internalDirectPlayerSwap(playersArr: Player[]): void {
  *
  * The function will explore possible three-way swaps if a direct swap is not possible.
  *
- * @param {Player[]} source - array of players to move from
- * @param {Player[]} target - array of players to move to
+ * @param {IPlayer[]} source - array of players to move from
+ * @param {IPlayer[]} target - array of players to move to
  * @param {{}} unfilledPositions - dictionary of unfilled positions
  * @param {boolean} isMaximizingScore - whether to maximize score on target array
  */
 function swapPlayers(
-  source: Player[],
-  target: Player[],
+  source: IPlayer[],
+  target: IPlayer[],
   unfilledPositions: { [key: string]: number },
   isMaximizingScore = false
 ) {
@@ -526,10 +526,10 @@ function swapPlayers(
   /**
    * Returns the unfilled position if there is one, otherwise returns undefined
    *
-   * @param {Player} playerA - the player to find an unfilled position for
+   * @param {IPlayer} playerA - the player to find an unfilled position for
    * @return {string} - the unfilled position
    */
-  function availableUnfilledPosition(playerA: Player) {
+  function availableUnfilledPosition(playerA: IPlayer) {
     let unfilledPosition: string | undefined;
     if (!isPlayerAActiveRoster) {
       const numEmptyRosterSpots = Object.keys(unfilledPositions).reduce(
@@ -565,13 +565,16 @@ function swapPlayers(
   /**
    * Finds a third player that can be moved to the position of playerB
    *
-   * @param {Player} playerA - The player to move
-   * @param {Player} playerB - The player to move to
-   * @return {(Player | undefined)} - The player that can be moved to playerB's position
+   * @param {IPlayer} playerA - The player to move
+   * @param {IPlayer} playerB - The player to move to
+   * @return {(IPlayer | undefined)} - The player that can be moved to playerB's position
    */
-  function findPlayerC(playerA: Player, playerB: Player): Player | undefined {
+  function findPlayerC(
+    playerA: IPlayer,
+    playerB: IPlayer
+  ): IPlayer | undefined {
     const eligibleThirdPlayer = target.find(
-      (thirdPlayer: Player) =>
+      (thirdPlayer: IPlayer) =>
         thirdPlayer.player_key !== playerB.player_key &&
         playerB.eligible_positions.includes(thirdPlayer.selected_position) &&
         (isMaximizingScore
@@ -584,10 +587,10 @@ function swapPlayers(
   /**
    * Swaps two players positions in the lineup and in the source and target arrays
    *
-   * @param {Player} playerOne - The first player to swap
-   * @param {Player} playerTwo - The second player to swap
+   * @param {IPlayer} playerOne - The first player to swap
+   * @param {IPlayer} playerTwo - The second player to swap
    */
-  function swapPlayers(playerOne: Player, playerTwo: Player): void {
+  function swapPlayers(playerOne: IPlayer, playerTwo: IPlayer): void {
     // TODO: Don't want to move to other array if it is all the players. Only if it is a subset of the players.
     verboseLogging &&
       console.info(
@@ -608,11 +611,11 @@ function swapPlayers(
   /**
    * Will swap players between two arrays of players
    *
-   * @param {Player} player - The player to swap
+   * @param {IPlayer} player - The player to swap
    * @param {string} position - The position to swap the player to
    * @param {{}} newPlayerPositions - The dictionary of players to move
    */
-  function movePlayerToPosition(player: Player, position: string) {
+  function movePlayerToPosition(player: IPlayer, position: string) {
     // console.log(
     //   "movePlayerToPosition",
     //   player.player_name,

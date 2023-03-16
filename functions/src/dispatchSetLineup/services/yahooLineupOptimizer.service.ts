@@ -1,5 +1,5 @@
 import { Team } from "../interfaces/Team";
-import { Player } from "../interfaces/Player";
+import { IPlayer } from "../interfaces/IPlayer";
 import { RosterModification } from "../interfaces/RosterModification";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 import { postRosterModifications } from "../../common/services/yahooAPI/yahooAPI.service";
@@ -79,7 +79,7 @@ export function optimizeStartingLineup(teamRoster: Team): RosterModification {
     0
   );
 
-  let genPlayerScore: (player: Player) => number;
+  let genPlayerScore: (player: IPlayer) => number;
   if (teamRoster.game_code === "nfl") {
     genPlayerScore = nflScoreFunction();
   } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
@@ -97,10 +97,10 @@ export function optimizeStartingLineup(teamRoster: Team): RosterModification {
     benched,
     healthyOnIR,
   }: {
-    rostered: Player[];
-    injuredOnRoster: Player[];
-    benched: Player[];
-    healthyOnIR: Player[];
+    rostered: IPlayer[];
+    injuredOnRoster: IPlayer[];
+    benched: IPlayer[];
+    healthyOnIR: IPlayer[];
   } = fillRosterArrays(players, genPlayerScore);
 
   // If there are no editable players on roster or bench, return
@@ -147,7 +147,7 @@ export function optimizeStartingLineup(teamRoster: Team): RosterModification {
   while (benched.length > 0) {
     // Pop the benchPlayer off the benched stack, it will either be moved
     // to the roster, or it belongs on the bench and can be ignored.
-    const benchPlayer: Player | undefined = benched.pop();
+    const benchPlayer: IPlayer | undefined = benched.pop();
     if (benchPlayer) {
       const positionsList = benchPlayer.eligible_positions.filter(
         (pos) => INACTIVE_POSITION_LIST.indexOf(pos) === -1
@@ -191,12 +191,12 @@ export function optimizeStartingLineup(teamRoster: Team): RosterModification {
    *
    *
    * @param {string[]} positionsList - The list of positions to check
-   * @param {Player} benchPlayer - The player to move
+   * @param {IPlayer} benchPlayer - The player to move
    * @return {boolean} - Whether the player was moved or not
    */
   function moveToUnfilledPosition(
     positionsList: string[],
-    benchPlayer: Player
+    benchPlayer: IPlayer
   ): boolean {
     for (const eligiblePosition of positionsList) {
       if (unfilledPositions[eligiblePosition] > 0) {
@@ -212,12 +212,12 @@ export function optimizeStartingLineup(teamRoster: Team): RosterModification {
 /**
  * Will calculate the number of unfilled positions for a given roster
  *
- * @param {Player[]} players - The players on the roster
+ * @param {IPlayer[]} players - The players on the roster
  * @param {{}} rosterPositions - The roster positions
  * @return {{}} - The number of unfilled positions
  */
 function getUnfilledPositions(
-  players: Player[],
+  players: IPlayer[],
   rosterPositions: { [key: string]: number }
 ): { [key: string]: number } {
   const unfilledPositions: { [key: string]: number } = { ...rosterPositions };
@@ -231,18 +231,18 @@ function getUnfilledPositions(
  * This function will loop through all players and add them to the appropriate
  * array based on their status and eligibility.
  *
- * @param {Player[]} players - The players to loop through
+ * @param {IPlayer[]} players - The players to loop through
  * @param {(player)} genPlayerScore - The function to generate the score for a player
- * @return {{ rostered: Player[], injuredOnRoster: Player[], benched: Player[], healthyOnIR: Player[] }} - The arrays of players
+ * @return {{ rostered: IPlayer[], injuredOnRoster: IPlayer[], benched: IPlayer[], healthyOnIR: IPlayer[] }} - The arrays of players
  */
 function fillRosterArrays(
-  players: Player[],
-  genPlayerScore: (player: Player) => number
+  players: IPlayer[],
+  genPlayerScore: (player: IPlayer) => number
 ) {
-  const benched: Player[] = [];
-  const rostered: Player[] = [];
-  const healthyOnIR: Player[] = [];
-  const injuredOnRoster: Player[] = [];
+  const benched: IPlayer[] = [];
+  const rostered: IPlayer[] = [];
+  const healthyOnIR: IPlayer[] = [];
+  const injuredOnRoster: IPlayer[] = [];
   players.forEach((player) => {
     if (player.is_editable) {
       player.start_score = genPlayerScore(player);
@@ -275,29 +275,29 @@ function fillRosterArrays(
 /**
  * Compares two players by score.
  *
- * @param {Player} a - A player object
- * @param {Player} b - A player object
+ * @param {IPlayer} a - A player object
+ * @param {IPlayer} b - A player object
  * @return {number} - A number indicating the relative order of the two players.
  */
-function playerCompareFunction(a: Player, b: Player): number {
+function playerCompareFunction(a: IPlayer, b: IPlayer): number {
   return a.start_score - b.start_score;
 }
 
 /**
  * Finds an active roster spot for a healthy player to replace an injured player
  *
- * @param {Player[]} injuredOnRoster - List of injured players on the active roster
+ * @param {IPlayer[]} injuredOnRoster - List of injured players on the active roster
  * @param {*} emptyPositions - List of empty positions on the active roster
- * @param {Player} healthyPlayer - A healthy player to replace an injured player
- * @param {Player[]} benched - List of benched players
+ * @param {IPlayer} healthyPlayer - A healthy player to replace an injured player
+ * @param {IPlayer[]} benched - List of benched players
  * @param {*} newPlayerPositions - Dictionary of player positions to be updated
  * Returns nothing, but updates newPlayerPositions and emptyPositions
  */
 function findInactivePlayerSwap(
-  injuredOnRoster: Player[],
+  injuredOnRoster: IPlayer[],
   emptyPositions: any,
-  healthyPlayer: Player,
-  benched: Player[],
+  healthyPlayer: IPlayer,
+  benched: IPlayer[],
   newPlayerPositions: any
 ): void {
   for (let i = 0; i < injuredOnRoster.length; i++) {
@@ -352,15 +352,15 @@ function findInactivePlayerSwap(
 /**
  * Attempts to move a bench player onto the active roster
  *
- * @param {Player} benchPlayer - The player to move onto the active roster
- * @param {Player[]} rostered - List of players on the active roster
- * @param {Player[]} benched - List of players on the bench
+ * @param {IPlayer} benchPlayer - The player to move onto the active roster
+ * @param {IPlayer[]} rostered - List of players on the active roster
+ * @param {IPlayer[]} benched - List of players on the bench
  * @param {*} newPlayerPositions - Dictionary of player positions to be updated
  */
 function findActivePlayerSwap(
-  benchPlayer: Player,
-  rostered: Player[],
-  benched: Player[],
+  benchPlayer: IPlayer,
+  rostered: IPlayer[],
+  benched: IPlayer[],
   newPlayerPositions: any
 ) {
   for (const rosterPlayer of rostered) {
@@ -429,12 +429,12 @@ function findActivePlayerSwap(
 /**
  * A small helper function to move a player to a new position
  *
- * @param {Player} player - The player to move
+ * @param {IPlayer} player - The player to move
  * @param {string} position - The new position to move the player to
  * @param {*} newPlayerPositions - Dictionary of player positions to be updated
  */
 function movePlayerTo(
-  player: Player,
+  player: IPlayer,
   position: string,
   newPlayerPositions: any
 ) {

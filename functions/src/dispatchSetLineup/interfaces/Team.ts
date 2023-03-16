@@ -1,8 +1,8 @@
-import { Player } from "./Player";
+import { IPlayer } from "./IPlayer";
 
 export interface Team {
   team_key: string;
-  players: Player[];
+  players: IPlayer[];
   coverage_type: string;
   coverage_period: string;
   weekly_deadline: string;

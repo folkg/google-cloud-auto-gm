@@ -2,7 +2,7 @@ import { Roster as Roster } from "./Roster";
 import { Team } from "../interfaces/Team";
 import { RosterModification } from "../interfaces/RosterModification";
 import { assignPlayerStartScoreFunction } from "../services/playerStartScoreFunctions.service";
-import { OptimizationPlayer } from "./OptimizationPlayer";
+import { Player } from "./Player";
 
 export class LineupOptimizer {
   private readonly team: Team;
@@ -60,7 +60,7 @@ export class LineupOptimizer {
     };
   }
 
-  private createPlayerPositionDictionary(players: OptimizationPlayer[]) {
+  private createPlayerPositionDictionary(players: Player[]) {
     const result: { [key: string]: string } = {};
     players.forEach((player) => {
       result[player.player_key] = player.selected_position;
@@ -121,7 +121,7 @@ export class LineupOptimizer {
     }
   }
 
-  private attemptIllegalPlayerSwaps(playerA: OptimizationPlayer): boolean {
+  private attemptIllegalPlayerSwaps(playerA: Player): boolean {
     const allEditablePlayers = this.roster.editablePlayers;
     Roster.sortAscendingByScore(allEditablePlayers);
 
@@ -146,8 +146,8 @@ export class LineupOptimizer {
     return false;
   }
   threeWayMoveToUnfilledPositionIllegalPlayer(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer
+    playerA: Player,
+    playerB: Player
   ) {
     const potentialPlayerAPosition = playerB.isActiveRoster()
       ? "BN"
@@ -170,10 +170,7 @@ export class LineupOptimizer {
       this.movePlayerToPosition(playerA, potentialPlayerAPosition);
     }
   }
-  threeWaySwapIllegalPlayer(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer
-  ): boolean {
+  threeWaySwapIllegalPlayer(playerA: Player, playerB: Player): boolean {
     this.logInfo("attempting to find a three way swap");
     const playerC = this.findPlayerCforIllegalPlayerA(
       playerA,
@@ -229,9 +226,7 @@ export class LineupOptimizer {
     }
   }
 
-  private swapWithStartingPlayers(
-    playerA: OptimizationPlayer
-  ): OptimizationPlayer | undefined {
+  private swapWithStartingPlayers(playerA: Player): Player | undefined {
     const startingPlayersList = this.roster.startingPlayers;
     Roster.sortAscendingByScore(startingPlayersList);
 
@@ -273,9 +268,9 @@ export class LineupOptimizer {
   }
 
   private threeWayMoveToUnfilledPosition(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer
-  ): OptimizationPlayer | undefined {
+    playerA: Player,
+    playerB: Player
+  ): Player | undefined {
     this.logInfo(
       `attempting to move playerB ${playerB.player_name} to unfilled position, and playerA ${playerA.player_name} to playerB's old position.`
     );
@@ -294,12 +289,9 @@ export class LineupOptimizer {
     return undefined;
   }
 
-  private threeWaySwap(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer
-  ): OptimizationPlayer | undefined {
+  private threeWaySwap(playerA: Player, playerB: Player): Player | undefined {
     this.logInfo("attempting to find a three way swap");
-    const playerCTargetList: OptimizationPlayer[] = playerA.isInactiveList()
+    const playerCTargetList: Player[] = playerA.isInactiveList()
       ? this.roster.inactiveListPlayers
       : this.roster.startingPlayers;
 
@@ -316,17 +308,14 @@ export class LineupOptimizer {
     return undefined;
   }
 
-  private movePlayerToPosition(player: OptimizationPlayer, position: string) {
+  private movePlayerToPosition(player: Player, position: string) {
     this.logInfo(
       "moving player " + player.player_name + " to position " + position
     );
     player.selected_position = position;
   }
 
-  private swapPlayers(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer
-  ): void {
+  private swapPlayers(playerA: Player, playerB: Player): void {
     this.logInfo(
       `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`
     );
@@ -335,13 +324,12 @@ export class LineupOptimizer {
     this.movePlayerToPosition(playerA, temp);
   }
 
-  private openOneRosterSpot(playerToOpenSpotFor?: OptimizationPlayer): boolean {
+  private openOneRosterSpot(playerToOpenSpotFor?: Player): boolean {
     const unfilledInactivePositions: string[] =
       this.roster.unfilledInactivePositions;
     if (unfilledInactivePositions.length === 0) return false;
 
-    let inactivePlayersOnRoster: OptimizationPlayer[] =
-      this.roster.inactiveOnRosterPlayers;
+    let inactivePlayersOnRoster: Player[] = this.roster.inactiveOnRosterPlayers;
     if (playerToOpenSpotFor) {
       inactivePlayersOnRoster = inactivePlayersOnRoster.filter(
         (player) => playerToOpenSpotFor.start_score > player.start_score
@@ -368,7 +356,7 @@ export class LineupOptimizer {
   }
 
   private movePlayerToUnfilledPositionInTargetList(
-    player: OptimizationPlayer,
+    player: Player,
     unfilledPositionTargetList: string[]
   ): boolean {
     const unfilledPosition = player.findEligiblePositionIn(
@@ -382,9 +370,7 @@ export class LineupOptimizer {
     return true;
   }
 
-  private moveILPlayerToUnfilledALPosition(
-    player: OptimizationPlayer
-  ): boolean {
+  private moveILPlayerToUnfilledALPosition(player: Player): boolean {
     this.logInfo("numEmptyRosterSpots: " + this.roster.numEmptyRosterSpots);
     if (!player.isInactiveList()) return false;
 
@@ -403,16 +389,16 @@ export class LineupOptimizer {
    * This finds a left-hand rotation swap, i.e. player A ->B -> C
    *
    * @private
-   * @param {OptimizationPlayer} playerA - player to be swapped out
-   * @param {OptimizationPlayer} playerB - player to be swapped in
-   * @param {OptimizationPlayer[]} playersArray - array of players to search for playerC
-   * @return {(OptimizationPlayer[] | undefined)} playerC or undefined if not found
+   * @param {Player} playerA - player to be swapped out
+   * @param {Player} playerB - player to be swapped in
+   * @param {Player[]} playersArray - array of players to search for playerC
+   * @return {(Player[] | undefined)} playerC or undefined if not found
    */
   private getPotentialPlayerCList(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer,
-    playersArray: OptimizationPlayer[]
-  ): OptimizationPlayer[] | undefined {
+    playerA: Player,
+    playerB: Player,
+    playersArray: Player[]
+  ): Player[] | undefined {
     this.logInfo(
       `Finding playerC for playerA: ${playerA.player_name} ${playerA.player_key} ${playerA.selected_position} ${playerA.start_score}, playerB: ${playerB.player_name} ${playerB.player_key} ${playerB.selected_position} ${playerB.start_score}`
     );
@@ -427,7 +413,7 @@ export class LineupOptimizer {
         : playerB.selected_position;
 
     return playersArray.filter(
-      (playerC: OptimizationPlayer) =>
+      (playerC: Player) =>
         playerB !== playerC &&
         playerA !== playerC &&
         playerB.eligible_positions.includes(playerC.selected_position) &&
@@ -437,20 +423,20 @@ export class LineupOptimizer {
   }
 
   private findPlayerCforIllegalPlayerA(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer,
-    playersArray: OptimizationPlayer[]
+    playerA: Player,
+    playerB: Player,
+    playersArray: Player[]
   ) {
     return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.at(0);
   }
 
   private findPlayerCforOptimization(
-    playerA: OptimizationPlayer,
-    playerB: OptimizationPlayer,
-    playersArray: OptimizationPlayer[]
-  ): OptimizationPlayer | undefined {
+    playerA: Player,
+    playerB: Player,
+    playersArray: Player[]
+  ): Player | undefined {
     return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.find(
-      (playerC: OptimizationPlayer) =>
+      (playerC: Player) =>
         playerA.start_score > playerC.start_score &&
         playerB.start_score > playerC.start_score
     );

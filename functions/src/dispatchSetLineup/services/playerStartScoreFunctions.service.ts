@@ -1,4 +1,4 @@
-import { Player } from "../interfaces/Player";
+import { IPlayer } from "../interfaces/IPlayer";
 import { HEALTHY_STATUS_LIST } from "../helpers/constants";
 import { getNHLStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 
@@ -34,8 +34,8 @@ export function assignPlayerStartScoreFunction(
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function dailyScoreFunction(): (player: Player) => number {
-  return (player: Player) => {
+export function dailyScoreFunction(): (player: IPlayer) => number {
+  return (player: IPlayer) => {
     const NOT_PLAYING_FACTOR = 0.01;
     const INJURY_FACTOR = 0.001;
     // The score will be percent_started
@@ -65,9 +65,9 @@ export function dailyScoreFunction(): (player: Player) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function nhlScoreFunction(): (player: Player) => number {
+export function nhlScoreFunction(): (player: IPlayer) => number {
   const starters = getNHLStartingGoalies() ? getNHLStartingGoalies() : [];
-  return (player: Player) => {
+  return (player: IPlayer) => {
     const NOT_PLAYING_FACTOR = 0.01;
     const INJURY_FACTOR = 0.001;
     const STARTING_FACTOR = 100;
@@ -116,8 +116,8 @@ export function nhlScoreFunction(): (player: Player) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function nflScoreFunction(): (player: Player) => number {
-  return (player: Player) => {
+export function nflScoreFunction(): (player: IPlayer) => number {
+  return (player: IPlayer) => {
     const NOT_PLAYING_FACTOR = 0.01;
     const INJURY_FACTOR = 0.001;
     // The score will be percent_started / rank_projected_week
@@ -149,8 +149,8 @@ export function nflScoreFunction(): (player: Player) => number {
  *
  * @return {()} - A function that takes a player and returns a score.
  */
-export function weeklyLineupScoreFunction(): (player: Player) => number {
-  return (player: Player) => {
+export function weeklyLineupScoreFunction(): (player: IPlayer) => number {
+  return (player: IPlayer) => {
     // The score will be the inverse of their projected rank for the next week
     // We will not factor in injury status as Yahoo has already accounted for it
     const score = 100 / player.rank_next7days;
