@@ -479,7 +479,6 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     );
   });
 
-  //TODO: FAIL: This test is failing, but it should be passing. Need to fix
   test("NA player on IR, open NA slot on roster", function () {
     const roster: Team = require("./testRosters/NHL/Daily/NAonIR&OpenNASlotOnRoster.json");
     const lo = new LineupOptimizer(roster);
@@ -538,7 +537,7 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     );
   });
 
-  test("Two healthy players on IR, two IR on bench", function () {
+  test("Two healthy players on IR, two IR on bench, Healthy G on IR has score of 0", function () {
     const roster: Team = require("./testRosters/NHL/Daily/2HealthyOnIR&2IRonBN.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
@@ -557,6 +556,8 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
       rosterModification.newPlayerPositions["419.p.6726"]
     );
   });
+
+  // TODO: Add test case: playerA on IR (NOT IR+ eligible), playerB on IR+ (IR, NA eligible), open NA spot.
 
   test("Two healthy players on IR, one IR player on BN, no IR+ slots open", function () {
     const roster: Team = require("./testRosters/NHL/Daily/2HealthyOnIR&1IRonBN.json");
@@ -599,9 +600,6 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     });
   });
 
-  // TODO: Fail. Fix.
-  // Sam Bennet should swap with Sam Bennet 3 and Tony Deangelo in 3 player swap
-  // This is an issue with findPlayerC method. Additional notes are in the method.
   test("One healthy player on IR, one IR+ player on BN, one IR player on IR+, no spare IR+ slot", function () {
     const roster: Team = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onBN&1IRonIR+&NoSpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
@@ -791,13 +789,10 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({});
-    // TODO: If we are going to move IR players up in the lineup, there should be a swap
-    // For now, we are just doing these swaps in weekly leagues
-    // expect(rosterModification.newPlayerPositions).toEqual({
-    //   "419.p.6370": "BN",
-    //   "419.p.5376": "IR",
-    // });
+    expect(["IR", "IR+"]).toContain(
+      rosterModification.newPlayerPositions["419.p.5376"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
   });
 
   // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is open spot
@@ -816,9 +811,11 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
 
   // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is open spot
   // BN has Util eligiblity, Util has RW,LW eligiblity, LW is open spot
+  // TODO: Problematic test! Infinte loop? Why can't I get anything out of this test?
   test("Two three-way swap with two open LW", function () {
     const roster: Team = require("./testRosters/NHL/Daily/threeWaySwapsWithTwoOpenLWSpot.json");
     const lo = new LineupOptimizer(roster);
+    lo.verbose = true;
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
@@ -843,6 +840,19 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
       "419.p.5391": "LW",
       "419.p.6726": "RW",
       "419.p.5441": "BN",
+    });
+  });
+
+  test("Two players on IR/IR+, two empty roster spots", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/twoPlayersOnIRTwoEmptyRosterSpots.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "419.p.6370": "BN",
+      "419.p.63702": "BN",
     });
   });
 });

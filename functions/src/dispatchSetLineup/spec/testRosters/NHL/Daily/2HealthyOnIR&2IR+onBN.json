@@ -329,7 +329,7 @@
       "is_editable": true,
       "is_playing": false,
       "injury_status": "Healthy",
-      "percent_started": 0,
+      "percent_started": 1,
       "percent_owned": 37,
       "transactions_delta": -24,
       "is_starting": "N/A",
