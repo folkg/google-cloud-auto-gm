@@ -83,7 +83,7 @@ export class LineupOptimizer {
     return result;
   }
 
-  private resolveIllegalPlayers() {
+  private resolveIllegalPlayers(): void {
     const illegalPlayers = this.roster.illegalPlayers;
     if (illegalPlayers.length === 0) return;
 
@@ -139,16 +139,14 @@ export class LineupOptimizer {
         const success = this.threeWaySwapIllegalPlayer(playerA, playerB);
         if (success) return true;
 
-        this.threeWayMoveToUnfilledPositionIllegalPlayer(playerA, playerB);
+        this.threeWayMoveIllegalToUnfilledPosition(playerA, playerB);
       }
     }
     this.logInfo(`no swaps found for ${playerA.player_name}`);
     return false;
   }
-  threeWayMoveToUnfilledPositionIllegalPlayer(
-    playerA: Player,
-    playerB: Player
-  ) {
+
+  threeWayMoveIllegalToUnfilledPosition(playerA: Player, playerB: Player) {
     const potentialPlayerAPosition = playerB.isActiveRoster()
       ? "BN"
       : playerB.selected_position;
@@ -158,10 +156,12 @@ export class LineupOptimizer {
     this.logInfo(
       `attempting to move playerB ${playerB.player_name} to unfilled position`
     );
-    const unfilledPositionTargetList =
-      playerA.isInactiveList() && this.roster.numEmptyRosterSpots === 0
-        ? this.roster.unfilledInactivePositions
-        : this.roster.unfilledAllPositions;
+    const illegalPlayerACannotMoveToOpenRosterSpot =
+      playerA.isInactiveList() && this.roster.numEmptyRosterSpots === 0;
+
+    const unfilledPositionTargetList = illegalPlayerACannotMoveToOpenRosterSpot
+      ? this.roster.unfilledInactivePositions
+      : this.roster.unfilledAllPositions;
     const success = this.movePlayerToUnfilledPositionInTargetList(
       playerB,
       unfilledPositionTargetList
@@ -189,7 +189,7 @@ export class LineupOptimizer {
     return false;
   }
 
-  private optimizeReserveToStaringPlayers() {
+  private optimizeReserveToStaringPlayers(): void {
     const reservePlayers = this.roster.reservePlayers;
     Roster.sortAscendingByScore(reservePlayers);
     this.logInfo("reserve: " + reservePlayers.map((p) => p.player_name));
@@ -200,14 +200,13 @@ export class LineupOptimizer {
       if (playerA.isStartingRoster()) continue;
       this.logInfo(`playerA: ${playerA.player_name}`);
 
-      // TODO: This seems convoluted, try to make more clear
-      let proceedToLookForUnfilledInStarters = true;
+      let proceedToLookForUnfilledPositionInStarters = true;
       if (playerA.isInactiveList()) {
-        proceedToLookForUnfilledInStarters =
+        proceedToLookForUnfilledPositionInStarters =
           this.moveILPlayerToUnfilledALPosition(playerA);
       }
       const success =
-        proceedToLookForUnfilledInStarters &&
+        proceedToLookForUnfilledPositionInStarters &&
         this.movePlayerToUnfilledPositionInTargetList(
           playerA,
           this.roster.unfilledStartingPositions
@@ -217,35 +216,19 @@ export class LineupOptimizer {
         continue;
       }
 
-      const swappedPlayer = this.swapWithStartingPlayers(playerA);
-      if (swappedPlayer) {
+      const playerMovedToReserve = this.swapWithStartingPlayers(playerA);
+      if (playerMovedToReserve) {
         // if a player was swapped back into the reserve list, we need to
-        // re-evaluate the player we just swapped
-        reservePlayers.push(swappedPlayer);
+        // re-evaluate the player we just swapped to see if it can be moved back
+        reservePlayers.push(playerMovedToReserve);
       } else this.logInfo(`No swaps for playerA: ${playerA.player_name}`);
     }
   }
 
   private swapWithStartingPlayers(playerA: Player): Player | undefined {
-    const startingPlayersList = this.roster.startingPlayers;
-    Roster.sortAscendingByScore(startingPlayersList);
-
-    this.logInfo("starting: " + startingPlayersList.map((p) => p.player_name));
-    if (playerA.hasLowerScoreThanAllPlayersIn(startingPlayersList)) {
-      this.logInfo(
-        `Player ${playerA.player_name} is worse than all players in target array. Skipping.`
-      );
+    const eligibleTargetPlayers = this.getEliglibleStartingPlayers(playerA);
+    if (!eligibleTargetPlayers || eligibleTargetPlayers.length === 0)
       return undefined;
-    }
-
-    const eligibleTargetPlayers =
-      playerA.getEligibleTargetPlayers(startingPlayersList);
-    this.logInfo(
-      `eligibleTargetPlayers for player ${
-        playerA.player_name
-      }: ${eligibleTargetPlayers.map((p) => p.player_name)}`
-    );
-    if (eligibleTargetPlayers.length === 0) return undefined;
 
     for (const playerB of eligibleTargetPlayers) {
       if (playerA.isEligibleAndHigherScoreThan(playerB)) {
@@ -265,6 +248,26 @@ export class LineupOptimizer {
       }
     }
     return undefined;
+  }
+
+  private getEliglibleStartingPlayers(playerA: Player): Player[] | undefined {
+    const startingPlayersList = this.roster.startingPlayers;
+    Roster.sortAscendingByScore(startingPlayersList);
+
+    if (playerA.hasLowerScoreThanAllPlayersIn(startingPlayersList)) {
+      this.logInfo(
+        `Player ${playerA.player_name} is worse than all players in target array. Skipping.`
+      );
+      return undefined;
+    }
+
+    const result = playerA.getEligibleTargetPlayers(startingPlayersList);
+    this.logInfo(
+      `eligibleTargetPlayers for player ${playerA.player_name}: ${result.map(
+        (p) => p.player_name
+      )}`
+    );
+    return result;
   }
 
   private threeWayMoveToUnfilledPosition(
@@ -308,7 +311,7 @@ export class LineupOptimizer {
     return undefined;
   }
 
-  private movePlayerToPosition(player: Player, position: string) {
+  private movePlayerToPosition(player: Player, position: string): void {
     this.logInfo(
       "moving player " + player.player_name + " to position " + position
     );
@@ -479,15 +482,16 @@ export class LineupOptimizer {
       return false;
     }
 
-    for (const reservePlayer of this.roster.reservePlayers) {
-      for (const startingPlayer of this.roster.startingPlayers) {
-        if (reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)) {
-          console.error(
-            `Suboptimal Lineup: reservePlayer ${reservePlayer.player_name} has a higher score than startingPlayer ${startingPlayer.player_name} for team ${this.team.team_key}`
-          );
-          return false;
-        }
-      }
+    const suboptimalLineup = this.roster.reservePlayers.some((reservePlayer) =>
+      this.roster.startingPlayers.some((startingPlayer) =>
+        reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)
+      )
+    );
+    if (suboptimalLineup) {
+      console.error(
+        `Suboptimal Lineup: reservePlayers have higher scores than startingPlayers for team ${this.team.team_key}`
+      );
+      return false;
     }
 
     return true;
