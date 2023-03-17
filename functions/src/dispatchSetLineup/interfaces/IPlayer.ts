@@ -1,5 +1,4 @@
 export interface IPlayer {
-  addDropScore?: any;
   player_key: string;
   player_name: string;
   eligible_positions: string[];
@@ -13,5 +12,4 @@ export interface IPlayer {
   is_starting: number | string;
   rank_next7days: number;
   rank_projected_week: number;
-  start_score: number; // TODO: Remove this once we move over to new lineup optimizer
 }

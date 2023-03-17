@@ -20,6 +20,7 @@ module.exports = {
   },
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
+    "/coverage/**/*", // Ignore coverage files.
     "jest.config.js",
     "**/*.spec.ts",
   ],
