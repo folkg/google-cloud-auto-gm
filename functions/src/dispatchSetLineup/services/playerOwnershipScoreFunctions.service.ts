@@ -7,27 +7,52 @@ import { IPlayer } from "../interfaces/IPlayer";
  * @param {OptimizationPlayer} player - The player to score
  * @return {number} - The score
  */
-export function ownershipScoreFunction(player: IPlayer): number {
-  // score will be based on players transaction_delta, percent_owned, and rank_lat14days
-  // transaction_delta and percent_owned should higher is better
-  // rank_last14days lower is better
-  // const { transaction_delta, percent_owned, rank_last30days ,rank_last14days, rank_last7days, rank_next7days, rank_projected_week , rank_projected_season} = player;
-  // Num roster players * num teams = baseline
+export function ownershipScoreFunction(
+  player: IPlayer,
+  numPlayersInLeague: number
+): number {
+  // console.log(player.player_name);
+  // console.log(player.percent_owned);
+  // console.log(
+  //   Math.min(numPlayersInLeague / resolveRank(player.ranks.last30Days), 5)
+  // );
+  // console.log(
+  //   Math.min(numPlayersInLeague / resolveRank(player.ranks.last14Days), 5)
+  // );
+  // console.log(
+  //   Math.min(numPlayersInLeague / resolveRank(player.ranks.next7Days), 5)
+  // );
+  // console.log(
+  //   Math.min(numPlayersInLeague / resolveRank(player.ranks.restOfSeason), 5)
+  // );
+  // console.log(
+  //   Math.min(numPlayersInLeague / resolveRank(player.ranks.last4Weeks), 5)
+  // );
+  // console.log(
+  //   Math.min(numPlayersInLeague / resolveRank(player.ranks.projectedWeek), 5)
+  // );
+  // console.log(
+  //   Math.min(numPlayersInLeague / resolveRank(player.ranks.next4Weeks), 5)
+  // );
 
-  // TODO: How to get the 25 FA players we will look at? What to sort by? percent_owned? rank_last14days? rank_season? transaction_delta?
+  // A player can add up to 20 points to their ownership score.
+  // Historical performance is weighted more heavily than the yahoo projections
+  return (
+    player.percent_owned +
+    Math.min(numPlayersInLeague / resolveRank(player.ranks.last30Days), 7) +
+    Math.min(numPlayersInLeague / resolveRank(player.ranks.last14Days), 8) +
+    Math.min(numPlayersInLeague / resolveRank(player.ranks.next7Days), 5) +
+    Math.min(numPlayersInLeague / resolveRank(player.ranks.restOfSeason), 5) +
+    Math.min(numPlayersInLeague / resolveRank(player.ranks.last4Weeks), 8) +
+    Math.min(numPlayersInLeague / resolveRank(player.ranks.projectedWeek), 7) +
+    Math.min(numPlayersInLeague / resolveRank(player.ranks.next4Weeks), 5)
+  );
 
-  // const score =
-  //   percent_owned +
-  //   min(baseline / rank_last30days, 10) +
-  //   min(baseline / rank_last14days, 5) +
-  //   min(baseline / rank_next7days, 5) +
-  //   min(baseline / rank_remaining_games, 10);
-
-  //   min(baseline / rank_last_4_weeks, 10) +
-  //   min(baseline / rank_projected_week, 10) +
-  //   min(baseline / rank_next_4_weeks, 5) +
-
-  const score = 0;
-
-  return score;
+  function resolveRank(rank: number): number {
+    if (rank === -1) {
+      return Infinity;
+    } else {
+      return rank;
+    }
+  }
 }

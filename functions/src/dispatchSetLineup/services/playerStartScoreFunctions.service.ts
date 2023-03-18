@@ -12,7 +12,7 @@ import { getNHLStartingGoalies } from "../../common/services/yahooAPI/yahooStart
  * @param {string} weeklyDeadline - The weekly deadline for the league
  * @return {()} - A function that takes a player and returns a score.
  */
-export function assignPlayerStartScoreFunction(
+export function playerStartScoreFunctionFactory(
   gameCode: string,
   weeklyDeadline: string
 ) {

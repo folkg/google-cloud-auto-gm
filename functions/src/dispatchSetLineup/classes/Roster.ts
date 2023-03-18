@@ -1,5 +1,7 @@
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { IPlayer } from "../interfaces/IPlayer";
+import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
+import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
 
 export class Roster {
@@ -10,19 +12,42 @@ export class Roster {
   constructor(
     players: IPlayer[],
     rosterPositions: { [key: string]: number },
-    playerSitStartScoreFunction: (player: Player) => number
+    numTeamsInLeague: number,
+    gameCode: string,
+    weeklyDeadline: string
   ) {
     this._allPlayers = players.map((player) => new Player(player));
 
     this._editablePlayers = this._allPlayers.filter(
       (player) => player.is_editable
     );
-    this.editablePlayers.forEach((player) => {
-      player.start_score = playerSitStartScoreFunction(player);
+    this._rosterPositions = { ...rosterPositions };
+
+    const playerStartScoreFunction = playerStartScoreFunctionFactory(
+      gameCode,
+      weeklyDeadline
+    );
+
+    this._allPlayers.forEach((player) => {
+      player.start_score = playerStartScoreFunction(player);
+      player.ownership_score = ownershipScoreFunction(
+        player,
+        numTeamsInLeague * this.numStandardRosterSpots
+      );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
-
-    this._rosterPositions = { ...rosterPositions };
+    // console.log(
+    //   this._allPlayers
+    //     .sort((a, b) => b.ownership_score - a.ownership_score)
+    //     .map(
+    //       (player) =>
+    //         player.player_name +
+    //         " " +
+    //         player.ownership_score +
+    //         " " +
+    //         player.percent_owned
+    //     )
+    // );
   }
 
   /**
@@ -145,6 +170,14 @@ export class Roster {
     return Object.keys(unfilledPositions).reduce((acc, position) => {
       if (!INACTIVE_POSITION_LIST.includes(position))
         acc += unfilledPositions[position];
+      return acc;
+    }, 0);
+  }
+
+  public get numStandardRosterSpots(): number {
+    return Object.keys(this._rosterPositions).reduce((acc, position) => {
+      if (!INACTIVE_POSITION_LIST.includes(position))
+        acc += this._rosterPositions[position];
       return acc;
     }, 0);
   }

@@ -204,7 +204,6 @@ describe("Test LineupOptimizer Class NBA Weekly", function () {
   test("high score IL+ player on IL+, low score IL player on bench, one spare IL slot, no spare IL+ slot", function () {
     const roster: Team = require("./testRosters/NBA/Weekly/highScoreIL+PlayerOnIL+LowScoreILPlayerOnBenchOneSpareILSlot.json");
     const lo = new LineupOptimizer(roster);
-    lo.verbose = true;
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);

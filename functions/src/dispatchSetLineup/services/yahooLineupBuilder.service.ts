@@ -17,7 +17,7 @@ export async function fetchRostersFromYahoo(
   uid: string
 ): Promise<Team[]> {
   const yahooRostersJSON = await getRostersByTeamID(teams, uid);
-  console.log(JSON.stringify(yahooRostersJSON));
+  // console.log(JSON.stringify(yahooRostersJSON));
   const rosters: Team[] = [];
   const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
   // console.log(games); //use this to debug the JSON object and see all data
@@ -79,7 +79,7 @@ export async function fetchRostersFromYahoo(
     }
   }
   // console.log("Fetched rosters from Yahoo API:");
-  console.log(JSON.stringify(rosters));
+  // console.log(JSON.stringify(rosters));
   return rosters;
 }
 

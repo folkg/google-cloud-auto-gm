@@ -1,3 +1,4 @@
+import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { fetchRostersFromYahoo } from "../services/yahooLineupBuilder.service";
 
 // mock firebase-admin
@@ -28,6 +29,7 @@ describe("Test fetchRostersFromYahoo", function () {
       .mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
+    new LineupOptimizer(result[0]); // testing the constructor to see player ownership scores
     expect(result).toEqual(expected);
   });
 

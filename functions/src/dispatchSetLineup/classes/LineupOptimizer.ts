@@ -1,7 +1,6 @@
 import { Roster as Roster } from "./Roster";
 import { Team } from "../interfaces/Team";
 import { RosterModification } from "../interfaces/RosterModification";
-import { assignPlayerStartScoreFunction } from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
 
 export class LineupOptimizer {
@@ -20,7 +19,9 @@ export class LineupOptimizer {
     this.roster = new Roster(
       team.players,
       team.roster_positions,
-      assignPlayerStartScoreFunction(team.game_code, team.weekly_deadline)
+      team.num_teams_in_league,
+      team.game_code,
+      team.weekly_deadline
     );
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.roster.editablePlayers
