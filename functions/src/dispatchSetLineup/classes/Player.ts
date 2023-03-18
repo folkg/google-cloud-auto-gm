@@ -17,7 +17,8 @@ export interface Player extends IPlayer {
  */
 export class Player implements Player {
   constructor(player: IPlayer) {
-    Object.assign(this, player);
+    const playerCopy = JSON.parse(JSON.stringify(player));
+    Object.assign(this, playerCopy);
   }
 
   isInactiveList(): boolean {
