@@ -17,6 +17,7 @@ export async function fetchRostersFromYahoo(
   uid: string
 ): Promise<Team[]> {
   const yahooRostersJSON = await getRostersByTeamID(teams, uid);
+  console.log(JSON.stringify(yahooRostersJSON));
   const rosters: Team[] = [];
   const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
   // console.log(games); //use this to debug the JSON object and see all data
@@ -55,7 +56,20 @@ export async function fetchRostersFromYahoo(
               "weekly_deadline"
             ),
             game_code: getChild(gameJSON, "code"),
+            num_teams_in_league: getChild(leaguesJSON[key].league, "num_teams"),
             roster_positions: rosterPositions,
+            current_weekly_adds: parseStringToInt(
+              getChild(usersTeam.team[0], "roster_adds").value
+            ),
+            current_season_adds: parseStringToInt(
+              getChild(usersTeam.team[0], "number_of_moves")
+            ),
+            max_weekly_adds: parseStringToInt(
+              getChild(leaguesJSON[key].league, "settings")[0].max_weekly_adds
+            ),
+            max_season_adds: parseStringToInt(
+              getChild(leaguesJSON[key].league, "settings")[0].max_adds
+            ),
           };
           rosters.push(rosterObj);
         }
@@ -63,6 +77,7 @@ export async function fetchRostersFromYahoo(
     }
   }
   // console.log("Fetched rosters from Yahoo API:");
+  console.log(JSON.stringify(rosters));
   return rosters;
 }
 
@@ -108,15 +123,13 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
       // get the player's opponent
       const opponent = getChild(player, "opponent");
 
+      const ranks = getPlayerRanks(player);
+
       // pull the percent_started and percent_owned out of the JSON
       const percentStarted = getDiamondPCT(player, "percent_started");
       const percentOwned = getDiamondPCT(player, "percent_owned");
 
-      // pull the player ranks out of the JSON
-      const { rankNext7Days, rankProjectedWeek } = getPlayerRanks(player);
-
       // pull the transaction delta out of the JSON
-      const transactionDelta = getTransactions(player);
       // Build the player object
       const playerObj: IPlayer = {
         player_key: getChild(player[0], "player_key"),
@@ -131,12 +144,16 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
         injury_status: getChild(player[0], "status_full") || "Healthy",
         percent_started: percentStarted,
         percent_owned: percentOwned,
-        transactions_delta: transactionDelta,
         is_starting: getChild(player, "starting_status")
           ? getChild(getChild(player, "starting_status"), "is_starting")
           : "N/A",
-        rank_next7days: rankNext7Days,
-        rank_projected_week: rankProjectedWeek,
+        rank_last30days: ranks.rankLast30Days,
+        rank_last14days: ranks.rankLast14Days,
+        rank_next7days: ranks.rankNext7Days,
+        rank_rest_of_season: ranks.rankRestOfSeason,
+        rank_last4weeks: ranks.rankLast4Weeks,
+        rank_projected_week: ranks.rankProjectedWeek,
+        rank_next4weeks: ranks.rankNext4Weeks,
       };
 
       // push the player to the object
@@ -173,31 +190,55 @@ function getDiamondPCT(player: any, pctType: string): number {
  * @return {*} - The player ranks
  */
 function getPlayerRanks(player: any) {
-  let rankNext7Days = -1;
-  let rankProjectedWeek = -1;
+  type PlayerRank = {
+    rankLast30Days: number;
+    rankLast14Days: number;
+    rankNext7Days: number;
+    rankRestOfSeason: number;
+    rankLast4Weeks: number;
+    rankProjectedWeek: number;
+    rankNext4Weeks: number;
+  };
+
+  const result: PlayerRank = {
+    rankLast30Days: -1,
+    rankLast14Days: -1,
+    rankNext7Days: -1,
+    rankRestOfSeason: -1,
+    rankLast4Weeks: -1,
+    rankProjectedWeek: -1,
+    rankNext4Weeks: -1,
+  };
   getChild(player, "player_ranks").forEach((rank: any) => {
-    if (rank.player_rank.rank_type === "PS7") {
-      rankNext7Days = parseInt(rank.player_rank.rank_value) || -1;
-    } else if (rank.player_rank.rank_type === "PW") {
-      rankProjectedWeek = parseInt(rank.player_rank.rank_value) || -1;
+    switch (rank.player_rank.rank_type) {
+      case "L30":
+        result.rankLast30Days = parseStringToInt(rank.player_rank.rank_value);
+        break;
+      case "L14":
+        result.rankLast14Days = parseStringToInt(rank.player_rank.rank_value);
+        break;
+      case "PS7":
+        result.rankNext7Days = parseStringToInt(rank.player_rank.rank_value);
+        break;
+      case "PSR":
+        result.rankRestOfSeason = parseStringToInt(rank.player_rank.rank_value);
+        break;
+      case "L4W":
+        result.rankLast4Weeks = parseStringToInt(rank.player_rank.rank_value);
+        break;
+      case "PW":
+        result.rankProjectedWeek = parseStringToInt(
+          rank.player_rank.rank_value
+        );
+        break;
+      case "PN4W":
+        result.rankNext4Weeks = parseStringToInt(rank.player_rank.rank_value);
+        break;
     }
   });
-  return { rankNext7Days, rankProjectedWeek };
+  return result;
 }
 
-/**
- * Will get the transaction delta for the player
- *
- * @param {*} player - The player JSON object
- * @return {number} - The transaction delta
- */
-function getTransactions(player: any): number {
-  let transactionDelta = 0;
-  getChild(player, "transactions").cut_types.forEach((cutType: any) => {
-    const cutTypeObj = cutType.cut_type;
-    if (cutTypeObj.type === "diamond") {
-      transactionDelta = parseInt(cutTypeObj.adds) - parseInt(cutTypeObj.drops);
-    }
-  });
-  return transactionDelta;
+function parseStringToInt(value: string): number {
+  return parseInt(value) || -1;
 }

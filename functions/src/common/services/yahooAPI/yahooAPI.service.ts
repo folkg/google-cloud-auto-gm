@@ -78,12 +78,10 @@ export async function getRostersByTeamID(
     "/leagues;league_keys=" +
     leagueKeys +
     ";out=settings/teams/roster" +
-    "/players;out=percent_started,percent_owned,ranks,opponent," +
-    "transactions,starting_status" +
-    ";ranks=projected_next7days,projected_week" +
+    "/players;out=percent_started,percent_owned,ranks,opponent,starting_status" +
+    ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
     ";percent_started.cut_types=diamond" +
     ";percent_owned.cut_types=diamond" +
-    ";transaction.cut_types=diamond" +
     "?format=json";
 
   try {

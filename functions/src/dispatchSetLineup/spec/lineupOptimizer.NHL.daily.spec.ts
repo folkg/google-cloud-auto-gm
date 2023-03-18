@@ -815,7 +815,6 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
   test("Two three-way swap with two open LW", function () {
     const roster: Team = require("./testRosters/NHL/Daily/threeWaySwapsWithTwoOpenLWSpot.json");
     const lo = new LineupOptimizer(roster);
-    lo.verbose = true;
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
