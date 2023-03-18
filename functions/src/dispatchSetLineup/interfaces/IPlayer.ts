@@ -9,11 +9,15 @@ export interface IPlayer {
   percent_started: number;
   percent_owned: number;
   is_starting: number | string;
-  rank_last30days: number;
-  rank_last14days: number;
-  rank_next7days: number;
-  rank_rest_of_season: number;
-  rank_last4weeks: number;
-  rank_projected_week: number;
-  rank_next4weeks: number;
+  ranks: PlayerRanks;
+}
+
+export interface PlayerRanks {
+  last30Days: number;
+  last14Days: number;
+  next7Days: number;
+  restOfSeason: number;
+  last4Weeks: number;
+  projectedWeek: number;
+  next4Weeks: number;
 }

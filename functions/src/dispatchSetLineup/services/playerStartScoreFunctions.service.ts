@@ -128,7 +128,7 @@ export function nflScoreFunction(): (player: IPlayer) => number {
       // percent_started has been broken before, so this is a backup
       score = player.percent_owned;
     }
-    score = (score / player.rank_projected_week) * 100;
+    score = (score / player.ranks.projectedWeek) * 100;
     if (!player.is_playing) {
       // If a player is not playing, set their score to a minimal value
       score *= NOT_PLAYING_FACTOR;
@@ -153,7 +153,7 @@ export function weeklyLineupScoreFunction(): (player: IPlayer) => number {
   return (player: IPlayer) => {
     // The score will be the inverse of their projected rank for the next week
     // We will not factor in injury status as Yahoo has already accounted for it
-    const score = 100 / player.rank_next7days;
+    const score = 100 / player.ranks.next7Days;
     return score;
   };
 }

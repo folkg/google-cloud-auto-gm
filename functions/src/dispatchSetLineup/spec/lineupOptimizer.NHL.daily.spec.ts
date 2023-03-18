@@ -12,14 +12,14 @@ const yahooStartingGoalieService = require("../../common/services/yahooAPI/yahoo
 jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service");
 
 describe("Test LineupOptimizer Class NHL Daily", function () {
-  beforeEach(() => {
-    jest.resetModules();
-  });
+  // beforeEach(() => {
+  //   jest.resetModules();
+  // });
 
-  afterEach(() => {
-    // restore the spy created with spyOn
-    jest.restoreAllMocks();
-  });
+  // afterEach(() => {
+  //   // restore the spy created with spyOn
+  //   jest.restoreAllMocks();
+  // });
 
   // *** Test Optimization of Lineup using healthy players ***
   test("Already optimal roster", function () {
