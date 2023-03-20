@@ -72,9 +72,15 @@ export class Player implements Player {
     );
   }
 
-  hasLowerScoreThanAllPlayersIn(playersList: Player[]): boolean {
+  hasLowerStartScoreThanAll(playersList: Player[]): boolean {
     return playersList.every(
       (player) => player.start_score >= this.start_score
+    );
+  }
+
+  hasLowerOwnershipScoreThanAll(playersList: Player[]): boolean {
+    return playersList.every(
+      (player) => player.ownership_score >= this.ownership_score
     );
   }
 }

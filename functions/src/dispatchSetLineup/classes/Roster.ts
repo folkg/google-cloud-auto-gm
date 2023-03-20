@@ -70,6 +70,10 @@ export class Roster {
     players.sort((a, b) => b.start_score - a.start_score);
   }
 
+  public get allPlayers(): Player[] {
+    return this._allPlayers;
+  }
+
   public get editablePlayers(): Player[] {
     return this._editablePlayers;
   }
@@ -180,5 +184,25 @@ export class Roster {
         acc += this._rosterPositions[position];
       return acc;
     }, 0);
+  }
+
+  public get criticalPositions(): string[] {
+    return Object.keys(this._rosterPositions).filter((position) => {
+      const numPlayersAtPosition = this._allPlayers.filter((player) =>
+        player.eligible_positions.includes(position)
+      ).length;
+      return numPlayersAtPosition < this._rosterPositions[position];
+    });
+  }
+
+  public get positionalScores() {
+    return Object.keys(this._rosterPositions).map((position) => {
+      const positionScore = this._allPlayers.reduce((acc, player) => {
+        if (player.eligible_positions.includes(position))
+          acc += player.ownership_score;
+        return acc;
+      }, 0);
+      return { position: positionScore };
+    });
   }
 }

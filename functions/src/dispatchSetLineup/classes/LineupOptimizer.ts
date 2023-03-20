@@ -255,7 +255,7 @@ export class LineupOptimizer {
     const startingPlayersList = this.roster.startingPlayers;
     Roster.sortAscendingByScore(startingPlayersList);
 
-    if (playerA.hasLowerScoreThanAllPlayersIn(startingPlayersList)) {
+    if (playerA.hasLowerStartScoreThanAll(startingPlayersList)) {
       this.logInfo(
         `Player ${playerA.player_name} is worse than all players in target array. Skipping.`
       );
@@ -354,9 +354,30 @@ export class LineupOptimizer {
       }
     }
 
+    this.dropPlayerToWaivers(playerToOpenSpotFor);
     // TODO: Call dropPlayerToWaivers() here if there is a worse player than playerToOpenSpotFor to be dropped
 
     return false;
+  }
+
+  dropPlayerToWaivers(playerToOpenSpotFor: Player | undefined) {
+    if (!playerToOpenSpotFor) return;
+
+    const unDroppablePositions = this.roster.criticalPositions;
+    const playerToDrop = this.roster.allPlayers
+      .filter(
+        (player) =>
+          player !== playerToOpenSpotFor &&
+          !player.eligible_positions.some((position) =>
+            unDroppablePositions.includes(position)
+          ) &&
+          player.ownership_score < playerToOpenSpotFor.ownership_score
+      )
+      .reduce((prevPlayer, currPlayer) =>
+        prevPlayer.ownership_score < currPlayer.ownership_score
+          ? prevPlayer
+          : currPlayer
+      );
   }
 
   private movePlayerToUnfilledPositionInTargetList(
