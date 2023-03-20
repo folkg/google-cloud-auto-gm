@@ -369,6 +369,7 @@ export class LineupOptimizer {
     const playerToDrop = this.roster.allPlayers
       .filter(
         (player) =>
+          !player.is_undroppable &&
           !player.eligible_positions.some((position) =>
             unDroppablePositions.includes(position)
           )
@@ -381,6 +382,7 @@ export class LineupOptimizer {
         playerToOpenSpotFor
       );
     if (playerToDrop === playerToOpenSpotFor) return;
+
     const rt: RosterTransaction = {
       teamKey: this.team.team_key,
       players: [
@@ -390,6 +392,9 @@ export class LineupOptimizer {
         },
       ],
     };
+    // TODO: Call this? We are missing UID. It is an async as well, so we need to wait for it to complete.
+    // If lineup changes are intraday, or it is NFL, we want this done now.
+    // Do we return this from the class with rosterModifications and then resolve it in the caller?
     this.logInfo(`dropPlayerToWaivers: ${JSON.stringify(rt)}`);
   }
 

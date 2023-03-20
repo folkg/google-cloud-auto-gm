@@ -9,6 +9,7 @@ export interface IPlayer {
   percent_started: number;
   percent_owned: number;
   is_starting: number | string;
+  is_undroppable: boolean;
   ranks: PlayerRanks;
 }
 

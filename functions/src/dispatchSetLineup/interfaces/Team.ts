@@ -6,6 +6,8 @@ export interface Team {
   coverage_type: string;
   coverage_period: string;
   weekly_deadline: string;
+  start_date: number;
+  end_date: number;
   game_code: string;
   num_teams_in_league: number;
   roster_positions: { [key: string]: number };

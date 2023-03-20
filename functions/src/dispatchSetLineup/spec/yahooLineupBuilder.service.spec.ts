@@ -29,6 +29,7 @@ describe("Test fetchRostersFromYahoo", function () {
       .mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
+
     new LineupOptimizer(result[0]); // testing the constructor to see player ownership scores
     expect(result).toEqual(expected);
   });
@@ -45,6 +46,7 @@ describe("Test fetchRostersFromYahoo", function () {
       .mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
+
     expect(result).toEqual(expected);
   });
 
@@ -65,6 +67,7 @@ describe("Test fetchRostersFromYahoo", function () {
       .mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
+
     expect(result).toEqual(expected);
   });
 });

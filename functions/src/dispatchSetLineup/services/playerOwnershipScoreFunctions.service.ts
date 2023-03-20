@@ -5,6 +5,7 @@ import { IPlayer } from "../interfaces/IPlayer";
  *
  * @export
  * @param {OptimizationPlayer} player - The player to score
+ * @param {number} numPlayersInLeague - The number of players in the league
  * @return {number} - The score
  */
 export function ownershipScoreFunction(

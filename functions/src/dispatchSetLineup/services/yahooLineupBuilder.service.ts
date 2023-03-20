@@ -72,6 +72,10 @@ export async function fetchRostersFromYahoo(
             max_season_adds: parseStringToInt(
               getChild(leaguesJSON[key].league, "settings")[0].max_adds
             ),
+            start_date: Date.parse(
+              getChild(leaguesJSON[key].league, "start_date")
+            ),
+            end_date: Date.parse(getChild(leaguesJSON[key].league, "end_date")),
           };
           rosters.push(rosterObj);
         }
@@ -148,6 +152,7 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
           ? getChild(getChild(player, "starting_status"), "is_starting")
           : "N/A",
         ranks: getPlayerRanks(player),
+        is_undroppable: getChild(player[0], "is_undroppable"),
       };
 
       // push the player to the object
@@ -221,6 +226,6 @@ function getPlayerRanks(player: any) {
   return result;
 }
 
-function parseStringToInt(value: string, defaultValue: number = -1): number {
+function parseStringToInt(value: string, defaultValue = -1): number {
   return parseInt(value) || defaultValue;
 }

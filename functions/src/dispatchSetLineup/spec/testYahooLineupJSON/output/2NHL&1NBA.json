@@ -21,7 +21,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6777",
@@ -42,7 +43,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6377",
@@ -63,7 +65,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.5573",
@@ -84,7 +87,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6746",
@@ -105,7 +109,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "1"
       },
       {
         "player_key": "419.p.4240",
@@ -126,7 +131,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6005",
@@ -147,7 +153,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.4472",
@@ -168,7 +175,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.5708",
@@ -189,7 +197,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.8877",
@@ -210,7 +219,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6370",
@@ -231,7 +241,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.8282",
@@ -252,7 +263,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6877",
@@ -273,7 +285,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.8878",
@@ -294,7 +307,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.7569",
@@ -315,7 +329,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6817",
@@ -336,7 +351,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.4965",
@@ -357,7 +373,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       }
     ],
     "coverage_type": "date",
@@ -377,7 +394,9 @@
     "current_weekly_adds": 0,
     "current_season_adds": 7,
     "max_weekly_adds": 4,
-    "max_season_adds": -1
+    "max_season_adds": -1,
+    "start_date": 1665964800000,
+    "end_date": 1681430400000
   },
   {
     "team_key": "419.l.91564.t.11",
@@ -401,7 +420,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.4986",
@@ -422,7 +442,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.5470",
@@ -443,7 +464,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.6485",
@@ -464,7 +486,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.4683",
@@ -485,7 +508,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.4921",
@@ -506,7 +530,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.5983",
@@ -527,7 +552,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.5987",
@@ -548,7 +574,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.7920",
@@ -569,7 +596,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.7519",
@@ -590,7 +618,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.5988",
@@ -611,7 +640,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.7554",
@@ -632,7 +662,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.5441",
@@ -653,7 +684,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.7626",
@@ -674,7 +706,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.4901",
@@ -695,7 +728,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "419.p.7163",
@@ -716,7 +750,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       }
     ],
     "coverage_type": "date",
@@ -736,7 +771,9 @@
     "current_weekly_adds": 0,
     "current_season_adds": 7,
     "max_weekly_adds": 4,
-    "max_season_adds": -1
+    "max_season_adds": -1,
+    "start_date": 1665964800000,
+    "end_date": 1681430400000
   },
   {
     "team_key": "418.l.200641.t.9",
@@ -760,7 +797,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.5161",
@@ -781,7 +819,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.4892",
@@ -802,7 +841,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.4725",
@@ -823,7 +863,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "1"
       },
       {
         "player_key": "418.p.5482",
@@ -844,7 +885,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.6053",
@@ -865,7 +907,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.6703",
@@ -886,7 +929,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.5352",
@@ -907,7 +951,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "1"
       },
       {
         "player_key": "418.p.6057",
@@ -928,7 +973,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.5864",
@@ -949,7 +995,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.5350",
@@ -970,7 +1017,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.5893",
@@ -991,7 +1039,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.6567",
@@ -1012,7 +1061,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.5835",
@@ -1033,7 +1083,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       },
       {
         "player_key": "418.p.5432",
@@ -1054,7 +1105,8 @@
           "last4Weeks": -1,
           "projectedWeek": -1,
           "next4Weeks": -1
-        }
+        },
+        "is_undroppable": "0"
       }
     ],
     "coverage_type": "date",
@@ -1077,6 +1129,8 @@
     "current_weekly_adds": 0,
     "current_season_adds": 2,
     "max_weekly_adds": 4,
-    "max_season_adds": -1
+    "max_season_adds": -1,
+    "start_date": 1674432000000,
+    "end_date": 1680393600000
   }
 ]
