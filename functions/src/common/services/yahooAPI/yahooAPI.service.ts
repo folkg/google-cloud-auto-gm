@@ -3,6 +3,7 @@ import { RosterModification } from "../../../dispatchSetLineup/interfaces/Roster
 import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
 import { AxiosError } from "axios";
 import { updateFirestoreTimestamp } from "../firebase/firestore.service";
+import { RosterTransaction } from "../../../dispatchSetLineup/interfaces/RosterTransaction";
 const js2xmlparser = require("js2xmlparser");
 
 /**
@@ -228,6 +229,72 @@ export async function postRosterModifications(
       );
       updateFirestoreTimestamp(uid, teamKey);
     }
+  }
+}
+
+/**
+ * Post the roster add/drop transactions to Yahoo
+ *
+ * @export
+ * @async
+ * @param {RosterTransaction} rosterTransactions The roster transactions.
+ * Shall contain the teamKey and the players to add/drop for a single transaction. This means that
+ * the players array shall contain only 1 or 2 players.
+ * @param {string} uid The Yahoo uid of the user
+ * @return {Promise<void>}
+ */
+export async function postRosterAddDropTransaction(
+  rosterTransactions: RosterTransaction,
+  uid: string
+): Promise<void> {
+  const { teamKey, players } = rosterTransactions;
+  if (Object.keys(players).length === 1 || Object.keys(players).length === 2) {
+    const playersToMove = players.map((player) => {
+      return {
+        player_key: player.playerKey,
+        transaction_data: {
+          type: player.transactionType,
+          [player.transactionType === "add"
+            ? "destination_team_key"
+            : "source_team_key"]: teamKey,
+        },
+      };
+    });
+    const transactionType =
+      playersToMove.length === 1
+        ? playersToMove[0].transaction_data.type
+        : "add/drop";
+    const data: any = {
+      transaction: {
+        type: transactionType,
+        players: playersToMove,
+      },
+    };
+    const isWaiverClaim = false;
+    if (isWaiverClaim) data.transaction.faab_bid = 0;
+    const xmlBody = js2xmlparser.parse("fantasy_content", data);
+    const leagueKey = teamKey.split(".t")[0];
+    try {
+      await httpPutAxios(
+        uid,
+        "league/" + leagueKey + "/transactions?format=json",
+        xmlBody
+      );
+      console.log(
+        `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}`
+      );
+    } catch (err: AxiosError | any) {
+      const errMessage =
+        "Error in postRosterAddDropTransaction. User: " +
+        uid +
+        " Team: " +
+        teamKey;
+      handleAxiosError(err, errMessage);
+    }
+  } else {
+    console.warn(
+      `Invalid number of players to move: ${players.length} for team: ${teamKey} for user: ${uid}. Must be 1 or 2.`
+    );
   }
 }
 

@@ -1,7 +1,8 @@
-import { Roster as Roster } from "./Roster";
-import { Team } from "../interfaces/Team";
 import { RosterModification } from "../interfaces/RosterModification";
+import { RosterTransaction } from "../interfaces/RosterTransaction";
+import { Team } from "../interfaces/Team";
 import { Player } from "./Player";
+import { Roster } from "./Roster";
 
 export class LineupOptimizer {
   private readonly team: Team;
@@ -354,8 +355,9 @@ export class LineupOptimizer {
       }
     }
 
-    this.dropPlayerToWaivers(playerToOpenSpotFor);
-    // TODO: Call dropPlayerToWaivers() here if there is a worse player than playerToOpenSpotFor to be dropped
+    if (this.team.allow_dropping) {
+      this.dropPlayerToWaivers(playerToOpenSpotFor);
+    }
 
     return false;
   }
@@ -367,17 +369,28 @@ export class LineupOptimizer {
     const playerToDrop = this.roster.allPlayers
       .filter(
         (player) =>
-          player !== playerToOpenSpotFor &&
           !player.eligible_positions.some((position) =>
             unDroppablePositions.includes(position)
-          ) &&
-          player.ownership_score < playerToOpenSpotFor.ownership_score
+          )
       )
-      .reduce((prevPlayer, currPlayer) =>
-        prevPlayer.ownership_score < currPlayer.ownership_score
-          ? prevPlayer
-          : currPlayer
+      .reduce(
+        (prevPlayer, currPlayer) =>
+          prevPlayer.ownership_score < currPlayer.ownership_score
+            ? prevPlayer
+            : currPlayer,
+        playerToOpenSpotFor
       );
+    if (playerToDrop === playerToOpenSpotFor) return;
+    const rt: RosterTransaction = {
+      teamKey: this.team.team_key,
+      players: [
+        {
+          playerKey: playerToDrop.player_key,
+          transactionType: "drop",
+        },
+      ],
+    };
+    this.logInfo(`dropPlayerToWaivers: ${JSON.stringify(rt)}`);
   }
 
   private movePlayerToUnfilledPositionInTargetList(
