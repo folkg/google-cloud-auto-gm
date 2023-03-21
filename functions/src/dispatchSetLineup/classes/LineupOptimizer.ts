@@ -127,7 +127,12 @@ export class LineupOptimizer {
       );
       if (success) continue;
 
-      this.attemptIllegalPlayerSwaps(player);
+      success = this.attemptIllegalPlayerSwaps(player);
+      if (success) continue;
+
+      if (player?.isHealthy() && this.team.allow_dropping) {
+        this.dropPlayerFromRoster(player);
+      }
     }
   }
 
@@ -363,10 +368,6 @@ export class LineupOptimizer {
       }
     }
 
-    if (playerToOpenSpotFor?.isHealthy() && this.team.allow_dropping) {
-      this.dropPlayerFromRoster(playerToOpenSpotFor);
-    }
-
     return false;
   }
 
@@ -382,13 +383,14 @@ export class LineupOptimizer {
    * @param {Player} playerToOpenSpotFor
    */
   dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
-    const unDroppablePositions = this.roster.criticalPositions;
+    const alreadyDroppedPlayerKeys = this.getAlreadyDroppedPlayers();
     const playerToDrop = this.roster.allPlayers
       .filter(
         (player) =>
           !player.is_undroppable &&
+          !alreadyDroppedPlayerKeys.includes(player.player_key) &&
           !player.eligible_positions.some((position) =>
-            unDroppablePositions.includes(position)
+            this.roster.criticalPositions.includes(position)
           )
       )
       .reduce(
@@ -413,6 +415,13 @@ export class LineupOptimizer {
     this.logInfo(
       `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
     );
+  }
+
+  private getAlreadyDroppedPlayers() {
+    return this.playerTransactions
+      .flatMap((transaction) => transaction.players)
+      .filter((player) => player.transactionType === "drop")
+      .map((player) => player.playerKey);
   }
 
   private movePlayerToUnfilledPositionInTargetList(

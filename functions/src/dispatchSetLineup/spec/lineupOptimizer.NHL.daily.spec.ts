@@ -919,11 +919,48 @@ describe("Test LineupOptimizer NHL Daily Drop Players", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
-  // TODO: Add the following:
+  test("No drops required Intraday", function () {
+    const roster: Team = require("./testRosters/NHL/IntradayDrops/noDropsRequired.json");
+    const lo = new LineupOptimizer(roster);
+    const { rosterModification, playerTransactions } =
+      lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-  // no drops required intraday
-  // drop player with lowest score for 'Game Time Decision' player intraday
-  // drop two players with lowest score for 'Questionable' and 'Healthy' player intraday
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(playerTransactions).toEqual([]);
+    expect(rosterModification.newPlayerPositions).toEqual({});
+  });
+
+  test("Drop player with lowest score for 'Probable' player Intraday", function () {
+    const roster: Team = require("./testRosters/NHL/IntradayDrops/dropPlayerWithLowestScore.json");
+    const lo = new LineupOptimizer(roster);
+
+    const { rosterModification, playerTransactions } =
+      lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(playerTransactions[0].players[0].playerKey).toEqual("419.p.7528");
+    expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
+    expect(rosterModification.newPlayerPositions).toEqual({});
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
+  test("Drop two players with lowest score for 'Questionable' and 'Game Time Decision' players Intraday", function () {
+    const roster: Team = require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json");
+    const lo = new LineupOptimizer(roster);
+    const { rosterModification, playerTransactions } =
+      lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(playerTransactions[0].players[0].playerKey).toEqual("419.p.7528");
+    expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("419.p.7903");
+    expect(playerTransactions[1].players[0].transactionType).toEqual("drop");
+    expect(rosterModification.newPlayerPositions).toEqual({});
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
 
   // a few NBA drop tests. We can include dropping alone and with optimizing lineups. Maybe 4 tests in total.
 });
