@@ -96,6 +96,41 @@ export async function getRostersByTeamID(
 }
 
 /**
+ * Will fetch the top 25 free agents for the given league, based on rank over
+ * the last 14 days
+ *
+ * @export
+ * @async
+ * @param {string} leagueKey - The league key
+ * @param {string} uid - The Yahoo user ID
+ * @return {Promise<any>}
+ */
+export async function getFreeAgents(
+  leagueKey: string,
+  uid: string
+): Promise<any> {
+  //sort=AR_L30;sort_type=lastmonth
+  const url =
+    "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=" +
+    leagueKey +
+    "/players;status=A;sort=AR_L14;sort_type=biweekly" +
+    ";out=percent_started,percent_owned,ranks,opponent,starting_status" +
+    ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
+    ";percent_started.cut_types=diamond" +
+    ";percent_owned.cut_types=diamond" +
+    "?format=json";
+
+  try {
+    const { data } = await httpGetAxios(url, uid);
+    return data;
+  } catch (err: AxiosError | any) {
+    const errMessage =
+      "Error in getFreeAgents. User: " + uid + " League: " + leagueKey;
+    handleAxiosError(err, errMessage);
+  }
+}
+
+/**
  * Get all the standings for all the leagues for all the games from Yahoo
  * @async
  * @param {string} uid The firebase uid
