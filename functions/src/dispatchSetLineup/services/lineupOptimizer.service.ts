@@ -65,14 +65,14 @@ async function getRosterModifications(
 
   for (const roster of rosters) {
     const lo = new LineupOptimizer(roster);
-    const rm = lo.optimizeStartingLineup();
+    const rosterChange = lo.optimizeStartingLineup();
     lo.isSuccessfullyOptimized(); // will log any errors
     // const rm = await optimizeStartingLineup2(roster);
     // console.info(
     //   "rm for team " + roster.team_key + " is " + JSON.stringify(rm)
     // );
-    if (rm) {
-      rosterModifications.push(rm);
+    if (rosterChange) {
+      rosterModifications.push(rosterChange.rosterModification);
     }
   }
   return rosterModifications;

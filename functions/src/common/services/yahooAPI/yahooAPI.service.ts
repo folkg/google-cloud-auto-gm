@@ -3,7 +3,7 @@ import { RosterModification } from "../../../dispatchSetLineup/interfaces/Roster
 import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
 import { AxiosError } from "axios";
 import { updateFirestoreTimestamp } from "../firebase/firestore.service";
-import { RosterTransaction } from "../../../dispatchSetLineup/interfaces/RosterTransaction";
+import { PlayerTransaction } from "../../../dispatchSetLineup/interfaces/PlayerTransaction";
 const js2xmlparser = require("js2xmlparser");
 
 /**
@@ -272,14 +272,14 @@ export async function postRosterModifications(
  *
  * @export
  * @async
- * @param {RosterTransaction} rosterTransactions The roster transactions.
+ * @param {PlayerTransaction} rosterTransactions The roster transactions.
  * Shall contain the teamKey and the players to add/drop for a single transaction. This means that
  * the players array shall contain only 1 or 2 players.
  * @param {string} uid The Yahoo uid of the user
  * @return {Promise<void>}
  */
 export async function postRosterAddDropTransaction(
-  rosterTransactions: RosterTransaction,
+  rosterTransactions: PlayerTransaction,
   uid: string
 ): Promise<void> {
   const { teamKey, players } = rosterTransactions;

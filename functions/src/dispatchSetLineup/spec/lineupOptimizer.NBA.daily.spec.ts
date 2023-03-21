@@ -16,7 +16,7 @@ xdescribe("Test LineupOptimizer Class NBA Daily", function () {
   it("One healthy on IL, one IL on IL, one injured on roster", async function () {
     const roster: Team = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = await lo.optimizeStartingLineup();
+    const { rosterModification } = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 

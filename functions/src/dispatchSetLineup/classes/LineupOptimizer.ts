@@ -1,5 +1,5 @@
 import { RosterModification } from "../interfaces/RosterModification";
-import { RosterTransaction } from "../interfaces/RosterTransaction";
+import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { Team } from "../interfaces/Team";
 import { Player } from "./Player";
 import { Roster } from "./Roster";
@@ -29,10 +29,13 @@ export class LineupOptimizer {
     );
   }
 
-  public optimizeStartingLineup(): RosterModification {
+  public optimizeStartingLineup(): {
+    rosterModification: RosterModification;
+    playerTransactions: PlayerTransaction[];
+  } {
     if (this.roster.editablePlayers.length === 0) {
       this.logInfo("no players to optimize for team " + this.team.team_key);
-      return this.aRosterModification({});
+      return this.aRosterChange({});
     }
 
     this.resolveIllegalPlayers();
@@ -48,17 +51,21 @@ export class LineupOptimizer {
     );
 
     // Return the roster modification object if there are changes
-    return this.aRosterModification(this.deltaPlayerPositions);
+    return this.aRosterChange(this.deltaPlayerPositions);
   }
 
-  private aRosterModification(newPlayerPositions: {
-    [key: string]: string;
-  }): RosterModification {
+  private aRosterChange(newPlayerPositions: { [key: string]: string }): {
+    rosterModification: RosterModification;
+    playerTransactions: PlayerTransaction[];
+  } {
     return {
-      teamKey: this.team.team_key,
-      coverageType: this.team.coverage_type,
-      coveragePeriod: this.team.coverage_period,
-      newPlayerPositions,
+      rosterModification: {
+        teamKey: this.team.team_key,
+        coverageType: this.team.coverage_type,
+        coveragePeriod: this.team.coverage_period,
+        newPlayerPositions,
+      },
+      playerTransactions: [],
     };
   }
 
@@ -383,7 +390,7 @@ export class LineupOptimizer {
       );
     if (playerToDrop === playerToOpenSpotFor) return;
 
-    const rt: RosterTransaction = {
+    const rt: PlayerTransaction = {
       teamKey: this.team.team_key,
       players: [
         {

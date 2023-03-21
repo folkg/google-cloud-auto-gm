@@ -1,4 +1,4 @@
-export interface RosterTransaction {
+export interface PlayerTransaction {
   teamKey: string;
   players: [
     {
