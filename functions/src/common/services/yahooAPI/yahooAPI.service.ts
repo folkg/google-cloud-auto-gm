@@ -114,7 +114,7 @@ export async function getFreeAgents(
     "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=" +
     leagueKey +
     "/players;status=A;sort=AR_L14;sort_type=biweekly" +
-    ";out=percent_started,percent_owned,ranks,opponent,starting_status" +
+    ";out=ownership,percent_started,percent_owned,ranks,opponent,starting_status" +
     ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
     ";percent_started.cut_types=diamond" +
     ";percent_owned.cut_types=diamond" +

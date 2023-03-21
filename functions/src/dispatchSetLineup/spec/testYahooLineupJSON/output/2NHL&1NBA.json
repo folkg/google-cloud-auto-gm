@@ -396,7 +396,8 @@
     "max_weekly_adds": 4,
     "max_season_adds": -1,
     "start_date": 1665964800000,
-    "end_date": 1681430400000
+    "end_date": 1681430400000,
+    "faab_balance": 100
   },
   {
     "team_key": "419.l.91564.t.11",
@@ -773,7 +774,8 @@
     "max_weekly_adds": 4,
     "max_season_adds": -1,
     "start_date": 1665964800000,
-    "end_date": 1681430400000
+    "end_date": 1681430400000,
+    "faab_balance": 99
   },
   {
     "team_key": "418.l.200641.t.9",
@@ -1131,6 +1133,7 @@
     "max_weekly_adds": 4,
     "max_season_adds": -1,
     "start_date": 1674432000000,
-    "end_date": 1680393600000
+    "end_date": 1680393600000,
+    "faab_balance": 100
   }
 ]

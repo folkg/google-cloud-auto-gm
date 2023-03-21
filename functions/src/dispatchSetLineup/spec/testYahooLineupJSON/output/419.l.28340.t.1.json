@@ -486,6 +486,7 @@
     "max_weekly_adds": -1,
     "max_season_adds": 70,
     "start_date": 1665100800000,
-    "end_date": 1681430400000
+    "end_date": 1681430400000,
+    "faab_balance": -1
   }
 ]

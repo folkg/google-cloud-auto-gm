@@ -15,6 +15,7 @@ export interface Team {
   current_season_adds: number;
   max_weekly_adds: number;
   max_season_adds: number;
+  faab_balance: number;
   allow_dropping?: any;
   allow_adding?: any;
 }

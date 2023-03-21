@@ -76,6 +76,9 @@ export async function fetchRostersFromYahoo(
               getChild(leaguesJSON[key].league, "start_date")
             ),
             end_date: Date.parse(getChild(leaguesJSON[key].league, "end_date")),
+            faab_balance: parseStringToInt(
+              getChild(usersTeam.team[0], "faab_balance")
+            ),
           };
           rosters.push(rosterObj);
         }

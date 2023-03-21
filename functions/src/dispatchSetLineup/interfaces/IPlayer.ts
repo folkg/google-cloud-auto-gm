@@ -11,6 +11,7 @@ export interface IPlayer {
   is_starting: number | string;
   is_undroppable: boolean;
   ranks: PlayerRanks;
+  ownership?: PlayerOwnership;
 }
 
 export interface PlayerRanks {
@@ -21,4 +22,9 @@ export interface PlayerRanks {
   last4Weeks: number;
   projectedWeek: number;
   next4Weeks: number;
+}
+
+export interface PlayerOwnership {
+  type: string;
+  waiver_date?: string;
 }

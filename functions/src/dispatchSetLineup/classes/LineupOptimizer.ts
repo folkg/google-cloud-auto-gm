@@ -36,7 +36,7 @@ export class LineupOptimizer {
   } {
     if (this.roster.editablePlayers.length === 0) {
       this.logInfo("no players to optimize for team " + this.team.team_key);
-      return this.aRosterChange({});
+      return this.formatRosterChange();
     }
 
     this.resolveIllegalPlayers();
@@ -52,10 +52,10 @@ export class LineupOptimizer {
     );
 
     // Return the roster modification object if there are changes
-    return this.aRosterChange(this.deltaPlayerPositions);
+    return this.formatRosterChange();
   }
 
-  private aRosterChange(newPlayerPositions: { [key: string]: string }): {
+  private formatRosterChange(): {
     rosterModification: RosterModification;
     playerTransactions: PlayerTransaction[];
   } {
@@ -64,7 +64,7 @@ export class LineupOptimizer {
         teamKey: this.team.team_key,
         coverageType: this.team.coverage_type,
         coveragePeriod: this.team.coverage_period,
-        newPlayerPositions,
+        newPlayerPositions: this.deltaPlayerPositions,
       },
       playerTransactions: this.playerTransactions,
     };
