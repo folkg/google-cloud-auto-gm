@@ -109,7 +109,7 @@ export async function getFreeAgents(
   leagueKey: string,
   uid: string
 ): Promise<any> {
-  //sort=AR_L30;sort_type=lastmonth
+  // sort=AR_L30;sort_type=lastmonth
   const url =
     "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=" +
     leagueKey +

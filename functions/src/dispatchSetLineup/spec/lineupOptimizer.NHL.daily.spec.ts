@@ -854,10 +854,35 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
       "419.p.63702": "BN",
     });
   });
+
+  test("Injured players on BN, not playing players on Roster", function () {
+    const roster: Team = require("./testRosters/NHL/Daily/injuredPlayersOnBenchNotPlayingPlayersOnRoster.json");
+    const lo = new LineupOptimizer(roster);
+    const { rosterModification } = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(["IR", "IR+"]).toContain(
+      rosterModification.newPlayerPositions["419.p.6726"]
+    );
+    expect(["BN", "LW", "Util"]).toContain(
+      rosterModification.newPlayerPositions["419.p.6877"]
+    );
+
+    expect(["C", "Util"]).toContain(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    );
+    expect(["D", "Util"]).toContain(
+      rosterModification.newPlayerPositions["419.p.4930"]
+    );
+    expect(rosterModification.newPlayerPositions["419.p.3737"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.5980"]).toEqual("BN");
+  });
 });
 
 describe("Test LineupOptimizer NHL Daily Drop Players", function () {
-  test("No drops allowed", function () {
+  test("No drops allowed Daily", function () {
     const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
     const lo = new LineupOptimizer(roster);
     const { rosterModification, playerTransactions } =
@@ -869,7 +894,7 @@ describe("Test LineupOptimizer NHL Daily Drop Players", function () {
     expect(rosterModification.newPlayerPositions).toEqual({});
   });
 
-  test("No drops required", function () {
+  test("No drops required Daily", function () {
     const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsRequired.json");
     const lo = new LineupOptimizer(roster);
     const { rosterModification, playerTransactions } =
@@ -881,7 +906,7 @@ describe("Test LineupOptimizer NHL Daily Drop Players", function () {
     expect(rosterModification.newPlayerPositions).toEqual({});
   });
 
-  test("Drop player with lowest score for 'Probable' player", function () {
+  test("Drop player with lowest score for 'Probable' player Daily", function () {
     const roster: Team = require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     const { rosterModification, playerTransactions } =
@@ -894,4 +919,12 @@ describe("Test LineupOptimizer NHL Daily Drop Players", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
   });
+
+  // TODO: Add the following:
+
+  // no drops required intraday
+  // drop player with lowest score for 'Game Time Decision' player intraday
+  // drop two players with lowest score for 'Questionable' and 'Healthy' player intraday
+
+  // a few NBA drop tests. We can include dropping alone and with optimizing lineups. Maybe 4 tests in total.
 });

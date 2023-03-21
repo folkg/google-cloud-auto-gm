@@ -68,8 +68,8 @@ export function dailyScoreFunction(): (player: IPlayer) => number {
 export function nhlScoreFunction(): (player: IPlayer) => number {
   const starters = getNHLStartingGoalies() ? getNHLStartingGoalies() : [];
   return (player: IPlayer) => {
-    const NOT_PLAYING_FACTOR = 0.01;
-    const INJURY_FACTOR = 0.001;
+    const NOT_PLAYING_FACTOR = 0.001;
+    const INJURY_FACTOR = 0.01;
     const STARTING_FACTOR = 100;
     // The score will be percent_started
     let score = player.percent_started;
