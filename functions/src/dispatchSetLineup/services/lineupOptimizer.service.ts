@@ -5,6 +5,7 @@ import { HttpsError } from "firebase-functions/v2/https";
 
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
+import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -36,8 +37,7 @@ export async function setUsersLineup(
   // initialize starting goalies global array
   await initStartingGoalies();
 
-  const rosterModifications: RosterModification[] =
-    await getRosterModifications(teams, uid);
+  const { rosterModifications } = await getRosterModifications(teams, uid);
 
   // TODO: getRosterModifications should return a PlayerTransaction object
   // TODO: if teams have playerTransactions and are intraday or NFL, post them, wait, redo the optimization, then post all rosterModifications together.
@@ -45,6 +45,11 @@ export async function setUsersLineup(
 
   return Promise.resolve();
 }
+
+type RosterChange = {
+  rosterModifications: RosterModification[];
+  playerTransactions: PlayerTransaction[][];
+};
 
 /**
  * Will get the required roster modifications for a given user
@@ -57,10 +62,13 @@ export async function setUsersLineup(
 async function getRosterModifications(
   teams: string[],
   uid: string
-): Promise<RosterModification[]> {
+): Promise<RosterChange> {
   const rosters = await fetchRostersFromYahoo(teams, uid);
-  const rosterModifications: RosterModification[] = [];
 
+  const result: RosterChange = {
+    rosterModifications: [],
+    playerTransactions: [],
+  };
   // console.log(
   //   "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
@@ -75,8 +83,9 @@ async function getRosterModifications(
     // );
     // TODO: Need to return the playerTransaction object as well eventually
     if (rosterChange) {
-      rosterModifications.push(rosterChange.rosterModification);
+      result.rosterModifications.push(rosterChange.rosterModification);
+      result.playerTransactions.push(rosterChange.playerTransactions);
     }
   }
-  return rosterModifications;
+  return result;
 }

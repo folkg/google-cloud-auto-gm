@@ -9,7 +9,6 @@ jest.mock("firebase-admin", () => ({
 
 // Use this to mock the global NHL_STARTING_GOALIES array where needed
 const yahooStartingGoalieService = require("../../common/services/yahooAPI/yahooStartingGoalie.service");
-jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service");
 
 describe("Test LineupOptimizer Class NHL Daily", function () {
   // beforeEach(() => {

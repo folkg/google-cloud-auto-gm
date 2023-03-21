@@ -7,9 +7,8 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
-// mock the result from yahooAPI getRostersByTeamID()
+// To mock the result from yahooAPI getRostersByTeamID()
 const yahooAPIService = require("../../common/services/yahooAPI/yahooAPI.service");
-jest.mock("../../common/services/yahooAPI/yahooAPI.service");
 
 describe("Test fetchRostersFromYahoo", function () {
   afterEach(() => {
