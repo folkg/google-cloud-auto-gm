@@ -152,7 +152,8 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
           ? getChild(getChild(player, "starting_status"), "is_starting")
           : "N/A",
         ranks: getPlayerRanks(player),
-        is_undroppable: getChild(player[0], "is_undroppable"),
+        is_undroppable:
+          getChild(player[0], "is_undroppable") === "1" ? true : false,
       };
 
       // push the player to the object

@@ -9,6 +9,7 @@ export class LineupOptimizer {
   private roster: Roster;
   private originalPlayerPositions: { [key: string]: string };
   private deltaPlayerPositions: { [key: string]: string } = {};
+  private playerTransactions: PlayerTransaction[] = [];
 
   public verbose = false;
   private logInfo(...args: any[]) {
@@ -65,7 +66,7 @@ export class LineupOptimizer {
         coveragePeriod: this.team.coverage_period,
         newPlayerPositions,
       },
-      playerTransactions: [],
+      playerTransactions: this.playerTransactions,
     };
   }
 
@@ -362,16 +363,25 @@ export class LineupOptimizer {
       }
     }
 
-    if (this.team.allow_dropping) {
-      this.dropPlayerToWaivers(playerToOpenSpotFor);
+    if (playerToOpenSpotFor?.isHealthy() && this.team.allow_dropping) {
+      this.dropPlayerFromRoster(playerToOpenSpotFor);
     }
 
     return false;
   }
 
-  dropPlayerToWaivers(playerToOpenSpotFor: Player | undefined) {
-    if (!playerToOpenSpotFor) return;
-
+  /**
+   * Drops the lowest scoring player that is not undroppable or in a critical
+   * position. If playerToOpenSpotFor is provided, it will only drop players
+   * that have a lower ownership score than playerToOpenSpotFor.
+   *
+   * This function will not immediately drop the player, but will instead add a
+   * transaction to the transaction list to be processed by the caller.
+   *
+   *
+   * @param {Player} playerToOpenSpotFor
+   */
+  dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
     const unDroppablePositions = this.roster.criticalPositions;
     const playerToDrop = this.roster.allPlayers
       .filter(
@@ -390,7 +400,7 @@ export class LineupOptimizer {
       );
     if (playerToDrop === playerToOpenSpotFor) return;
 
-    const rt: PlayerTransaction = {
+    const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       players: [
         {
@@ -399,10 +409,10 @@ export class LineupOptimizer {
         },
       ],
     };
-    // TODO: Call this? We are missing UID. It is an async as well, so we need to wait for it to complete.
-    // If lineup changes are intraday, or it is NFL, we want this done now.
-    // Do we return this from the class with rosterModifications and then resolve it in the caller?
-    this.logInfo(`dropPlayerToWaivers: ${JSON.stringify(rt)}`);
+    this.playerTransactions.push(pt);
+    this.logInfo(
+      `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
+    );
   }
 
   private movePlayerToUnfilledPositionInTargetList(

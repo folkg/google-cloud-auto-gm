@@ -39,6 +39,8 @@ export async function setUsersLineup(
   const rosterModifications: RosterModification[] =
     await getRosterModifications(teams, uid);
 
+  // TODO: getRosterModifications should return a PlayerTransaction object
+  // TODO: if teams have playerTransactions and are intraday or NFL, post them, wait, redo the optimization, then post all rosterModifications together.
   await postRosterModifications(rosterModifications, uid);
 
   return Promise.resolve();
@@ -71,6 +73,7 @@ async function getRosterModifications(
     // console.info(
     //   "rm for team " + roster.team_key + " is " + JSON.stringify(rm)
     // );
+    // TODO: Need to return the playerTransaction object as well eventually
     if (rosterChange) {
       rosterModifications.push(rosterChange.rosterModification);
     }

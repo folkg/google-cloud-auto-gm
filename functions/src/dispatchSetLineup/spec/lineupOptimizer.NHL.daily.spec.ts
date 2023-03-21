@@ -855,3 +855,43 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     });
   });
 });
+
+describe("Test LineupOptimizer NHL Daily Drop Players", function () {
+  test("No drops allowed", function () {
+    const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
+    const lo = new LineupOptimizer(roster);
+    const { rosterModification, playerTransactions } =
+      lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(playerTransactions).toEqual([]);
+    expect(rosterModification.newPlayerPositions).toEqual({});
+  });
+
+  test("No drops required", function () {
+    const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsRequired.json");
+    const lo = new LineupOptimizer(roster);
+    const { rosterModification, playerTransactions } =
+      lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(playerTransactions).toEqual([]);
+    expect(rosterModification.newPlayerPositions).toEqual({});
+  });
+
+  test("Drop player with lowest score for 'Probable' player", function () {
+    const roster: Team = require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScore.json");
+    const lo = new LineupOptimizer(roster);
+    const { rosterModification, playerTransactions } =
+      lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(playerTransactions[0].players[0].playerKey).toEqual("419.p.7155");
+    expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
+    expect(rosterModification.newPlayerPositions).toEqual({});
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+});

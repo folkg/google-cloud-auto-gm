@@ -1,4 +1,7 @@
-import { INACTIVE_POSITION_LIST } from "../helpers/constants";
+import {
+  HEALTHY_STATUS_LIST,
+  INACTIVE_POSITION_LIST,
+} from "../helpers/constants";
 import { IPlayer } from "../interfaces/IPlayer";
 
 export interface Player extends IPlayer {
@@ -38,6 +41,10 @@ export class Player implements Player {
 
   isIllegalPosition(): boolean {
     return !this.eligible_positions.includes(this.selected_position);
+  }
+
+  isHealthy(): boolean {
+    return HEALTHY_STATUS_LIST.includes(this.injury_status);
   }
 
   isEligibleToSwapWith(playerB: Player): boolean {

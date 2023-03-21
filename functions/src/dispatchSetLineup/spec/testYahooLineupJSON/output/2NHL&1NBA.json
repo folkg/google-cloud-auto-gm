@@ -22,7 +22,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6777",
@@ -44,7 +44,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6377",
@@ -66,7 +66,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.5573",
@@ -88,7 +88,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6746",
@@ -110,7 +110,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "1"
+        "is_undroppable": true
       },
       {
         "player_key": "419.p.4240",
@@ -132,7 +132,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6005",
@@ -154,7 +154,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.4472",
@@ -176,7 +176,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.5708",
@@ -198,7 +198,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.8877",
@@ -220,7 +220,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6370",
@@ -242,7 +242,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.8282",
@@ -264,7 +264,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6877",
@@ -286,7 +286,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.8878",
@@ -308,7 +308,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.7569",
@@ -330,7 +330,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6817",
@@ -352,7 +352,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.4965",
@@ -374,7 +374,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       }
     ],
     "coverage_type": "date",
@@ -421,7 +421,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.4986",
@@ -443,7 +443,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.5470",
@@ -465,7 +465,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.6485",
@@ -487,7 +487,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.4683",
@@ -509,7 +509,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.4921",
@@ -531,7 +531,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.5983",
@@ -553,7 +553,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.5987",
@@ -575,7 +575,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.7920",
@@ -597,7 +597,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.7519",
@@ -619,7 +619,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.5988",
@@ -641,7 +641,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.7554",
@@ -663,7 +663,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.5441",
@@ -685,7 +685,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.7626",
@@ -707,7 +707,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.4901",
@@ -729,7 +729,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "419.p.7163",
@@ -751,7 +751,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       }
     ],
     "coverage_type": "date",
@@ -798,7 +798,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.5161",
@@ -820,7 +820,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.4892",
@@ -842,7 +842,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.4725",
@@ -864,7 +864,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "1"
+        "is_undroppable": true
       },
       {
         "player_key": "418.p.5482",
@@ -886,7 +886,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.6053",
@@ -908,7 +908,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.6703",
@@ -930,7 +930,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.5352",
@@ -952,7 +952,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "1"
+        "is_undroppable": true
       },
       {
         "player_key": "418.p.6057",
@@ -974,7 +974,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.5864",
@@ -996,7 +996,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.5350",
@@ -1018,7 +1018,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.5893",
@@ -1040,7 +1040,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.6567",
@@ -1062,7 +1062,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.5835",
@@ -1084,7 +1084,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       },
       {
         "player_key": "418.p.5432",
@@ -1106,7 +1106,7 @@
           "projectedWeek": -1,
           "next4Weeks": -1
         },
-        "is_undroppable": "0"
+        "is_undroppable": false
       }
     ],
     "coverage_type": "date",
