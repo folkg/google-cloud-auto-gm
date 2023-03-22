@@ -49,6 +49,37 @@ describe("Test fetchRostersFromYahoo", function () {
     expect(result).toEqual(expected);
   });
 
+  test("NBA Weekly League - not editable", async function () {
+    const teams = ["419.l.28340.t.1"];
+    const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1";
+    const yahooJSON = require("./testYahooLineupJSON/yahooJSON/NBAWeeklyNotEditable.json");
+
+    // mock the JSON result from yahooAPI getRostersByTeamID()
+    jest
+      .spyOn(yahooAPIService, "getRostersByTeamID")
+      .mockReturnValue(yahooJSON);
+
+    const result = await fetchRostersFromYahoo(teams, uid);
+
+    expect(result).toEqual([]);
+  });
+
+  test("NBA Weekly League - editable", async function () {
+    const teams = ["419.l.28340.t.1"];
+    const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1";
+    const yahooJSON = require("./testYahooLineupJSON/yahooJSON/NBAWeekly.json");
+    const expected = require("./testYahooLineupJSON/output/NBAWeekly.json");
+
+    // mock the JSON result from yahooAPI getRostersByTeamID()
+    jest
+      .spyOn(yahooAPIService, "getRostersByTeamID")
+      .mockReturnValue(yahooJSON);
+
+    const result = await fetchRostersFromYahoo(teams, uid);
+
+    expect(result).toEqual(expected);
+  });
+
   test("Two NHL, two NBA for Jeff Barnes", async function () {
     const teams = [
       "419.l.91560.t.5",

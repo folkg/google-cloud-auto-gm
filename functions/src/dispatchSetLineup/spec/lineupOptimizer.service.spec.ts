@@ -56,6 +56,12 @@ describe("LineupOptimizerService full stack", () => {
     );
   });
 
-  // TODO: Add tests where we call on multiple rosters no changes, single and multiple rosters with simple modifications
-  // TODO: Add tests where we add in playerTransactions and multiple calls to postRosterModifications
+  // user with multiple teams, no changes
+  // user with multiple teams, rosterModifications only
+  // user with single team, playerTransactions only
+  // user with single team, playerTransactions and single call to postRosterModifications (tomorrow lineup) x 2 different tests
+  // user with single team, playerTransactions and multiple calls to postRosterModifications (intraday or NFL lineup) x 2 different tests
+  //    - one where the first rosterModifications has no changes, but the second call does
+  //    - one where the first rosterModifications moves a player to roster, he is dropped, and then the next call shuffles lineup further
+  // user with multiple teams, playerTransactions and multiple calls to postRosterModifications (intraday or NFL lineup) x 2 different tests
 });

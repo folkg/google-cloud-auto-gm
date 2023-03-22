@@ -383,23 +383,7 @@ export class LineupOptimizer {
    * @param {Player} playerToOpenSpotFor
    */
   dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
-    const alreadyDroppedPlayerKeys = this.getAlreadyDroppedPlayers();
-    const playerToDrop = this.roster.allPlayers
-      .filter(
-        (player) =>
-          !player.is_undroppable &&
-          !alreadyDroppedPlayerKeys.includes(player.player_key) &&
-          !player.eligible_positions.some((position) =>
-            this.roster.criticalPositions.includes(position)
-          )
-      )
-      .reduce(
-        (prevPlayer, currPlayer) =>
-          prevPlayer.ownership_score < currPlayer.ownership_score
-            ? prevPlayer
-            : currPlayer,
-        playerToOpenSpotFor
-      );
+    const playerToDrop = this.getPlayerToDrop(playerToOpenSpotFor);
     if (playerToDrop === playerToOpenSpotFor) return;
 
     const pt: PlayerTransaction = {
@@ -415,6 +399,32 @@ export class LineupOptimizer {
     this.logInfo(
       `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
     );
+  }
+
+  private getPlayerToDrop(playerToOpenSpotFor: Player) {
+    return this.roster.allPlayers
+      .filter(
+        (player) =>
+          !player.is_undroppable &&
+          !this.isTooLateToDrop(player) &&
+          !this.getAlreadyDroppedPlayers().includes(player.player_key) &&
+          !player.eligible_positions.some((position) =>
+            this.roster.criticalPositions.includes(position)
+          )
+      )
+      .reduce(
+        (prevPlayer, currPlayer) =>
+          prevPlayer.ownership_score < currPlayer.ownership_score
+            ? prevPlayer
+            : currPlayer,
+        playerToOpenSpotFor
+      );
+  }
+
+  private isTooLateToDrop(player: Player) {
+    const immediateTransaction =
+      this.team.game_code === "nfl" || this.team.weekly_deadline === "intraday";
+    return immediateTransaction && !player.is_editable;
   }
 
   private getAlreadyDroppedPlayers() {

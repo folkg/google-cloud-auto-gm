@@ -188,10 +188,13 @@ export class Roster {
 
   public get criticalPositions(): string[] {
     return Object.keys(this._rosterPositions).filter((position) => {
-      const numPlayersAtPosition = this._allPlayers.filter((player) =>
+      const playersAtPosition = this._allPlayers.filter((player) =>
         player.eligible_positions.includes(position)
-      ).length;
-      return numPlayersAtPosition < this._rosterPositions[position];
+      );
+      return (
+        !INACTIVE_POSITION_LIST.includes(position) &&
+        playersAtPosition.length <= this._rosterPositions[position]
+      );
     });
   }
 
