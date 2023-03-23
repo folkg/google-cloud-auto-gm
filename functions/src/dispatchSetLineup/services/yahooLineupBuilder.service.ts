@@ -10,13 +10,15 @@ import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.serv
  * @async
  * @param {string[]} teams The team keys
  * @param {string} uid The firebase uid of the user
+ * @param {string} [date=""] The date to get the roster for. If not provided, the default "" is today's date
  * @return {Promise<Team[]>} The roster objects
  */
 export async function fetchRostersFromYahoo(
   teams: string[],
-  uid: string
+  uid: string,
+  date: string = ""
 ): Promise<Team[]> {
-  const yahooRostersJSON = await getRostersByTeamID(teams, uid);
+  const yahooRostersJSON = await getRostersByTeamID(teams, uid, date);
   // console.log(JSON.stringify(yahooRostersJSON));
   const rosters: Team[] = [];
   const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
@@ -55,6 +57,7 @@ export async function fetchRostersFromYahoo(
               leaguesJSON[key].league,
               "weekly_deadline"
             ),
+            edit_key: getChild(leaguesJSON[key].league, "edit_key"),
             game_code: getChild(gameJSON, "code"),
             num_teams_in_league: getChild(leaguesJSON[key].league, "num_teams"),
             roster_positions: rosterPositions,

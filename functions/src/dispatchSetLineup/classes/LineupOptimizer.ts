@@ -30,11 +30,12 @@ export class LineupOptimizer {
     );
   }
 
-  public findPlayerTransactions(): PlayerTransaction[] {
+  public findDropPlayerTransactions(): PlayerTransaction[] {
     // find drops by attempting to move healthy players off IL unsuccessfully
     if (this.team.allow_dropping) {
       this.resolveHealthyPlayersOnIL();
     }
+    // Separate functions for add players and add/drop players
     // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
     // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
     // Any players added by the above will be available for the next round of swaps

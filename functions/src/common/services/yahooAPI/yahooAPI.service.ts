@@ -59,11 +59,13 @@ export async function refreshYahooAccessToken(
  * "414.l.240994.t.12, 414.l.358976.t.4, 419.l.14950.t.2,
  * 419.l.19947.t.6,419.l.28340.t.1,419.l.59985.t.12"
  * @param {string} uid - The firebase uid
+ * @param {string} [date=""] - The date to get the roster for. Defaults to today.
  * @return {Promise<any>} The Yahoo JSON object containing the rosters
  */
 export async function getRostersByTeamID(
   teams: string[],
-  uid: string
+  uid: string,
+  date: string = ""
 ): Promise<any> {
   const leagueKeysArray: string[] = [];
   teams.forEach((teamKey) => {
@@ -78,7 +80,8 @@ export async function getRostersByTeamID(
     "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
     "/leagues;league_keys=" +
     leagueKeys +
-    ";out=settings/teams/roster" +
+    ";out=settings/teams/roster;date=" +
+    date +
     "/players;out=percent_started,percent_owned,ranks,opponent,starting_status" +
     ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
     ";percent_started.cut_types=diamond" +

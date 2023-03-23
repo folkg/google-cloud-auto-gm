@@ -6,6 +6,7 @@ export interface Team {
   coverage_type: string;
   coverage_period: string;
   weekly_deadline: string;
+  edit_key: string;
   start_date: number;
   end_date: number;
   game_code: string;
