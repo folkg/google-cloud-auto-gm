@@ -110,26 +110,26 @@ export class Roster {
    * @type {Player[]}
    */
   public get reservePlayers(): Player[] {
-    return this._editablePlayers.filter(
-      (player) =>
-        INACTIVE_POSITION_LIST.includes(player.selected_position) ||
-        player.selected_position === "BN"
-    );
+    return this._editablePlayers.filter((player) => !player.isStartingRoster());
   }
 
   public get inactiveListPlayers(): Player[] {
-    return this._editablePlayers.filter((player) =>
-      INACTIVE_POSITION_LIST.includes(player.selected_position)
-    );
+    return this._editablePlayers.filter((player) => player.isInactiveList());
   }
 
   public get inactiveOnRosterPlayers(): Player[] {
     return this._editablePlayers.filter(
       (player) =>
-        !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
+        player.isActiveRoster() &&
         player.eligible_positions.some((position) =>
           INACTIVE_POSITION_LIST.includes(position)
         )
+    );
+  }
+
+  public get healthyOnIL(): Player[] {
+    return this._editablePlayers.filter(
+      (player) => player.isHealthy() && player.isInactiveList()
     );
   }
 
