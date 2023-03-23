@@ -30,16 +30,22 @@ export class LineupOptimizer {
     );
   }
 
-  public optimizeStartingLineup(): {
-    rosterModification: RosterModification;
-    playerTransactions: PlayerTransaction[];
-  } {
+  public findPlayerTransactions(): PlayerTransaction[] {
+    // find drops by attempting to move healthy players off IL unsuccessfully
+    if (this.team.allow_dropping) {
+      this.resolveHealthyPlayersOnIL();
+    }
+    // find adds by attempting to free roster spots by moving players to IL
+    return this.playerTransactions;
+  }
+
+  public optimizeStartingLineup(): RosterModification {
     if (this.roster.editablePlayers.length === 0) {
       this.logInfo("no players to optimize for team " + this.team.team_key);
       return this.formatRosterChange();
     }
 
-    this.resolveIllegalPlayers();
+    this.resolveAllIllegalPlayers();
     this.optimizeReserveToStaringPlayers();
     // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
     // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
@@ -55,18 +61,12 @@ export class LineupOptimizer {
     return this.formatRosterChange();
   }
 
-  private formatRosterChange(): {
-    rosterModification: RosterModification;
-    playerTransactions: PlayerTransaction[];
-  } {
+  private formatRosterChange(): RosterModification {
     return {
-      rosterModification: {
-        teamKey: this.team.team_key,
-        coverageType: this.team.coverage_type,
-        coveragePeriod: this.team.coverage_period,
-        newPlayerPositions: this.deltaPlayerPositions,
-      },
-      playerTransactions: this.playerTransactions,
+      teamKey: this.team.team_key,
+      coverageType: this.team.coverage_type,
+      coveragePeriod: this.team.coverage_period,
+      newPlayerPositions: this.deltaPlayerPositions,
     };
   }
 
@@ -93,47 +93,60 @@ export class LineupOptimizer {
     return result;
   }
 
-  private resolveIllegalPlayers(): void {
+  private resolveHealthyPlayersOnIL(): void {
+    const healthyPlayersOnIL = this.roster.healthyOnIL;
+    if (healthyPlayersOnIL.length === 0) return;
+
+    Roster.sortDescendingByScore(healthyPlayersOnIL);
+    for (const player of healthyPlayersOnIL) {
+      const success = this.resolveIllegalPlayer(player);
+      if (!success) {
+        this.dropPlayerFromRoster(player);
+      }
+    }
+  }
+
+  private resolveAllIllegalPlayers(): void {
     const illegalPlayers = this.roster.illegalPlayers;
     if (illegalPlayers.length === 0) return;
 
     Roster.sortDescendingByScore(illegalPlayers);
-
     this.logInfo(
       "Resolving illegal players:" +
         illegalPlayers.map((p) => p.player_name).join(", ")
     );
-
     for (const player of illegalPlayers) {
-      this.logInfo(`Resolving illegal player: ${player.player_name}`);
-      // an illegalPlayer may have been resolved in a previous swap
-      if (!player.isIllegalPosition()) continue;
-
-      let success;
-      let unfilledPositionTargetList;
-
-      if (player.isInactiveList()) {
-        success = this.moveILPlayerToUnfilledALPosition(player);
-        if (success) continue;
-
-        unfilledPositionTargetList = this.roster.unfilledInactivePositions;
-      } else {
-        unfilledPositionTargetList = this.roster.unfilledActivePositions;
-      }
-
-      success = this.movePlayerToUnfilledPositionInTargetList(
-        player,
-        unfilledPositionTargetList
-      );
-      if (success) continue;
-
-      success = this.attemptIllegalPlayerSwaps(player);
-      if (success) continue;
-
-      if (player?.isHealthy() && this.team.allow_dropping) {
-        this.dropPlayerFromRoster(player);
-      }
+      this.resolveIllegalPlayer(player);
     }
+  }
+
+  private resolveIllegalPlayer(player: Player): boolean {
+    this.logInfo(`Resolving illegal player: ${player.player_name}`);
+    // an illegalPlayer may have been resolved in a previous swap
+    if (!player.isIllegalPosition()) return true;
+
+    let success;
+    let unfilledPositionTargetList;
+
+    if (player.isInactiveList()) {
+      success = this.moveILPlayerToUnfilledALPosition(player);
+      if (success) return true;
+
+      unfilledPositionTargetList = this.roster.unfilledInactivePositions;
+    } else {
+      unfilledPositionTargetList = this.roster.unfilledActivePositions;
+    }
+
+    success = this.movePlayerToUnfilledPositionInTargetList(
+      player,
+      unfilledPositionTargetList
+    );
+    if (success) return true;
+
+    success = this.attemptIllegalPlayerSwaps(player);
+    if (success) return true;
+
+    return false;
   }
 
   private attemptIllegalPlayerSwaps(playerA: Player): boolean {

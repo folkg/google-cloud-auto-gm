@@ -15,7 +15,7 @@ xdescribe("Test LineupOptimizer Class NFL", function () {
   it("Optimal Lineup", async function () {
     const roster: Team = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
-    const { rosterModification } = lo.optimizeStartingLineup();
+    const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 

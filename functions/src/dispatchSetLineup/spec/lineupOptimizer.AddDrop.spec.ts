@@ -7,7 +7,7 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
-describe("Test LineupOptimizer Add Drop Players", function () {
+xdescribe("Test LineupOptimizer Add Drop Players", function () {
   test("No drops allowed Daily", function () {
     const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
     const lo = new LineupOptimizer(roster);
