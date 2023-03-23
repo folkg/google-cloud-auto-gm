@@ -1,5 +1,5 @@
 import { httpGetAxios, httpPostAxios, httpPutAxios } from "./yahooHttp.service";
-import { RosterModification } from "../../../dispatchSetLineup/interfaces/RosterModification";
+import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges";
 import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
 import { AxiosError } from "axios";
 import { updateFirestoreTimestamp } from "../firebase/firestore.service";
@@ -200,16 +200,16 @@ export async function getStartingGoalies(
  *
  * @export
  * @async
- * @param {RosterModification[]} rosterModifications
+ * @param {LineupChanges[]} lineupChanges
  * @param {string} uid The firebase uid of the user
  * @return {unknown}
  */
-export async function postRosterModifications(
-  rosterModifications: RosterModification[],
+export async function postLineupChanges(
+  lineupChanges: LineupChanges[],
   uid: string
 ): Promise<void> {
   // eslint-disable-next-line guard-for-in
-  for (const rosterModification of rosterModifications) {
+  for (const rosterModification of lineupChanges) {
     const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
       rosterModification;
 

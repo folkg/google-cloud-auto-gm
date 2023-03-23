@@ -1,4 +1,4 @@
-import { RosterModification } from "../interfaces/RosterModification";
+import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { Team } from "../interfaces/Team";
 import { Player } from "./Player";
@@ -35,22 +35,22 @@ export class LineupOptimizer {
     if (this.team.allow_dropping) {
       this.resolveHealthyPlayersOnIL();
     }
-    // find adds by attempting to free roster spots by moving players to IL
-    return this.playerTransactions;
-  }
-
-  public optimizeStartingLineup(): RosterModification {
-    if (this.roster.editablePlayers.length === 0) {
-      this.logInfo("no players to optimize for team " + this.team.team_key);
-      return this.formatRosterChange();
-    }
-
-    this.resolveAllIllegalPlayers();
-    this.optimizeReserveToStaringPlayers();
     // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
     // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
     // Any players added by the above will be available for the next round of swaps
     // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
+
+    return this.playerTransactions;
+  }
+
+  public optimizeStartingLineup(): LineupChanges {
+    if (this.roster.editablePlayers.length === 0) {
+      this.logInfo("no players to optimize for team " + this.team.team_key);
+      return this.formatLineupChange();
+    }
+
+    this.resolveAllIllegalPlayers();
+    this.optimizeReserveToStaringPlayers();
 
     this.deltaPlayerPositions = this.diffPlayerPositionDictionary(
       this.originalPlayerPositions,
@@ -58,10 +58,10 @@ export class LineupOptimizer {
     );
 
     // Return the roster modification object if there are changes
-    return this.formatRosterChange();
+    return this.formatLineupChange();
   }
 
-  private formatRosterChange(): RosterModification {
+  private formatLineupChange(): LineupChanges {
     return {
       teamKey: this.team.team_key,
       coverageType: this.team.coverage_type,

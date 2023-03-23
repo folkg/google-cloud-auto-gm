@@ -1,4 +1,4 @@
-import { RosterModification } from "../interfaces/RosterModification";
+import { LineupChanges } from "../interfaces/LineupChanges";
 import { Team } from "../interfaces/Team";
 import { setUsersLineup } from "../services/lineupOptimizer.service";
 
@@ -37,7 +37,7 @@ describe("LineupOptimizerService full stack", () => {
       .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
       .mockReturnValue(Promise.resolve(roster));
 
-    const expectedRosterModifications: RosterModification[] = [
+    const expectedRosterModifications: LineupChanges[] = [
       {
         coveragePeriod: "2023-02-28",
         coverageType: "date",
@@ -46,7 +46,7 @@ describe("LineupOptimizerService full stack", () => {
       },
     ];
     const spyPostRosterModifications = jest
-      .spyOn(yahooAPI, "postRosterModifications")
+      .spyOn(yahooAPI, "postLineupChanges")
       .mockReturnValue(Promise.resolve());
 
     await setUsersLineup(uid, teams);

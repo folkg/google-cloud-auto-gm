@@ -1,4 +1,4 @@
-export interface RosterModification {
+export interface LineupChanges {
   teamKey: string;
   coverageType: string;
   coveragePeriod: string;
