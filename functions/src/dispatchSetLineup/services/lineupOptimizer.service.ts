@@ -1,6 +1,9 @@
 import { RosterModification } from "../interfaces/RosterModification";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import { postRosterModifications } from "../../common/services/yahooAPI/yahooAPI.service";
+import {
+  postRosterAddDropTransaction,
+  postRosterModifications,
+} from "../../common/services/yahooAPI/yahooAPI.service";
 import { HttpsError } from "firebase-functions/v2/https";
 
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
@@ -34,21 +37,51 @@ export async function setUsersLineup(
     );
   }
 
-  // initialize starting goalies global array
   await initStartingGoalies();
 
-  const { rosterModifications } = await getRosterModifications(teams, uid);
+  const { allRosterModifications, allPlayerTransactions } =
+    await getRosterChanges(teams, uid);
 
-  // TODO: getRosterModifications should return a PlayerTransaction object
-  // TODO: if teams have playerTransactions and are intraday or NFL, post them, wait, redo the optimization, then post all rosterModifications together.
-  await postRosterModifications(rosterModifications, uid);
+  //TODO: refactor this, it's ugly!
+  const teamsToReoptimize: string[] = [];
+  for (const teamTransactions of allPlayerTransactions) {
+    if (teamTransactions.length == 0) break;
+    let reoptimizeTeam = false;
+    // promiseall transactions?
+    for (const transaction of teamTransactions) {
+      try {
+        await postRosterAddDropTransaction(transaction, uid);
+        if (transaction.isImmediateTransaction) reoptimizeTeam = true;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (reoptimizeTeam) {
+      teamsToReoptimize.push(teamTransactions[0].teamKey);
+    }
+  }
+
+  if (teamsToReoptimize.length > 0) {
+    const { allRosterModifications: updatedRosterModifications } =
+      await getRosterChanges(teamsToReoptimize, uid);
+    for (const urm of updatedRosterModifications) {
+      const index = allRosterModifications.findIndex(
+        (r) => r.teamKey === urm.teamKey
+      );
+      if (index > -1) {
+        allRosterModifications[index] = urm;
+      }
+    }
+  }
+
+  await postRosterModifications(allRosterModifications, uid);
 
   return Promise.resolve();
 }
 
 type RosterChange = {
-  rosterModifications: RosterModification[];
-  playerTransactions: PlayerTransaction[][];
+  allRosterModifications: RosterModification[];
+  allPlayerTransactions: PlayerTransaction[][];
 };
 
 /**
@@ -59,15 +92,15 @@ type RosterChange = {
  * @param {string} uid - The user id
  * @return {Promise<RosterModification[]>} - The roster modifications to make
  */
-async function getRosterModifications(
+async function getRosterChanges(
   teams: string[],
   uid: string
 ): Promise<RosterChange> {
   const rosters = await fetchRostersFromYahoo(teams, uid);
 
   const result: RosterChange = {
-    rosterModifications: [],
-    playerTransactions: [],
+    allRosterModifications: [],
+    allPlayerTransactions: [],
   };
   // console.log(
   //   "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
@@ -83,8 +116,8 @@ async function getRosterModifications(
     // );
     // TODO: Need to return the playerTransaction object as well eventually
     if (rosterChange) {
-      result.rosterModifications.push(rosterChange.rosterModification);
-      result.playerTransactions.push(rosterChange.playerTransactions);
+      result.allRosterModifications.push(rosterChange.rosterModification);
+      result.allPlayerTransactions.push(rosterChange.playerTransactions);
     }
   }
   return result;

@@ -309,6 +309,7 @@ export async function postRosterAddDropTransaction(
     if (isWaiverClaim) data.transaction.faab_bid = 0;
     const xmlBody = js2xmlparser.parse("fantasy_content", data);
     const leagueKey = teamKey.split(".t")[0];
+    // TODO: Make axios post
     try {
       await httpPutAxios(
         uid,

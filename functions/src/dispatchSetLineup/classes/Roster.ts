@@ -8,6 +8,7 @@ export class Roster {
   private _allPlayers: Player[];
   private _editablePlayers: Player[];
   private _rosterPositions: { [key: string]: number };
+  private _areTransactionsImmediatelyEffective: boolean;
 
   constructor(
     players: IPlayer[],
@@ -36,6 +37,10 @@ export class Roster {
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
+
+    this._areTransactionsImmediatelyEffective =
+      gameCode === "nfl" || weeklyDeadline === "intraday";
+
     // console.log(
     //   this._allPlayers
     //     .sort((a, b) => b.ownership_score - a.ownership_score)
@@ -68,6 +73,10 @@ export class Roster {
    */
   static sortDescendingByScore(players: Player[]) {
     players.sort((a, b) => b.start_score - a.start_score);
+  }
+
+  public get areTransactionsImmediatelyEffective(): boolean {
+    return this._areTransactionsImmediatelyEffective;
   }
 
   public get allPlayers(): Player[] {
