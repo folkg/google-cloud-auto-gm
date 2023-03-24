@@ -18,11 +18,13 @@ export async function fetchRostersFromYahoo(
   uid: string,
   date = ""
 ): Promise<Team[]> {
+  const result: Team[] = [];
+
   const yahooRostersJSON = await getRostersByTeamID(teams, uid, date);
   // console.log(JSON.stringify(yahooRostersJSON));
-  const rosters: Team[] = [];
   const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
   // console.log(games); //use this to debug the JSON object and see all data
+
   // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const key in gamesJSON) {
     if (key !== "count") {
@@ -40,15 +42,12 @@ export async function fetchRostersFromYahoo(
           }
           const coverageType = usersTeamRoster.coverage_type;
           // save the position counts to a map
-          const rosterPositions: { [key: string]: number } = getPositionCounts(
-            leaguesJSON,
-            key
-          );
+          const rosterPositions = getPositionCounts(leaguesJSON, key);
           const players: IPlayer[] = getPlayersFromRoster(
             usersTeamRoster[0].players
           );
 
-          const rosterObj: Team = {
+          const rosterObject: Team = {
             team_key: getChild(usersTeam.team[0], "team_key"),
             players: players,
             coverage_type: coverageType,
@@ -85,14 +84,14 @@ export async function fetchRostersFromYahoo(
             waiver_rule: getChild(leaguesJSON[key].league, "settings")[0]
               .waiver_rule,
           };
-          rosters.push(rosterObj);
+          result.push(rosterObject);
         }
       }
     }
   }
   // console.log("Fetched rosters from Yahoo API:");
   // console.log(JSON.stringify(rosters));
-  return rosters;
+  return result;
 }
 
 /**
@@ -103,15 +102,17 @@ export async function fetchRostersFromYahoo(
  * @return {*} - A map of positions and the number of players
  */
 function getPositionCounts(leaguesJSON: any, key: string) {
-  const positionCounter: any = {};
+  const result: { [key: string]: number } = {};
+
   getChild(leaguesJSON[key].league, "settings")[0].roster_positions.forEach(
     (position: any) => {
-      positionCounter[position.roster_position.position] = parseInt(
+      result[position.roster_position.position] = parseInt(
         position.roster_position.count
       );
     }
   );
-  return positionCounter;
+
+  return result;
 }
 
 /**
@@ -122,31 +123,18 @@ function getPositionCounts(leaguesJSON: any, key: string) {
  * @return {IPlayer[]} - An array of Player objects
  */
 function getPlayersFromRoster(playersJSON: any): IPlayer[] {
-  const players: IPlayer[] = [];
+  const result: IPlayer[] = [];
 
   // eslint-disable-next-line guard-for-in
   for (const key in playersJSON) {
     if (key !== "count") {
       const player = playersJSON[key].player;
-      // Loop through the eligible_positions array
-      const eligiblePositions: string[] = [];
-      getChild(player[0], "eligible_positions").forEach((position: any) => {
-        eligiblePositions.push(position.position);
-      });
-
-      // get the player's opponent
       const opponent = getChild(player, "opponent");
 
-      // pull the percent_started and percent_owned out of the JSON
-      const percentStarted = getDiamondPCT(player, "percent_started");
-      const percentOwned = getDiamondPCT(player, "percent_owned");
-
-      // pull the transaction delta out of the JSON
-      // Build the player object
-      const playerObj: IPlayer = {
+      const playerObject: IPlayer = {
         player_key: getChild(player[0], "player_key"),
         player_name: getChild(player[0], "name").full,
-        eligible_positions: eligiblePositions,
+        eligible_positions: getEligiblePositions(player),
         selected_position: getChild(
           getChild(player, "selected_position"),
           "position"
@@ -154,8 +142,8 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
         is_editable: getChild(player, "is_editable") === 1 ? true : false,
         is_playing: !opponent || opponent === "Bye" ? false : true,
         injury_status: getChild(player[0], "status_full") || "Healthy",
-        percent_started: percentStarted,
-        percent_owned: percentOwned,
+        percent_started: getPercentObject(player, "percent_started"),
+        percent_owned: getPercentObject(player, "percent_owned"),
         is_starting: getChild(player, "starting_status")
           ? getChild(getChild(player, "starting_status"), "is_starting")
           : "N/A",
@@ -164,31 +152,48 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
           getChild(player[0], "is_undroppable") === "1" ? true : false,
       };
 
-      // push the player to the object
-      players.push(playerObj);
+      result.push(playerObject);
     }
   }
-  return players;
+
+  return result;
+}
+
+function getEligiblePositions(player: any) {
+  const eligiblePositions: string[] = [];
+  getChild(player[0], "eligible_positions").forEach((position: any) => {
+    eligiblePositions.push(position.position);
+  });
+  return eligiblePositions;
 }
 
 /**
  * Will get the diamond cut value for the percent started or percent owned
  *
  * @param {*} player - The player JSON object
- * @param {string} pctType - The type of percent to get
+ * @param {string} percentType - The type of percent to get
  * (percent_started or percent_owned)
+ * @param {string} cut - The cut type to get (diamond, platinum, gold, silver, bronze)
  * @return {number} - The diamond cut value
  */
-function getDiamondPCT(player: any, pctType: string): number {
-  let returnPCT = 0;
-  const pSCuts = getChild(getChild(player, pctType), pctType + "_cut_types");
-  pSCuts.forEach((cutType: any) => {
-    const cutTypeObj = cutType[pctType + "_cut_type"];
-    if (getChild(cutTypeObj, "cut_type") === "diamond") {
-      returnPCT = getChild(cutTypeObj, "value");
+function getPercentObject(
+  player: any,
+  percentType: string,
+  cut = "diamond"
+): number {
+  const percentObject = getChild(player, percentType);
+  let result = getChild(percentObject, "value");
+
+  // if we can get the cut type, then we will return that instead of the general value
+  const percentCuts = getChild(percentObject, percentType + "_cut_types");
+  percentCuts.forEach((cutType: any) => {
+    const cutTypeObject = cutType[percentType + "_cut_type"];
+    if (getChild(cutTypeObject, "cut_type") === cut) {
+      result = getChild(cutTypeObject, "value");
     }
   });
-  return returnPCT;
+
+  return result;
 }
 
 /**
