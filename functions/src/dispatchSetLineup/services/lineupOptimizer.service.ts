@@ -1,13 +1,14 @@
-import { LineupChanges } from "../interfaces/LineupChanges";
-import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import { postLineupChanges } from "../../common/services/yahooAPI/yahooAPI.service";
 import { HttpsError } from "firebase-functions/v2/https";
-
+import {
+  postRosterAddDropTransaction,
+  putLineupChanges,
+} from "../../common/services/yahooAPI/yahooAPI.service";
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
+import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { Team } from "../interfaces/Team";
-import { datePSTString } from "../../common/services/utilities.service";
+import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -49,23 +50,22 @@ export async function setUsersLineup(
     teamsWithEditKeyToday
   );
   if (todaysPlayerTransactions.length > 0) {
-    // post all transactions in a promiseall?
-    // worth trying to post many transactions in one API call?
+    await postAllTransactions(todaysPlayerTransactions, uid);
   }
 
   const allLineupChanges = await getLineupChanges(rosters);
   if (allLineupChanges.length > 0) {
-    await postLineupChanges(allLineupChanges, uid);
+    await putLineupChanges(allLineupChanges, uid);
   }
 
-  const teamsWithEditKeyFuture = getTeamsWithEditKeyFuture(rosters);
-  // TODO: Get new rosters for future days. For now, just use todays rosters and hope for the best.
+  const rostersWithEditKeyFuture = getTeamsWithEditKeyFuture(rosters);
+  // TODO: Get new rosters for future days. For now, just use todays rosters and hope for the best since we are dropping only.
+  // TODO: How to test the yahooAPI to make sure the post works?
   const futurePlayerTransactions = await getPlayerTransactions(
-    teamsWithEditKeyFuture
+    rostersWithEditKeyFuture
   );
   if (futurePlayerTransactions.length > 0) {
-    // post all transactions in a promiseall?
-    // worth trying to post many transactions in one API call?
+    await postAllTransactions(futurePlayerTransactions, uid);
   }
 
   return Promise.resolve();
@@ -104,6 +104,22 @@ async function getLineupChanges(rosters: Team[]): Promise<LineupChanges[]> {
     }
   }
   return result;
+}
+
+async function postAllTransactions(
+  playerTransactions: PlayerTransaction[][],
+  uid: string
+) {
+  const allTransactionsPromises = playerTransactions
+    .reduce((acc, val) => acc.concat(val), [])
+    .map((transaction) => postRosterAddDropTransaction(transaction, uid));
+  const results = await Promise.allSettled(allTransactionsPromises);
+
+  if (results.some((result) => result.status === "rejected")) {
+    console.error(
+      "Error posting transactions: " + JSON.stringify(results, null, 2)
+    );
+  }
 }
 
 function getTeamsWithEditKeyToday(rosters: Team[]): Team[] {

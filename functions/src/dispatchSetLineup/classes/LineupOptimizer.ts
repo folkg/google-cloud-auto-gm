@@ -402,7 +402,7 @@ export class LineupOptimizer {
 
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
-      isImmediateTransaction: this.roster.areTransactionsImmediatelyEffective,
+      isImmediateTransaction: this.roster.sameDayTransactions,
       players: [
         {
           playerKey: playerToDrop.player_key,
@@ -437,9 +437,7 @@ export class LineupOptimizer {
   }
 
   private isTooLateToDrop(player: Player) {
-    return (
-      this.roster.areTransactionsImmediatelyEffective && !player.is_editable
-    );
+    return this.roster.sameDayTransactions && !player.is_editable;
   }
 
   private getAlreadyDroppedPlayers() {

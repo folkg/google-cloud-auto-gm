@@ -45,15 +45,19 @@ describe("LineupOptimizerService full stack", () => {
         teamKey: "419.l.28340.t.1",
       },
     ];
-    const spyPostRosterModifications = jest
-      .spyOn(yahooAPI, "postLineupChanges")
+    const spyPutLineupChanges = jest
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve());
+    const spyPostRosterAddDropTransaction = jest
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
       .mockReturnValue(Promise.resolve());
 
     await setUsersLineup(uid, teams);
-    expect(spyPostRosterModifications).toHaveBeenCalledWith(
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
       expectedRosterModifications,
       uid
     );
+    expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
   });
 
   // user with multiple teams, no changes

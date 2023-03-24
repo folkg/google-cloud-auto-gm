@@ -174,6 +174,4 @@ describe("Test LineupOptimizer Add Drop Players", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
   });
-
-  // If a it is intraday or NFL and player is not editable, filter out
 });

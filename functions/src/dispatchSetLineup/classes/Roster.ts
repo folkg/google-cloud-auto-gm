@@ -8,7 +8,7 @@ export class Roster {
   private _allPlayers: Player[];
   private _editablePlayers: Player[];
   private _rosterPositions: { [key: string]: number };
-  private _areTransactionsImmediatelyEffective: boolean;
+  private _sameDayTransactions: boolean;
 
   constructor(
     players: IPlayer[],
@@ -38,7 +38,7 @@ export class Roster {
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
-    this._areTransactionsImmediatelyEffective =
+    this._sameDayTransactions =
       gameCode === "nfl" || weeklyDeadline === "intraday";
 
     // console.log(
@@ -75,8 +75,8 @@ export class Roster {
     players.sort((a, b) => b.start_score - a.start_score);
   }
 
-  public get areTransactionsImmediatelyEffective(): boolean {
-    return this._areTransactionsImmediatelyEffective;
+  public get sameDayTransactions(): boolean {
+    return this._sameDayTransactions;
   }
 
   public get allPlayers(): Player[] {

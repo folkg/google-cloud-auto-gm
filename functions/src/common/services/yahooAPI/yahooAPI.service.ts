@@ -1,4 +1,9 @@
-import { httpGetAxios, httpPostAxios, httpPutAxios } from "./yahooHttp.service";
+import {
+  httpGetAxios,
+  httpPostAxiosAuth,
+  httpPostAxiosUnauth,
+  httpPutAxios,
+} from "./yahooHttp.service";
 import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges";
 import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
 import { AxiosError } from "axios";
@@ -33,7 +38,7 @@ export async function refreshYahooAccessToken(
 
   try {
     const requestTime = Date.now();
-    const { data } = await httpPostAxios(url, body);
+    const { data } = await httpPostAxiosUnauth(url, body);
     // Get the token info from the response and save it to the database
     const accessToken = data.access_token;
     const tokenExpirationTime = data.expires_in * 1000 + requestTime;
@@ -65,7 +70,7 @@ export async function refreshYahooAccessToken(
 export async function getRostersByTeamID(
   teams: string[],
   uid: string,
-  date: string = ""
+  date = ""
 ): Promise<any> {
   const leagueKeysArray: string[] = [];
   teams.forEach((teamKey) => {
@@ -207,14 +212,14 @@ export async function getStartingGoalies(
  * @param {string} uid The firebase uid of the user
  * @return {unknown}
  */
-export async function postLineupChanges(
+export async function putLineupChanges(
   lineupChanges: LineupChanges[],
   uid: string
 ): Promise<void> {
   // eslint-disable-next-line guard-for-in
-  for (const rosterModification of lineupChanges) {
+  for (const lineupChange of lineupChanges) {
     const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
-      rosterModification;
+      lineupChange;
 
     if (Object.keys(newPlayerPositions).length !== 0) {
       const players: any[] = [];
@@ -244,7 +249,7 @@ export async function postLineupChanges(
           xmlBody
         );
         console.log(
-          "Successfully posted roster changes for team: " +
+          "Successfully put roster changes for team: " +
             teamKey +
             " for user: " +
             uid
@@ -312,9 +317,8 @@ export async function postRosterAddDropTransaction(
     if (isWaiverClaim) data.transaction.faab_bid = 0;
     const xmlBody = js2xmlparser.parse("fantasy_content", data);
     const leagueKey = teamKey.split(".t")[0];
-    // TODO: Make axios post
     try {
-      await httpPutAxios(
+      await httpPostAxiosAuth(
         uid,
         "league/" + leagueKey + "/transactions?format=json",
         xmlBody

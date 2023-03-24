@@ -32,10 +32,22 @@ export async function httpGetAxios(url: string, uid: string) {
  * @param {*} body - the body of the post request
  * @return {unknown} - the response from the API
  */
-export function httpPostAxios(url: string, body: any) {
+export function httpPostAxiosUnauth(url: string, body: any) {
   return axios.post(url, body, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+}
+
+export async function httpPostAxiosAuth(url: string, uid: string, body: any) {
+  const credential = await loadYahooAccessToken(uid);
+  const accessToken = credential.accessToken;
+
+  return axios.post(API_URL + url, body, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: "Bearer " + accessToken,
     },
   });
 }

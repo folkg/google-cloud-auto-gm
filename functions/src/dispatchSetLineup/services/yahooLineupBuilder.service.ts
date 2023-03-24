@@ -16,7 +16,7 @@ import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.serv
 export async function fetchRostersFromYahoo(
   teams: string[],
   uid: string,
-  date: string = ""
+  date = ""
 ): Promise<Team[]> {
   const yahooRostersJSON = await getRostersByTeamID(teams, uid, date);
   // console.log(JSON.stringify(yahooRostersJSON));
