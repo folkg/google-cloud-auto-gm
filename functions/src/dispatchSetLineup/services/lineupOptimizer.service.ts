@@ -80,6 +80,7 @@ async function postTransactionsForNextDayChanges(
   const teamKeys = getTeamsForNextDayTransactions(originalRosters).map(
     (roster) => roster.team_key
   );
+  if (teamKeys.length === 0) return;
   const rosters = await fetchRostersFromYahoo(
     teamKeys,
     uid,

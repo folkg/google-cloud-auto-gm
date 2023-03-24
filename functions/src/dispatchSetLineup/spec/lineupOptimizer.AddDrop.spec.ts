@@ -7,7 +7,7 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
-describe("Test LineupOptimizer Add Drop Players", function () {
+describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   test("No drops allowed Daily", function () {
     const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
     const lo = new LineupOptimizer(roster);
@@ -174,4 +174,6 @@ describe("Test LineupOptimizer Add Drop Players", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
   });
+
+  // TODO: Will the weekly lineups be next day, even if done when edit_key === coverage_period? I think so. Double check.
 });
