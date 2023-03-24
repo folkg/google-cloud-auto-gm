@@ -1,4 +1,5 @@
 import { HttpsError } from "firebase-functions/v2/https";
+import { datePSTString } from "../../common/services/utilities.service";
 import {
   postRosterAddDropTransaction,
   putLineupChanges,
@@ -29,7 +30,6 @@ export async function setUsersLineup(
       "You must be logged in to get an access token"
     );
   }
-
   if (!teams) {
     throw new HttpsError(
       "invalid-argument",
@@ -39,41 +39,49 @@ export async function setUsersLineup(
 
   await initStartingGoalies();
 
-  // TODO: for player adds, we need to physically move those players to IL.  We can't just add them to the roster.
-  // This means we need to make lineupChanges as well as playerTransactions. Shit...
-  // Maybe we first do drops if dropping. Then call another function to move players to IL. Then call another function to add players to the roster.
+  let rosters = await fetchRostersFromYahoo(teams, uid);
 
-  const rosters = await fetchRostersFromYahoo(teams, uid);
-
-  const teamsWithEditKeyToday = getTeamsWithEditKeyToday(rosters);
-  const todaysPlayerTransactions = await getPlayerTransactions(
-    teamsWithEditKeyToday
-  );
-  if (todaysPlayerTransactions.length > 0) {
-    await postAllTransactions(todaysPlayerTransactions, uid);
-  }
+  rosters = await postTransactionsForSameDayChanges(rosters, uid);
 
   const allLineupChanges = await getLineupChanges(rosters);
   if (allLineupChanges.length > 0) {
     await putLineupChanges(allLineupChanges, uid);
   }
 
-  const rostersWithEditKeyTomorrow = getTeamsWithEditKeyTomorrow(rosters);
-  // TODO: Get new rosters for future days. For now, just use todays rosters and hope for the best since we are dropping only.
-  // TODO: How to test the yahooAPI to make sure the post works?
-  const tomorrowPlayerTransactions = await getPlayerTransactions(
-    rostersWithEditKeyTomorrow
-  );
-  if (tomorrowPlayerTransactions.length > 0) {
-    await postAllTransactions(tomorrowPlayerTransactions, uid);
-  }
+  await postTransactionsForNextDayChanges(rosters, uid);
 
   return Promise.resolve();
 }
 
-async function getPlayerTransactions(
-  rosters: Team[]
-): Promise<PlayerTransaction[][]> {
+async function postTransactionsForSameDayChanges(rosters: Team[], uid: string) {
+  let result: Team[] = rosters;
+
+  const teams = getTeamsWithSameDayTransactions(rosters);
+  const transactions = getPlayerTransactions(teams);
+  if (transactions.length > 0) {
+    await postAllTransactions(transactions, uid);
+    result = await refetchAndPatchRosters(transactions, uid, rosters);
+  }
+
+  return result;
+}
+
+async function postTransactionsForNextDayChanges(rosters: Team[], uid: string) {
+  const teamKeys = getTeamsForNextDayTransactions(rosters).map(
+    (roster) => roster.team_key
+  );
+  const teams = await fetchRostersFromYahoo(
+    teamKeys,
+    uid,
+    tomorrowsDateAsString()
+  );
+  const transactions = getPlayerTransactions(teams);
+  if (transactions.length > 0) {
+    await postAllTransactions(transactions, uid);
+  }
+}
+
+function getPlayerTransactions(rosters: Team[]): PlayerTransaction[][] {
   // console.log(
   //   "finding transactions for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
@@ -106,10 +114,30 @@ async function getLineupChanges(rosters: Team[]): Promise<LineupChanges[]> {
   return result;
 }
 
+async function refetchAndPatchRosters(
+  todaysPlayerTransactions: PlayerTransaction[][],
+  uid: string,
+  rosters: Team[]
+): Promise<Team[]> {
+  const result = JSON.parse(JSON.stringify(rosters));
+  const updatedTeamKeys = todaysPlayerTransactions
+    .reduce((acc, val) => acc.concat(val), [])
+    .map((transaction) => transaction.teamKey);
+  const updatedRosters = await fetchRostersFromYahoo(updatedTeamKeys, uid);
+
+  updatedRosters.forEach((updatedRoster) => {
+    const originalIdx = result.findIndex(
+      (roster: Team) => roster.team_key === updatedRoster.team_key
+    );
+    result[originalIdx] = updatedRoster;
+  });
+  return result;
+}
+
 async function postAllTransactions(
   playerTransactions: PlayerTransaction[][],
   uid: string
-) {
+): Promise<void> {
   const allTransactionsPromises = playerTransactions
     .reduce((acc, val) => acc.concat(val), [])
     .map((transaction) => postRosterAddDropTransaction(transaction, uid));
@@ -122,18 +150,26 @@ async function postAllTransactions(
   }
 }
 
-function getTeamsWithEditKeyToday(rosters: Team[]): Team[] {
+function getTeamsWithSameDayTransactions(rosters: Team[]): Team[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
-      roster.edit_key === roster.coverage_period
+      roster.edit_key === roster.coverage_period &&
+      roster.waiver_rule !== "continuous"
   );
 }
 
-function getTeamsWithEditKeyTomorrow(rosters: Team[]): Team[] {
+function getTeamsForNextDayTransactions(rosters: Team[]): Team[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
-      roster.edit_key !== roster.coverage_period
+      (roster.edit_key !== roster.coverage_period ||
+        roster.waiver_rule === "continuous")
   );
+}
+
+function tomorrowsDateAsString(): string {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return datePSTString(tomorrow);
 }

@@ -34,7 +34,9 @@ export class Roster {
 
     // this._sameDayTransactions =
     //   team.game_code === "nfl" || team.weekly_deadline === "intraday";
-    this._sameDayTransactions = team.edit_key === team.coverage_period;
+    this._sameDayTransactions =
+      team.edit_key === team.coverage_period &&
+      team.waiver_rule !== "continuous";
 
     // console.log(
     //   this._allPlayers
