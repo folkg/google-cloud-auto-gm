@@ -18,13 +18,7 @@ export class LineupOptimizer {
 
   constructor(team: Team) {
     this.team = team;
-    this.roster = new Roster(
-      team.players,
-      team.roster_positions,
-      team.num_teams_in_league,
-      team.game_code,
-      team.weekly_deadline
-    );
+    this.roster = new Roster(team);
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.roster.editablePlayers
     );
@@ -175,7 +169,10 @@ export class LineupOptimizer {
     return false;
   }
 
-  threeWayMoveIllegalToUnfilledPosition(playerA: Player, playerB: Player) {
+  private threeWayMoveIllegalToUnfilledPosition(
+    playerA: Player,
+    playerB: Player
+  ) {
     const potentialPlayerAPosition = playerB.isActiveRoster()
       ? "BN"
       : playerB.selected_position;
@@ -199,7 +196,7 @@ export class LineupOptimizer {
       this.movePlayerToPosition(playerA, potentialPlayerAPosition);
     }
   }
-  threeWaySwapIllegalPlayer(playerA: Player, playerB: Player): boolean {
+  private threeWaySwapIllegalPlayer(playerA: Player, playerB: Player): boolean {
     this.logInfo("attempting to find a three way swap");
     const playerC = this.findPlayerCforIllegalPlayerA(
       playerA,
@@ -396,13 +393,13 @@ export class LineupOptimizer {
    *
    * @param {Player} playerToOpenSpotFor
    */
-  dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
+  private dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
     const playerToDrop = this.getPlayerToDrop(playerToOpenSpotFor);
     if (playerToDrop === playerToOpenSpotFor) return;
 
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
-      isImmediateTransaction: this.roster.sameDayTransactions,
+      sameDayTransactions: this.roster.sameDayTransactions,
       players: [
         {
           playerKey: playerToDrop.player_key,

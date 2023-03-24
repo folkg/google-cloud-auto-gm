@@ -1,5 +1,5 @@
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { IPlayer } from "../interfaces/IPlayer";
+import { Team } from "../interfaces/Team";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
 import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
@@ -10,36 +10,31 @@ export class Roster {
   private _rosterPositions: { [key: string]: number };
   private _sameDayTransactions: boolean;
 
-  constructor(
-    players: IPlayer[],
-    rosterPositions: { [key: string]: number },
-    numTeamsInLeague: number,
-    gameCode: string,
-    weeklyDeadline: string
-  ) {
-    this._allPlayers = players.map((player) => new Player(player));
+  constructor(team: Team) {
+    this._allPlayers = team.players.map((player) => new Player(player));
 
     this._editablePlayers = this._allPlayers.filter(
       (player) => player.is_editable
     );
-    this._rosterPositions = { ...rosterPositions };
+    this._rosterPositions = { ...team.roster_positions };
 
     const playerStartScoreFunction = playerStartScoreFunctionFactory(
-      gameCode,
-      weeklyDeadline
+      team.game_code,
+      team.weekly_deadline
     );
 
     this._allPlayers.forEach((player) => {
       player.start_score = playerStartScoreFunction(player);
       player.ownership_score = ownershipScoreFunction(
         player,
-        numTeamsInLeague * this.numStandardRosterSpots
+        team.num_teams_in_league * this.numStandardRosterSpots
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
-    this._sameDayTransactions =
-      gameCode === "nfl" || weeklyDeadline === "intraday";
+    // this._sameDayTransactions =
+    //   team.game_code === "nfl" || team.weekly_deadline === "intraday";
+    this._sameDayTransactions = team.edit_key === team.coverage_period;
 
     // console.log(
     //   this._allPlayers

@@ -58,14 +58,14 @@ export async function setUsersLineup(
     await putLineupChanges(allLineupChanges, uid);
   }
 
-  const rostersWithEditKeyFuture = getTeamsWithEditKeyFuture(rosters);
+  const rostersWithEditKeyTomorrow = getTeamsWithEditKeyTomorrow(rosters);
   // TODO: Get new rosters for future days. For now, just use todays rosters and hope for the best since we are dropping only.
   // TODO: How to test the yahooAPI to make sure the post works?
-  const futurePlayerTransactions = await getPlayerTransactions(
-    rostersWithEditKeyFuture
+  const tomorrowPlayerTransactions = await getPlayerTransactions(
+    rostersWithEditKeyTomorrow
   );
-  if (futurePlayerTransactions.length > 0) {
-    await postAllTransactions(futurePlayerTransactions, uid);
+  if (tomorrowPlayerTransactions.length > 0) {
+    await postAllTransactions(tomorrowPlayerTransactions, uid);
   }
 
   return Promise.resolve();
@@ -126,15 +126,14 @@ function getTeamsWithEditKeyToday(rosters: Team[]): Team[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
-      (roster.game_code === "nfl" || roster.weekly_deadline === "intraday")
+      roster.edit_key === roster.coverage_period
   );
 }
 
-function getTeamsWithEditKeyFuture(rosters: Team[]): Team[] {
+function getTeamsWithEditKeyTomorrow(rosters: Team[]): Team[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
-      roster.game_code !== "nfl" &&
-      roster.weekly_deadline !== "intraday"
+      roster.edit_key !== roster.coverage_period
   );
 }

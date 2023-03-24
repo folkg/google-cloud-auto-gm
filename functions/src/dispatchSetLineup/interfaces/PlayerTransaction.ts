@@ -1,6 +1,6 @@
 export interface PlayerTransaction {
   teamKey: string;
-  isImmediateTransaction: boolean;
+  sameDayTransactions: boolean;
   players: [
     {
       playerKey: string;
