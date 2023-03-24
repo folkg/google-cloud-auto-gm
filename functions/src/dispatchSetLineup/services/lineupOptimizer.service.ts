@@ -41,6 +41,10 @@ export async function setUsersLineup(
 
   let rosters = await fetchRostersFromYahoo(teams, uid);
 
+  // TODO: Rosters with same day changes other than continous waiver_rule could drop player today, but add players for tomorrow. Tricky/messy edge case...
+  // could split up the adding and the dropping into two different functions, but that would require a lot of mess. Think about it.
+  // In all likelyhood, this will be okay, since the player will likely be dropped at 155am, and then roster will be re-optimized later in the day.
+
   rosters = await postTransactionsForSameDayChanges(rosters, uid);
 
   const allLineupChanges = await getLineupChanges(rosters);
@@ -53,29 +57,35 @@ export async function setUsersLineup(
   return Promise.resolve();
 }
 
-async function postTransactionsForSameDayChanges(rosters: Team[], uid: string) {
-  let result: Team[] = rosters;
+async function postTransactionsForSameDayChanges(
+  originalRosters: Team[],
+  uid: string
+): Promise<Team[]> {
+  let result: Team[] = originalRosters;
 
-  const teams = getTeamsWithSameDayTransactions(rosters);
-  const transactions = getPlayerTransactions(teams);
+  const rosters = getTeamsWithSameDayTransactions(originalRosters);
+  const transactions = getPlayerTransactions(rosters);
   if (transactions.length > 0) {
     await postAllTransactions(transactions, uid);
-    result = await refetchAndPatchRosters(transactions, uid, rosters);
+    result = await refetchAndPatchRosters(transactions, uid, originalRosters);
   }
 
   return result;
 }
 
-async function postTransactionsForNextDayChanges(rosters: Team[], uid: string) {
-  const teamKeys = getTeamsForNextDayTransactions(rosters).map(
+async function postTransactionsForNextDayChanges(
+  originalRosters: Team[],
+  uid: string
+): Promise<void> {
+  const teamKeys = getTeamsForNextDayTransactions(originalRosters).map(
     (roster) => roster.team_key
   );
-  const teams = await fetchRostersFromYahoo(
+  const rosters = await fetchRostersFromYahoo(
     teamKeys,
     uid,
     tomorrowsDateAsString()
   );
-  const transactions = getPlayerTransactions(teams);
+  const transactions = getPlayerTransactions(rosters);
   if (transactions.length > 0) {
     await postAllTransactions(transactions, uid);
   }
@@ -85,8 +95,8 @@ function getPlayerTransactions(rosters: Team[]): PlayerTransaction[][] {
   // console.log(
   //   "finding transactions for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
-
   const result: PlayerTransaction[][] = [];
+
   for (const roster of rosters) {
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
@@ -94,6 +104,7 @@ function getPlayerTransactions(rosters: Team[]): PlayerTransaction[][] {
       result.push(playerTransactions);
     }
   }
+
   return result;
 }
 
@@ -101,8 +112,8 @@ async function getLineupChanges(rosters: Team[]): Promise<LineupChanges[]> {
   // console.log(
   //   "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
-
   const result: LineupChanges[] = [];
+
   for (const roster of rosters) {
     const lo = new LineupOptimizer(roster);
     const lineupChanges = lo.optimizeStartingLineup();
@@ -111,15 +122,17 @@ async function getLineupChanges(rosters: Team[]): Promise<LineupChanges[]> {
       result.push(lineupChanges);
     }
   }
+
   return result;
 }
 
 async function refetchAndPatchRosters(
   todaysPlayerTransactions: PlayerTransaction[][],
   uid: string,
-  rosters: Team[]
+  originalRosters: Team[]
 ): Promise<Team[]> {
-  const result = JSON.parse(JSON.stringify(rosters));
+  const result = JSON.parse(JSON.stringify(originalRosters));
+
   const updatedTeamKeys = todaysPlayerTransactions
     .reduce((acc, val) => acc.concat(val), [])
     .map((transaction) => transaction.teamKey);
@@ -127,10 +140,12 @@ async function refetchAndPatchRosters(
 
   updatedRosters.forEach((updatedRoster) => {
     const originalIdx = result.findIndex(
-      (roster: Team) => roster.team_key === updatedRoster.team_key
+      (originalRoster: Team) =>
+        originalRoster.team_key === updatedRoster.team_key
     );
     result[originalIdx] = updatedRoster;
   });
+
   return result;
 }
 
