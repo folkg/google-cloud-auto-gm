@@ -12,6 +12,7 @@ export interface Team {
   game_code: string;
   num_teams_in_league: number;
   roster_positions: { [key: string]: number };
+  waiver_rule: string;
   current_weekly_adds: number;
   current_season_adds: number;
   max_weekly_adds: number;

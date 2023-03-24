@@ -467,7 +467,8 @@
     }
   ],
   "coverage_type": "date",
-  "coverage_period": "2023-03-17",
+  "coverage_period": " 2023-03-17 ",
+  "edit_key": "${new Date(Date.parse('2023-03-17') + 86400000).toISOString().substr(0, 10)}",
   "weekly_deadline": null,
   "game_code": "nhl",
   "num_teams_in_league": 12,

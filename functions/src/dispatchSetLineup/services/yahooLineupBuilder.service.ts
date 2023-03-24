@@ -82,6 +82,8 @@ export async function fetchRostersFromYahoo(
             faab_balance: parseStringToInt(
               getChild(usersTeam.team[0], "faab_balance")
             ),
+            waiver_rule: getChild(leaguesJSON[key].league, "settings")[0]
+              .waiver_rule,
           };
           rosters.push(rosterObj);
         }

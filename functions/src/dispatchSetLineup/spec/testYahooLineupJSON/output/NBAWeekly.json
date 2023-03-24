@@ -357,6 +357,7 @@
     "max_season_adds": -1,
     "start_date": 1674432000000,
     "end_date": 1680393600000,
-    "faab_balance": -1
+    "faab_balance": -1,
+    "waiver_rule": "all"
   }
 ]
