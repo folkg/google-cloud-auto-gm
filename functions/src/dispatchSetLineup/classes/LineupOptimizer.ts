@@ -4,8 +4,16 @@ import { Team } from "../interfaces/Team";
 import { Player } from "./Player";
 import { Roster } from "./Roster";
 
+type DeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends (infer U)[]
+    ? ReadonlyArray<DeepReadonly<U>> // If T[P] is an array, make all elements immutable recursively
+    : T[P] extends object
+    ? DeepReadonly<T[P]> // If T[P] is an object, make the object immutable recursively
+    : T[P]; // Otherwise, keep the property as it is
+};
+
 export class LineupOptimizer {
-  private readonly team: Team;
+  private readonly team: DeepReadonly<Team>;
   private roster: Roster;
   private originalPlayerPositions: { [key: string]: string };
   private deltaPlayerPositions: { [key: string]: string } = {};
@@ -17,7 +25,7 @@ export class LineupOptimizer {
   }
 
   constructor(team: Team) {
-    this.team = team;
+    this.team = team as DeepReadonly<Team>;
     this.roster = new Roster(team);
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.roster.editablePlayers
@@ -34,7 +42,6 @@ export class LineupOptimizer {
     // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
     // Any players added by the above will be available for the next round of swaps
     // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
-
     return this.playerTransactions;
   }
 
