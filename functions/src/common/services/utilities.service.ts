@@ -91,3 +91,15 @@ export function partitionArray<T>(
     [[], []] as T[][]
   );
 }
+
+/**
+ * Returns true if the array is empty or all of the sub arrays are empty.
+ *
+ * @export
+ * @template T The type of the array elements
+ * @param {T[][]} arr The array to check
+ * @returns {boolean} True if the array is empty or all of the sub arrays are empty
+ */
+export function is2DArrayEmpty<T>(arr: T[][]): boolean {
+  return arr.length === 0 || arr.every((subArr) => subArr.length === 0);
+}

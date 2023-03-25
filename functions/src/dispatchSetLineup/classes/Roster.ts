@@ -32,9 +32,7 @@ export class Roster {
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
-    this._sameDayTransactions =
-      team.edit_key === team.coverage_period &&
-      team.waiver_rule !== "continuous";
+    this._sameDayTransactions = team.edit_key === team.coverage_period;
 
     // console.log(
     //   this._allPlayers

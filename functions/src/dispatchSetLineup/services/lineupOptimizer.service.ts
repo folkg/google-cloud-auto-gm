@@ -1,5 +1,8 @@
 import { HttpsError } from "firebase-functions/v2/https";
-import { datePSTString } from "../../common/services/utilities.service";
+import {
+  datePSTString,
+  is2DArrayEmpty,
+} from "../../common/services/utilities.service";
 import {
   postRosterAddDropTransaction,
   putLineupChanges,
@@ -41,12 +44,10 @@ export async function setUsersLineup(
 
   let rosters = await fetchRostersFromYahoo(teams, uid);
 
-  // TODO: Rosters with same day changes other than continous waiver_rule could drop player today, but add players for tomorrow. Tricky/messy edge case...
-  // could split up the adding and the dropping into two different functions, but that would require a lot of mess. Think about it.
-  // In all likelyhood, this will be okay, since the player will likely be dropped at 155am, and then roster will be re-optimized later in the day.
-
   rosters = await postTransactionsForSameDayChanges(rosters, uid);
 
+  //TODO: Should we get the rosters again after the lineup changes are made?
+  // Move this to its own function
   const allLineupChanges = await getLineupChanges(rosters);
   if (allLineupChanges.length > 0) {
     await putLineupChanges(allLineupChanges, uid);
@@ -65,7 +66,7 @@ async function postTransactionsForSameDayChanges(
 
   const rosters = getTeamsWithSameDayTransactions(originalRosters);
   const transactions = getPlayerTransactions(rosters);
-  if (transactions.length > 0 && transactions[0].length > 0) {
+  if (!is2DArrayEmpty(transactions)) {
     await postAllTransactions(transactions, uid);
     result = await refetchAndPatchRosters(transactions, uid, originalRosters);
   }
@@ -77,17 +78,23 @@ async function postTransactionsForNextDayChanges(
   originalRosters: Team[],
   uid: string
 ): Promise<void> {
-  const teamKeys = getTeamsForNextDayTransactions(originalRosters).map(
-    (roster) => roster.team_key
-  );
-  if (teamKeys.length === 0) return;
-  const rosters = await fetchRostersFromYahoo(
-    teamKeys,
+  // check if there are any transactions required for teams with next day changes
+  // this pre-check is to save on Yahoo API calls
+  const rosters = getTeamsForNextDayTransactions(originalRosters);
+  const potentialTransactions = getPlayerTransactions(rosters);
+  if (is2DArrayEmpty(potentialTransactions)) {
+    return;
+  }
+
+  // if there are transactions required, get tomorrow's rosters and perform the transactions
+  const uniqueTeamKeys = getUniqueTeamKeys(potentialTransactions);
+  const tomorrowsRosters = await fetchRostersFromYahoo(
+    uniqueTeamKeys,
     uid,
     tomorrowsDateAsString()
   );
-  const transactions = getPlayerTransactions(rosters);
-  if (transactions.length > 0) {
+  const transactions = getPlayerTransactions(tomorrowsRosters);
+  if (!is2DArrayEmpty(transactions)) {
     await postAllTransactions(transactions, uid);
   }
 }
@@ -124,6 +131,8 @@ async function getLineupChanges(rosters: Team[]): Promise<LineupChanges[]> {
     }
   }
 
+  //TODO: Should we get the rosters again after the lineup changes are made?
+
   return result;
 }
 
@@ -136,9 +145,7 @@ async function refetchAndPatchRosters(
 
   const result = JSON.parse(JSON.stringify(originalRosters));
 
-  const updatedTeamKeys = todaysPlayerTransactions
-    .reduce((acc, val) => acc.concat(val), [])
-    .map((transaction) => transaction.teamKey);
+  const updatedTeamKeys = getUniqueTeamKeys(todaysPlayerTransactions);
   const updatedRosters = await fetchRostersFromYahoo(updatedTeamKeys, uid);
 
   updatedRosters.forEach((updatedRoster) => {
@@ -156,8 +163,9 @@ async function postAllTransactions(
   playerTransactions: PlayerTransaction[][],
   uid: string
 ): Promise<void> {
+  // TODO: Do we just want to post these sequentially instead? Might be easier on the Yahoo API
   const allTransactionsPromises = playerTransactions
-    .reduce((acc, val) => acc.concat(val), [])
+    .flat()
     .map((transaction) => postRosterAddDropTransaction(transaction, uid));
   const results = await Promise.allSettled(allTransactionsPromises);
 
@@ -172,8 +180,7 @@ function getTeamsWithSameDayTransactions(rosters: Team[]): Team[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
-      roster.edit_key === roster.coverage_period &&
-      roster.waiver_rule !== "continuous"
+      roster.edit_key === roster.coverage_period
   );
 }
 
@@ -181,8 +188,7 @@ function getTeamsForNextDayTransactions(rosters: Team[]): Team[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
-      (roster.edit_key !== roster.coverage_period ||
-        roster.waiver_rule === "continuous")
+      roster.edit_key !== roster.coverage_period
   );
 }
 
@@ -190,4 +196,14 @@ function tomorrowsDateAsString(): string {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   return datePSTString(tomorrow);
+}
+
+function getUniqueTeamKeys(transactions: PlayerTransaction[][]): string[] {
+  const uniqueKeys = new Set<string>();
+  for (const team of transactions) {
+    for (const playerTransaction of team) {
+      uniqueKeys.add(playerTransaction.teamKey);
+    }
+  }
+  return Array.from(uniqueKeys);
 }

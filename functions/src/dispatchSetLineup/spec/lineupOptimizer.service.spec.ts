@@ -101,7 +101,7 @@ describe("Full Stack Add Drop Tests", () => {
       uid
     );
     expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
-    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
   });
 
   // user with multiple teams, rosterModifications only
