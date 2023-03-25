@@ -20,8 +20,9 @@ export interface Player extends IPlayer {
  */
 export class Player implements Player {
   constructor(player: IPlayer) {
-    const playerCopy = JSON.parse(JSON.stringify(player));
-    Object.assign(this, playerCopy);
+    // no need to clone anymore, since the only caller already cloned the original
+    // const playerCopy = structuredClone(player);
+    Object.assign(this, player);
   }
 
   isInactiveList(): boolean {

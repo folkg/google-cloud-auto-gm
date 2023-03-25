@@ -1,5 +1,5 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { Team } from "../interfaces/Team";
+import { ITeam } from "../interfaces/ITeam";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({
@@ -9,7 +9,7 @@ jest.mock("firebase-admin", () => ({
 
 describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   test("No drops allowed Daily", function () {
-    const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
+    const roster: ITeam = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -17,7 +17,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("No drops allowed Daily", function () {
-    const roster: Team = require("./testRosters/NHL/DailyDrops/noAllowDroppingPropertyOnTeam.json");
+    const roster: ITeam = require("./testRosters/NHL/DailyDrops/noAllowDroppingPropertyOnTeam.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -25,7 +25,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("No drops required Daily", function () {
-    const roster: Team = require("./testRosters/NHL/DailyDrops/noDropsRequired.json");
+    const roster: ITeam = require("./testRosters/NHL/DailyDrops/noDropsRequired.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -33,7 +33,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Injured player illegally on IR, don't drop anyone", function () {
-    const roster: Team = require("./testRosters/NHL/DailyDrops/injuredPlayerIllegallyOnIR.json");
+    const roster: ITeam = require("./testRosters/NHL/DailyDrops/injuredPlayerIllegallyOnIR.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -41,7 +41,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop player with lowest score for 'Probable' player Daily", function () {
-    const roster: Team = require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScore.json");
+    const roster: ITeam = require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -50,7 +50,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("No drops required Intraday", function () {
-    const roster: Team = require("./testRosters/NHL/IntradayDrops/noDropsRequired.json");
+    const roster: ITeam = require("./testRosters/NHL/IntradayDrops/noDropsRequired.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -58,7 +58,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Try dropping critical position G", function () {
-    const roster: Team = require("./testRosters/NHL/IntradayDrops/tryDropCriticalPositionG.json");
+    const roster: ITeam = require("./testRosters/NHL/IntradayDrops/tryDropCriticalPositionG.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -68,7 +68,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop player with lowest score for 'Probable' player Intraday", function () {
-    const roster: Team = require("./testRosters/NHL/IntradayDrops/dropPlayerWithLowestScore.json");
+    const roster: ITeam = require("./testRosters/NHL/IntradayDrops/dropPlayerWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -77,7 +77,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop two players with lowest score for 'Questionable' and 'Game Time Decision' players Intraday", function () {
-    const roster: Team = require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json");
+    const roster: ITeam = require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -88,7 +88,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop player with lowest score for 'Probable' player NBA", function () {
-    const roster: Team = require("./testRosters/NBA/IntradayDrops/oneDropRequired.json");
+    const roster: ITeam = require("./testRosters/NBA/IntradayDrops/oneDropRequired.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
 
@@ -97,7 +97,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop player with third lowest score (lowest are non-editable for today) - NBA", function () {
-    const roster: Team = require("./testRosters/NBA/IntradayDrops/oneDropRequiredThirdLowest.json");
+    const roster: ITeam = require("./testRosters/NBA/IntradayDrops/oneDropRequiredThirdLowest.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
     const rosterModification = lo.optimizeStartingLineup();
@@ -111,7 +111,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop player with lowest score - same as above but roster is now daily change - NBA", function () {
-    const roster: Team = require("./testRosters/NBA/IntradayDrops/oneDropRequiredLowest.json");
+    const roster: ITeam = require("./testRosters/NBA/IntradayDrops/oneDropRequiredLowest.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
     const rosterModification = lo.optimizeStartingLineup();
@@ -125,7 +125,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop player with lowest score for 'Game Time Decision' player NBA, also optimize some bench players", function () {
-    const roster: Team = require("./testRosters/NBA/IntradayDrops/oneDropRequiredWithOptimization.json");
+    const roster: ITeam = require("./testRosters/NBA/IntradayDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
     const rosterModification = lo.optimizeStartingLineup();
@@ -142,7 +142,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop two player with lowest score for 'Game Time Decision' players NBA, also optimize more advanced swap", function () {
-    const roster: Team = require("./testRosters/NBA/IntradayDrops/twoDropsRequiredWithOptimization.json");
+    const roster: ITeam = require("./testRosters/NBA/IntradayDrops/twoDropsRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
     const rosterModification = lo.optimizeStartingLineup();
@@ -159,7 +159,7 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
   });
 
   test("Drop player with lowest score for 'Game Time Decision' player NBA weekly, also optimize some bench players", function () {
-    const roster: Team = require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json");
+    const roster: ITeam = require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
     const rosterModification = lo.optimizeStartingLineup();

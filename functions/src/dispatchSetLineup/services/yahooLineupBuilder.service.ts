@@ -1,5 +1,5 @@
 import { getChild } from "../../common/services/utilities.service";
-import { Team } from "../interfaces/Team";
+import { ITeam } from "../interfaces/ITeam";
 import { IPlayer, PlayerRanks } from "../interfaces/IPlayer";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
 
@@ -11,14 +11,14 @@ import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.serv
  * @param {string[]} teams The team keys
  * @param {string} uid The firebase uid of the user
  * @param {string} [date=""] The date to get the roster for. If not provided, the default "" is today's date
- * @return {Promise<Team[]>} The roster objects
+ * @return {Promise<ITeam[]>} The roster objects
  */
 export async function fetchRostersFromYahoo(
   teams: string[],
   uid: string,
   date = ""
-): Promise<Team[]> {
-  const result: Team[] = [];
+): Promise<ITeam[]> {
+  const result: ITeam[] = [];
 
   const yahooRostersJSON = await getRostersByTeamID(teams, uid, date);
   // console.log(JSON.stringify(yahooRostersJSON));
@@ -47,7 +47,7 @@ export async function fetchRostersFromYahoo(
             usersTeamRoster[0].players
           );
 
-          const rosterObject: Team = {
+          const rosterObject: ITeam = {
             team_key: getChild(usersTeam.team[0], "team_key"),
             players: players,
             coverage_type: coverageType,

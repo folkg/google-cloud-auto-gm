@@ -1,5 +1,5 @@
 import { LineupChanges } from "../interfaces/LineupChanges";
-import { Team } from "../interfaces/Team";
+import { ITeam } from "../interfaces/ITeam";
 import { setUsersLineup } from "../services/lineupOptimizer.service";
 
 // mock firebase-admin
@@ -30,7 +30,7 @@ describe("Full Stack Add Drop Tests", () => {
     const uid = "testUID";
     const teams = ["test1"];
 
-    const rosters: Team[] = [
+    const rosters: ITeam[] = [
       require("./testRosters/NHL/Daily/optimalRoster.json"),
     ];
 
@@ -66,7 +66,7 @@ describe("Full Stack Add Drop Tests", () => {
     const uid = "testUID";
     const teams = ["test1", "test2"];
 
-    const rosters: Team[] = [
+    const rosters: ITeam[] = [
       require("./testRosters/NHL/DailyDrops/noDropsRequired.json"),
       require("./testRosters/NHL/IntradayDrops/noDropsRequired.json"),
     ];
@@ -109,7 +109,7 @@ describe("Full Stack Add Drop Tests", () => {
     const uid = "testUID";
     const teams = ["test1", "test2"];
 
-    const rosters: Team[] = [
+    const rosters: ITeam[] = [
       require("./testRosters/NHL/Daily/oneSwapRequired.json"),
       require("./testRosters/NBA/Weekly/1SwapRequired1PlayerToMoveInto1EmptyRosterSpot.json"),
     ];
@@ -159,10 +159,10 @@ describe("Full Stack Add Drop Tests", () => {
     const teams = ["test1"];
 
     // Set up mock data
-    const initialRosters: Team[] = [
+    const initialRosters: ITeam[] = [
       require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
     ];
-    const updatedRosters: Team[] = [
+    const updatedRosters: ITeam[] = [
       require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
     ];
     const transaction1 = {
@@ -243,8 +243,8 @@ describe("Full Stack Add Drop Tests", () => {
 
     // Set up mock data
     // TODO: Fill in all the missing data
-    const initialRosters: Team[] = [require("?")];
-    const updatedRosters: Team[] = [require("?")];
+    const initialRosters: ITeam[] = [require("?")];
+    const updatedRosters: ITeam[] = [require("?")];
     const transaction1 = {
       players: [
         {

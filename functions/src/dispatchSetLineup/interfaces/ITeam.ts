@@ -1,6 +1,6 @@
 import { IPlayer } from "./IPlayer";
 
-export interface Team {
+export interface ITeam {
   team_key: string;
   players: IPlayer[];
   coverage_type: string;

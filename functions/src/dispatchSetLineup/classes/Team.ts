@@ -1,38 +1,39 @@
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { Team } from "../interfaces/Team";
+import { ITeam } from "../interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
 import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
 
-export class Roster {
-  private _allPlayers: Player[];
+// use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
+export interface Team extends ITeam {
+  players: Player[];
+}
+export class Team implements Team {
   private _editablePlayers: Player[];
-  private _rosterPositions: { [key: string]: number };
-  private _sameDayTransactions: boolean;
 
-  constructor(team: Team) {
-    this._allPlayers = team.players.map((player) => new Player(player));
+  constructor(team: ITeam) {
+    // TODO: Change Team to ITeam everywhere
+    // get rid of the team property in LineupOptimizer and just use this Roster object.
+    // return the .toTeam() method from the LineupOptimizer
+    const teamCopy = structuredClone(team);
+    teamCopy.players = teamCopy.players.map((player) => new Player(player));
+    Object.assign(this, teamCopy);
 
-    this._editablePlayers = this._allPlayers.filter(
-      (player) => player.is_editable
-    );
-    this._rosterPositions = { ...team.roster_positions };
+    this._editablePlayers = this.players.filter((player) => player.is_editable);
 
     const playerStartScoreFunction = playerStartScoreFunctionFactory(
-      team.game_code,
-      team.weekly_deadline
+      this.game_code,
+      this.weekly_deadline
     );
 
-    this._allPlayers.forEach((player) => {
+    this.players.forEach((player) => {
       player.start_score = playerStartScoreFunction(player);
       player.ownership_score = ownershipScoreFunction(
         player,
-        team.num_teams_in_league * this.numStandardRosterSpots
+        this.num_teams_in_league * this.numStandardRosterSpots
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
-
-    this._sameDayTransactions = team.edit_key === team.coverage_period;
 
     // console.log(
     //   this._allPlayers
@@ -46,6 +47,11 @@ export class Roster {
     //         player.percent_owned
     //     )
     // );
+  }
+
+  public toITeamObject(): ITeam {
+    const { _editablePlayers, ...team } = this;
+    return structuredClone(team) as ITeam;
   }
 
   /**
@@ -69,11 +75,12 @@ export class Roster {
   }
 
   public get sameDayTransactions(): boolean {
-    return this._sameDayTransactions;
+    return this.edit_key === this.coverage_period;
   }
 
+  // alias for players
   public get allPlayers(): Player[] {
-    return this._allPlayers;
+    return this.players;
   }
 
   public get editablePlayers(): Player[] {
@@ -127,8 +134,8 @@ export class Roster {
   }
 
   private get unfilledPositionCounter(): { [key: string]: number } {
-    const result = { ...this._rosterPositions };
-    this._allPlayers.forEach((player) => {
+    const result = { ...this.roster_positions };
+    this.players.forEach((player) => {
       result[player.selected_position]--;
     });
     return result;
@@ -181,28 +188,28 @@ export class Roster {
   }
 
   public get numStandardRosterSpots(): number {
-    return Object.keys(this._rosterPositions).reduce((acc, position) => {
+    return Object.keys(this.roster_positions).reduce((acc, position) => {
       if (!INACTIVE_POSITION_LIST.includes(position))
-        acc += this._rosterPositions[position];
+        acc += this.roster_positions[position];
       return acc;
     }, 0);
   }
 
   public get criticalPositions(): string[] {
-    return Object.keys(this._rosterPositions).filter((position) => {
-      const playersAtPosition = this._allPlayers.filter((player) =>
+    return Object.keys(this.roster_positions).filter((position) => {
+      const playersAtPosition = this.players.filter((player) =>
         player.eligible_positions.includes(position)
       );
       return (
         !INACTIVE_POSITION_LIST.includes(position) &&
-        playersAtPosition.length <= this._rosterPositions[position]
+        playersAtPosition.length <= this.roster_positions[position]
       );
     });
   }
 
   public get positionalScores() {
-    return Object.keys(this._rosterPositions).map((position) => {
-      const positionScore = this._allPlayers.reduce((acc, player) => {
+    return Object.keys(this.roster_positions).map((position) => {
+      const positionScore = this.players.reduce((acc, player) => {
         if (player.eligible_positions.includes(position))
           acc += player.ownership_score;
         return acc;

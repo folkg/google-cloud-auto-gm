@@ -11,7 +11,7 @@ import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartin
 import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
-import { Team } from "../interfaces/Team";
+import { ITeam } from "../interfaces/ITeam";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 
 /**
@@ -59,10 +59,10 @@ export async function setUsersLineup(
 }
 
 async function postTransactionsForSameDayChanges(
-  originalRosters: Team[],
+  originalRosters: ITeam[],
   uid: string
-): Promise<Team[]> {
-  let result: Team[] = originalRosters;
+): Promise<ITeam[]> {
+  let result: ITeam[] = originalRosters;
 
   const rosters = getTeamsWithSameDayTransactions(originalRosters);
   const transactions = getPlayerTransactions(rosters);
@@ -75,7 +75,7 @@ async function postTransactionsForSameDayChanges(
 }
 
 async function postTransactionsForNextDayChanges(
-  originalRosters: Team[],
+  originalRosters: ITeam[],
   uid: string
 ): Promise<void> {
   // check if there are any transactions required for teams with next day changes
@@ -99,7 +99,7 @@ async function postTransactionsForNextDayChanges(
   }
 }
 
-function getPlayerTransactions(rosters: Team[]): PlayerTransaction[][] {
+function getPlayerTransactions(rosters: ITeam[]): PlayerTransaction[][] {
   // console.log(
   //   "finding transactions for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
@@ -116,7 +116,7 @@ function getPlayerTransactions(rosters: Team[]): PlayerTransaction[][] {
   return result;
 }
 
-async function getLineupChanges(rosters: Team[]): Promise<LineupChanges[]> {
+async function getLineupChanges(rosters: ITeam[]): Promise<LineupChanges[]> {
   // console.log(
   //   "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
@@ -139,18 +139,18 @@ async function getLineupChanges(rosters: Team[]): Promise<LineupChanges[]> {
 async function refetchAndPatchRosters(
   todaysPlayerTransactions: PlayerTransaction[][],
   uid: string,
-  originalRosters: Team[]
-): Promise<Team[]> {
+  originalRosters: ITeam[]
+): Promise<ITeam[]> {
   console.log("refetching and patching rosters");
 
-  const result = JSON.parse(JSON.stringify(originalRosters));
+  const result = structuredClone(originalRosters);
 
   const updatedTeamKeys = getUniqueTeamKeys(todaysPlayerTransactions);
   const updatedRosters = await fetchRostersFromYahoo(updatedTeamKeys, uid);
 
   updatedRosters.forEach((updatedRoster) => {
     const originalIdx = result.findIndex(
-      (originalRoster: Team) =>
+      (originalRoster: ITeam) =>
         originalRoster.team_key === updatedRoster.team_key
     );
     result[originalIdx] = updatedRoster;
@@ -176,7 +176,7 @@ async function postAllTransactions(
   }
 }
 
-function getTeamsWithSameDayTransactions(rosters: Team[]): Team[] {
+function getTeamsWithSameDayTransactions(rosters: ITeam[]): ITeam[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
@@ -184,7 +184,7 @@ function getTeamsWithSameDayTransactions(rosters: Team[]): Team[] {
   );
 }
 
-function getTeamsForNextDayTransactions(rosters: Team[]): Team[] {
+function getTeamsForNextDayTransactions(rosters: ITeam[]): ITeam[] {
   return rosters.filter(
     (roster) =>
       (roster.allow_adding || roster.allow_dropping) &&
