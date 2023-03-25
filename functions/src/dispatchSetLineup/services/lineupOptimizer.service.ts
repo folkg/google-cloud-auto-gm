@@ -65,7 +65,7 @@ async function postTransactionsForSameDayChanges(
 
   const rosters = getTeamsWithSameDayTransactions(originalRosters);
   const transactions = getPlayerTransactions(rosters);
-  if (transactions.length > 0) {
+  if (transactions.length > 0 && transactions[0].length > 0) {
     await postAllTransactions(transactions, uid);
     result = await refetchAndPatchRosters(transactions, uid, originalRosters);
   }
@@ -132,6 +132,8 @@ async function refetchAndPatchRosters(
   uid: string,
   originalRosters: Team[]
 ): Promise<Team[]> {
+  console.log("refetching and patching rosters");
+
   const result = JSON.parse(JSON.stringify(originalRosters));
 
   const updatedTeamKeys = todaysPlayerTransactions

@@ -33,9 +33,6 @@ describe("Full Stack Add Drop Tests", () => {
     const rosters: Team[] = [
       require("./testRosters/NHL/Daily/optimalRoster.json"),
     ];
-    jest
-      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
-      .mockReturnValue(Promise.resolve(rosters));
 
     const expectedRosterModifications: LineupChanges[] = [
       {
@@ -45,6 +42,9 @@ describe("Full Stack Add Drop Tests", () => {
         teamKey: "419.l.28340.t.1",
       },
     ];
+    const spyFetchRostersFromYahoo = jest
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockReturnValue(Promise.resolve(rosters));
     const spyPutLineupChanges = jest
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve());
@@ -58,6 +58,7 @@ describe("Full Stack Add Drop Tests", () => {
       uid
     );
     expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
   });
 
   // user with multiple teams, no changes
@@ -69,9 +70,6 @@ describe("Full Stack Add Drop Tests", () => {
       require("./testRosters/NHL/DailyDrops/noDropsRequired.json"),
       require("./testRosters/NHL/IntradayDrops/noDropsRequired.json"),
     ];
-    jest
-      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
-      .mockReturnValue(Promise.resolve(rosters));
 
     const expectedRosterModifications: LineupChanges[] = [
       {
@@ -87,6 +85,9 @@ describe("Full Stack Add Drop Tests", () => {
         teamKey: "419.l.19947.t.6",
       },
     ];
+    const spyFetchRostersFromYahoo = jest
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockReturnValue(Promise.resolve(rosters));
     const spyPutLineupChanges = jest
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve());
@@ -100,6 +101,7 @@ describe("Full Stack Add Drop Tests", () => {
       uid
     );
     expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
   });
 
   // user with multiple teams, rosterModifications only
@@ -111,10 +113,6 @@ describe("Full Stack Add Drop Tests", () => {
       require("./testRosters/NHL/Daily/oneSwapRequired.json"),
       require("./testRosters/NBA/Weekly/1SwapRequired1PlayerToMoveInto1EmptyRosterSpot.json"),
     ];
-    jest
-      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
-      .mockReturnValue(Promise.resolve(rosters));
-
     const expectedRosterModifications: LineupChanges[] = [
       {
         coveragePeriod: "2023-02-28",
@@ -136,6 +134,9 @@ describe("Full Stack Add Drop Tests", () => {
         teamKey: "418.l.201581.t.1",
       },
     ];
+    const spyFetchRostersFromYahoo = jest
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockReturnValue(Promise.resolve(rosters));
     const spyPutLineupChanges = jest
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve());
@@ -149,11 +150,11 @@ describe("Full Stack Add Drop Tests", () => {
       uid
     );
     expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
   });
 
-  // New full stack drop tests should include:
   // - Drop players with same day transactions, lineup optimization (Intraday)
-  it("should have one transaction, one refetch, one roster change", async () => {
+  it("should have one transaction, one refetch, then one lineup change", async () => {
     const uid = "testUID";
     const teams = ["test1"];
 
@@ -235,9 +236,91 @@ describe("Full Stack Add Drop Tests", () => {
       uid
     );
   });
-  // - Drop players with next day transactions, no lineup optimization (Daily)
+  // - Drop players with next day transactions, with lineup optimization (Daily)
+  it("should have one lineup change, then one refetch, then one drop", async () => {
+    const uid = "testUID";
+    const teams = ["test1"];
+
+    // Set up mock data
+    // TODO: Fill in all the missing data
+    const initialRosters: Team[] = [require("?")];
+    const updatedRosters: Team[] = [require("?")];
+    const transaction1 = {
+      players: [
+        {
+          playerKey: "419.p.7528",
+          transactionType: "drop",
+        },
+      ],
+      sameDayTransactions: true,
+      teamKey: "419.l.19947.t.6",
+    };
+    const transaction2 = {
+      players: [
+        {
+          playerKey: "419.p.7903",
+          transactionType: "drop",
+        },
+      ],
+      sameDayTransactions: true,
+      teamKey: "419.l.19947.t.6",
+    };
+
+    const expectedLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-03-17",
+        coverageType: "date",
+        newPlayerPositions: {
+          "419.p.6377": "BN",
+          "419.p.63772": "BN",
+        },
+        teamKey: "419.l.19947.t.6",
+      },
+    ];
+
+    // Set up spies and mocks
+    const spyFetchRostersFromYahoo = jest.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(updatedRosters);
+    });
+    const spyPostRosterAddDropTransaction = jest
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve());
+    const spyPutLineupChanges = jest
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve());
+
+    // Run test
+    await setUsersLineup(uid, teams);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
+
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(1);
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      expectedLineupChanges,
+      uid
+    );
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(2);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction1,
+      uid
+    );
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction2,
+      uid
+    );
+  });
+
   // - Drop players with next day transactions, with lineup optimization (Weekly)
+  // - Drop players with next day transactions, no lineup optimization (Weekly)
   // user with multiple teams, playerTransactions and multiple calls to postRosterModifications (one intraday, one next day)
+  // Lineup optimization only because add/drops DISALLOWED. Check that it doesn't call postRosterModifications and only fetchesYahooRsotrts once. Duplicate test 3
 
   // TODO: Add tests for the following
   // - Drop players with same day transactions, with lineup optimization (NFL)
