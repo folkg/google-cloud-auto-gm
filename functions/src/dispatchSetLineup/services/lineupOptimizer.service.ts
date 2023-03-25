@@ -20,12 +20,12 @@ import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
  * @export
  * @async
  * @param {(string)} uid - The user id
- * @param {(string[])} teams - The team ids
+ * @param {(string[])} teamKeys - The team ids
  * @return {unknown}
  */
 export async function setUsersLineup(
   uid: string,
-  teams: string[]
+  teamKeys: string[]
 ): Promise<void> {
   if (!uid) {
     throw new HttpsError(
@@ -33,7 +33,7 @@ export async function setUsersLineup(
       "You must be logged in to get an access token"
     );
   }
-  if (!teams) {
+  if (!teamKeys) {
     throw new HttpsError(
       "invalid-argument",
       "You must provide a list of teams to optimize"
@@ -42,71 +42,89 @@ export async function setUsersLineup(
 
   await initStartingGoalies();
 
-  let rosters = await fetchRostersFromYahoo(teams, uid);
-
-  rosters = await postTransactionsForSameDayChanges(rosters, uid);
-
-  //TODO: Should we get the rosters again after the lineup changes are made?
-  // Move this to its own function
-  const allLineupChanges = await getLineupChanges(rosters);
-  if (allLineupChanges.length > 0) {
-    await putLineupChanges(allLineupChanges, uid);
-  }
-
-  await postTransactionsForNextDayChanges(rosters, uid);
+  let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
+  usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
+  usersTeams = await processTodaysLineupChanges(usersTeams, uid);
+  await processTransactionsForNextDayChanges(usersTeams, uid);
 
   return Promise.resolve();
 }
 
-async function postTransactionsForSameDayChanges(
-  originalRosters: ITeam[],
+async function processTodaysLineupChanges(
+  teams: ITeam[],
   uid: string
 ): Promise<ITeam[]> {
-  let result: ITeam[] = originalRosters;
+  const result: ITeam[] = [];
 
-  const rosters = getTeamsWithSameDayTransactions(originalRosters);
-  const transactions = getPlayerTransactions(rosters);
-  if (!is2DArrayEmpty(transactions)) {
-    await postAllTransactions(transactions, uid);
-    result = await refetchAndPatchRosters(transactions, uid, originalRosters);
+  const allLineupChanges: LineupChanges[] = [];
+  for (const team of teams) {
+    const lo = new LineupOptimizer(team);
+    const lineupChanges = lo.optimizeStartingLineup();
+    result.push(lo.getCurrentTeamState());
+    lo.isSuccessfullyOptimized(); // will log any errors, we could remove this later once we're confident in the optimizer
+    if (lineupChanges) {
+      allLineupChanges.push(lineupChanges);
+    }
+  }
+
+  if (allLineupChanges.length > 0) {
+    // if there is a failure calling the Yahoo API, an error will be thrown, and we will let it propagate up
+    await putLineupChanges(allLineupChanges, uid);
   }
 
   return result;
 }
 
-async function postTransactionsForNextDayChanges(
-  originalRosters: ITeam[],
+async function processTransactionsForSameDayChanges(
+  originalTeams: ITeam[],
+  uid: string
+): Promise<ITeam[]> {
+  let result: ITeam[] = originalTeams;
+
+  const teams = getTeamsWithSameDayTransactions(originalTeams);
+  const transactions = getPlayerTransactions(teams);
+  if (!is2DArrayEmpty(transactions)) {
+    await postAllTransactions(transactions, uid);
+    // returns a new deep copy of the teams with the updated player transactions
+    result = await refetchAndPatchTeams(transactions, uid, originalTeams);
+  }
+
+  return result;
+}
+
+async function processTransactionsForNextDayChanges(
+  originalTeams: ITeam[],
   uid: string
 ): Promise<void> {
   // check if there are any transactions required for teams with next day changes
   // this pre-check is to save on Yahoo API calls
-  const rosters = getTeamsForNextDayTransactions(originalRosters);
-  const potentialTransactions = getPlayerTransactions(rosters);
+  const teams = getTeamsForNextDayTransactions(originalTeams);
+  const potentialTransactions = getPlayerTransactions(teams);
   if (is2DArrayEmpty(potentialTransactions)) {
     return;
   }
 
   // if there are transactions required, get tomorrow's rosters and perform the transactions
-  const uniqueTeamKeys = getUniqueTeamKeys(potentialTransactions);
-  const tomorrowsRosters = await fetchRostersFromYahoo(
+  const uniqueTeamKeys = getTeamKeysFromTransactions(potentialTransactions);
+  const tomorrowsTeams = await fetchRostersFromYahoo(
     uniqueTeamKeys,
     uid,
     tomorrowsDateAsString()
   );
-  const transactions = getPlayerTransactions(tomorrowsRosters);
+  const transactions = getPlayerTransactions(tomorrowsTeams);
   if (!is2DArrayEmpty(transactions)) {
     await postAllTransactions(transactions, uid);
   }
 }
 
-function getPlayerTransactions(rosters: ITeam[]): PlayerTransaction[][] {
+function getPlayerTransactions(teams: ITeam[]): PlayerTransaction[][] {
   // console.log(
   //   "finding transactions for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
   const result: PlayerTransaction[][] = [];
 
-  for (const roster of rosters) {
-    const lo = new LineupOptimizer(roster);
+  for (const team of teams) {
+    const lo = new LineupOptimizer(team);
     const playerTransactions = lo.findDropPlayerTransactions();
     if (playerTransactions) {
       result.push(playerTransactions);
@@ -116,44 +134,23 @@ function getPlayerTransactions(rosters: ITeam[]): PlayerTransaction[][] {
   return result;
 }
 
-async function getLineupChanges(rosters: ITeam[]): Promise<LineupChanges[]> {
-  // console.log(
-  //   "optimizing for user: " + uid + "teams: " + JSON.stringify(teams)
-  // );
-  const result: LineupChanges[] = [];
-
-  for (const roster of rosters) {
-    const lo = new LineupOptimizer(roster);
-    const lineupChanges = lo.optimizeStartingLineup();
-    lo.isSuccessfullyOptimized(); // will log any errors
-    if (lineupChanges) {
-      result.push(lineupChanges);
-    }
-  }
-
-  //TODO: Should we get the rosters again after the lineup changes are made?
-
-  return result;
-}
-
-async function refetchAndPatchRosters(
+async function refetchAndPatchTeams(
   todaysPlayerTransactions: PlayerTransaction[][],
   uid: string,
-  originalRosters: ITeam[]
+  originalTeams: ITeam[]
 ): Promise<ITeam[]> {
-  console.log("refetching and patching rosters");
+  console.log("refetching and patching teams");
 
-  const result = structuredClone(originalRosters);
+  const result = structuredClone(originalTeams);
 
-  const updatedTeamKeys = getUniqueTeamKeys(todaysPlayerTransactions);
-  const updatedRosters = await fetchRostersFromYahoo(updatedTeamKeys, uid);
+  const updatedTeamKeys = getTeamKeysFromTransactions(todaysPlayerTransactions);
+  const updatedTeams = await fetchRostersFromYahoo(updatedTeamKeys, uid);
 
-  updatedRosters.forEach((updatedRoster) => {
+  updatedTeams.forEach((updatedTeam) => {
     const originalIdx = result.findIndex(
-      (originalRoster: ITeam) =>
-        originalRoster.team_key === updatedRoster.team_key
+      (originalTeam: ITeam) => originalTeam.team_key === updatedTeam.team_key
     );
-    result[originalIdx] = updatedRoster;
+    result[originalIdx] = updatedTeam;
   });
 
   return result;
@@ -163,42 +160,45 @@ async function postAllTransactions(
   playerTransactions: PlayerTransaction[][],
   uid: string
 ): Promise<void> {
-  // TODO: Do we just want to post these sequentially instead? Might be easier on the Yahoo API
-  const allTransactionsPromises = playerTransactions
-    .flat()
-    .map((transaction) => postRosterAddDropTransaction(transaction, uid));
-  const results = await Promise.allSettled(allTransactionsPromises);
-
-  if (results.some((result) => result.status === "rejected")) {
-    console.error(
-      "Error posting transactions: " + JSON.stringify(results, null, 2)
-    );
+  const allTransactions = playerTransactions.flat();
+  // if there is a failure calling the Yahoo API, it will be swallowed here, and we will simply log it
+  for (const transaction of allTransactions) {
+    try {
+      await postRosterAddDropTransaction(transaction, uid);
+    } catch (e) {
+      console.error(
+        "Error posting transaction: " + JSON.stringify(transaction, null, 2)
+      );
+      console.error(e);
+    }
   }
+
+  // TODO: This is the code to use if we want to use Promise.allSettled in parallel
+  // const allTransactionsPromises = playerTransactions
+  //   .flat()
+  //   .map((transaction) => postRosterAddDropTransaction(transaction, uid));
+  // const results = await Promise.allSettled(allTransactionsPromises);
 }
 
-function getTeamsWithSameDayTransactions(rosters: ITeam[]): ITeam[] {
-  return rosters.filter(
-    (roster) =>
-      (roster.allow_adding || roster.allow_dropping) &&
-      roster.edit_key === roster.coverage_period
+function getTeamsWithSameDayTransactions(teams: ITeam[]): ITeam[] {
+  return teams.filter(
+    (team) =>
+      (team.allow_adding || team.allow_dropping) &&
+      team.edit_key === team.coverage_period
   );
 }
 
-function getTeamsForNextDayTransactions(rosters: ITeam[]): ITeam[] {
-  return rosters.filter(
-    (roster) =>
-      (roster.allow_adding || roster.allow_dropping) &&
-      roster.edit_key !== roster.coverage_period
+function getTeamsForNextDayTransactions(teams: ITeam[]): ITeam[] {
+  return teams.filter(
+    (team) =>
+      (team.allow_adding || team.allow_dropping) &&
+      team.edit_key !== team.coverage_period
   );
 }
 
-function tomorrowsDateAsString(): string {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  return datePSTString(tomorrow);
-}
-
-function getUniqueTeamKeys(transactions: PlayerTransaction[][]): string[] {
+function getTeamKeysFromTransactions(
+  transactions: PlayerTransaction[][]
+): string[] {
   const uniqueKeys = new Set<string>();
   for (const team of transactions) {
     for (const playerTransaction of team) {
@@ -206,4 +206,10 @@ function getUniqueTeamKeys(transactions: PlayerTransaction[][]): string[] {
     }
   }
   return Array.from(uniqueKeys);
+}
+
+function tomorrowsDateAsString(): string {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return datePSTString(tomorrow);
 }

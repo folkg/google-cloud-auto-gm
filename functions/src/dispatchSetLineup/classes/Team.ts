@@ -15,7 +15,7 @@ export class Team implements Team {
     // TODO: Change Team to ITeam everywhere
     // get rid of the team property in LineupOptimizer and just use this Roster object.
     // return the .toTeam() method from the LineupOptimizer
-    const teamCopy = structuredClone(team);
+    const teamCopy = structuredClone(team) as Team;
     teamCopy.players = teamCopy.players.map((player) => new Player(player));
     Object.assign(this, teamCopy);
 
@@ -49,6 +49,12 @@ export class Team implements Team {
     // );
   }
 
+  /**
+   * Returns a deep clone of the team as an ITeam object
+   *
+   * @public
+   * @returns {ITeam}
+   */
   public toITeamObject(): ITeam {
     const { _editablePlayers, ...team } = this;
     return structuredClone(team) as ITeam;
