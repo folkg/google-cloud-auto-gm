@@ -257,10 +257,7 @@ export async function putLineupChanges(
         updateFirestoreTimestamp(uid, teamKey);
       } catch (err: AxiosError | any) {
         const errMessage =
-          "Error in postRosterModifications. User: " +
-          uid +
-          " Team: " +
-          teamKey;
+          "Error in putLineupChanges. User: " + uid + " Team: " + teamKey;
         handleAxiosError(err, errMessage);
       }
     } else {

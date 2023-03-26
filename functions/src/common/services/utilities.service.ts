@@ -97,8 +97,8 @@ export function partitionArray<T>(
  *
  * @export
  * @template T The type of the array elements
- * @param {T[][]} arr The array to check
- * @returns {boolean} True if the array is empty or all of the sub arrays are empty
+ * @param {T} arr The array to check
+ * @return {boolean} True if the array is empty or all of the sub arrays are empty
  */
 export function is2DArrayEmpty<T>(arr: T[][]): boolean {
   return arr.length === 0 || arr.every((subArr) => subArr.length === 0);

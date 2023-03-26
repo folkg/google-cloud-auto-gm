@@ -312,7 +312,6 @@ describe("Full Stack Add Drop Tests", () => {
     );
   });
 
-  // - Drop players with next day transactions, no lineup optimization
   it("should have one lineup change, then one refetch, then one drop (again)", async () => {
     const uid = "testUID";
     const teams = ["test1"];
@@ -381,7 +380,9 @@ describe("Full Stack Add Drop Tests", () => {
       uid
     );
   });
+
   // user with multiple teams, playerTransactions and multiple calls to postRosterModifications (one intraday, one next day)
+  it("should have one drop, refetch, two lineup changes, then refetch and drop (again)", async () => {});
   // Lineup optimization only because add/drops DISALLOWED. Check that it doesn't call postRosterModifications and only fetchesYahooRsotrts once. Duplicate test 3
 
   // TODO: Add tests for the following
@@ -419,7 +420,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     try {
       await setUsersLineup(uid, teams);
     } catch (error) {
-      expect(error).toEqual(new Error("Error from fetchRostersFromYahoo()"));
+      expect(error).toEqual(
+        new Error("Error from fetchRostersFromYahoo() test 1")
+      );
     }
 
     expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
@@ -479,7 +482,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     try {
       await setUsersLineup(uid, teams);
     } catch (error) {
-      expect(error).toEqual(new Error("Error from fetchRostersFromYahoo() 2"));
+      expect(error).toEqual(
+        new Error("Error from fetchRostersFromYahoo() test 2")
+      );
     }
 
     expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
@@ -541,7 +546,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     try {
       await setUsersLineup(uid, teams);
     } catch (error) {
-      expect(error).toEqual(new Error("Error from putLineupChanges()"));
+      expect(error).toEqual(new Error("Error from putLineupChanges() test 3"));
     }
     expect(spyPutLineupChanges).toHaveBeenCalledWith(
       expectedRosterModifications,
@@ -566,16 +571,6 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
       players: [
         {
           playerKey: "419.p.7528",
-          transactionType: "drop",
-        },
-      ],
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
-    };
-    const transaction2 = {
-      players: [
-        {
-          playerKey: "419.p.7903",
           transactionType: "drop",
         },
       ],
@@ -609,7 +604,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const spyPostRosterAddDropTransaction = jest
       .spyOn(yahooAPI, "postRosterAddDropTransaction")
       .mockImplementation(() => {
-        throw new Error("Error from postRosterAddDropTransaction()");
+        throw new Error("Error from postRosterAddDropTransaction() test 4");
       });
     const spyPutLineupChanges = jest
       .spyOn(yahooAPI, "putLineupChanges")
@@ -626,13 +621,10 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
       uid
     );
 
-    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(2);
+    // Will stop after first failed transaction, but allow the rest of the function to continue
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
       transaction1,
-      uid
-    );
-    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction2,
       uid
     );
   });
@@ -676,7 +668,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const spyPutLineupChanges = jest
       .spyOn(yahooAPI, "putLineupChanges")
       .mockImplementation(() => {
-        throw new Error("Error from putLineupChanges()");
+        throw new Error("Error from putLineupChanges() test 5");
       });
 
     // Run test

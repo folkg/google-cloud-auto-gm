@@ -42,7 +42,7 @@ export async function setUsersLineup(
 
   await initStartingGoalies();
 
-  //TODO: Calling a weekly league on Sunday (day before) should be calling tomorrow's rosters.
+  // TODO: Calling a weekly league on Sunday (day before) should be calling tomorrow's rosters.
   // We need to make a special call for this though, since it won't be in the list of teams.
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
@@ -71,7 +71,16 @@ async function processTodaysLineupChanges(
 
   if (allLineupChanges.length > 0) {
     // if there is a failure calling the Yahoo API, an error will be thrown, and we will let it propagate up
-    await putLineupChanges(allLineupChanges, uid);
+    try {
+      await putLineupChanges(allLineupChanges, uid);
+    } catch (err: Error | any) {
+      console.error(err.message);
+      console.error(
+        "Lineup changes object: " + JSON.stringify(allLineupChanges)
+      );
+      console.error("Teams object: " + JSON.stringify(teams));
+      throw err;
+    }
   }
 
   return result;
@@ -86,7 +95,12 @@ async function processTransactionsForSameDayChanges(
   const teams = getTeamsWithSameDayTransactions(originalTeams);
   const transactions = getPlayerTransactions(teams);
   if (!is2DArrayEmpty(transactions)) {
-    await postAllTransactions(transactions, uid);
+    try {
+      await postAllTransactions(transactions, uid);
+    } catch (err) {
+      console.error("Error in processTransactionsForSameDayChanges()");
+      console.error(`Teams object: ${JSON.stringify(originalTeams)}`);
+    }
     // returns a new deep copy of the teams with the updated player transactions
     result = await refetchAndPatchTeams(transactions, uid, originalTeams);
   }
@@ -117,7 +131,12 @@ async function processTransactionsForNextDayChanges(
 
   const transactions = getPlayerTransactions(tomorrowsTeams);
   if (!is2DArrayEmpty(transactions)) {
-    await postAllTransactions(transactions, uid);
+    try {
+      await postAllTransactions(transactions, uid);
+    } catch (err) {
+      console.error("Error in processTransactionsForNextDayChanges()");
+      console.error(`Teams object: ${JSON.stringify(originalTeams)}`);
+    }
   }
 }
 
@@ -168,12 +187,12 @@ async function postAllTransactions(
   for (const transaction of allTransactions) {
     try {
       await postRosterAddDropTransaction(transaction, uid);
-    } catch (e: any) {
+    } catch (err: any) {
       console.error(
-        `Error posting transaction: ${JSON.stringify(
-          transaction
-        )} for user: ${uid}. Error Message: ${e.message}`
+        `Error in postAllTransactions() for User: ${uid}: ${err.message}`
       );
+      console.error(`Transaction: ${JSON.stringify(transaction)}`);
+      throw err;
     }
   }
 

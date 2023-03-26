@@ -90,7 +90,7 @@ export async function fetchRostersFromYahoo(
     }
   }
   // console.log("Fetched rosters from Yahoo API:");
-  // console.log(JSON.stringify(rosters));
+  // console.log(JSON.stringify(result));
   return result;
 }
 

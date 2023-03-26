@@ -53,7 +53,7 @@ export class Team implements Team {
    * Returns a deep clone of the team as an ITeam object
    *
    * @public
-   * @returns {ITeam}
+   * @return {ITeam}
    */
   public toITeamObject(): ITeam {
     const { _editablePlayers, ...team } = this;
