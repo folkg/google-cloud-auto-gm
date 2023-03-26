@@ -295,7 +295,7 @@
       "eligible_positions": ["D", "Util"],
       "selected_position": "BN",
       "is_editable": true,
-      "is_playing": false,
+      "is_playing": true,
       "injury_status": "Healthy",
       "percent_started": 7,
       "percent_owned": 9,

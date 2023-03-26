@@ -42,6 +42,8 @@ export async function setUsersLineup(
 
   await initStartingGoalies();
 
+  //TODO: Calling a weekly league on Sunday (day before) should be calling tomorrow's rosters.
+  // We need to make a special call for this though, since it won't be in the list of teams.
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
@@ -100,6 +102,7 @@ async function processTransactionsForNextDayChanges(
   // this pre-check is to save on Yahoo API calls
   const teams = getTeamsForNextDayTransactions(originalTeams);
   const potentialTransactions = getPlayerTransactions(teams);
+
   if (is2DArrayEmpty(potentialTransactions)) {
     return;
   }
@@ -111,6 +114,7 @@ async function processTransactionsForNextDayChanges(
     uid,
     tomorrowsDateAsString()
   );
+
   const transactions = getPlayerTransactions(tomorrowsTeams);
   if (!is2DArrayEmpty(transactions)) {
     await postAllTransactions(transactions, uid);
@@ -126,6 +130,7 @@ function getPlayerTransactions(teams: ITeam[]): PlayerTransaction[][] {
   for (const team of teams) {
     const lo = new LineupOptimizer(team);
     const playerTransactions = lo.findDropPlayerTransactions();
+
     if (playerTransactions) {
       result.push(playerTransactions);
     }
@@ -139,8 +144,6 @@ async function refetchAndPatchTeams(
   uid: string,
   originalTeams: ITeam[]
 ): Promise<ITeam[]> {
-  console.log("refetching and patching teams");
-
   const result = structuredClone(originalTeams);
 
   const updatedTeamKeys = getTeamKeysFromTransactions(todaysPlayerTransactions);
@@ -165,11 +168,12 @@ async function postAllTransactions(
   for (const transaction of allTransactions) {
     try {
       await postRosterAddDropTransaction(transaction, uid);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
-        "Error posting transaction: " + JSON.stringify(transaction, null, 2)
+        `Error posting transaction: ${JSON.stringify(
+          transaction
+        )} for user: ${uid}. Error Message: ${e.message}`
       );
-      console.error(e);
     }
   }
 

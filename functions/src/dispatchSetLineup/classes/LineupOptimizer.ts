@@ -396,6 +396,8 @@ export class LineupOptimizer {
    */
   private dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
     const playerToDrop = this.getPlayerToDrop(playerToOpenSpotFor);
+    this.logInfo("playerToDrop: " + playerToDrop.player_name);
+
     if (playerToDrop === playerToOpenSpotFor) return;
     if (!playerToDrop.ownership_score) return; // in case of Yahoo API error
 
