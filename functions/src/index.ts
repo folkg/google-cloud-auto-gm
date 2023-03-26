@@ -12,6 +12,10 @@ exports.schedulesetlineup = schedulesetlineup;
 
 import { dispatchsetlineup } from "./dispatchSetLineup/dispatchSetLineup";
 exports.dispatchsetlineup = dispatchsetlineup;
+import { mockdispatchsetlineup } from "./mockScheduleDispatch/mockDispatchSetLineup";
+exports.mockdispatchsetlineup = mockdispatchsetlineup;
+import { addmocktaskstoqueue } from "./mockScheduleDispatch/addMockTasksToQueue";
+exports.addmocktaskstoqueue = addmocktaskstoqueue;
 
 import { sendfeedbackemail } from "./sendEmail/sendEmail";
 exports.sendfeedbackemail = sendfeedbackemail;

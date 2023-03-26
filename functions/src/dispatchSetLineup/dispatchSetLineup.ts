@@ -2,18 +2,21 @@ import { error } from "firebase-functions/logger";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { setUsersLineup } from "./services/lineupOptimizer.service";
 
-export const dispatchsetlineup = onTaskDispatched(
-  {
-    retryConfig: {
-      maxAttempts: 5,
-      minBackoffSeconds: 10,
-      maxDoublings: 4,
-    },
-    rateLimits: {
-      maxConcurrentDispatches: 5,
-      maxDispatchesPerSecond: 500,
-    },
+// could increase maxConcurrentDispatches if we get more users.
+export const taskQueueConfig = {
+  retryConfig: {
+    maxAttempts: 5,
+    minBackoffSeconds: 10,
+    maxDoublings: 4,
   },
+  rateLimits: {
+    maxConcurrentDispatches: 5,
+    maxDispatchesPerSecond: 500,
+  },
+};
+
+export const dispatchsetlineup = onTaskDispatched(
+  taskQueueConfig,
   async (req) => {
     // const testUsers: string[] = [
     //   "RLSrRcWN3lcYbxKQU1FKqditGDu1",
