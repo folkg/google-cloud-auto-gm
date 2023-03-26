@@ -10,7 +10,7 @@ export const taskQueueConfig = {
     maxDoublings: 4,
   },
   rateLimits: {
-    maxConcurrentDispatches: 5,
+    maxConcurrentDispatches: 1000,
     maxDispatchesPerSecond: 500,
   },
 };
