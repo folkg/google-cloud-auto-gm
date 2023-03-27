@@ -49,9 +49,8 @@ export async function refreshYahooAccessToken(
     };
 
     return token;
-  } catch (error: AxiosError | any) {
+  } catch (error: AxiosError | unknown) {
     handleAxiosError(error, null);
-    return Promise.reject(error);
   }
 }
 
@@ -96,9 +95,8 @@ export async function getRostersByTeamID(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (err: AxiosError | any) {
-    const errMessage =
-      "Error in getRostersByTeamID. User: " + uid + " Teams: " + teams;
+  } catch (err: AxiosError | unknown) {
+    const errMessage = `Error in getRostersByTeamID. User: ${uid} Teams: ${teams}`;
     handleAxiosError(err, errMessage);
   }
 }
@@ -131,9 +129,8 @@ export async function getFreeAgents(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (err: AxiosError | any) {
-    const errMessage =
-      "Error in getFreeAgents. User: " + uid + " League: " + leagueKey;
+  } catch (err: AxiosError | unknown) {
+    const errMessage = `Error in getFreeAgents. User: ${uid} League: ${leagueKey}`;
     handleAxiosError(err, errMessage);
   }
 }
@@ -152,7 +149,7 @@ export async function getAllStandings(uid: string): Promise<any> {
       uid
     );
     return data;
-  } catch (err: AxiosError | any) {
+  } catch (err: AxiosError | unknown) {
     const errMessage = "Error in getAllStandings. User: " + uid;
     handleAxiosError(err, errMessage);
   }
@@ -193,12 +190,8 @@ export async function getStartingGoalies(
       ),
     ]);
     return [data1.data, data2.data];
-  } catch (err: AxiosError | any) {
-    const errMessage =
-      "Error in getStartingGoalies. Using User: " +
-      uid +
-      " League: " +
-      leagueKey;
+  } catch (err: AxiosError | unknown) {
+    const errMessage = `Error in getStartingGoalies. User: ${uid} League: ${leagueKey}`;
     handleAxiosError(err, errMessage);
   }
 }
@@ -255,17 +248,13 @@ export async function putLineupChanges(
             uid
         );
         updateFirestoreTimestamp(uid, teamKey);
-      } catch (err: AxiosError | any) {
-        const errMessage =
-          "Error in putLineupChanges. User: " + uid + " Team: " + teamKey;
+      } catch (err: AxiosError | unknown) {
+        const errMessage = `Error in putLineupChanges. User: ${uid} Team: ${teamKey}`;
         handleAxiosError(err, errMessage);
       }
     } else {
       console.log(
-        "Successfully completed. No changes to post for team: " +
-          teamKey +
-          " for user: " +
-          uid
+        `Successfully completed. No changes to post for team: ${teamKey} for user: ${uid}`
       );
       updateFirestoreTimestamp(uid, teamKey);
     }
@@ -277,86 +266,86 @@ export async function putLineupChanges(
  *
  * @export
  * @async
- * @param {PlayerTransaction} rosterTransactions The roster transactions.
+ * @param {PlayerTransaction} transaction The roster transactions.
  * Shall contain the teamKey and the players to add/drop for a single transaction. This means that
  * the players array shall contain only 1 or 2 players.
  * @param {string} uid The Yahoo uid of the user
  * @return {Promise<void>}
  */
 export async function postRosterAddDropTransaction(
-  rosterTransactions: PlayerTransaction,
+  transaction: PlayerTransaction,
   uid: string
-): Promise<void> {
-  const { teamKey, players } = rosterTransactions;
-  if (Object.keys(players).length === 1 || Object.keys(players).length === 2) {
-    const playersToMove = players.map((player) => {
-      return {
-        player_key: player.playerKey,
-        transaction_data: {
-          type: player.transactionType,
-          [player.transactionType === "add"
-            ? "destination_team_key"
-            : "source_team_key"]: teamKey,
-        },
-      };
-    });
-    const transactionType =
-      playersToMove.length === 1
-        ? playersToMove[0].transaction_data.type
-        : "add/drop";
-    const data: any = {
-      transaction: {
-        type: transactionType,
-        players: playersToMove,
-      },
-    };
-    const isWaiverClaim = false;
-    if (isWaiverClaim) data.transaction.faab_bid = 0;
-    const xmlBody = js2xmlparser.parse("fantasy_content", data);
-    const leagueKey = teamKey.split(".t")[0];
-    try {
-      await httpPostAxiosAuth(
-        uid,
-        "league/" + leagueKey + "/transactions?format=json",
-        xmlBody
-      );
-      console.log(
-        `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}`
-      );
-    } catch (err: AxiosError | any) {
-      const errMessage =
-        "Error in postRosterAddDropTransaction. User: " +
-        uid +
-        " Team: " +
-        teamKey;
-      handleAxiosError(err, errMessage);
-    }
-  } else {
+): Promise<boolean> {
+  const { teamKey, players } = transaction;
+
+  const validPlayerCount = [1, 2].includes(players.length);
+  if (!validPlayerCount) {
     console.warn(
       `Invalid number of players to move: ${players.length} for team: ${teamKey} for user: ${uid}. Must be 1 or 2.`
     );
+    return false;
+  }
+  const playersCopy = [...players];
+  playersCopy.sort((a, b) => (a.transactionType > b.transactionType ? 1 : -1));
+  const XMLPlayers = playersCopy.map((player) => ({
+    player_key: player.playerKey,
+    transaction_data: {
+      type: player.transactionType,
+      [player.transactionType === "add"
+        ? "destination_team_key"
+        : "source_team_key"]: teamKey,
+    },
+  }));
+
+  const transactionType =
+    XMLPlayers.length === 1 ? XMLPlayers[0].transaction_data.type : "add/drop";
+
+  const isWaiverClaim = false; // TODO: Implement waiver claim logic later
+  const data = {
+    transaction: {
+      type: transactionType,
+      ...(XMLPlayers.length === 1 && { player: XMLPlayers[0] }),
+      ...(XMLPlayers.length === 2 && { players: { player: XMLPlayers } }),
+      ...(isWaiverClaim ? { faab_bid: 0 } : {}),
+    },
+  };
+
+  const xmlBody = js2xmlparser.parse("fantasy_content", data);
+
+  const leagueKey = teamKey.split(".t")[0];
+  try {
+    await httpPostAxiosAuth(uid, `league/${leagueKey}/transactions`, xmlBody);
+    console.log(
+      `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}.`
+    );
+    return true;
+  } catch (err) {
+    const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;
+    handleAxiosError(err, errMessage);
+    return false;
   }
 }
 
 /**
  * Handle the axios error
  *
- * @param {(AxiosError | any)} err - The axios error
+ * @param {AxiosError} err - The axios error
  * @param {string} message - The message to throw
  */
-function handleAxiosError(err: AxiosError | any, message: string | null): void {
-  const errMessage = message ? message + ". " : "";
+function handleAxiosError(
+  err: AxiosError | any,
+  message: string | null
+): never {
+  const errMessage = message ? `${message}. ` : "";
   if (err.response) {
     throw new Error(
-      errMessage +
-        "Error status: " +
-        err.response.status +
-        ": " +
-        JSON.stringify(err.response.data)
+      `${errMessage}Error status: ${err.response.status}: ${JSON.stringify(
+        err.response.data
+      )}`
     );
   } else if (err.request) {
-    throw new Error(errMessage + err.request);
+    throw new Error(`${errMessage}${err.request}`);
   } else {
-    throw new Error(errMessage + err.message);
+    throw new Error(`${errMessage}${err.message}`);
   }
 }

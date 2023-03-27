@@ -24,7 +24,7 @@ export async function loadYahooAccessToken(
   const doc = await db.collection("users").doc(uid).get();
   const docData = doc.data();
   if (!doc.exists || !docData) {
-    throw new Error("No access token found for user");
+    throw new Error(`No access token found for user ${uid}`);
   }
 
   // return the current token if it is valid, or refresh the token if not

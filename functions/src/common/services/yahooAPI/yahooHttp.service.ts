@@ -40,13 +40,13 @@ export function httpPostAxiosUnauth(url: string, body: any) {
   });
 }
 
-export async function httpPostAxiosAuth(url: string, uid: string, body: any) {
+export async function httpPostAxiosAuth(uid: string, url: string, body: any) {
   const credential = await loadYahooAccessToken(uid);
   const accessToken = credential.accessToken;
 
   return axios.post(API_URL + url, body, {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      "content-type": "application/xml; charset=UTF-8",
       Authorization: "Bearer " + accessToken,
     },
   });
