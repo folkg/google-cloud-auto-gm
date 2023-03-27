@@ -175,19 +175,10 @@ export async function getStartingGoalies(
   try {
     // There could be up to 32 starting goalies, so we need to make 2 calls
     // to get all the goalies. The first call will get the first 25 goalies.
+    const urlBase = `league/${leagueKey}/players;position=S_G;sort=AR;start=`;
     const [data1, data2] = await Promise.all([
-      await httpGetAxios(
-        "league/" +
-          leagueKey +
-          "/players;position=S_G;sort=AR;start=0?format=json",
-        uid
-      ),
-      await httpGetAxios(
-        "league/" +
-          leagueKey +
-          "/players;position=S_G;sort=AR;start=25?format=json",
-        uid
-      ),
+      httpGetAxios(`${urlBase}0?format=json`, uid),
+      httpGetAxios(`${urlBase}25?format=json`, uid),
     ]);
     return [data1.data, data2.data];
   } catch (err: AxiosError | unknown) {
@@ -209,43 +200,30 @@ export async function putLineupChanges(
   lineupChanges: LineupChanges[],
   uid: string
 ): Promise<void> {
-  // eslint-disable-next-line guard-for-in
   for (const lineupChange of lineupChanges) {
     const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
       lineupChange;
-
     if (Object.keys(newPlayerPositions).length !== 0) {
-      const players: any[] = [];
-      // eslint-disable-next-line guard-for-in
-      for (const playerKey in newPlayerPositions) {
-        const position = newPlayerPositions[playerKey];
-        players.push({
-          player_key: playerKey,
-          position: position,
-        });
+      const players = [];
+      for (const [playerKey, position] of Object.entries(newPlayerPositions)) {
+        players.push({ player_key: playerKey, position });
       }
 
-      const data: any = {
+      const data = {
         roster: {
           coverage_type: coverageType,
           [coverageType]: coveragePeriod,
-          players: {
-            player: players,
-          },
+          players: { player: players },
         },
       };
-      const xmlBody = js2xmlparser.parse("fantasy_content", data);
+
+      const XML_NAMESPACE = "fantasy_content";
+      const xmlBody = js2xmlparser.parse(XML_NAMESPACE, data);
+
       try {
-        await httpPutAxios(
-          uid,
-          "team/" + teamKey + "/roster?format=json",
-          xmlBody
-        );
+        await httpPutAxios(uid, `team/${teamKey}/roster?format=json`, xmlBody);
         console.log(
-          "Successfully put roster changes for team: " +
-            teamKey +
-            " for user: " +
-            uid
+          `Successfully put roster changes for team: ${teamKey} for user: ${uid}`
         );
         updateFirestoreTimestamp(uid, teamKey);
       } catch (err: AxiosError | unknown) {
@@ -253,9 +231,6 @@ export async function putLineupChanges(
         handleAxiosError(err, errMessage);
       }
     } else {
-      console.log(
-        `Successfully completed. No changes to post for team: ${teamKey} for user: ${uid}`
-      );
       updateFirestoreTimestamp(uid, teamKey);
     }
   }
@@ -286,7 +261,7 @@ export async function postRosterAddDropTransaction(
     return false;
   }
   const playersCopy = [...players];
-  playersCopy.sort((a, b) => (a.transactionType > b.transactionType ? 1 : -1));
+  playersCopy.sort((a, b) => (a.transactionType > b.transactionType ? 1 : -1)); // sorts add before drop
   const XMLPlayers = playersCopy.map((player) => ({
     player_key: player.playerKey,
     transaction_data: {
@@ -310,7 +285,8 @@ export async function postRosterAddDropTransaction(
     },
   };
 
-  const xmlBody = js2xmlparser.parse("fantasy_content", data);
+  const XML_NAMESPACE = "fantasy_content";
+  const xmlBody = js2xmlparser.parse(XML_NAMESPACE, data);
 
   const leagueKey = teamKey.split(".t")[0];
   try {
