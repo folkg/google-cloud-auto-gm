@@ -1,18 +1,18 @@
-import { onSchedule } from "firebase-functions/v2/scheduler";
-import { getFunctions, TaskQueue } from "firebase-admin/functions";
-import { leaguesToSetLineupsFor } from "./services/schedulingService";
-import { getFunctionUrl } from "../common/services/utilities.service";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
-import { error } from "firebase-functions/logger";
-import { fetchStartingGoaliesYahoo } from "../common/services/yahooAPI/yahooStartingGoalie.service";
+import { getFunctions, TaskQueue } from "firebase-admin/functions";
+import { logger } from "firebase-functions";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 import { db } from "../common/services/firebase/firestore.service";
+import { getFunctionUrl } from "../common/services/utilities.service";
+import { fetchStartingGoaliesYahoo } from "../common/services/yahooAPI/yahooStartingGoalie.service";
+import { leaguesToSetLineupsFor } from "./services/schedulingService";
 
 // TODO: Refactor this function to be more readable and maintainable
 // function will run every hour at 55 minutes past the hour
 export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   const leagues: string[] = await leaguesToSetLineupsFor();
   if (leagues.length === 0) {
-    console.log("No leagues to set lineups for.");
+    logger.log("No leagues to set lineups for.");
     return;
   }
 
@@ -21,7 +21,7 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
     try {
       await fetchStartingGoaliesYahoo();
     } catch (err: Error | any) {
-      error("Error fetching starting goalies from Yahoo " + err.message);
+      logger.error("Error fetching starting goalies from Yahoo " + err.message);
     }
   }
 
@@ -35,13 +35,13 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
       .where("game_code", "in", leagues)
       .get();
   } catch (err: Error | any) {
-    error("Error fetching teams from Firebase. " + err.message);
-    console.log("Leagues: " + leagues.join(", "));
+    logger.error("Error fetching teams from Firebase. " + err.message);
+    logger.log("Leagues: " + leagues.join(", "));
     return;
   }
 
   if (teamsSnapshot.size === 0) {
-    console.log("No teams to set lineups for.");
+    logger.log("No teams to set lineups for.");
     return;
   }
 
@@ -61,7 +61,7 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   });
 
   if (activeUsers.size === 0) {
-    console.log("No users to set lineups for");
+    logger.log("No users to set lineups for");
     return;
   }
 
@@ -72,7 +72,7 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
     queue = getFunctions().taskQueue("dispatchsetlineup");
     targetUri = await getFunctionUrl("dispatchsetlineup");
   } catch (err: Error | any) {
-    error("Error getting task queue. " + err.message);
+    logger.error("Error getting task queue. " + err.message);
     return;
   }
 
@@ -91,8 +91,8 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
 
   try {
     await Promise.all(enqueues);
-    console.log("Successfully enqueued tasks");
+    logger.log("Successfully enqueued tasks");
   } catch (err: Error | any) {
-    error("Error enqueuing tasks: " + err.message);
+    logger.error("Error enqueuing tasks: " + err.message);
   }
 });

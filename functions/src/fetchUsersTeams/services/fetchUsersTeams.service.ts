@@ -13,7 +13,7 @@ export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
   const teams: TeamClient[] = [];
   const standings = await getAllStandings(uid);
   const gamesJSON = standings.fantasy_content.users[0].user[1].games;
-  // console.log(games); //use this to debug the JSON object and see all data
+  // logger.log(games); //use this to debug the JSON object and see all data
   // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const key in gamesJSON) {
     if (key !== "count") {
@@ -55,8 +55,8 @@ export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
       }
     }
   }
-  // console.log("Fetched teams from Yahoo API:");
-  // console.log(teams);
+  // logger.log("Fetched teams from Yahoo API:");
+  // logger.log(teams);
   return teams;
 }
 

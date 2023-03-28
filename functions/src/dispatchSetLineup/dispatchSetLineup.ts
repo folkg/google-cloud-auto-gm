@@ -1,3 +1,4 @@
+import { logger } from "firebase-functions";
 import { error } from "firebase-functions/logger";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { setUsersLineup } from "./services/lineupOptimizer.service";
@@ -25,11 +26,11 @@ export const dispatchsetlineup = onTaskDispatched(
     const uid: string = req.data.uid;
     const teams: string[] = req.data.teams;
     if (!uid) {
-      console.log("No uid provided");
+      logger.log("No uid provided");
       return;
     }
     if (!teams) {
-      console.log("No teams provided");
+      logger.log("No teams provided");
       return;
     }
 
@@ -37,7 +38,7 @@ export const dispatchsetlineup = onTaskDispatched(
       return await setUsersLineup(uid, teams);
     } catch (err: Error | any) {
       error("Error setting lineup for user " + uid + ". " + err.message);
-      console.log("User's teams: " + teams);
+      logger.log("User's teams: " + teams);
     }
   }
 );

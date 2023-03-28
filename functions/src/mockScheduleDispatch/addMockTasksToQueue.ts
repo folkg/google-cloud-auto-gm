@@ -1,4 +1,5 @@
 import { getFunctions, TaskQueue } from "firebase-admin/functions";
+import { logger } from "firebase-functions";
 import { onRequest } from "firebase-functions/v2/https";
 import { getFunctionUrl } from "../common/services/utilities.service";
 
@@ -9,7 +10,7 @@ export const addmocktaskstoqueue = onRequest(async (req, res) => {
     queue = getFunctions().taskQueue("mockdispatchsetlineup");
     targetUri = await getFunctionUrl("mockdispatchsetlineup");
   } catch (err: Error | any) {
-    console.error("Error getting task queue. " + err.message);
+    logger.error("Error getting task queue. " + err.message);
     return;
   }
 
@@ -25,8 +26,8 @@ export const addmocktaskstoqueue = onRequest(async (req, res) => {
   try {
     // Wait for all mock tasks to be enqueued
     await Promise.all(mockEnqueues);
-    console.log("Successfully enqueued mock tasks");
+    logger.log("Successfully enqueued mock tasks");
   } catch (err: Error | any) {
-    console.error("Error enqueuing or processing tasks: " + err.message);
+    logger.error("Error enqueuing or processing tasks: " + err.message);
   }
 });

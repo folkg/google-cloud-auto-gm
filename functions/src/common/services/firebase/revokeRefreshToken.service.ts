@@ -1,4 +1,5 @@
 import { getAuth } from "firebase-admin/auth";
+import { logger } from "firebase-functions";
 
 /**
  * Revoke the refresh token for a user
@@ -9,8 +10,8 @@ import { getAuth } from "firebase-admin/auth";
 export function revokeRefreshToken(uid: string) {
   try {
     getAuth().revokeRefreshTokens(uid);
-    console.log(`Token revoked for user ${uid} successfully.`);
+    logger.log(`Token revoked for user ${uid} successfully.`);
   } catch (error) {
-    console.log(error);
+    logger.log(error);
   }
 }

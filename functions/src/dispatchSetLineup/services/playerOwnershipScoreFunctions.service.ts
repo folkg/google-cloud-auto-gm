@@ -13,27 +13,27 @@ export function ownershipScoreFunction(
   numPlayersInLeague: number
 ): number {
   // if (player.player_name === "Kris Letang") {
-  //   console.log(player.player_name);
-  //   console.log(player.percent_owned);
-  //   console.log(
+  //   logger.log(player.player_name);
+  //   logger.log(player.percent_owned);
+  //   logger.log(
   //     Math.min(numPlayersInLeague / resolveRank(player.ranks.last30Days), 6)
   //   );
-  //   console.log(
+  //   logger.log(
   //     Math.min(numPlayersInLeague / resolveRank(player.ranks.last14Days), 6)
   //   );
-  //   console.log(
+  //   logger.log(
   //     Math.min(numPlayersInLeague / resolveRank(player.ranks.next7Days), 4)
   //   );
-  //   console.log(
+  //   logger.log(
   //     Math.min(numPlayersInLeague / resolveRank(player.ranks.restOfSeason), 4)
   //   );
-  //   console.log(
+  //   logger.log(
   //     Math.min(numPlayersInLeague / resolveRank(player.ranks.last4Weeks), 8)
   //   );
-  //   console.log(
+  //   logger.log(
   //     Math.min(numPlayersInLeague / resolveRank(player.ranks.projectedWeek), 7)
   //   );
-  //   console.log(
+  //   logger.log(
   //     Math.min(numPlayersInLeague / resolveRank(player.ranks.next4Weeks), 5)
   //   );
   // }

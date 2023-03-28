@@ -1,14 +1,15 @@
+import { AxiosError } from "axios";
+import { logger } from "firebase-functions";
+import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges";
+import { PlayerTransaction } from "../../../dispatchSetLineup/interfaces/PlayerTransaction";
+import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
+import { updateFirestoreTimestamp } from "../firebase/firestore.service";
 import {
   httpGetAxios,
   httpPostAxiosAuth,
   httpPostAxiosUnauth,
   httpPutAxios,
 } from "./yahooHttp.service";
-import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges";
-import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
-import { AxiosError } from "axios";
-import { updateFirestoreTimestamp } from "../firebase/firestore.service";
-import { PlayerTransaction } from "../../../dispatchSetLineup/interfaces/PlayerTransaction";
 const js2xmlparser = require("js2xmlparser");
 
 /**
@@ -222,7 +223,7 @@ export async function putLineupChanges(
 
       try {
         await httpPutAxios(uid, `team/${teamKey}/roster?format=json`, xmlBody);
-        console.log(
+        logger.log(
           `Successfully put roster changes for team: ${teamKey} for user: ${uid}`
         );
         updateFirestoreTimestamp(uid, teamKey);
@@ -255,7 +256,7 @@ export async function postRosterAddDropTransaction(
 
   const validPlayerCount = [1, 2].includes(players.length);
   if (!validPlayerCount) {
-    console.warn(
+    logger.warn(
       `Invalid number of players to move: ${players.length} for team: ${teamKey} for user: ${uid}. Must be 1 or 2.`
     );
     return false;
@@ -291,7 +292,7 @@ export async function postRosterAddDropTransaction(
   const leagueKey = teamKey.split(".t")[0];
   try {
     await httpPostAxiosAuth(uid, `league/${leagueKey}/transactions`, xmlBody);
-    console.log(
+    logger.log(
       `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}.`
     );
     return true;

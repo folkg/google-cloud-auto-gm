@@ -23,6 +23,7 @@ exports.sendfeedbackemail = sendfeedbackemail;
 // TODO: This is just for testing. Remove later.
 import { onRequest } from "firebase-functions/v2/https";
 import { setUsersLineup } from "./dispatchSetLineup/services/lineupOptimizer.service";
+import { logger } from "firebase-functions";
 exports.testsetlineups = onRequest(async (req, res) => {
   const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1"; // Graeme Folk
   const teams = [
@@ -46,6 +47,6 @@ exports.testsetlineups = onRequest(async (req, res) => {
   try {
     return await setUsersLineup(uid, teams);
   } catch (error) {
-    console.log("Error in testsetlineups: " + error);
+    logger.log("Error in testsetlineups: " + error);
   }
 });

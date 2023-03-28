@@ -3,6 +3,7 @@ import {
   DocumentSnapshot,
   QuerySnapshot,
 } from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
 import { leaguesToSetLineupsFor } from "../../../scheduleSetLineup/services/schedulingService";
 import { db } from "../firebase/firestore.service";
 import { datePSTString, getChild } from "../utilities.service";
@@ -84,7 +85,7 @@ async function getStartingGoaliesFromYahoo(
   uid: string,
   leagueKey: string
 ): Promise<string[]> {
-  console.log(
+  logger.log(
     "Loading starting goalies from Yahoo. Logging this to see if it's called more than once."
   );
   const result: string[] = [];
@@ -154,10 +155,10 @@ async function getStartingGoaliesFromFirestore(): Promise<string[]> {
       await fetchStartingGoaliesYahoo();
       return getStartingGoaliesFromFirestore();
     } catch (error: Error | any) {
-      console.error(error);
+      logger.error(error);
     }
   } catch (error: Error | any) {
-    console.error("Error getting starting goalies from firestore: " + error);
+    logger.error("Error getting starting goalies from firestore: " + error);
   }
 
   // return an empty array if there was an error
@@ -179,11 +180,11 @@ export async function initStartingGoalies(): Promise<void> {
   // TODO: Ensure there are NHL games being played in next hour before fetching starting goalies
   if (!NHL_STARTING_GOALIES) {
     NHL_STARTING_GOALIES = await getStartingGoaliesFromFirestore();
-    console.log(
+    logger.log(
       "Initialized NHL starting goalies global array from Firestore. Logging this to see how many times it is called."
     );
   } else {
-    console.log(
+    logger.log(
       "NHL starting goalies global array already initialized within this instance, NOT fetching from Firestore."
     );
   }

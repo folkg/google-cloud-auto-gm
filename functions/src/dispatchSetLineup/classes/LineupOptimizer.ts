@@ -1,6 +1,7 @@
+import { logger } from "firebase-functions";
+import { ITeam } from "../interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
-import { ITeam } from "../interfaces/ITeam";
 import { Player } from "./Player";
 import { Team } from "./Team";
 
@@ -12,7 +13,7 @@ export class LineupOptimizer {
 
   public verbose = false;
   private logInfo(...args: any[]) {
-    if (this.verbose) console.info(...args);
+    if (this.verbose) logger.info(...args);
   }
 
   constructor(team: ITeam) {
@@ -545,7 +546,7 @@ export class LineupOptimizer {
   public isSuccessfullyOptimized(): boolean {
     const unfilledActiveRosterPositions = this.team.unfilledActivePositions;
     if (unfilledActiveRosterPositions.length > 0) {
-      console.error(
+      logger.error(
         `Suboptimal Lineup: unfilledRosterPositions for team ${this.team.team_key}: ${unfilledActiveRosterPositions}`
       );
       return false;
@@ -553,7 +554,7 @@ export class LineupOptimizer {
 
     const overfilledPositions = this.team.overfilledPositions;
     if (overfilledPositions.length > 0) {
-      console.error(
+      logger.error(
         `Illegal Lineup: Too many players at positions: ${overfilledPositions} for team ${this.team.team_key}`
       );
       return false;
@@ -566,7 +567,7 @@ export class LineupOptimizer {
         )
     );
     if (illegallyMovedPlayers.length > 0) {
-      console.error(
+      logger.error(
         `Illegal Lineup: illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`
       );
       return false;
@@ -578,7 +579,7 @@ export class LineupOptimizer {
       )
     );
     if (suboptimalLineup) {
-      console.error(
+      logger.error(
         `Suboptimal Lineup: reservePlayers have higher scores than startingPlayers for team ${this.team.team_key}`
       );
       return false;

@@ -1,14 +1,14 @@
 import { firestore } from "firebase-admin";
+import { logger } from "firebase-functions";
+import { ReturnCredential, Token } from "../../interfaces/credential";
 import {
   clientToFirestore,
   TeamClient,
   TeamFirestore,
 } from "../../interfaces/team";
-import { ReturnCredential, Token } from "../../interfaces/credential";
-import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { sendUserEmail } from "../email.service";
+import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
-import { error } from "firebase-functions/logger";
 
 export const db = firestore();
 
@@ -96,7 +96,7 @@ export async function fetchTeamsFirestore(
     });
     return teams;
   } catch (err: Error | any) {
-    error("Error in fetchTeamsFirestore for User: " + uid);
+    logger.error("Error in fetchTeamsFirestore for User: " + uid);
     throw new Error("Error fetching teams from Firebase. " + err.message);
   }
 }
@@ -120,7 +120,7 @@ export async function syncTeamsInFirebase(
   for (const mTeam of missingTeams) {
     if (mTeam.end_date < Date.now()) continue;
 
-    // console.log("Adding team to batch: " + mTeam.team_key);
+    // logger.log("Adding team to batch: " + mTeam.team_key);
     mTeam.uid = uid; // uid is not present in TeamClient
     const data: TeamFirestore = clientToFirestore(mTeam);
 
@@ -130,7 +130,7 @@ export async function syncTeamsInFirebase(
   }
 
   for (const eTeam of extraTeams) {
-    // console.log("Deleting team from batch: " + eTeam.team_key);
+    // logger.log("Deleting team from batch: " + eTeam.team_key);
     const docId = String(eTeam.team_key);
     const docRef = db.collection("users/" + uid + "/teams").doc(docId);
     batch.delete(docRef);
@@ -138,9 +138,9 @@ export async function syncTeamsInFirebase(
   try {
     await batch.commit();
   } catch (err: Error | any) {
-    error("Error in syncTeamsInFirebase for User: " + uid);
-    console.log("missingTeams: " + JSON.stringify(missingTeams));
-    console.log("extraTeams: " + JSON.stringify(extraTeams));
+    logger.error("Error in syncTeamsInFirebase for User: " + uid);
+    logger.log("missingTeams: " + JSON.stringify(missingTeams));
+    logger.log("extraTeams: " + JSON.stringify(extraTeams));
     throw new Error("Error syncing teams in Firebase. " + err.message);
   }
 }
@@ -159,10 +159,10 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
       last_updated: Date.now(),
     });
   } catch (err: Error | any) {
-    error(
+    logger.error(
       "Error in updateFirestoreTimestamp updating last_updated timestamp in Firebase. " +
         err
     );
-    error("uid: " + uid + ", teamKey: " + teamKey);
+    logger.error("uid: " + uid + ", teamKey: " + teamKey);
   }
 }

@@ -1,7 +1,8 @@
 import axios, { AxiosError } from "axios";
-import { GameStartTimes } from "../interfaces/gameStartTime";
+import { logger } from "firebase-functions";
 import { db } from "../../common/services/firebase/firestore.service";
 import { datePSTString } from "../../common/services/utilities.service";
+import { GameStartTimes } from "../interfaces/gameStartTime";
 
 /**
  * Determine the leagues that we will set lineups for at this time
@@ -25,7 +26,7 @@ export async function leaguesToSetLineupsFor(): Promise<string[]> {
     leagues = findLeaguesPlayingNextHour(gameStartTimes);
 
     if (leagues.length === 0) {
-      console.log("No games starting in the next hour");
+      logger.log("No games starting in the next hour");
       // If there are no games starting in the next hour, then we will not
       // set any lineups.
       return [];
@@ -78,7 +79,7 @@ async function loadTodaysGames(todayDate: string) {
     !scheduleDocData ||
     scheduleDocData.date !== todayDate
   ) {
-    console.log("No games in database, fetching from internet");
+    logger.log("No games in database, fetching from internet");
     gameStartTimes = await getTodaysGames(todayDate);
     loadedFromDB = false;
   } else {
@@ -106,26 +107,26 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes> {
         ...(await getGameTimesYahoo(league, todayDate)),
       };
     } catch (error: AxiosError | any) {
-      console.log("Error fetching games from Yahoo API");
-      console.log(error);
+      logger.log("Error fetching games from Yahoo API");
+      logger.log(error);
       if (error.response) {
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        logger.log(error.response.data);
+        logger.log(error.response.status);
+        logger.log(error.response.headers);
       }
       // get gamestimes from Sportsnet as a backup plan
-      console.log("Trying to get games from Sportsnet API");
+      logger.log("Trying to get games from Sportsnet API");
       try {
         gameStartTimes = {
           ...gameStartTimes,
           ...(await getGameTimesSportsnet(league, todayDate)),
         };
       } catch (error: AxiosError | any) {
-        console.log("Error fetching games from Sportsnet API");
+        logger.log("Error fetching games from Sportsnet API");
         if (error.response) {
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
+          logger.log(error.response.data);
+          logger.log(error.response.status);
+          logger.log(error.response.headers);
         }
       }
     }

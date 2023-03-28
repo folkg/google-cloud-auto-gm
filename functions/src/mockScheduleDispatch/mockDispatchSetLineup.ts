@@ -1,3 +1,4 @@
+import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { initStartingGoalies } from "../common/services/yahooAPI/yahooStartingGoalie.service";
 import { taskQueueConfig } from "../dispatchSetLineup/dispatchSetLineup";
@@ -8,11 +9,11 @@ export const mockdispatchsetlineup = onTaskDispatched(
     const uid: string = req.data.uid;
     const teams: string[] = req.data.teams;
     if (!uid) {
-      console.log("No uid provided");
+      logger.log("No uid provided");
       return;
     }
     if (!teams) {
-      console.log("No teams provided");
+      logger.log("No teams provided");
       return;
     }
 
@@ -21,7 +22,7 @@ export const mockdispatchsetlineup = onTaskDispatched(
 
     // approximate the time it takes to process a task (~3200ms from cloud logs, give or take)
     await new Promise((resolve) => setTimeout(resolve, 3500));
-    console.log(
+    logger.log(
       `Successfully processed mock task for uid: ${uid} and teams: ${teams}`
     );
   }

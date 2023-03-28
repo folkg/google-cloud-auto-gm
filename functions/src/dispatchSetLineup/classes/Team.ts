@@ -35,7 +35,7 @@ export class Team implements Team {
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
-    // console.log(
+    // logger.log(
     //   this._allPlayers
     //     .sort((a, b) => b.ownership_score - a.ownership_score)
     //     .map(

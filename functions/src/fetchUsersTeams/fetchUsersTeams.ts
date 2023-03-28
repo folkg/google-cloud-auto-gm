@@ -1,10 +1,11 @@
+import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { TeamClient, TeamFirestore } from "../common/interfaces/team";
-import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service";
 import {
   fetchTeamsFirestore,
   syncTeamsInFirebase,
 } from "../common/services/firebase/firestore.service";
+import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service";
 
 export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
   const uid = request.auth?.uid;
@@ -52,7 +53,7 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
   try {
     await syncTeamsInFirebase(yahooTeams, extraTeams, uid);
   } catch (err: Error | any) {
-    console.log("Error syncing teams in firebase: " + err.message);
+    logger.log("Error syncing teams in firebase: " + err.message);
   }
 
   return teams;

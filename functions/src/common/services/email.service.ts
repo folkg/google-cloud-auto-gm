@@ -1,4 +1,5 @@
 import { auth } from "firebase-admin";
+import { logger } from "firebase-functions";
 import { createTransport, Transporter } from "nodemailer";
 import SMTPTransport = require("nodemailer/lib/smtp-transport");
 
@@ -45,7 +46,7 @@ export async function sendFeedbackEmail(
   try {
     await transporter.sendMail(mailOptions);
   } catch (error: Error | any) {
-    console.log("feedback email failed to send: " + error);
+    logger.log("feedback email failed to send: " + error);
     throw new Error("Failed to send feedback email: " + error.message);
   }
 }
@@ -93,7 +94,7 @@ export async function sendUserEmail(
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.log("user email failed to send: " + error);
+    logger.log("user email failed to send: " + error);
     return false;
   }
 }

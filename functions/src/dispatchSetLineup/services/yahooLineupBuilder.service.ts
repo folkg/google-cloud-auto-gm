@@ -21,9 +21,9 @@ export async function fetchRostersFromYahoo(
   const result: ITeam[] = [];
 
   const yahooRostersJSON = await getRostersByTeamID(teams, uid, date);
-  // console.log(JSON.stringify(yahooRostersJSON));
+  // logger.log(JSON.stringify(yahooRostersJSON));
   const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
-  // console.log(games); //use this to debug the JSON object and see all data
+  // logger.log(games); //use this to debug the JSON object and see all data
 
   // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const key in gamesJSON) {
@@ -89,8 +89,8 @@ export async function fetchRostersFromYahoo(
       }
     }
   }
-  // console.log("Fetched rosters from Yahoo API:");
-  // console.log(JSON.stringify(result));
+  // logger.log("Fetched rosters from Yahoo API:");
+  // logger.log(JSON.stringify(result));
   return result;
 }
 

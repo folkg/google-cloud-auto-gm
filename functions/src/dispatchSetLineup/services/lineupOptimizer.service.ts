@@ -1,3 +1,4 @@
+import { logger } from "firebase-functions";
 import { HttpsError } from "firebase-functions/v2/https";
 import {
   datePSTString,
@@ -9,9 +10,9 @@ import {
 } from "../../common/services/yahooAPI/yahooAPI.service";
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
+import { ITeam } from "../interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
-import { ITeam } from "../interfaces/ITeam";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
 
 /**
@@ -74,11 +75,11 @@ async function processTodaysLineupChanges(
     try {
       await putLineupChanges(allLineupChanges, uid);
     } catch (err: Error | any) {
-      console.error(err.message);
-      console.error(
+      logger.error(err.message);
+      logger.error(
         "Lineup changes object: " + JSON.stringify(allLineupChanges)
       );
-      console.error("Teams object: " + JSON.stringify(teams));
+      logger.error("Teams object: " + JSON.stringify(teams));
       throw err;
     }
   }
@@ -98,8 +99,8 @@ async function processTransactionsForSameDayChanges(
     try {
       await postAllTransactions(transactions, uid);
     } catch (err) {
-      console.error("Error in processTransactionsForSameDayChanges()");
-      console.error(`Teams object: ${JSON.stringify(originalTeams)}`);
+      logger.error("Error in processTransactionsForSameDayChanges()");
+      logger.error(`Teams object: ${JSON.stringify(originalTeams)}`);
     }
     // returns a new deep copy of the teams with the updated player transactions
     result = await refetchAndPatchTeams(transactions, uid, originalTeams);
@@ -134,14 +135,14 @@ async function processTransactionsForNextDayChanges(
     try {
       await postAllTransactions(transactions, uid);
     } catch (err) {
-      console.error("Error in processTransactionsForNextDayChanges()");
-      console.error(`Teams object: ${JSON.stringify(originalTeams)}`);
+      logger.error("Error in processTransactionsForNextDayChanges()");
+      logger.error(`Teams object: ${JSON.stringify(originalTeams)}`);
     }
   }
 }
 
 function getPlayerTransactions(teams: ITeam[]): PlayerTransaction[][] {
-  // console.log(
+  // logger.log(
   //   "finding transactions for user: " + uid + "teams: " + JSON.stringify(teams)
   // );
   const result: PlayerTransaction[][] = [];
@@ -188,10 +189,10 @@ async function postAllTransactions(
     try {
       await postRosterAddDropTransaction(transaction, uid);
     } catch (err: any) {
-      console.error(
+      logger.error(
         `Error in postAllTransactions() for User: ${uid}: ${err.message}`
       );
-      console.error(`Transaction: ${JSON.stringify(transaction)}`);
+      logger.error(`Transaction: ${JSON.stringify(transaction)}`);
       throw err;
     }
   }
