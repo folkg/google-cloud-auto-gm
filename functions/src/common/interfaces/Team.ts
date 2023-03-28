@@ -22,6 +22,7 @@ export interface TeamFirestore {
  * @return {TeamFirestore} - The converted team
  */
 export function clientToFirestore(team: TeamClient): TeamFirestore {
+  /* eslint-disable camelcase */
   const {
     uid = "",
     game_code,
@@ -45,6 +46,7 @@ export function clientToFirestore(team: TeamClient): TeamFirestore {
     allow_dropping: false,
     allow_adding: false,
   };
+  /* eslint-enable camelcase */
 }
 
 export interface TeamClient {

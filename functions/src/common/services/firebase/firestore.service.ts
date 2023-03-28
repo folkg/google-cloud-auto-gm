@@ -1,4 +1,5 @@
 import { firestore } from "firebase-admin";
+import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { ReturnCredential, Token } from "../../interfaces/credential";
 import {
@@ -97,6 +98,27 @@ export async function fetchTeamsFirestore(
     logger.error(`Error in fetchTeamsFirestore for User: ${uid}`);
     throw new Error(`Error fetching teams from Firebase. ${err.message}`);
   }
+}
+
+export async function getActiveTeamsForLeagues(
+  leagues: string[]
+): Promise<
+  QuerySnapshot<DocumentData> | PromiseLike<QuerySnapshot<DocumentData>>
+> {
+  let result: QuerySnapshot<DocumentData>;
+
+  try {
+    const teamsRef = db.collectionGroup("teams");
+    result = await teamsRef
+      .where("is_setting_lineups", "==", true)
+      .where("end_date", ">=", Date.now())
+      .where("game_code", "in", leagues)
+      .get();
+  } catch (err: Error | any) {
+    return Promise.reject(err);
+  }
+
+  return result;
 }
 
 /**
