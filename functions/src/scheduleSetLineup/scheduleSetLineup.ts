@@ -12,7 +12,7 @@ import { db } from "../common/services/firebase/firestore.service";
 export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   const leagues: string[] = await leaguesToSetLineupsFor();
   if (leagues.length === 0) {
-    console.log("No leagues to set lineups for");
+    console.log("No leagues to set lineups for.");
     return;
   }
 
@@ -21,7 +21,7 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
     try {
       await fetchStartingGoaliesYahoo();
     } catch (err: Error | any) {
-      error("Error fetching starting goalies. " + err.message);
+      error("Error fetching starting goalies from Yahoo " + err.message);
     }
   }
 
@@ -41,7 +41,7 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   }
 
   if (teamsSnapshot.size === 0) {
-    console.log("No teams to set lineups for");
+    console.log("No teams to set lineups for.");
     return;
   }
 

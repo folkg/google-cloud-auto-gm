@@ -315,13 +315,13 @@ function handleAxiosError(
   const errMessage = message ? `${message}. ` : "";
   if (err.response) {
     throw new Error(
-      `${errMessage}Error status: ${err.response.status}: ${JSON.stringify(
-        err.response.data
-      )}`
+      `${errMessage}Error status: ${JSON.stringify(
+        err.response.status
+      )}: ${JSON.stringify(err.response.data)}`
     );
   } else if (err.request) {
-    throw new Error(`${errMessage}${err.request}`);
+    throw new Error(`${errMessage}${JSON.stringify(err.request)}`);
   } else {
-    throw new Error(`${errMessage}${err.message}`);
+    throw new Error(`${errMessage}${JSON.stringify(err.message)}`);
   }
 }

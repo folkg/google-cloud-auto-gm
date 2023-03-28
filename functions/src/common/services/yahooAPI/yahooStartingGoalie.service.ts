@@ -87,19 +87,21 @@ async function getStartingGoaliesFromYahoo(
   console.log(
     "Loading starting goalies from Yahoo. Logging this to see if it's called more than once."
   );
-  const startingGoalies: string[] = [];
-  const results = await getStartingGoalies(uid, leagueKey);
-  if (results) {
-    for (const goaliesJSON of results) {
+  const result: string[] = [];
+
+  const startingGoalies = await getStartingGoalies(uid, leagueKey);
+  if (startingGoalies) {
+    for (const goaliesJSON of startingGoalies) {
       const goalies = goaliesJSON.fantasy_content.league[1].players;
       for (const key in goalies) {
         if (key !== "count") {
-          startingGoalies.push(getChild(goalies[key].player[0], "player_key"));
+          result.push(getChild(goalies[key].player[0], "player_key"));
         }
       }
     }
   }
-  return startingGoalies;
+
+  return result;
 }
 
 /**
@@ -179,6 +181,10 @@ export async function initStartingGoalies(): Promise<void> {
     NHL_STARTING_GOALIES = await getStartingGoaliesFromFirestore();
     console.log(
       "Initialized NHL starting goalies global array from Firestore. Logging this to see how many times it is called."
+    );
+  } else {
+    console.log(
+      "NHL starting goalies global array already initialized within this instance, NOT fetching from Firestore."
     );
   }
 }
