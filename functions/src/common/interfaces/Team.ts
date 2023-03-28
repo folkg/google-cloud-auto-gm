@@ -10,6 +10,8 @@ export interface TeamFirestore {
   is_approved: boolean;
   is_setting_lineups: boolean;
   last_updated: number;
+  allow_dropping: boolean;
+  allow_adding: boolean;
 }
 
 /**
@@ -22,23 +24,26 @@ export interface TeamFirestore {
 export function clientToFirestore(team: TeamClient): TeamFirestore {
   const {
     uid = "",
-    game_code: gameCode,
-    start_date: startDate,
-    end_date: endDate,
-    weekly_deadline: weeklyDeadline,
-    is_approved: isApproved,
-    is_setting_lineups: isSettingLineups,
-    last_updated: lastUpdate,
+    game_code,
+    start_date,
+    end_date,
+    weekly_deadline,
+    is_approved,
+    is_setting_lineups,
+    last_updated,
   } = team;
+
   return {
     uid,
-    game_code: gameCode,
-    start_date: startDate,
-    end_date: endDate,
-    weekly_deadline: weeklyDeadline,
-    is_approved: isApproved,
-    is_setting_lineups: isSettingLineups,
-    last_updated: lastUpdate,
+    game_code,
+    start_date,
+    end_date,
+    weekly_deadline,
+    is_approved,
+    is_setting_lineups,
+    last_updated,
+    allow_dropping: false,
+    allow_adding: false,
   };
 }
 

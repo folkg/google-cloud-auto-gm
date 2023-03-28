@@ -18,6 +18,6 @@ export interface ITeam {
   max_weekly_adds: number;
   max_season_adds: number;
   faab_balance: number;
-  allow_dropping?: any;
-  allow_adding?: any;
+  allow_dropping?: boolean;
+  allow_adding?: boolean;
 }
