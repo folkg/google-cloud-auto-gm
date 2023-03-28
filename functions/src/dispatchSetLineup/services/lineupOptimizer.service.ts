@@ -13,6 +13,7 @@ import { ITeam } from "../interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
+import assert = require("assert/strict");
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -27,12 +28,8 @@ export async function setUsersLineup(
   uid: string,
   firestoreTeams: any[]
 ): Promise<void> {
-  if (!uid) {
-    throw new Error("You must be logged in to get an access token");
-  }
-  if (!firestoreTeams) {
-    throw new Error("You must provide a list of teams to optimize");
-  }
+  assert(uid, "No uid provided");
+  assert(firestoreTeams, "No teams provided");
 
   await initStartingGoalies();
 
