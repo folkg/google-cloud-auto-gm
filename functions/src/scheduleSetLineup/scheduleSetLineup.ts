@@ -5,7 +5,7 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 import { db } from "../common/services/firebase/firestore.service";
 import { getFunctionUrl } from "../common/services/utilities.service";
 import { fetchStartingGoaliesYahoo } from "../common/services/yahooAPI/yahooStartingGoalie.service";
-import { leaguesToSetLineupsFor } from "./services/schedulingService";
+import { leaguesToSetLineupsFor } from "./services/scheduling.service";
 
 // TODO: Refactor this function to be more readable and maintainable
 // function will run every hour at 55 minutes past the hour
@@ -46,16 +46,20 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   }
 
   // create a map of user_id to list of teams
-  const activeUsers: Map<string, string[]> = new Map();
+  const activeUsers: Map<string, any[]> = new Map();
   teamsSnapshot.forEach((doc) => {
     const team = doc.data();
+    const uid = team.uid;
+    delete team.uid;
+    team.team_key = doc.id;
+
     // only add teams where the season has started
     if (team.start_date <= Date.now()) {
       const userTeams = activeUsers.get(team.uid);
       if (userTeams === undefined) {
-        activeUsers.set(team.uid, [doc.id]);
+        activeUsers.set(uid, [team]);
       } else {
-        userTeams.push(doc.id);
+        userTeams.push(team);
       }
     }
   });
@@ -80,7 +84,7 @@ export const schedulesetlineup = onSchedule("55 * * * *", async (event) => {
   activeUsers.forEach((teams, uid) => {
     enqueues.push(
       queue.enqueue(
-        { uid: uid, teams: teams },
+        { uid, teams },
         {
           dispatchDeadlineSeconds: 60 * 5, // 5 minutes
           uri: targetUri,

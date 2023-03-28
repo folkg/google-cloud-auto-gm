@@ -24,7 +24,7 @@ export const dispatchsetlineup = onTaskDispatched(
     //   "xAyXmaHKO3aRm9J3fnj2rgZRPnX2",
     // ]; // Graeme Folk, Jeff Barnes
     const uid: string = req.data.uid;
-    const teams: string[] = req.data.teams;
+    const teams: any[] = req.data.teams;
     if (!uid) {
       logger.log("No uid provided");
       return;
@@ -38,7 +38,7 @@ export const dispatchsetlineup = onTaskDispatched(
       return await setUsersLineup(uid, teams);
     } catch (err: Error | any) {
       error("Error setting lineup for user " + uid + ". " + err.message);
-      logger.log("User's teams: " + teams);
+      logger.log("User's teams: " + teams.map((t) => t.team_key));
     }
   }
 );

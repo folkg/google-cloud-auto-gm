@@ -4,7 +4,7 @@ import {
   QuerySnapshot,
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { leaguesToSetLineupsFor } from "../../../scheduleSetLineup/services/schedulingService";
+import { leaguesToSetLineupsFor } from "../../../scheduleSetLineup/services/scheduling.service";
 import { db } from "../firebase/firestore.service";
 import { datePSTString, getChild } from "../utilities.service";
 import { getStartingGoalies } from "./yahooAPI.service";

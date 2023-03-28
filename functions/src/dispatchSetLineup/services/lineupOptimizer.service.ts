@@ -1,5 +1,4 @@
 import { logger } from "firebase-functions";
-import { HttpsError } from "firebase-functions/v2/https";
 import {
   datePSTString,
   is2DArrayEmpty,
@@ -21,31 +20,27 @@ import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
  * @export
  * @async
  * @param {(string)} uid - The user id
- * @param {(string[])} teamKeys - The team ids
+ * @param {(any[])} teams - The team ids
  * @return {unknown}
  */
-export async function setUsersLineup(
-  uid: string,
-  teamKeys: string[]
-): Promise<void> {
+export async function setUsersLineup(uid: string, teams: any[]): Promise<void> {
   if (!uid) {
-    throw new HttpsError(
-      "unauthenticated",
-      "You must be logged in to get an access token"
-    );
+    throw new Error("You must be logged in to get an access token");
   }
-  if (!teamKeys) {
-    throw new HttpsError(
-      "invalid-argument",
-      "You must provide a list of teams to optimize"
-    );
+  if (!teams) {
+    throw new Error("You must provide a list of teams to optimize");
   }
 
   await initStartingGoalies();
 
+  const teamKeys: string[] = teams.map((t) => t.team_key);
+  // TODO: Enrich the Yahoo teams object with settings from the Firestore team object passed in
+  // TODO: Create a separate function to handle that.
+
   // TODO: Calling a weekly league on Sunday (day before) should be calling tomorrow's rosters.
   // We need to make a special call for this though, since it won't be in the list of teams.
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
+
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
   await processTransactionsForNextDayChanges(usersTeams, uid);

@@ -33,7 +33,7 @@ describe("Full Stack Add Drop Tests", () => {
 
   it("should do nothing for already optimal lineup", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     const rosters: ITeam[] = [
       require("./testRosters/NHL/Daily/optimalRoster.json"),
@@ -69,7 +69,7 @@ describe("Full Stack Add Drop Tests", () => {
   // user with multiple teams, no changes
   it("should do nothing for two already optimal lineup", async () => {
     const uid = "testUID";
-    const teams = ["test1", "test2"];
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     const rosters: ITeam[] = [
       require("./testRosters/NHL/DailyDrops/noDropsRequired.json"),
@@ -112,7 +112,7 @@ describe("Full Stack Add Drop Tests", () => {
   // user with multiple teams, rosterModifications only
   it("should have two roster changes, no transactions", async () => {
     const uid = "testUID";
-    const teams = ["test1", "test2"];
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     const rosters: ITeam[] = [
       require("./testRosters/NHL/Daily/oneSwapRequired.json"),
@@ -161,7 +161,7 @@ describe("Full Stack Add Drop Tests", () => {
   // - Drop players with same day transactions, lineup optimization (Intraday)
   it("should have one transaction, one refetch, then one lineup change (Intraday)", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
@@ -244,7 +244,7 @@ describe("Full Stack Add Drop Tests", () => {
   // - Drop players with next day transactions, with lineup optimization (Daily)
   it("should have one lineup change, then one refetch, then one drop (Daily)", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
@@ -314,7 +314,7 @@ describe("Full Stack Add Drop Tests", () => {
 
   it("should have one lineup change, then one refetch, then one drop (again)", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
@@ -384,7 +384,7 @@ describe("Full Stack Add Drop Tests", () => {
   // user with multiple teams, playerTransactions and multiple calls to postRosterModifications (one intraday, one next day)
   it("should have one drop, refetch, two lineup changes, then refetch and drop (again)", async () => {
     const uid = "testUID";
-    const teams = ["test1", "test2"];
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
@@ -499,7 +499,7 @@ describe("Full Stack Add Drop Tests", () => {
 
   it("should have two lineup changes, and no add drops because prop doesn't exist (legacy teams)", async () => {
     const uid = "testUID";
-    const teams = ["test1", "test2"];
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
@@ -565,7 +565,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
 
   it("should throw an error from the first fetchRostersFromYahoo() API call", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     // Set up spies and mocks
     const spyFetchRostersFromYahoo = jest.spyOn(
@@ -599,7 +599,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
 
   it("should throw an error from the second fetchRostersFromYahoo() API call, after dropping a player first (Intraday)", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
@@ -669,7 +669,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
 
   it("should have two roster changes, and then fail to put changes", async () => {
     const uid = "testUID";
-    const teams = ["test1", "test2"];
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     const rosters: ITeam[] = [
       require("./testRosters/NHL/Daily/oneSwapRequired.json"),
@@ -725,7 +725,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
 
   it("should have one failed transaction, one refetch, then continue to lineup change (Intraday)", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
@@ -798,7 +798,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
 
   it("should have one failed lineup change, then not proceed to required drops (Daily)", async () => {
     const uid = "testUID";
-    const teams = ["test1"];
+    const teams = [{ team_key: "test1" }];
 
     // Set up mock data
     const initialRosters: ITeam[] = [
