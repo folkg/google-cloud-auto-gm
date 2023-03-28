@@ -20,32 +20,49 @@ import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
  * @export
  * @async
  * @param {(string)} uid - The user id
- * @param {(any[])} teams - The team ids
+ * @param {(any[])} firestoreTeams - The team objects from Firestore
  * @return {unknown}
  */
-export async function setUsersLineup(uid: string, teams: any[]): Promise<void> {
+export async function setUsersLineup(
+  uid: string,
+  firestoreTeams: any[]
+): Promise<void> {
   if (!uid) {
     throw new Error("You must be logged in to get an access token");
   }
-  if (!teams) {
+  if (!firestoreTeams) {
     throw new Error("You must provide a list of teams to optimize");
   }
 
   await initStartingGoalies();
 
-  const teamKeys: string[] = teams.map((t) => t.team_key);
-  // TODO: Enrich the Yahoo teams object with settings from the Firestore team object passed in
-  // TODO: Create a separate function to handle that.
+  const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
 
   // TODO: Calling a weekly league on Sunday (day before) should be calling tomorrow's rosters.
   // We need to make a special call for this though, since it won't be in the list of teams.
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
-
+  usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
   await processTransactionsForNextDayChanges(usersTeams, uid);
 
   return Promise.resolve();
+}
+
+function enrichTeamsWithFirestoreSettings(
+  yahooTeams: ITeam[],
+  firestoreTeams: any[]
+): ITeam[] {
+  return yahooTeams.map((yahooTeam) => {
+    const firestoreTeam = firestoreTeams.find(
+      (firestoreTeam) => firestoreTeam.team_key === yahooTeam.team_key
+    );
+    return {
+      allow_adding: firestoreTeam?.allow_adding ?? false,
+      allow_dropping: firestoreTeam?.allow_dropping ?? false,
+      ...yahooTeam,
+    };
+  });
 }
 
 async function processTodaysLineupChanges(
