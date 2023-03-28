@@ -151,7 +151,7 @@ export async function getAllStandings(uid: string): Promise<any> {
     );
     return data;
   } catch (err: AxiosError | unknown) {
-    const errMessage = "Error in getAllStandings. User: " + uid;
+    const errMessage = `Error in getAllStandings. User: ${uid}`;
     handleAxiosError(err, errMessage);
   }
 }
@@ -261,9 +261,7 @@ export async function postRosterAddDropTransaction(
     );
     return false;
   }
-  const playersCopy = [...players];
-  playersCopy.sort((a, b) => (a.transactionType > b.transactionType ? 1 : -1)); // sorts add before drop
-  const XMLPlayers = playersCopy.map((player) => ({
+  const XMLPlayers = players.map((player) => ({
     player_key: player.playerKey,
     transaction_data: {
       type: player.transactionType,
@@ -272,6 +270,9 @@ export async function postRosterAddDropTransaction(
         : "source_team_key"]: teamKey,
     },
   }));
+  XMLPlayers.sort((a, b) =>
+    a.transaction_data.type > b.transaction_data.type ? 1 : -1
+  ); // sorts add before drop
 
   const transactionType =
     XMLPlayers.length === 1 ? XMLPlayers[0].transaction_data.type : "add/drop";
@@ -299,7 +300,6 @@ export async function postRosterAddDropTransaction(
   } catch (err) {
     const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;
     handleAxiosError(err, errMessage);
-    return false;
   }
 }
 

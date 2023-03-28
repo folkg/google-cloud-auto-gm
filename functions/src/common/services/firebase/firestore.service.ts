@@ -5,7 +5,7 @@ import {
   clientToFirestore,
   TeamClient,
   TeamFirestore,
-} from "../../interfaces/team";
+} from "../../interfaces/Team";
 import { sendUserEmail } from "../email.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
@@ -29,8 +29,8 @@ export async function loadYahooAccessToken(
 
   // return the current token if it is valid, or refresh the token if not
   let credential: ReturnCredential;
-  // add 5 seconds to the expiration time to account for latency
-  if (docData.tokenExpirationTime < Date.now() + 5000) {
+  // add 10 seconds to the expiration time to account for latency
+  if (docData.tokenExpirationTime < Date.now() + 10000) {
     let token: Token;
     try {
       token = await refreshYahooAccessToken(docData.refreshToken);
@@ -84,20 +84,18 @@ export async function fetchTeamsFirestore(
   uid: string
 ): Promise<TeamFirestore[]> {
   try {
-    const teams: TeamFirestore[] = [];
     // get all teams for the user that have not ended
     const teamsRef = db.collection("users/" + uid + "/teams");
     const teamsSnapshot = await teamsRef
       .where("end_date", ">=", Date.now())
       .get();
 
-    teamsSnapshot.forEach((doc) => {
-      teams.push({ team_key: doc.id, ...doc.data() } as TeamFirestore);
-    });
-    return teams;
+    return teamsSnapshot.docs.map(
+      (doc) => ({ team_key: doc.id, ...doc.data() } as TeamFirestore)
+    );
   } catch (err: Error | any) {
-    logger.error("Error in fetchTeamsFirestore for User: " + uid);
-    throw new Error("Error fetching teams from Firebase. " + err.message);
+    logger.error(`Error in fetchTeamsFirestore for User: ${uid}`);
+    throw new Error(`Error fetching teams from Firebase. ${err.message}`);
   }
 }
 
@@ -117,6 +115,7 @@ export async function syncTeamsInFirebase(
 ) {
   const batch = db.batch();
 
+  const collectionPath = `users/${uid}/teams`;
   for (const mTeam of missingTeams) {
     if (mTeam.end_date < Date.now()) continue;
 
@@ -125,23 +124,23 @@ export async function syncTeamsInFirebase(
     const data: TeamFirestore = clientToFirestore(mTeam);
 
     const docId = String(mTeam.team_key);
-    const docRef = db.collection("users/" + uid + "/teams").doc(docId);
+    const docRef = db.collection(collectionPath).doc(docId);
     batch.set(docRef, data);
   }
 
   for (const eTeam of extraTeams) {
     // logger.log("Deleting team from batch: " + eTeam.team_key);
     const docId = String(eTeam.team_key);
-    const docRef = db.collection("users/" + uid + "/teams").doc(docId);
+    const docRef = db.collection(collectionPath).doc(docId);
     batch.delete(docRef);
   }
   try {
     await batch.commit();
   } catch (err: Error | any) {
-    logger.error("Error in syncTeamsInFirebase for User: " + uid);
-    logger.log("missingTeams: " + JSON.stringify(missingTeams));
-    logger.log("extraTeams: " + JSON.stringify(extraTeams));
-    throw new Error("Error syncing teams in Firebase. " + err.message);
+    logger.error(`Error in syncTeamsInFirebase for User: ${uid}`);
+    logger.info(`missingTeams: ${JSON.stringify(missingTeams)}`);
+    logger.info(`extraTeams: ${JSON.stringify(extraTeams)}`);
+    throw new Error(`Error syncing teams in Firebase. ${err.message}`);
   }
 }
 
@@ -153,16 +152,15 @@ export async function syncTeamsInFirebase(
  * @param {string} teamKey The team key
  */
 export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
-  const teamRef = db.collection("users/" + uid + "/teams").doc(teamKey);
+  const teamRef = db.collection(`users/${uid}/teams`).doc(teamKey);
   try {
     await teamRef.update({
-      last_updated: Date.now(),
+      last_updated: firestore.FieldValue.serverTimestamp(),
     });
   } catch (err: Error | any) {
     logger.error(
-      "Error in updateFirestoreTimestamp updating last_updated timestamp in Firebase. " +
-        err
+      `Error in updateFirestoreTimestamp for User: ${uid} and team: ${teamKey}`
     );
-    logger.error("uid: " + uid + ", teamKey: " + teamKey);
+    logger.error(`Error: ${err}`);
   }
 }

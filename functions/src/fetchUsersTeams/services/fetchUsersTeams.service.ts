@@ -1,4 +1,4 @@
-import { TeamClient } from "../../common/interfaces/team";
+import { TeamClient } from "../../common/interfaces/Team";
 import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**

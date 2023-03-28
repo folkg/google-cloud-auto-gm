@@ -1,6 +1,6 @@
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { TeamClient, TeamFirestore } from "../common/interfaces/team";
+import { TeamClient, TeamFirestore } from "../common/interfaces/Team";
 import {
   fetchTeamsFirestore,
   syncTeamsInFirebase,
@@ -32,13 +32,13 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
 
   // find all teams that are in firestore but not in yahoo
   const extraTeams = firestoreTeams.filter(
-    (t) => !yahooTeams.some((y) => y.team_key === t.team_key)
+    (f) => !yahooTeams.some((y) => y.team_key === f.team_key)
   );
 
   const teams: TeamClient[] = [];
   firestoreTeams.forEach((firestoreTeam: TeamFirestore) => {
     const yahooTeam: TeamClient | undefined = yahooTeams.find(
-      (t) => t.team_key === firestoreTeam.team_key
+      (y) => y.team_key === firestoreTeam.team_key
     );
     if (yahooTeam) {
       // remove the team from the yahooTeams array and merge it with the team from firebase
@@ -53,7 +53,7 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
   try {
     await syncTeamsInFirebase(yahooTeams, extraTeams, uid);
   } catch (err: Error | any) {
-    logger.log("Error syncing teams in firebase: " + err.message);
+    logger.error("Error syncing teams in firebase: " + err.message);
   }
 
   return teams;
