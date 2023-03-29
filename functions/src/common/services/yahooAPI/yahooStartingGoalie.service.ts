@@ -4,7 +4,6 @@ import {
   QuerySnapshot,
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { leaguesToSetLineupsFor } from "../../../scheduleSetLineup/services/scheduling.service";
 import { db } from "../firebase/firestore.service";
 import { datePSTString, getChild } from "../utilities.service";
 import { getStartingGoalies } from "./yahooAPI.service";
@@ -174,10 +173,6 @@ async function getStartingGoaliesFromFirestore(): Promise<string[]> {
  * @return {Promise<void>}
  */
 export async function initStartingGoalies(): Promise<void> {
-  if (!(await leaguesToSetLineupsFor()).includes("nhl")) {
-    return;
-  }
-  // TODO: Ensure there are NHL games being played in next hour before fetching starting goalies
   if (!NHL_STARTING_GOALIES) {
     NHL_STARTING_GOALIES = await getStartingGoaliesFromFirestore();
     logger.log(

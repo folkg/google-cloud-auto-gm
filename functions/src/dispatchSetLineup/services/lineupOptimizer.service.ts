@@ -31,19 +31,20 @@ export async function setUsersLineup(
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
 
-  await initStartingGoalies();
+  const numNHLTeams = firestoreTeams.filter(
+    (team) => team.game_code === "nhl"
+  ).length;
+  if (numNHLTeams > 0) {
+    await initStartingGoalies();
+  }
 
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
 
-  // TODO: Calling a weekly league on Sunday (day before) should be calling tomorrow's rosters.
-  // We need to make a special call for this though, since it won't be in the list of teams.
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
   await processTransactionsForNextDayChanges(usersTeams, uid);
-
-  return Promise.resolve();
 }
 
 function enrichTeamsWithFirestoreSettings(
