@@ -81,7 +81,9 @@ export class Team implements Team {
   }
 
   public get sameDayTransactions(): boolean {
-    return this.edit_key === this.coverage_period;
+    return (
+      this.weekly_deadline !== "1" && this.edit_key === this.coverage_period
+    );
   }
 
   // alias for players

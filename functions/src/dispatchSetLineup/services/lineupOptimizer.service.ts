@@ -30,6 +30,10 @@ export async function setUsersLineup(
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
+  if (firestoreTeams.length === 0) {
+    logger.log(`No teams for user ${uid}`);
+    return;
+  }
 
   const numNHLTeams = firestoreTeams.filter(
     (team) => team.game_code === "nhl"
@@ -218,6 +222,7 @@ function getTeamsWithSameDayTransactions(teams: ITeam[]): ITeam[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping) &&
+      team.weekly_deadline !== "1" &&
       team.edit_key === team.coverage_period
   );
 }

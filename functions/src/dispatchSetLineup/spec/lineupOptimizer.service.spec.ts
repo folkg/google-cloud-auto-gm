@@ -318,10 +318,10 @@ describe("Full Stack Add Drop Tests", () => {
 
     // Set up mock data
     const initialRosters: ITeam[] = [
-      require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json"),
+      require("./testRosters/NBA/Daily/oneDropRequiredWithOptimization.json"),
     ];
     const tomorrowRosters: ITeam[] = [
-      require("./testRosters/NBA/WeeklyDrops/RefetchedRosters/oneDropRequiredWithOptimization.json"),
+      require("./testRosters/NBA/Daily/RefetchedRosters/oneDropRequiredWithOptimization.json"),
     ];
 
     const expectedLineupChanges: LineupChanges[] = [
