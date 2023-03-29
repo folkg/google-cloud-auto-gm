@@ -35,10 +35,8 @@ export async function setUsersLineup(
     return;
   }
 
-  const numNHLTeams = firestoreTeams.filter(
-    (team) => team.game_code === "nhl"
-  ).length;
-  if (numNHLTeams > 0) {
+  const anyNHLTeam = firestoreTeams.find((team) => team.game_code === "nhl");
+  if (anyNHLTeam) {
     await initStartingGoalies();
   }
 
@@ -48,6 +46,30 @@ export async function setUsersLineup(
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
+  await processTransactionsForNextDayChanges(usersTeams, uid);
+}
+
+export async function performTransactionsForWeeklyLeagues(
+  uid: string,
+  firestoreTeams: any[]
+): Promise<void> {
+  assert(uid, "No uid provided");
+  assert(firestoreTeams, "No teams provided");
+
+  // TODO: In a number of places we have assumed all weekly leagues are "1".
+  // This is likely true, but can we make this more generic in acse Yahoo ever changes?
+  // TODO: We should also be assuming that we are getting weekly teams already from the caller, no need to fileter.
+  const weeklyTeams = firestoreTeams.filter(
+    (team) => team.weekly_deadline === "1"
+  );
+  if (weeklyTeams.length === 0) {
+    logger.log(`No weekly teams for user ${uid}`);
+    return;
+  }
+  const teamKeys: string[] = weeklyTeams.map((t) => t.team_key);
+  // TODO: Modify the processTransactionsForNextDayChanges to skip the pre-check if no teams are passed in and immediately get tomorrow's rosters
+  // Then we don't have to fetch today's rosters for no reason.
+  let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
   await processTransactionsForNextDayChanges(usersTeams, uid);
 }
 
@@ -89,11 +111,9 @@ async function processTodaysLineupChanges(
     try {
       await putLineupChanges(allLineupChanges, uid);
     } catch (err: Error | any) {
-      logger.error(err.message);
-      logger.error(
-        "Lineup changes object: " + JSON.stringify(allLineupChanges)
-      );
-      logger.error("Teams object: " + JSON.stringify(teams));
+      logger.error(err);
+      logger.error("Lineup changes object: ", allLineupChanges);
+      logger.error("Teams object: ", teams);
       throw err;
     }
   }
@@ -114,7 +134,7 @@ async function processTransactionsForSameDayChanges(
       await postAllTransactions(transactions, uid);
     } catch (err) {
       logger.error("Error in processTransactionsForSameDayChanges()");
-      logger.error(`Teams object: ${JSON.stringify(originalTeams)}`);
+      logger.error("Teams object: ", originalTeams);
     }
     // returns a new deep copy of the teams with the updated player transactions
     result = await refetchAndPatchTeams(transactions, uid, originalTeams);
@@ -150,15 +170,12 @@ async function processTransactionsForNextDayChanges(
       await postAllTransactions(transactions, uid);
     } catch (err) {
       logger.error("Error in processTransactionsForNextDayChanges()");
-      logger.error(`Teams object: ${JSON.stringify(originalTeams)}`);
+      logger.error("Teams object: ", originalTeams);
     }
   }
 }
 
 function getPlayerTransactions(teams: ITeam[]): PlayerTransaction[][] {
-  // logger.log(
-  //   "finding transactions for user: " + uid + "teams: " + JSON.stringify(teams)
-  // );
   const result: PlayerTransaction[][] = [];
 
   for (const team of teams) {
@@ -206,7 +223,7 @@ async function postAllTransactions(
       logger.error(
         `Error in postAllTransactions() for User: ${uid}: ${err.message}`
       );
-      logger.error(`Transaction: ${JSON.stringify(transaction)}`);
+      logger.error("Transaction: ", transaction);
       throw err;
     }
   }
@@ -231,6 +248,7 @@ function getTeamsForNextDayTransactions(teams: ITeam[]): ITeam[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping) &&
+      team.weekly_deadline !== "1" &&
       team.edit_key !== team.coverage_period
   );
 }

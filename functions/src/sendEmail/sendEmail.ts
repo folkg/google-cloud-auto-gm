@@ -31,7 +31,7 @@ export const sendfeedbackemail = onCall(async (request) => {
     await sendFeedbackEmail(userEmail, feedbackType, title, message);
     result = true;
   } catch (err: Error | any) {
-    error("feedback email failed to send: " + err.message);
+    error("feedback email failed to send: ", err);
   }
   return result;
 });

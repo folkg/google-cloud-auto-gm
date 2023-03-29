@@ -42,7 +42,7 @@ export class LineupOptimizer {
 
   public optimizeStartingLineup(): LineupChanges {
     if (this.team.editablePlayers.length === 0) {
-      this.logInfo("no players to optimize for team " + this.team.team_key);
+      this.logInfo(`no players to optimize for team ${this.team.team_key}`);
       return this.formatLineupChange();
     }
 
@@ -109,8 +109,9 @@ export class LineupOptimizer {
 
     Team.sortDescendingByScore(illegalPlayers);
     this.logInfo(
-      "Resolving illegal players:" +
-        illegalPlayers.map((p) => p.player_name).join(", ")
+      `Resolving illegal players: ${illegalPlayers
+        .map((p) => p.player_name)
+        .join(", ")}`
     );
     for (const player of illegalPlayers) {
       this.resolveIllegalPlayer(player);
@@ -220,7 +221,9 @@ export class LineupOptimizer {
   private optimizeReserveToStaringPlayers(): void {
     const reservePlayers = this.team.reservePlayers;
     Team.sortAscendingByScore(reservePlayers);
-    this.logInfo("reserve: " + reservePlayers.map((p) => p.player_name));
+    this.logInfo(
+      `reserve players: ${reservePlayers.map((p) => p.player_name)}`
+    );
 
     while (reservePlayers.length > 0) {
       const playerA = reservePlayers.pop();
@@ -340,9 +343,7 @@ export class LineupOptimizer {
   }
 
   private movePlayerToPosition(player: Player, position: string): void {
-    this.logInfo(
-      "moving player " + player.player_name + " to position " + position
-    );
+    this.logInfo(`moving player ${player.player_name} to position ${position}`);
     player.selected_position = position;
   }
 
@@ -397,7 +398,7 @@ export class LineupOptimizer {
    */
   private dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
     const playerToDrop = this.getPlayerToDrop(playerToOpenSpotFor);
-    this.logInfo("playerToDrop: " + playerToDrop.player_name);
+    this.logInfo(`playerToDrop: ${playerToDrop.player_name}`);
 
     if (playerToDrop === playerToOpenSpotFor) return;
     if (!playerToDrop.ownership_score) return; // in case of Yahoo API error
@@ -456,7 +457,7 @@ export class LineupOptimizer {
     const unfilledPosition = player.findEligiblePositionIn(
       unfilledPositionTargetList
     );
-    this.logInfo("unfilledPosition: " + unfilledPosition);
+    this.logInfo(`unfilledPosition: ${unfilledPosition}`);
 
     if (!unfilledPosition) return false;
 
@@ -465,7 +466,7 @@ export class LineupOptimizer {
   }
 
   private moveILPlayerToUnfilledALPosition(player: Player): boolean {
-    this.logInfo("numEmptyRosterSpots: " + this.team.numEmptyRosterSpots);
+    this.logInfo(`numEmptyRosterSpots ${this.team.numEmptyRosterSpots}`);
     if (!player.isInactiveList()) return false;
 
     if (this.team.numEmptyRosterSpots === 0) {
@@ -547,7 +548,9 @@ export class LineupOptimizer {
     const unfilledActiveRosterPositions = this.team.unfilledActivePositions;
     if (unfilledActiveRosterPositions.length > 0) {
       logger.error(
-        `Suboptimal Lineup: unfilledRosterPositions for team ${this.team.team_key}: ${unfilledActiveRosterPositions}`
+        `Suboptimal Lineup: unfilledRosterPositions for team ${this.team.team_key}: ${unfilledActiveRosterPositions}`,
+        this.team,
+        this.deltaPlayerPositions
       );
       return false;
     }
@@ -555,7 +558,9 @@ export class LineupOptimizer {
     const overfilledPositions = this.team.overfilledPositions;
     if (overfilledPositions.length > 0) {
       logger.error(
-        `Illegal Lineup: Too many players at positions: ${overfilledPositions} for team ${this.team.team_key}`
+        `Illegal Lineup: Too many players at positions: ${overfilledPositions} for team ${this.team.team_key}`,
+        this.team,
+        this.deltaPlayerPositions
       );
       return false;
     }
@@ -568,7 +573,9 @@ export class LineupOptimizer {
     );
     if (illegallyMovedPlayers.length > 0) {
       logger.error(
-        `Illegal Lineup: illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`
+        `Illegal Lineup: illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`,
+        this.team,
+        this.deltaPlayerPositions
       );
       return false;
     }
@@ -580,7 +587,9 @@ export class LineupOptimizer {
     );
     if (suboptimalLineup) {
       logger.error(
-        `Suboptimal Lineup: reservePlayers have higher scores than startingPlayers for team ${this.team.team_key}`
+        `Suboptimal Lineup: reservePlayers have higher scores than startingPlayers for team ${this.team.team_key}`,
+        this.team,
+        this.deltaPlayerPositions
       );
       return false;
     }

@@ -47,6 +47,6 @@ exports.testsetlineups = onRequest(async (req, res) => {
   try {
     return await setUsersLineup(uid, teams);
   } catch (error) {
-    logger.log("Error in testsetlineups: " + error);
+    logger.log("Error in testsetlineups: ", error);
   }
 });

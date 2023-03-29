@@ -1,4 +1,4 @@
-import { error } from "firebase-functions/logger";
+import { logger } from "firebase-functions";
 import * as functionsV1 from "firebase-functions/v1";
 import { db } from "../common/services/firebase/firestore.service";
 
@@ -17,11 +17,8 @@ export const beforeSignInV1 = functionsV1.auth
       try {
         await db.collection("users").doc(uid).set(data);
       } catch (err: Error | any) {
-        error(
-          "Error saving login token credentials in Firestore for user " +
-            uid +
-            ". " +
-            err.message
+        logger.error(
+          `Error saving login token credentials in Firestore for user ${uid}. ${err.message}`
         );
       }
     }

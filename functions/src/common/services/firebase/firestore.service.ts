@@ -47,17 +47,14 @@ export async function loadYahooAccessToken(
           "https://auto-gm-372620.web.app/"
       );
       throw new Error(
-        "Could not refresh access token for user: " + uid + ". " + error.message
+        `Could not refresh access token for user: ${uid}. ${error.message}`
       );
     }
     try {
       await db.collection("users").doc(uid).update(token);
     } catch (error: Error | any) {
-      error(
-        "Error storing token in Firestore for user: " +
-          uid +
-          ". " +
-          error.message
+      logger.error(
+        `Error storing token in Firestore for user: ${uid}. ${error.message}`
       );
     }
 
@@ -86,7 +83,7 @@ export async function fetchTeamsFirestore(
 ): Promise<TeamFirestore[]> {
   try {
     // get all teams for the user that have not ended
-    const teamsRef = db.collection("users/" + uid + "/teams");
+    const teamsRef = db.collection(`users/${uid}/teams`);
     const teamsSnapshot = await teamsRef
       .where("end_date", ">=", Date.now())
       .get();
@@ -141,7 +138,6 @@ export async function syncTeamsInFirebase(
   for (const mTeam of missingTeams) {
     if (mTeam.end_date < Date.now()) continue;
 
-    // logger.log("Adding team to batch: " + mTeam.team_key);
     mTeam.uid = uid; // uid is not present in TeamClient
     const data: TeamFirestore = clientToFirestore(mTeam);
 
@@ -151,7 +147,6 @@ export async function syncTeamsInFirebase(
   }
 
   for (const eTeam of extraTeams) {
-    // logger.log("Deleting team from batch: " + eTeam.team_key);
     const docId = String(eTeam.team_key);
     const docRef = db.collection(collectionPath).doc(docId);
     batch.delete(docRef);
@@ -160,8 +155,8 @@ export async function syncTeamsInFirebase(
     await batch.commit();
   } catch (err: Error | any) {
     logger.error(`Error in syncTeamsInFirebase for User: ${uid}`);
-    logger.info(`missingTeams: ${JSON.stringify(missingTeams)}`);
-    logger.info(`extraTeams: ${JSON.stringify(extraTeams)}`);
+    logger.info("missingTeams: ", missingTeams);
+    logger.info("extraTeams: ", extraTeams);
     throw new Error(`Error syncing teams in Firebase. ${err.message}`);
   }
 }
@@ -183,6 +178,6 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
     logger.error(
       `Error in updateFirestoreTimestamp for User: ${uid} and team: ${teamKey}`
     );
-    logger.error(`Error: ${err}`);
+    logger.error(`Error: ${err.message}`);
   }
 }

@@ -1,3 +1,4 @@
+// import { logger } from "firebase-functions";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { ITeam } from "../interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
@@ -34,7 +35,6 @@ export class Team implements Team {
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
-
     // logger.log(
     //   this._allPlayers
     //     .sort((a, b) => b.ownership_score - a.ownership_score)

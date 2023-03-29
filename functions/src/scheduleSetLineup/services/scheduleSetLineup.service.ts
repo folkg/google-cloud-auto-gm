@@ -18,7 +18,7 @@ export async function scheduleSetLineup() {
     try {
       await fetchStartingGoaliesYahoo();
     } catch (err: Error | any) {
-      logger.error("Error fetching starting goalies from Yahoo " + err.message);
+      logger.error("Error fetching starting goalies from Yahoo ", err);
     }
   }
 
@@ -69,7 +69,7 @@ export async function scheduleSetLineup() {
     queue = getFunctions().taskQueue("dispatchsetlineup");
     targetUri = await getFunctionUrl("dispatchsetlineup");
   } catch (err: Error | any) {
-    logger.error("Error getting task queue. " + err.message);
+    logger.error("Error getting task queue. ", err);
     return;
   }
 
@@ -90,6 +90,6 @@ export async function scheduleSetLineup() {
     await Promise.all(enqueues);
     logger.log("Successfully enqueued tasks");
   } catch (err: Error | any) {
-    logger.error("Error enqueuing tasks: " + err.message);
+    logger.error("Error enqueuing tasks: ", err);
   }
 }

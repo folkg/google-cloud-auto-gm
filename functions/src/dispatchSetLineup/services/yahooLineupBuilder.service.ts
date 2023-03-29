@@ -2,6 +2,7 @@ import { getChild } from "../../common/services/utilities.service";
 import { ITeam } from "../interfaces/ITeam";
 import { IPlayer, PlayerRanks } from "../interfaces/IPlayer";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
+// import { logger } from "firebase-functions";
 
 /**
  * Get the roster objects for the given teams
@@ -21,7 +22,7 @@ export async function fetchRostersFromYahoo(
   const result: ITeam[] = [];
 
   const yahooRostersJSON = await getRostersByTeamID(teams, uid, date);
-  // logger.log(JSON.stringify(yahooRostersJSON));
+  // logger.log(yahooRostersJSON);
   const gamesJSON = yahooRostersJSON.fantasy_content.users[0].user[1].games;
   // logger.log(games); //use this to debug the JSON object and see all data
 
@@ -90,7 +91,7 @@ export async function fetchRostersFromYahoo(
     }
   }
   // logger.log("Fetched rosters from Yahoo API:");
-  // logger.log(JSON.stringify(result));
+  // logger.log(result);
   return result;
 }
 
