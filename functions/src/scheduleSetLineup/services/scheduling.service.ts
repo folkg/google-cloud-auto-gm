@@ -49,16 +49,16 @@ export async function leaguesToSetLineupsFor(): Promise<string[]> {
 function findLeaguesPlayingNextHour(gameStartTimes: GameStartTimes) {
   const now: number = Date.now();
   const nextHour: number = now + 3600000;
-  const leaguesPlayingNextHour: string[] = [];
+  const result: string[] = [];
   for (const [league, gameTimestamps] of Object.entries(gameStartTimes)) {
     for (const timestamp of gameTimestamps) {
       if (timestamp > now && timestamp < nextHour) {
-        leaguesPlayingNextHour.push(league);
+        result.push(league);
         break;
       }
     }
   }
-  return leaguesPlayingNextHour;
+  return result;
 }
 
 /**

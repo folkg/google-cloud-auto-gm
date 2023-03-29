@@ -177,7 +177,7 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
   const teamRef = db.collection(`users/${uid}/teams`).doc(teamKey);
   try {
     await teamRef.update({
-      last_updated: firestore.FieldValue.serverTimestamp(),
+      last_updated: Date.now(),
     });
   } catch (err: Error | any) {
     logger.error(
