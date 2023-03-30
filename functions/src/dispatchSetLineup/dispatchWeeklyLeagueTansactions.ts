@@ -1,27 +1,24 @@
 import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
-import { setUsersLineup } from "./services/lineupOptimizer.service";
+import { performWeeklyLeagueTransactions } from "./services/lineupOptimizer.service";
 
-// could increase maxConcurrentDispatches if we get more users.
+// we have lower maxConcurrentDispatches because we don't want to overload
+// Yahoo's API with a non-essential task
 export const taskQueueConfig = {
   retryConfig: {
-    maxAttempts: 5,
+    maxAttempts: 2,
     minBackoffSeconds: 10,
-    maxDoublings: 4,
+    maxDoublings: 1,
   },
   rateLimits: {
-    maxConcurrentDispatches: 1000,
+    maxConcurrentDispatches: 5,
     maxDispatchesPerSecond: 500,
   },
 };
 
-export const dispatchsetlineup = onTaskDispatched(
+export const dispatchweeklyleaguetransactions = onTaskDispatched(
   taskQueueConfig,
   async (req) => {
-    // const testUsers: string[] = [
-    //   "RLSrRcWN3lcYbxKQU1FKqditGDu1",
-    //   "xAyXmaHKO3aRm9J3fnj2rgZRPnX2",
-    // ]; // Graeme Folk, Jeff Barnes
     const uid: string = req.data.uid;
     const teams: any[] = req.data.teams;
     if (!uid) {
@@ -34,9 +31,12 @@ export const dispatchsetlineup = onTaskDispatched(
     }
 
     try {
-      return await setUsersLineup(uid, teams);
+      return await performWeeklyLeagueTransactions(uid, teams);
     } catch (err) {
-      logger.error(`Error setting lineup for user ${uid}:`, err);
+      logger.error(
+        `Error performing weekly transactions for user ${uid}:`,
+        err
+      );
       logger.error("User's teams: ", teams);
     }
   }

@@ -49,28 +49,33 @@ export async function setUsersLineup(
   await processTransactionsForNextDayChanges(usersTeams, uid);
 }
 
-export async function performTransactionsForWeeklyLeagues(
+export async function performWeeklyLeagueTransactions(
   uid: string,
   firestoreTeams: any[]
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
-
-  // TODO: In a number of places we have assumed all weekly leagues are "1".
-  // This is likely true, but can we make this more generic in acse Yahoo ever changes?
-  // TODO: We should also be assuming that we are getting weekly teams already from the caller, no need to fileter.
-  const weeklyTeams = firestoreTeams.filter(
-    (team) => team.weekly_deadline === "1"
-  );
-  if (weeklyTeams.length === 0) {
+  if (firestoreTeams.length === 0) {
     logger.log(`No weekly teams for user ${uid}`);
     return;
   }
-  const teamKeys: string[] = weeklyTeams.map((t) => t.team_key);
-  // TODO: Modify the processTransactionsForNextDayChanges to skip the pre-check if no teams are passed in and immediately get tomorrow's rosters
-  // Then we don't have to fetch today's rosters for no reason.
-  let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
-  await processTransactionsForNextDayChanges(usersTeams, uid);
+
+  const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
+  let usersTeams = await fetchRostersFromYahoo(
+    teamKeys,
+    uid,
+    tomorrowsDateAsString()
+  );
+  usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
+  const transactions = getPlayerTransactions(usersTeams);
+  if (!is2DArrayEmpty(transactions)) {
+    try {
+      await postAllTransactions(transactions, uid);
+    } catch (err) {
+      logger.error("Error in performTransactionsForWeeklyLeagues()");
+      logger.error("Teams object: ", usersTeams);
+    }
+  }
 }
 
 function enrichTeamsWithFirestoreSettings(

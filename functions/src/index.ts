@@ -9,9 +9,14 @@ exports.fetchuserteams = fetchuserteams;
 
 import { schedulesetlineup } from "./scheduleSetLineup/scheduleSetLineup";
 exports.schedulesetlineup = schedulesetlineup;
+import { scheduleweeklyleaguetransactions } from "./scheduleSetLineup/scheduleWeeklyLeagueTansactions";
+exports.scheduleweeklyleaguetransactions = scheduleweeklyleaguetransactions;
 
 import { dispatchsetlineup } from "./dispatchSetLineup/dispatchSetLineup";
 exports.dispatchsetlineup = dispatchsetlineup;
+import { dispatchweeklyleaguetransactions } from "./dispatchSetLineup/dispatchWeeklyLeagueTansactions";
+exports.dispatchweeklyleaguetransactions = dispatchweeklyleaguetransactions;
+
 import { mockdispatchsetlineup } from "./mockScheduleDispatch/mockDispatchSetLineup";
 exports.mockdispatchsetlineup = mockdispatchsetlineup;
 import { addmocktaskstoqueue } from "./mockScheduleDispatch/addMockTasksToQueue";

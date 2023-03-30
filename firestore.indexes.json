@@ -35,6 +35,28 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "teams",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "allow_transactions",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_setting_lineups",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "weekly_deadline",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "end_date",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

@@ -1,4 +1,6 @@
 import axios, { AxiosError } from "axios";
+import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
+import { TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { db } from "../../common/services/firebase/firestore.service";
 import { datePSTString } from "../../common/services/utilities.service";
@@ -193,4 +195,55 @@ async function getGameTimesSportsnet(
 
   const gameTimesArray = Array.from(new Set(gameTimesSet));
   return { [league]: gameTimesArray };
+}
+
+export function mapUsersToActiveTeams(
+  teamsSnapshot: QuerySnapshot<DocumentData>
+) {
+  if (teamsSnapshot.size === 0) {
+    logger.log("No teams found to process weekly transactions for.");
+    return new Map();
+  }
+
+  // create a map of user_id to list of teams
+  const result: Map<string, any[]> = new Map();
+  teamsSnapshot.forEach((doc) => {
+    const team = doc.data();
+    const uid = team.uid;
+    team.team_key = doc.id;
+
+    // only add teams where the season has started
+    if (team.start_date <= Date.now()) {
+      const userTeams = result.get(uid);
+      if (userTeams === undefined) {
+        result.set(uid, [team]);
+      } else {
+        userTeams.push(team);
+      }
+    }
+  });
+
+  return result;
+}
+
+export function enqueueUsersTeams(
+  activeUsers: Map<string, any[]>,
+  queue: TaskQueue<Record<string, any>>,
+  targetFunctionUri: string
+) {
+  const result: any[] = [];
+
+  activeUsers.forEach((teams, uid) => {
+    result.push(
+      queue.enqueue(
+        { uid, teams },
+        {
+          dispatchDeadlineSeconds: 60 * 5,
+          uri: targetFunctionUri,
+        }
+      )
+    );
+  });
+
+  return result;
 }

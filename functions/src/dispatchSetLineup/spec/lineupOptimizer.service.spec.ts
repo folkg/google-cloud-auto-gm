@@ -1,6 +1,9 @@
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { ITeam } from "../interfaces/ITeam";
-import { setUsersLineup } from "../services/lineupOptimizer.service";
+import {
+  performWeeklyLeagueTransactions,
+  setUsersLineup,
+} from "../services/lineupOptimizer.service";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({
@@ -20,7 +23,7 @@ const yahooAPI = require("../../common/services/yahooAPI/yahooAPI.service");
 // To mock and spy on the fetchRostersFromYahoo() and return a roster object for testing
 const LineupBuilderService = require("../services/yahooLineupBuilder.service");
 
-describe("Full Stack Add Drop Tests", () => {
+describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
   afterEach(() => {
     // restore the spy created with spyOn
     jest.restoreAllMocks();
@@ -555,6 +558,91 @@ describe("Full Stack Add Drop Tests", () => {
   // TODO: Add tests for the following
   // - Drop players with same day transactions, with lineup optimization (NFL)
   // - Drop players with next day transactions, with lineup optimization (MLB)
+});
+
+describe("Full stack performTransactionsForWeeklyLeagues()", () => {
+  afterEach(() => {
+    // restore the spy created with spyOn
+    jest.restoreAllMocks();
+  });
+
+  it("should call performTransactionsForWeeklyLeagues() for each transaction", async () => {
+    const uid = "testUID";
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
+
+    const rosters = [
+      require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json"),
+      require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json"),
+    ];
+
+    const transaction1 = {
+      players: [
+        {
+          playerKey: "418.p.6047",
+          transactionType: "drop",
+        },
+      ],
+      sameDayTransactions: false,
+      teamKey: "418.l.201581.t.1",
+    };
+    const transaction2 = {
+      players: [
+        {
+          playerKey: "418.p.6047",
+          transactionType: "drop",
+        },
+      ],
+      sameDayTransactions: false,
+      teamKey: "418.l.201581.t.1",
+    };
+
+    // Set up spies and mocks
+    const spyFetchRostersFromYahoo = jest.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(rosters);
+    });
+
+    const spyPostRosterAddDropTransaction = jest
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve());
+
+    // Run test
+    await performWeeklyLeagueTransactions(uid, teams);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(2);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction1,
+      uid
+    );
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction2,
+      uid
+    );
+  });
+
+  it("should exit early with an empty teams array", async () => {
+    const uid = "testUID";
+    const teams: any[] = [];
+
+    // Set up spies and mocks
+    const spyFetchRostersFromYahoo = jest.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+
+    const spyPostRosterAddDropTransaction = jest.spyOn(
+      yahooAPI,
+      "postRosterAddDropTransaction"
+    );
+
+    // Run test
+    await performWeeklyLeagueTransactions(uid, teams);
+    expect(spyFetchRostersFromYahoo).not.toHaveBeenCalled();
+    expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
+  });
 });
 
 describe("Test Errors thrown in LineupBuilderService by API service", () => {

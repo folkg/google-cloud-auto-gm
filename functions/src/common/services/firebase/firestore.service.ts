@@ -97,11 +97,17 @@ export async function fetchTeamsFirestore(
   }
 }
 
-export async function getActiveTeamsForLeagues(
-  leagues: string[]
-): Promise<
-  QuerySnapshot<DocumentData> | PromiseLike<QuerySnapshot<DocumentData>>
-> {
+/**
+ * Fetches all teams from Firestore for the user that are actively setting
+ * lineups
+ *
+ *
+ * @export
+ * @async
+ * @param {string[]} leagues - The leagues to filter by
+ * @returns {unknown} - An array of teams from Firestore
+ */
+export async function getActiveTeamsForLeagues(leagues: string[]) {
   let result: QuerySnapshot<DocumentData>;
 
   try {
@@ -110,6 +116,32 @@ export async function getActiveTeamsForLeagues(
       .where("is_setting_lineups", "==", true)
       .where("end_date", ">=", Date.now())
       .where("game_code", "in", leagues)
+      .get();
+  } catch (err: Error | any) {
+    return Promise.reject(err);
+  }
+
+  return result;
+}
+
+/**
+ * Fetches all teams from Firestore for the user that are actively setting
+ * lineups, allow transactions, and have a weekly deadline
+ *
+ * @export
+ * @async
+ * @returns {unknown} - An array of teams from Firestore
+ */
+export async function getActiveWeeklyTeams() {
+  let result: QuerySnapshot<DocumentData>;
+
+  try {
+    const teamsRef = db.collectionGroup("teams");
+    result = await teamsRef
+      .where("is_setting_lineups", "==", true)
+      .where("allow_transactions", "==", true)
+      .where("end_date", ">=", Date.now())
+      .where("weekly_deadline", "==", "1")
       .get();
   } catch (err: Error | any) {
     return Promise.reject(err);

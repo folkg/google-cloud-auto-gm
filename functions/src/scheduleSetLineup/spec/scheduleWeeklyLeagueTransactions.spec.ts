@@ -1,20 +1,10 @@
-import { scheduleSetLineup } from "../services/scheduleSetLineup.service";
 import { logger } from "firebase-functions";
+import { scheduleWeeklyLeagueTransactions } from "../services/scheduleWeeklyLeagueTansactions.service";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({
   initializeApp: jest.fn(),
   firestore: jest.fn(),
-}));
-
-// set up mocks
-const mockLeaguesToSetLineupsFor = jest.spyOn(
-  require("../services/scheduling.service"),
-  "leaguesToSetLineupsFor"
-);
-
-jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service", () => ({
-  fetchStartingGoaliesYahoo: jest.fn(() => Promise.resolve()),
 }));
 
 const mockQueue = {
@@ -39,17 +29,14 @@ jest.mock("firebase-admin/functions", () => {
   };
 });
 
-describe("scheduleSetLineup", () => {
-  beforeEach(() => {
-    mockLeaguesToSetLineupsFor.mockReturnValue(Promise.resolve(["nhl"]));
-  });
+describe("scheduleWeeklyLeagueTransactions", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const mockGetActiveTeamsForLeagues = jest.spyOn(
+  const mockGetActiveWeeklyTeams = jest.spyOn(
     require("../../common/services/firebase/firestore.service"),
-    "getActiveTeamsForLeagues"
+    "getActiveWeeklyTeams"
   );
 
   function mockTeamsSnapshot(teams: any) {
@@ -81,11 +68,9 @@ describe("scheduleSetLineup", () => {
     // mock the querySnapshot object
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
-    mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot)
-    );
+    mockGetActiveWeeklyTeams.mockReturnValue(Promise.resolve(teamsSnapshot));
 
-    await scheduleSetLineup();
+    await scheduleWeeklyLeagueTransactions();
 
     expect(mockQueue.enqueue).toHaveBeenCalledTimes(2); // check if the enqueue method was called twice
     expect(mockQueue.enqueue).toHaveBeenCalledWith(
@@ -106,21 +91,11 @@ describe("scheduleSetLineup", () => {
     );
   });
 
-  it("should not execute if there are no leagues", async () => {
-    mockLeaguesToSetLineupsFor.mockReturnValue(Promise.resolve([]));
-    const logSpy = jest.spyOn(logger, "log");
-
-    await scheduleSetLineup();
-
-    expect(logSpy).toHaveBeenCalledWith("No leagues to set lineups for.");
-    expect(mockQueue.enqueue).not.toHaveBeenCalled();
-  });
-
   it("should not execute if there are no active users / teams", async () => {
-    mockGetActiveTeamsForLeagues.mockReturnValue(Promise.resolve([]));
+    mockGetActiveWeeklyTeams.mockReturnValue(Promise.resolve([]));
     const logSpy = jest.spyOn(logger, "log");
 
-    await scheduleSetLineup();
+    await scheduleWeeklyLeagueTransactions();
 
     expect(logSpy).toHaveBeenCalledWith("No users to set lineups for");
     expect(mockQueue.enqueue).not.toHaveBeenCalled();
