@@ -513,7 +513,8 @@ export class LineupOptimizer {
         playerA !== playerC &&
         playerB.eligible_positions.includes(playerC.selected_position) &&
         playerC.eligible_positions.includes(playerA.selected_position) &&
-        playerA.eligible_positions.includes(playerBPosition)
+        playerA.eligible_positions.includes(playerBPosition) &&
+        playerC.selected_position !== playerA.selected_position
     );
   }
 

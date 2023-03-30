@@ -879,4 +879,16 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     expect(rosterModification.newPlayerPositions["419.p.3737"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.5980"]).toEqual("BN");
   });
+
+  test("better player on IR+, worse IR+ player on bench, and even worse player on IR+", function () {
+    const roster: ITeam = require("./testRosters/NHL/Daily/betterPlayerOnIRWorseIRPlayerOnBench.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(rosterModification.newPlayerPositions["419.p.6005"]).toEqual("D");
+    expect(rosterModification.newPlayerPositions["419.p.7124"]).toEqual("IR+");
+  });
 });
