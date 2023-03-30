@@ -32,10 +32,10 @@ export const dispatchweeklyleaguetransactions = onTaskDispatched(
 
     try {
       return await performWeeklyLeagueTransactions(uid, teams);
-    } catch (err) {
+    } catch (error) {
       logger.error(
         `Error performing weekly transactions for user ${uid}:`,
-        err
+        error
       );
       logger.error("User's teams: ", teams);
     }

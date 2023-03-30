@@ -71,7 +71,7 @@ export async function performWeeklyLeagueTransactions(
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
-    } catch (err) {
+    } catch (error) {
       logger.error("Error in performTransactionsForWeeklyLeagues()");
       logger.error("Teams object: ", usersTeams);
     }
@@ -115,11 +115,11 @@ async function processTodaysLineupChanges(
     // if there is a failure calling the Yahoo API, an error will be thrown, and we will let it propagate up
     try {
       await putLineupChanges(allLineupChanges, uid);
-    } catch (err: Error | any) {
-      logger.error(err);
+    } catch (error) {
+      logger.error(error);
       logger.error("Lineup changes object: ", allLineupChanges);
       logger.error("Teams object: ", teams);
-      throw err;
+      throw error;
     }
   }
 
@@ -137,8 +137,8 @@ async function processTransactionsForSameDayChanges(
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
-    } catch (err) {
-      logger.error("Error in processTransactionsForSameDayChanges()");
+    } catch (error) {
+      logger.error("Error in processTransactionsForSameDayChanges()", error);
       logger.error("Teams object: ", originalTeams);
     }
     // returns a new deep copy of the teams with the updated player transactions
@@ -173,8 +173,8 @@ async function processTransactionsForNextDayChanges(
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
-    } catch (err) {
-      logger.error("Error in processTransactionsForNextDayChanges()");
+    } catch (error) {
+      logger.error("Error in processTransactionsForNextDayChanges()", error);
       logger.error("Teams object: ", originalTeams);
     }
   }

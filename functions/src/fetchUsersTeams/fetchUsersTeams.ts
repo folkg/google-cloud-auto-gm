@@ -52,8 +52,8 @@ export const fetchuserteams = onCall(async (request): Promise<TeamClient[]> => {
   // Update the teams in firestore if required
   try {
     await syncTeamsInFirebase(yahooTeams, extraTeams, uid);
-  } catch (err: Error | any) {
-    logger.error("Error syncing teams in firebase: ", err);
+  } catch (error) {
+    logger.error("Error syncing teams in firebase: ", error);
   }
 
   return teams;

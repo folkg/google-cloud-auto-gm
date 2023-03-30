@@ -9,8 +9,8 @@ export const addmocktaskstoqueue = onRequest(async (req, res) => {
   try {
     queue = getFunctions().taskQueue("mockdispatchsetlineup");
     targetUri = await getFunctionUrl("mockdispatchsetlineup");
-  } catch (err: Error | any) {
-    logger.error("Error getting task queue. ", err);
+  } catch (error) {
+    logger.error("Error getting task queue. ", error);
     return;
   }
 
@@ -27,7 +27,8 @@ export const addmocktaskstoqueue = onRequest(async (req, res) => {
     // Wait for all mock tasks to be enqueued
     await Promise.all(mockEnqueues);
     logger.log("Successfully enqueued mock tasks");
-  } catch (err: Error | any) {
-    logger.error("Error enqueuing or processing tasks: ", err);
+  } catch (error) {
+    logger.error("Error enqueuing or processing tasks: ", error);
   }
+  res.end();
 });

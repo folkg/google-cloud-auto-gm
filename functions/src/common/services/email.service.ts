@@ -45,9 +45,9 @@ export async function sendFeedbackEmail(
 
   try {
     await transporter.sendMail(mailOptions);
-  } catch (error: Error | any) {
-    logger.log("feedback email failed to send: " + error);
-    throw new Error("Failed to send feedback email: " + error.message);
+  } catch (error) {
+    logger.error("feedback email failed to send: ", error);
+    throw new Error("Failed to send feedback email");
   }
 }
 

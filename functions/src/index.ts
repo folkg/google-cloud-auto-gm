@@ -54,4 +54,5 @@ exports.testsetlineups = onRequest(async (req, res) => {
   } catch (error) {
     logger.log("Error in testsetlineups: ", error);
   }
+  res.end();
 });

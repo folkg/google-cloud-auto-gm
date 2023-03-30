@@ -39,9 +39,9 @@ describe("YahooAPI Service", () => {
     try {
       result = await postRosterAddDropTransaction(transaction, uid);
       console.log("result: " + result);
-    } catch (err) {
-      console.error(err);
-      expect(err).toBeDefined();
+    } catch (error) {
+      console.error(error);
+      expect(error).toBeDefined();
     }
     expect(result).toBe(true);
   });

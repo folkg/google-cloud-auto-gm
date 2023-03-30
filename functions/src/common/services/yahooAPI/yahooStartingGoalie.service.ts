@@ -65,10 +65,9 @@ async function getIntradayNHLTeams(): Promise<QuerySnapshot<DocumentData>> {
       .where("weekly_deadline", "==", "intraday")
       .get();
     return teamsSnapshot;
-  } catch (error: Error | any) {
-    throw new Error(
-      `Error fetching Intraday NHL teams from firestore: ${error.message}`
-    );
+  } catch (error) {
+    logger.error("Error fetching Intraday NHL teams from firestore", error);
+    throw new Error("Error fetching Intraday NHL teams from firestore");
   }
 }
 
@@ -119,10 +118,9 @@ async function storeStartingGoaliesToFirestore(
     await startingGoaliesRef
       .doc("nhl")
       .set({ startingGoalies, date: datePSTString(new Date()) });
-  } catch (error: Error | any) {
-    throw new Error(
-      `Error storing starting goalies to firestore: ${error.message}`
-    );
+  } catch (error) {
+    logger.error("Error storing starting goalies to firestore: ", error);
+    throw new Error("Error storing starting goalies to firestore");
   }
 }
 
@@ -153,10 +151,10 @@ async function getStartingGoaliesFromFirestore(): Promise<string[]> {
     try {
       await fetchStartingGoaliesYahoo();
       return getStartingGoaliesFromFirestore();
-    } catch (error: Error | any) {
+    } catch (error) {
       logger.error(error);
     }
-  } catch (error: Error | any) {
+  } catch (error) {
     logger.error("Error getting starting goalies from firestore: ", error);
   }
 

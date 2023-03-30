@@ -9,8 +9,8 @@ export async function scheduleWeeklyLeagueTransactions() {
   let teamsSnapshot: QuerySnapshot<DocumentData>;
   try {
     teamsSnapshot = await getActiveWeeklyTeams();
-  } catch (err) {
-    logger.error("Error fetching weekly teams from Firebase.", err);
+  } catch (error) {
+    logger.error("Error fetching weekly teams from Firebase.", error);
     return;
   }
 
@@ -26,8 +26,8 @@ export async function scheduleWeeklyLeagueTransactions() {
   try {
     queue = getFunctions().taskQueue("dispatchweeklyleaguetransactions");
     targetUri = await getFunctionUrl("dispatchweeklyleaguetransactions");
-  } catch (err) {
-    logger.error("Error getting task queue. ", err);
+  } catch (error) {
+    logger.error("Error getting task queue. ", error);
     return;
   }
 
@@ -36,7 +36,7 @@ export async function scheduleWeeklyLeagueTransactions() {
   try {
     await Promise.all(enqueuedTasks);
     logger.log("Successfully enqueued tasks");
-  } catch (err) {
-    logger.error("Error enqueuing tasks: ", err);
+  } catch (error) {
+    logger.error("Error enqueuing tasks: ", error);
   }
 }

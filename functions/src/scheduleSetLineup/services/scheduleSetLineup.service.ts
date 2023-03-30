@@ -21,18 +21,18 @@ export async function scheduleSetLineup() {
   if (leagues.includes("nhl")) {
     try {
       await fetchStartingGoaliesYahoo();
-    } catch (err) {
-      logger.error("Error fetching starting goalies from Yahoo ", err);
+    } catch (error) {
+      logger.error("Error fetching starting goalies from Yahoo ", error);
     }
   }
 
   let teamsSnapshot: QuerySnapshot<DocumentData>;
   try {
     teamsSnapshot = await getActiveTeamsForLeagues(leagues);
-  } catch (err) {
+  } catch (error) {
     logger.error(
       `Error fetching teams from Firebase for Leagues: ${leagues.join(", ")}`,
-      err
+      error
     );
     return;
   }
@@ -49,8 +49,8 @@ export async function scheduleSetLineup() {
   try {
     queue = getFunctions().taskQueue("dispatchsetlineup");
     targetUri = await getFunctionUrl("dispatchsetlineup");
-  } catch (err) {
-    logger.error("Error getting task queue. ", err);
+  } catch (error) {
+    logger.error("Error getting task queue. ", error);
     return;
   }
 
@@ -59,7 +59,7 @@ export async function scheduleSetLineup() {
   try {
     await Promise.all(enqueuedTasks);
     logger.log("Successfully enqueued tasks");
-  } catch (err) {
-    logger.error("Error enqueuing tasks: ", err);
+  } catch (error) {
+    logger.error("Error enqueuing tasks: ", error);
   }
 }

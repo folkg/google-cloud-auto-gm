@@ -298,9 +298,9 @@ export async function postRosterAddDropTransaction(
     );
     logger.log(`Transaction data: ${data}`);
     return true;
-  } catch (err) {
+  } catch (error) {
     const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;
-    handleAxiosError(err, errMessage);
+    handleAxiosError(error, errMessage);
   }
 }
 

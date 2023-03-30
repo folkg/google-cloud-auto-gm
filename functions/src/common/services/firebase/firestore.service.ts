@@ -35,7 +35,7 @@ export async function loadYahooAccessToken(
     let token: Token;
     try {
       token = await refreshYahooAccessToken(docData.refreshToken);
-    } catch (error: Error | any) {
+    } catch (error) {
       // Revoking the refresh token will force the user to re-authenticate with Yahoo
       // Send an email to the user to let them know
       revokeRefreshToken(uid);
@@ -46,16 +46,13 @@ export async function loadYahooAccessToken(
           "Please visit the Fantasy AutoCoach website and sign-in again to re-authenticate.\n" +
           "https://auto-gm-372620.web.app/"
       );
-      throw new Error(
-        `Could not refresh access token for user: ${uid}. ${error.message}`
-      );
+      logger.error(`Error refreshing access token for user: ${uid}`, error);
+      throw new Error(`Could not refresh access token for user: ${uid}`);
     }
     try {
       await db.collection("users").doc(uid).update(token);
-    } catch (error: Error | any) {
-      logger.error(
-        `Error storing token in Firestore for user: ${uid}. ${error.message}`
-      );
+    } catch (error) {
+      logger.error(`Error storing token in Firestore for user: ${uid}`, error);
     }
 
     credential = {
@@ -91,9 +88,9 @@ export async function fetchTeamsFirestore(
     return teamsSnapshot.docs.map(
       (doc) => ({ team_key: doc.id, ...doc.data() } as TeamFirestore)
     );
-  } catch (err: Error | any) {
-    logger.error(`Error in fetchTeamsFirestore for User: ${uid}`);
-    throw new Error(`Error fetching teams from Firebase. ${err.message}`);
+  } catch (error) {
+    logger.error(`Error in fetchTeamsFirestore for User: ${uid}`, error);
+    throw new Error(`Error fetching teams from Firebase. User: ${uid}`);
   }
 }
 
@@ -105,7 +102,7 @@ export async function fetchTeamsFirestore(
  * @export
  * @async
  * @param {string[]} leagues - The leagues to filter by
- * @returns {unknown} - An array of teams from Firestore
+ * @return {unknown} - An array of teams from Firestore
  */
 export async function getActiveTeamsForLeagues(leagues: string[]) {
   let result: QuerySnapshot<DocumentData>;
@@ -117,8 +114,8 @@ export async function getActiveTeamsForLeagues(leagues: string[]) {
       .where("end_date", ">=", Date.now())
       .where("game_code", "in", leagues)
       .get();
-  } catch (err: Error | any) {
-    return Promise.reject(err);
+  } catch (error) {
+    return Promise.reject(error);
   }
 
   return result;
@@ -130,7 +127,7 @@ export async function getActiveTeamsForLeagues(leagues: string[]) {
  *
  * @export
  * @async
- * @returns {unknown} - An array of teams from Firestore
+ * @return {unknown} - An array of teams from Firestore
  */
 export async function getActiveWeeklyTeams() {
   let result: QuerySnapshot<DocumentData>;
@@ -143,8 +140,8 @@ export async function getActiveWeeklyTeams() {
       .where("end_date", ">=", Date.now())
       .where("weekly_deadline", "==", "1")
       .get();
-  } catch (err: Error | any) {
-    return Promise.reject(err);
+  } catch (error) {
+    return Promise.reject(error);
   }
 
   return result;
@@ -185,11 +182,11 @@ export async function syncTeamsInFirebase(
   }
   try {
     await batch.commit();
-  } catch (err: Error | any) {
-    logger.error(`Error in syncTeamsInFirebase for User: ${uid}`);
+  } catch (error) {
+    logger.error(`Error in syncTeamsInFirebase for User: ${uid}`, error);
     logger.info("missingTeams: ", missingTeams);
     logger.info("extraTeams: ", extraTeams);
-    throw new Error(`Error syncing teams in Firebase. ${err.message}`);
+    throw new Error("Error syncing teams in Firebase.");
   }
 }
 
@@ -206,10 +203,10 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
     await teamRef.update({
       last_updated: Date.now(),
     });
-  } catch (err: Error | any) {
+  } catch (error) {
     logger.error(
-      `Error in updateFirestoreTimestamp for User: ${uid} and team: ${teamKey}`
+      `Error in updateFirestoreTimestamp for User: ${uid} and team: ${teamKey}`,
+      error
     );
-    logger.error(`Error: ${err.message}`);
   }
 }

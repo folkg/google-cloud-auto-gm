@@ -16,9 +16,10 @@ export const beforeSignInV1 = functionsV1.auth
 
       try {
         await db.collection("users").doc(uid).set(data);
-      } catch (err: Error | any) {
+      } catch (error) {
         logger.error(
-          `Error saving login token credentials in Firestore for user ${uid}. ${err.message}`
+          `Error saving login token credentials in Firestore for user ${uid}`,
+          error
         );
       }
     }

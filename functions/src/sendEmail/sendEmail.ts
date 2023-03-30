@@ -1,4 +1,4 @@
-import { error } from "firebase-functions/logger";
+import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { sendFeedbackEmail } from "../common/services/email.service";
 
@@ -30,8 +30,8 @@ export const sendfeedbackemail = onCall(async (request) => {
   try {
     await sendFeedbackEmail(userEmail, feedbackType, title, message);
     result = true;
-  } catch (err: Error | any) {
-    error("feedback email failed to send: ", err);
+  } catch (error) {
+    logger.error("feedback email failed to send: ", error);
   }
   return result;
 });

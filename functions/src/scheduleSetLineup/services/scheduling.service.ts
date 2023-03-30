@@ -109,12 +109,11 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes> {
         ...(await getGameTimesYahoo(league, todayDate)),
       };
     } catch (error: AxiosError | any) {
-      logger.log("Error fetching games from Yahoo API");
-      logger.log(error);
+      logger.error("Error fetching games from Yahoo API", error);
       if (error.response) {
-        logger.log(error.response.data);
-        logger.log(error.response.status);
-        logger.log(error.response.headers);
+        logger.error(error.response.data);
+        logger.error(error.response.status);
+        logger.error(error.response.headers);
       }
       // get gamestimes from Sportsnet as a backup plan
       logger.log("Trying to get games from Sportsnet API");
@@ -124,11 +123,11 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes> {
           ...(await getGameTimesSportsnet(league, todayDate)),
         };
       } catch (error: AxiosError | any) {
-        logger.log("Error fetching games from Sportsnet API");
+        logger.error("Error fetching games from Sportsnet API", error);
         if (error.response) {
-          logger.log(error.response.data);
-          logger.log(error.response.status);
-          logger.log(error.response.headers);
+          logger.error(error.response.data);
+          logger.error(error.response.status);
+          logger.error(error.response.headers);
         }
       }
     }

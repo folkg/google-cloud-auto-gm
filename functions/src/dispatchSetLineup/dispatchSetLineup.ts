@@ -35,8 +35,8 @@ export const dispatchsetlineup = onTaskDispatched(
 
     try {
       return await setUsersLineup(uid, teams);
-    } catch (err) {
-      logger.error(`Error setting lineup for user ${uid}:`, err);
+    } catch (error) {
+      logger.error(`Error setting lineup for user ${uid}:`, error);
       logger.error("User's teams: ", teams);
     }
   }
