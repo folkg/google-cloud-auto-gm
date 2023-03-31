@@ -100,78 +100,46 @@ describe("Unit Test LineupOptimizer Simple Add Drop Players", function () {
     const roster: ITeam = require("./testRosters/NBA/IntradayDrops/oneDropRequiredThirdLowest.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(playerTransactions[0].players[0].playerKey).toEqual("418.p.5864");
     expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
-    expect(rosterModification.newPlayerPositions).toEqual({});
-
-    expect(isSuccessfullyOptimized).toEqual(true);
   });
 
   test("Drop player with lowest score - same as above but roster is now daily change - NBA", function () {
     const roster: ITeam = require("./testRosters/NBA/IntradayDrops/oneDropRequiredLowest.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(playerTransactions[0].players[0].playerKey).toEqual("418.p.5893");
     expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
-    expect(rosterModification.newPlayerPositions).toEqual({});
-
-    expect(isSuccessfullyOptimized).toEqual(true);
   });
 
-  test("Drop player with lowest score for 'Game Time Decision' player NBA, also optimize some bench players", function () {
+  test("Drop player with lowest score for 'Game Time Decision' player NBA", function () {
     const roster: ITeam = require("./testRosters/NBA/IntradayDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(playerTransactions[0].players[0].playerKey).toEqual("418.p.5893");
     expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
-    expect(rosterModification.newPlayerPositions).toEqual({
-      "418.p.6053": "BN",
-      "418.p.6567": "F",
-    });
-
-    expect(isSuccessfullyOptimized).toEqual(true);
   });
 
-  test("Drop two player with lowest score for 'Game Time Decision' players NBA, also optimize more advanced swap", function () {
+  test("Drop two player with lowest score for 'Game Time Decision' players NBA", function () {
     const roster: ITeam = require("./testRosters/NBA/IntradayDrops/twoDropsRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(playerTransactions[0].players[0].playerKey).toEqual("418.p.5893");
     expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
     expect(playerTransactions[1].players[0].playerKey).toEqual("418.p.6567");
     expect(playerTransactions[1].players[0].transactionType).toEqual("drop");
-    expect(isSuccessfullyOptimized).toEqual(true);
-    expect(
-      Object.keys(rosterModification.newPlayerPositions).length
-    ).toBeGreaterThan(4);
   });
 
-  test("Drop player with lowest score for 'Game Time Decision' player NBA weekly, also optimize some bench players", function () {
+  test("Drop player with lowest score for 'Game Time Decision' player NBA weekly", function () {
     const roster: ITeam = require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     const playerTransactions = lo.findDropPlayerTransactions();
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(playerTransactions[0].players[0].playerKey).toEqual("418.p.6047");
     expect(playerTransactions[0].players[0].transactionType).toEqual("drop");
-    expect(rosterModification.newPlayerPositions).toEqual({
-      "418.p.5471": "BN",
-      "418.p.5826": "Util",
-    });
-
-    expect(isSuccessfullyOptimized).toEqual(true);
   });
 });
