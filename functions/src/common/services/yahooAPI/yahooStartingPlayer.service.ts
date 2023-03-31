@@ -48,18 +48,15 @@ export async function setStartingPlayers(league: string): Promise<void> {
     leagueKey
   );
 
-  const startersGloablArray: { [key: string]: string[] } = {
+  const startersGlobalArray: { [key: string]: string[] } = {
     nhl: NHL_STARTING_GOALIES,
     mlb: MLB_STARTING_PITCHERS,
   };
 
-  // TODO: add test for NHL, MLB, and NBA
-  // TODO: will this still work if the array is uninitalized and empty?
-  console.log("league: ", league);
-  console.log("Starting players: ", startingPlayers);
-  startersGloablArray[league] &&= startingPlayers;
-
-  await storeStartingPlayersInFirestore(startingPlayers, league);
+  if (Object.prototype.hasOwnProperty.call(startersGlobalArray, league)) {
+    startersGlobalArray[league] = startingPlayers;
+    await storeStartingPlayersInFirestore(startingPlayers, league);
+  }
 }
 
 /**
@@ -82,6 +79,7 @@ async function parseStartingPlayersFromYahoo(
   const result: string[] = [];
 
   const startingPlayers = await getStartingPlayers(league, uid, leagueKey);
+
   if (startingPlayers) {
     for (const playersJSON of startingPlayers) {
       const players = playersJSON.fantasy_content.league[1].players;
