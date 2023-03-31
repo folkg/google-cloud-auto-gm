@@ -12,7 +12,7 @@ jest.mock("firebase-admin", () => ({
 }));
 
 // mock initialize starting goalies
-jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service", () => ({
+jest.mock("../../common/services/yahooAPI/yahooStartingPlayer.service", () => ({
   initStartingGoalies: jest.fn(() => Promise.resolve()),
   getNHLStartingGoalies: jest.fn().mockReturnValue([]),
 }));

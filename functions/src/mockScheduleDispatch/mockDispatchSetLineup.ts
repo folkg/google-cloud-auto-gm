@@ -1,6 +1,9 @@
 import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
-import { initStartingGoalies } from "../common/services/yahooAPI/yahooStartingGoalie.service";
+import {
+  initStartingGoalies,
+  initStartingPitchers,
+} from "../common/services/yahooAPI/yahooStartingPlayer.service";
 import { taskQueueConfig } from "../dispatchSetLineup/dispatchSetLineup";
 
 export const mockdispatchsetlineup = onTaskDispatched(
@@ -19,6 +22,7 @@ export const mockdispatchsetlineup = onTaskDispatched(
 
     // fetch starting goalies, just to test how often it is called
     await initStartingGoalies();
+    await initStartingPitchers();
 
     // approximate the time it takes to process a task (~3200ms from cloud logs, give or take)
     await new Promise((resolve) => setTimeout(resolve, 3500));

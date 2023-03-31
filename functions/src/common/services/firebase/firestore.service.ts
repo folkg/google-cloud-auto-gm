@@ -14,7 +14,7 @@ import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email.service";
 import { datePSTString } from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
-import { fetchStartingGoaliesYahoo } from "../yahooAPI/yahooStartingGoalie.service";
+import { setStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
 
 export const db = firestore();
@@ -236,10 +236,12 @@ export async function getIntradayTeams(
     return teamsSnapshot;
   } catch (error) {
     logger.error(
-      `Error fetching Intraday ${league} teams from firestore`,
+      `Error fetching Intraday ${league.toUpperCase} teams from firestore`,
       error
     );
-    throw new Error(`Error fetching Intraday ${league} teams from firestore`);
+    throw new Error(
+      `Error fetching Intraday ${league.toUpperCase} teams from firestore`
+    );
   }
 }
 
@@ -265,10 +267,12 @@ export async function storeStartingPlayersInFirestore(
     });
   } catch (error) {
     logger.error(
-      `Error storing starting ${league} players in Firestore`,
+      `Error storing starting ${league.toUpperCase} players in Firestore`,
       error
     );
-    throw new Error(`Error storing starting ${league} players in Firestore`);
+    throw new Error(
+      `Error storing starting ${league.toUpperCase} players in Firestore`
+    );
   }
 }
 
@@ -285,7 +289,7 @@ export async function getStartingPlayersFromFirestore(
   league: string
 ): Promise<string[]> {
   const startingPlayersRef = db.collection("startingPlayers");
-
+  console.log("Getting starting players from Firestore");
   try {
     const startingPlayersSnapshot: DocumentSnapshot<DocumentData> =
       await startingPlayersRef.doc(league).get();
@@ -301,16 +305,16 @@ export async function getStartingPlayersFromFirestore(
     }
     // if the starting players were not updated today,
     // or don't exist in firebase, fetch them from Yahoo API
+    console.log("Starting players not found in Firestore");
     try {
-      // TODO: Make this more generic for pitchers as well
-      await fetchStartingGoaliesYahoo();
+      await setStartingPlayers(league);
       return getStartingPlayersFromFirestore(league);
     } catch (error) {
       logger.error(error);
     }
   } catch (error) {
     logger.error(
-      `Error getting starting ${league} players from Firestore`,
+      `Error getting starting ${league.toUpperCase} players from Firestore`,
       error
     );
   }

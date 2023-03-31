@@ -8,7 +8,7 @@ jest.mock("firebase-admin", () => ({
 }));
 
 // Use this to mock the global NHL_STARTING_GOALIES array where needed
-const yahooStartingGoalieService = require("../../common/services/yahooAPI/yahooStartingGoalie.service");
+const yahooStartingPlayerService = require("../../common/services/yahooAPI/yahooStartingPlayer.service");
 
 describe("Test LineupOptimizer Class NHL Daily", function () {
   // beforeEach(() => {
@@ -267,9 +267,9 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const roster: ITeam = require("./testRosters/NHL/Daily/startingGoaliesOnBench2.json");
     // mock NHL_STARTING_GOALIES array
     jest
-      .spyOn(yahooStartingGoalieService, "getNHLStartingGoalies")
+      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
       .mockReturnValue(["419.p.7593", "419.p.7163"]);
-    expect(yahooStartingGoalieService.getNHLStartingGoalies()).toEqual([
+    expect(yahooStartingPlayerService.getNHLStartingGoalies()).toEqual([
       "419.p.7593",
       "419.p.7163",
     ]);
@@ -288,7 +288,7 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
 
     // reset the mock configuration
     jest
-      .spyOn(yahooStartingGoalieService, "getNHLStartingGoalies")
+      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
       .mockRestore();
   });
 
@@ -300,7 +300,7 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
 
     // starting goalies array should not be defined since it was never set
     expect(
-      yahooStartingGoalieService.getNHLStartingGoalies()
+      yahooStartingPlayerService.getNHLStartingGoalies()
     ).not.toBeDefined();
 
     expect(isSuccessfullyOptimized).toEqual(true);

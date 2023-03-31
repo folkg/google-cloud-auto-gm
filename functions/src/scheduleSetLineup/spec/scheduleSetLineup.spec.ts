@@ -13,7 +13,7 @@ const mockLeaguesToSetLineupsFor = jest.spyOn(
   "leaguesToSetLineupsFor"
 );
 
-jest.mock("../../common/services/yahooAPI/yahooStartingGoalie.service", () => ({
+jest.mock("../../common/services/yahooAPI/yahooStartingPlayer.service", () => ({
   fetchStartingGoaliesYahoo: jest.fn(() => Promise.resolve()),
 }));
 
@@ -41,7 +41,7 @@ jest.mock("firebase-admin/functions", () => {
 
 describe("scheduleSetLineup", () => {
   beforeEach(() => {
-    mockLeaguesToSetLineupsFor.mockReturnValue(Promise.resolve(["nhl"]));
+    mockLeaguesToSetLineupsFor.mockReturnValue(Promise.resolve(["nhl", "mlb"]));
   });
   afterEach(() => {
     jest.clearAllMocks();

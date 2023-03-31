@@ -138,6 +138,8 @@ export async function getFreeAgents(
 
 /**
  * Get all the standings for all the leagues for all the games from Yahoo
+ *
+ * @export
  * @async
  * @param {string} uid The firebase uid
  * @return {Promise<any>} The Yahoo JSON object containing league standings
@@ -157,33 +159,39 @@ export async function getAllStandings(uid: string): Promise<any> {
 }
 
 /**
- * Get the projected/confirmed starting goalies for the league
- *
- * This will return starting goalies based on the weekly_deadline
- * ie. intraday leagues will return today's starters, while daily leagues
- * will return tomorrow's starters
+ * Get the projected/confirmed starting players for the league
+ * ie. goalies from NHL, pitchers from MLB
  *
  * @export
  * @async
- * @param {string} uid The firebase uid
- * @param {string} leagueKey The league key
- * @return {Promise<any>} The Yahoo JSON object containing goalie data
+ * @param {string} league - The league, ie. nhl, mlb
+ * @param {string} uid - The firebase uid
+ * @param {string} leagueKey - The user's Yahoo league key (ie. nhl.l.123)
+ * @return {Promise<any>} The Yahoo JSON object containing raw start data
  */
-export async function getStartingGoalies(
+export async function getStartingPlayers(
+  league: string,
   uid: string,
   leagueKey: string
-): Promise<any> {
+) {
+  const starterPositions: { [key: string]: string } = {
+    nhl: "S_G",
+    mlb: "S_P",
+  };
+  const positions = starterPositions[league];
+  if (!positions) return [];
+
   try {
-    // There could be up to 32 starting goalies, so we need to make 2 calls
-    // to get all the goalies. The first call will get the first 25 goalies.
-    const urlBase = `league/${leagueKey}/players;position=S_G;sort=AR;start=`;
-    const [data1, data2] = await Promise.all([
+    // There could be up to 32 starting players, so we need to make 2 calls
+    // to get all the players. The first call will get the first 25 players.
+    const urlBase = `league/${leagueKey}/players;position=${positions};sort=AR;start=`;
+    const [result1, result2] = await Promise.all([
       httpGetAxios(`${urlBase}0?format=json`, uid),
       httpGetAxios(`${urlBase}25?format=json`, uid),
     ]);
-    return [data1.data, data2.data];
+    return [result1.data, result2.data];
   } catch (err: AxiosError | unknown) {
-    const errMessage = `Error in getStartingGoalies. User: ${uid} League: ${leagueKey}`;
+    const errMessage = `Error in getStartingPlayers. User: ${uid} League: ${leagueKey} Position: ${positions}`;
     handleAxiosError(err, errMessage);
   }
 }

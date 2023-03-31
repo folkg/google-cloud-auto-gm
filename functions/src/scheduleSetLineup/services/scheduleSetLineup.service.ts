@@ -3,7 +3,7 @@ import { getFunctions, TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { getActiveTeamsForLeagues } from "../../common/services/firebase/firestore.service";
 import { getFunctionUrl } from "../../common/services/utilities.service";
-import { fetchStartingGoaliesYahoo } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
+import { setStartingPlayers } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import {
   enqueueUsersTeams,
   leaguesToSetLineupsFor,
@@ -20,9 +20,16 @@ export async function scheduleSetLineup() {
 
   if (leagues.includes("nhl")) {
     try {
-      await fetchStartingGoaliesYahoo();
+      await setStartingPlayers("nhl");
     } catch (error) {
       logger.error("Error fetching starting goalies from Yahoo ", error);
+    }
+  }
+  if (leagues.includes("mlb")) {
+    try {
+      await setStartingPlayers("mlb");
+    } catch (error) {
+      logger.error("Error fetching starting pitchers from Yahoo ", error);
     }
   }
 

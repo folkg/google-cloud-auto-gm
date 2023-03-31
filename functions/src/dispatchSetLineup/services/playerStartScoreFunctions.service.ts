@@ -1,7 +1,13 @@
 import { IPlayer } from "../interfaces/IPlayer";
 import { HEALTHY_STATUS_LIST } from "../helpers/constants";
-import { getNHLStartingGoalies } from "../../common/services/yahooAPI/yahooStartingGoalie.service";
+import {
+  getMLBStartingPitchers,
+  getNHLStartingGoalies,
+} from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 
+const NOT_PLAYING_FACTOR = 0.001;
+const INJURY_FACTOR = 0.01;
+const STARTING_FACTOR = 100;
 /**
  * Returns the proper score function used to compare players on the same
  * fantasy roster in order to decide who to start and who to sit.
@@ -23,12 +29,14 @@ export function playerStartScoreFunctionFactory(
     return weeklyLineupScoreFunction();
   } else if (gameCode === "nhl") {
     return nhlScoreFunction();
+  } else if (gameCode === "mlb") {
+    return mlbScoreFunction();
   }
   return dailyScoreFunction();
 }
 
 /**
- * Default score function used to compare players.
+ * Default score function used to compare players. Basically just NBA at this point.
  * Higher scores are better.
  *
  * @return {()} - A function that takes a player and returns a score.
@@ -36,23 +44,14 @@ export function playerStartScoreFunctionFactory(
  */
 export function dailyScoreFunction(): (player: IPlayer) => number {
   return (player: IPlayer) => {
-    const NOT_PLAYING_FACTOR = 0.01;
-    const INJURY_FACTOR = 0.001;
-    // The score will be percent_started
-    // TODO: is_starting to be more specific (basketball G, baseball players)
-    // Maybe boost the score of players who are starting instead of penalizing?
-    let score = player.percent_started;
-    if (score == null) {
-      // percent_started has been broken before, so this is a backup
-      score = player.percent_owned;
-    }
+    // The base score will be percent_started
+    // percent_started has been broken before, so percent owned is a backup
+    let score = player.percent_started ?? player.percent_owned;
+
     if (!player.is_playing || player.is_starting === 0) {
-      // If a player is not playing, set their score to a minimal value
       score *= NOT_PLAYING_FACTOR;
     }
     if (!HEALTHY_STATUS_LIST.includes(player.injury_status)) {
-      // If a player is not starting or hurt, factor their score such that it
-      // falls below all healthy players, but above players not playing.
       score *= INJURY_FACTOR;
     }
     return score;
@@ -66,20 +65,16 @@ export function dailyScoreFunction(): (player: IPlayer) => number {
  *  returns a score.
  */
 export function nhlScoreFunction(): (player: IPlayer) => number {
-  const starters = getNHLStartingGoalies() ? getNHLStartingGoalies() : [];
+  // TODO: need to add a test for this
+  const starters = getNHLStartingGoalies() ?? [];
   return (player: IPlayer) => {
-    const NOT_PLAYING_FACTOR = 0.001;
-    const INJURY_FACTOR = 0.01;
-    const STARTING_FACTOR = 100;
-    // The score will be percent_started
-    let score = player.percent_started;
-    if (score == null) {
-      // percent_started has been broken before, so this is a backup
-      score = player.percent_owned;
-    }
+    // The base score will be percent_started
+    // percent_started has been broken before, so percent owned is a backup
+    let score = player.percent_started ?? player.percent_owned;
+
     const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
     const isStartingGoalie = player.eligible_positions.includes("G")
-      ? checkStartingGoalie()
+      ? isStartingPlayer(player, starters)
       : false;
     if (!player.is_playing) {
       score *= NOT_PLAYING_FACTOR;
@@ -91,24 +86,50 @@ export function nhlScoreFunction(): (player: IPlayer) => number {
       score *= STARTING_FACTOR;
     }
     return score;
-
-    /**
-     * Checks if the player is a starting goalie
-     *
-     * @return {boolean} - Whether the player is a starting goalie or not
-     */
-    function checkStartingGoalie(): boolean {
-      if (starters.length === 0) {
-        // default to is_starting flag if we can't get the starting goalies
-        return player.is_starting === 1;
-      }
-      if (starters.findIndex((g) => g === player.player_key) === -1) {
-        return false;
-      }
-      return true;
-    }
   };
 }
+
+/**
+ * Score function used to compare players in NHL leagues.
+ * Higher scores are better.
+ *
+ * @return {()} - A function that takes a player and returns a score.
+ *  returns a score.
+ */
+export function mlbScoreFunction(): (player: IPlayer) => number {
+  const starters = getMLBStartingPitchers() ?? [];
+  return (player: IPlayer) => {
+    // The base score will be percent_started
+    // percent_started has been broken before, so percent owned is a backup
+    let score = player.percent_started ?? player.percent_owned;
+
+    const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
+    const isStartingPitcher = player.eligible_positions.some((pos) =>
+      ["P", "SP", "RP"].includes(pos)
+    )
+      ? isStartingPlayer(player, starters)
+      : false;
+    if (!player.is_playing) {
+      score *= NOT_PLAYING_FACTOR;
+    }
+    if (isPlayerInjured) {
+      score *= INJURY_FACTOR;
+    }
+    if (isStartingPitcher) {
+      score *= STARTING_FACTOR;
+    }
+    return score;
+  };
+}
+
+function isStartingPlayer(player: IPlayer, starters: string[]): boolean {
+  if (starters.length === 0) {
+    // default to is_starting flag if we can't get the starters array
+    return player.is_starting === 1;
+  }
+  return starters.includes(player.player_key);
+}
+
 /**
  * Score function used to compare players in NFL leagues.
  * Higher scores are better.
@@ -118,24 +139,18 @@ export function nhlScoreFunction(): (player: IPlayer) => number {
  */
 export function nflScoreFunction(): (player: IPlayer) => number {
   return (player: IPlayer) => {
-    const NOT_PLAYING_FACTOR = 0.01;
-    const INJURY_FACTOR = 0.001;
     // The score will be percent_started / rank_projected_week
     // TODO: Does rank_projected_week factor in injury status already?
-    // Are we double counting?
-    let score = player.percent_started;
-    if (score == null) {
-      // percent_started has been broken before, so this is a backup
-      score = player.percent_owned;
-    }
+
+    // The base score will be percent_started
+    // percent_started has been broken before, so percent owned is a backup
+    let score = player.percent_started ?? player.percent_owned;
+
     score = (score / player.ranks.projectedWeek) * 100;
     if (!player.is_playing) {
-      // If a player is not playing, set their score to a minimal value
       score *= NOT_PLAYING_FACTOR;
     }
     if (!HEALTHY_STATUS_LIST.includes(player.injury_status)) {
-      // If a player is not starting or hurt, factor their score such that it
-      // falls below all healthy players, but above players not playing.
       score *= INJURY_FACTOR;
     }
 
