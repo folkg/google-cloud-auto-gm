@@ -1,11 +1,11 @@
-import {
-  DocumentData,
-  DocumentSnapshot,
-  QuerySnapshot,
-} from "firebase-admin/firestore";
+import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { db } from "../firebase/firestore.service";
-import { datePSTString, getChild } from "../utilities.service";
+import {
+  getIntradayTeams,
+  getStartingPlayersFromFirestore,
+  storeStartingPlayersInFirestore,
+} from "../firebase/firestore.service";
+import { getChild } from "../utilities.service";
 import { getStartingGoalies } from "./yahooAPI.service";
 
 /**
@@ -29,8 +29,9 @@ export async function fetchStartingGoaliesYahoo(): Promise<void> {
   // get a team from firestore where weekly_deadline='intraday' and game='nhl'
   // we will use their access token to get the starting goalies for all users
 
-  const teamsSnapshot: QuerySnapshot<DocumentData> =
-    await getIntradayNHLTeams();
+  const teamsSnapshot: QuerySnapshot<DocumentData> = await getIntradayTeams(
+    "nhl"
+  );
   if (teamsSnapshot.empty) {
     throw new Error(
       "No teams found with weekly_deadline='intraday' and game='nhl'"
@@ -47,28 +48,7 @@ export async function fetchStartingGoaliesYahoo(): Promise<void> {
 
   NHL_STARTING_GOALIES = startingGoalies;
 
-  await storeStartingGoaliesToFirestore(startingGoalies);
-}
-
-/**
- * Gets a team from firestore where weekly_deadline='intraday' and game='nhl'
- *
- * @async
- * @return {Promise<QuerySnapshot<DocumentData>>} the team
- */
-async function getIntradayNHLTeams(): Promise<QuerySnapshot<DocumentData>> {
-  const teamsRef = db.collectionGroup("teams");
-  try {
-    const teamsSnapshot = await teamsRef
-      .where("game_code", "==", "nhl")
-      .where("end_date", ">=", Date.now())
-      .where("weekly_deadline", "==", "intraday")
-      .get();
-    return teamsSnapshot;
-  } catch (error) {
-    logger.error("Error fetching Intraday NHL teams from firestore", error);
-    throw new Error("Error fetching Intraday NHL teams from firestore");
-  }
+  await storeStartingPlayersInFirestore(startingGoalies, "nhl");
 }
 
 /**
@@ -104,66 +84,6 @@ async function getStartingGoaliesFromYahoo(
 }
 
 /**
- * Stores the starting goalies to firestore
- *
- * @async
- * @param {string[]} startingGoalies - the starting goalies
- * @return {Promise<void>}
- */
-async function storeStartingGoaliesToFirestore(
-  startingGoalies: string[]
-): Promise<void> {
-  const startingGoaliesRef = db.collection("startingGoalies");
-  try {
-    await startingGoaliesRef
-      .doc("nhl")
-      .set({ startingGoalies, date: datePSTString(new Date()) });
-  } catch (error) {
-    logger.error("Error storing starting goalies to firestore: ", error);
-    throw new Error("Error storing starting goalies to firestore");
-  }
-}
-
-/**
- * Gets today's starting goalies from firestore
- *
- * @async
- * @return {Promise<string[]>} the starting goalies
- */
-async function getStartingGoaliesFromFirestore(): Promise<string[]> {
-  const startingGoaliesRef = db.collection("startingGoalies");
-
-  try {
-    const startingGoaliesSnapshot: DocumentSnapshot<DocumentData> =
-      await startingGoaliesRef.doc("nhl").get();
-
-    if (startingGoaliesSnapshot.exists) {
-      // check if the starting goalies were updated today
-      const date: string = startingGoaliesSnapshot.data()?.date;
-      const today = datePSTString(new Date());
-
-      if (date === today) {
-        return startingGoaliesSnapshot.data()?.startingGoalies;
-      }
-    }
-    // if the starting goalies were not updated today,
-    // or don't exist in firebase, fetch them from Yahoo API
-    try {
-      await fetchStartingGoaliesYahoo();
-      return getStartingGoaliesFromFirestore();
-    } catch (error) {
-      logger.error(error);
-    }
-  } catch (error) {
-    logger.error("Error getting starting goalies from firestore: ", error);
-  }
-
-  // return an empty array if there was an error
-  // we can still proceed with the rest of the program
-  return [];
-}
-
-/**
  * Initializes the starting goalies array
  *
  * @export
@@ -172,7 +92,7 @@ async function getStartingGoaliesFromFirestore(): Promise<string[]> {
  */
 export async function initStartingGoalies(): Promise<void> {
   if (!NHL_STARTING_GOALIES) {
-    NHL_STARTING_GOALIES = await getStartingGoaliesFromFirestore();
+    NHL_STARTING_GOALIES = await getStartingPlayersFromFirestore("nhl");
     logger.log(
       "Initialized NHL starting goalies global array from Firestore. Logging this to see how many times it is called."
     );

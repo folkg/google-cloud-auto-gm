@@ -1,14 +1,20 @@
 import { firestore } from "firebase-admin";
-import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
-import { logger } from "firebase-functions";
-import { ReturnCredential, Token } from "../../interfaces/credential";
 import {
-  clientToFirestore,
+  DocumentData,
+  DocumentSnapshot,
+  QuerySnapshot,
+} from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
+import {
   TeamClient,
   TeamFirestore,
+  clientToFirestore,
 } from "../../interfaces/Team";
+import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email.service";
+import { datePSTString } from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
+import { fetchStartingGoaliesYahoo } from "../yahooAPI/yahooStartingGoalie.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
 
 export const db = firestore();
@@ -209,4 +215,107 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
       error
     );
   }
+}
+
+/**
+ *
+ * @async
+ * @param {string} league The league code
+ * @return {Promise<QuerySnapshot<DocumentData>>} the team
+ */
+export async function getIntradayTeams(
+  league: string
+): Promise<QuerySnapshot<DocumentData>> {
+  const teamsRef = db.collectionGroup("teams");
+  try {
+    const teamsSnapshot = await teamsRef
+      .where("game_code", "==", league)
+      .where("end_date", ">=", Date.now())
+      .where("weekly_deadline", "==", "intraday")
+      .get();
+    return teamsSnapshot;
+  } catch (error) {
+    logger.error(
+      `Error fetching Intraday ${league} teams from firestore`,
+      error
+    );
+    throw new Error(`Error fetching Intraday ${league} teams from firestore`);
+  }
+}
+
+/**
+ * Stores today's starting players in Firestore.
+ * This would be used for goalies in the NHL and pitchers in MLB
+ *
+ * @export
+ * @async
+ * @param {string[]} startingPlayers - the starting players
+ * @param {string} league - the league
+ * @return {Promise<void>}
+ */
+export async function storeStartingPlayersInFirestore(
+  startingPlayers: string[],
+  league: string
+): Promise<void> {
+  const startingPlayersRef = db.collection("startingPlayers");
+  try {
+    await startingPlayersRef.doc(league).set({
+      startingPlayers,
+      date: datePSTString(new Date()),
+    });
+  } catch (error) {
+    logger.error(
+      `Error storing starting ${league} players in Firestore`,
+      error
+    );
+    throw new Error(`Error storing starting ${league} players in Firestore`);
+  }
+}
+
+/**
+ * Gets today's starting players from Firestore.
+ * This would be used for goalies in the NHL and pitchers in MLB
+ *
+ * @export
+ * @async
+ * @param {string} league - the league
+ * @return {Promise<string[]>} - the starting players
+ */
+export async function getStartingPlayersFromFirestore(
+  league: string
+): Promise<string[]> {
+  const startingPlayersRef = db.collection("startingPlayers");
+
+  try {
+    const startingPlayersSnapshot: DocumentSnapshot<DocumentData> =
+      await startingPlayersRef.doc(league).get();
+
+    if (startingPlayersSnapshot.exists) {
+      // check if the starting players were updated today
+      const date: string = startingPlayersSnapshot.data()?.date;
+      const today = datePSTString(new Date());
+
+      if (date === today) {
+        return startingPlayersSnapshot.data()?.startingPlayers;
+      }
+    }
+    // if the starting players were not updated today,
+    // or don't exist in firebase, fetch them from Yahoo API
+    try {
+      // TODO: Make this more generic for pitchers as well
+      await fetchStartingGoaliesYahoo();
+      return getStartingPlayersFromFirestore(league);
+    } catch (error) {
+      logger.error(error);
+    }
+  } catch (error) {
+    logger.error(
+      `Error getting starting ${league} players from Firestore`,
+      error
+    );
+  }
+
+  // return an empty array if there was an error
+  // we can still proceed with the rest of the program
+  return [];
 }
