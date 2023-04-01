@@ -445,8 +445,8 @@
     ],
     "coverage_type": "date",
     "coverage_period": "2023-03-17",
-    "edit_key": "2023-03-17",
     "weekly_deadline": "intraday",
+    "edit_key": "2023-03-17",
     "game_code": "nhl",
     "num_teams_in_league": 12,
     "roster_positions": {
@@ -460,6 +460,7 @@
       "IR+": 1,
       "NA": 2
     },
+    "league_scoring_type": "head",
     "current_weekly_adds": 1,
     "current_season_adds": 20,
     "max_weekly_adds": 7,
@@ -467,6 +468,8 @@
     "start_date": 1665100800000,
     "end_date": 1680393600000,
     "faab_balance": -1,
-    "waiver_rule": "all"
+    "waiver_rule": "all",
+    "max_games_played": -1,
+    "max_innings_pitched": -1
   }
 ]

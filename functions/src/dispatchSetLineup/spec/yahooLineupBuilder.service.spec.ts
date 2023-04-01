@@ -1,4 +1,3 @@
-import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { fetchRostersFromYahoo } from "../services/yahooLineupBuilder.service";
 
 // mock firebase-admin
@@ -29,7 +28,6 @@ describe("Test fetchRostersFromYahoo", function () {
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
-    new LineupOptimizer(result[0]); // testing the constructor to see player ownership scores
     expect(result).toEqual(expected);
   });
 
@@ -97,6 +95,27 @@ describe("Test fetchRostersFromYahoo", function () {
       .mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
+
+    expect(result).toEqual(expected);
+  });
+
+  test("MLB with pending waiver claim", async function () {
+    const teams = ["422.l.115494.t.4"];
+    const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2";
+    const yahooJSON = require("./testYahooLineupJSON/yahooJSON/MLB.json");
+    const expected = require("./testYahooLineupJSON/output/MLB.json");
+
+    // mock the JSON result from yahooAPI getRostersByTeamID()
+    jest
+      .spyOn(yahooAPIService, "getRostersByTeamID")
+      .mockReturnValue(yahooJSON);
+
+    const result = await fetchRostersFromYahoo(teams, uid);
+    // const fs = require("fs");
+    // fs.writeFileSync(
+    //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/dispatchSetLineup/spec/testYahooLineupJSON/output/MLB.json",
+    //   JSON.stringify(result)
+    // );
 
     expect(result).toEqual(expected);
   });

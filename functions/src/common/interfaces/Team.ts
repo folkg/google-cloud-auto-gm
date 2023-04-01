@@ -75,8 +75,16 @@ export interface TeamClient {
   start_date: number;
   end_date: number;
   weekly_deadline: string | number;
+  waiver_rule: string;
   edit_key: string;
   is_approved: boolean;
   is_setting_lineups: boolean;
   last_updated: number;
+  faab_balance: number;
+  current_weekly_adds: number;
+  current_season_adds: number;
+  max_weekly_adds: number;
+  max_season_adds: number;
+  max_games_played: number;
+  max_innings_pitched: number;
 }

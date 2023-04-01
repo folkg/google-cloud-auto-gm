@@ -1,0 +1,622 @@
+[
+  {
+    "team_key": "422.l.115494.t.4",
+    "players": [
+      {
+        "player_key": "422.p.11853",
+        "player_name": "Alejandro Kirk",
+        "eligible_positions": ["C", "Util"],
+        "selected_position": "C",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 70,
+        "percent_owned": 80,
+        "is_starting": 0,
+        "ranks": {
+          "last30Days": 239,
+          "last14Days": 239,
+          "next7Days": 150,
+          "restOfSeason": 419,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.10621",
+        "player_name": "Vladimir Guerrero Jr.",
+        "eligible_positions": ["1B", "Util"],
+        "selected_position": "1B",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 91,
+        "percent_owned": 98,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 93,
+          "last14Days": 93,
+          "next7Days": 29,
+          "restOfSeason": 11,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": true
+      },
+      {
+        "player_key": "422.p.9517",
+        "player_name": "Marcus Semien",
+        "eligible_positions": ["2B", "SS", "Util"],
+        "selected_position": "2B",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 89,
+        "percent_owned": 98,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 90,
+          "last14Days": 90,
+          "next7Days": 283,
+          "restOfSeason": 62,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.11731",
+        "player_name": "Gunnar Henderson",
+        "eligible_positions": ["3B", "SS", "Util"],
+        "selected_position": "3B",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 77,
+        "percent_owned": 93,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 299,
+          "last14Days": 299,
+          "next7Days": 72,
+          "restOfSeason": 80,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.10766",
+        "player_name": "Bo Bichette",
+        "eligible_positions": ["SS", "Util"],
+        "selected_position": "SS",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 92,
+        "percent_owned": 98,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 47,
+          "last14Days": 47,
+          "next7Days": 11,
+          "restOfSeason": 13,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": true
+      },
+      {
+        "player_key": "422.p.10215",
+        "player_name": "Tyler O'Neill",
+        "eligible_positions": ["OF", "Util"],
+        "selected_position": "OF",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 74,
+        "percent_owned": 88,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 54,
+          "last14Days": 54,
+          "next7Days": 212,
+          "restOfSeason": 88,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.9558",
+        "player_name": "Kris Bryant",
+        "eligible_positions": ["OF", "Util"],
+        "selected_position": "OF",
+        "is_editable": true,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 87,
+        "percent_owned": 89,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 72,
+          "last14Days": 72,
+          "next7Days": 88,
+          "restOfSeason": 157,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.11118",
+        "player_name": "Jeff McNeil",
+        "eligible_positions": ["2B", "OF", "Util"],
+        "selected_position": "OF",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 71,
+        "percent_owned": 78,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 320,
+          "last14Days": 320,
+          "next7Days": 317,
+          "restOfSeason": 258,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.9540",
+        "player_name": "José Abreu",
+        "eligible_positions": ["1B", "Util"],
+        "selected_position": "Util",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 95,
+        "percent_owned": 96,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 259,
+          "last14Days": 259,
+          "next7Days": 53,
+          "restOfSeason": 84,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.9103",
+        "player_name": "Kolten Wong",
+        "eligible_positions": ["2B", "Util"],
+        "selected_position": "Util",
+        "is_editable": true,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 10,
+        "percent_owned": 13,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 192,
+          "last14Days": 192,
+          "next7Days": 707,
+          "restOfSeason": 266,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.11370",
+        "player_name": "Oneil Cruz",
+        "eligible_positions": ["SS", "Util"],
+        "selected_position": "BN",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 83,
+        "percent_owned": 94,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 21,
+          "last14Days": 21,
+          "next7Days": 67,
+          "restOfSeason": 77,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.11124",
+        "player_name": "Ramón Laureano",
+        "eligible_positions": ["OF", "Util"],
+        "selected_position": "BN",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 3,
+        "percent_owned": 8,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 439,
+          "last14Days": 439,
+          "next7Days": 916,
+          "restOfSeason": 562,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.9414",
+        "player_name": "Joc Pederson",
+        "eligible_positions": ["OF", "Util"],
+        "selected_position": "BN",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 3,
+        "percent_owned": 9,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 392,
+          "last14Days": 392,
+          "next7Days": 693,
+          "restOfSeason": 314,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.11279",
+        "player_name": "Triston Casas",
+        "eligible_positions": ["1B", "Util"],
+        "selected_position": "BN",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 24,
+        "percent_owned": 49,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 235,
+          "last14Days": 235,
+          "next7Days": 80,
+          "restOfSeason": 207,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.11398",
+        "player_name": "Shane McClanahan",
+        "eligible_positions": ["SP", "P"],
+        "selected_position": "SP",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 66,
+        "percent_owned": 98,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 15,
+          "last14Days": 15,
+          "next7Days": 26,
+          "restOfSeason": 22,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.10438",
+        "player_name": "Dylan Cease",
+        "eligible_positions": ["SP", "P"],
+        "selected_position": "SP",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 76,
+        "percent_owned": 97,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 13,
+          "last14Days": 13,
+          "next7Days": 130,
+          "restOfSeason": 60,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.10860",
+        "player_name": "Alex Lange",
+        "eligible_positions": ["RP", "P"],
+        "selected_position": "RP",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 45,
+        "percent_owned": 48,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 2077,
+          "last14Days": 2077,
+          "next7Days": 119,
+          "restOfSeason": 147,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.10096",
+        "player_name": "Jorge López",
+        "eligible_positions": ["RP", "P"],
+        "selected_position": "RP",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 30,
+        "percent_owned": 31,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 111,
+          "last14Days": 111,
+          "next7Days": 896,
+          "restOfSeason": 1115,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.9585",
+        "player_name": "Julio Urías",
+        "eligible_positions": ["SP", "P"],
+        "selected_position": "P",
+        "is_editable": true,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 78,
+        "percent_owned": 98,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 28,
+          "last14Days": 28,
+          "next7Days": 91,
+          "restOfSeason": 68,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.11014",
+        "player_name": "Freddy Peralta",
+        "eligible_positions": ["SP", "P"],
+        "selected_position": "P",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 52,
+        "percent_owned": 86,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 2173,
+          "last14Days": 2173,
+          "next7Days": 90,
+          "restOfSeason": 111,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.9640",
+        "player_name": "Lucas Giolito",
+        "eligible_positions": ["SP", "P"],
+        "selected_position": "P",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 82,
+        "percent_owned": 91,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 1792,
+          "last14Days": 1792,
+          "next7Days": 286,
+          "restOfSeason": 169,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.8918",
+        "player_name": "Alex Cobb",
+        "eligible_positions": ["SP", "P"],
+        "selected_position": "P",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 16,
+        "percent_owned": 23,
+        "is_starting": 1,
+        "ranks": {
+          "last30Days": 1687,
+          "last14Days": 1687,
+          "next7Days": 792,
+          "restOfSeason": 380,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      },
+      {
+        "player_key": "422.p.10660",
+        "player_name": "Jordan Montgomery",
+        "eligible_positions": ["SP", "P"],
+        "selected_position": "BN",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 37,
+        "percent_owned": 66,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": 2021,
+          "last14Days": 2021,
+          "next7Days": 772,
+          "restOfSeason": 262,
+          "last4Weeks": -1,
+          "projectedWeek": -1,
+          "next4Weeks": -1
+        },
+        "is_undroppable": false
+      }
+    ],
+    "coverage_type": "date",
+    "coverage_period": "2023-04-01",
+    "weekly_deadline": "intraday",
+    "edit_key": "2023-04-01",
+    "game_code": "mlb",
+    "num_teams_in_league": 12,
+    "roster_positions": {
+      "C": 1,
+      "1B": 1,
+      "2B": 1,
+      "3B": 1,
+      "SS": 1,
+      "OF": 3,
+      "Util": 2,
+      "SP": 2,
+      "RP": 2,
+      "P": 4,
+      "BN": 5,
+      "IL": 4
+    },
+    "league_scoring_type": "roto",
+    "current_weekly_adds": 0,
+    "current_season_adds": 0,
+    "max_weekly_adds": -1,
+    "max_season_adds": -1,
+    "start_date": 1680134400000,
+    "end_date": 1696118400000,
+    "faab_balance": 100,
+    "waiver_rule": "continuous",
+    "transactions": [
+      {
+        "transaction_key": "422.l.115494.w.c.4_11643_11124",
+        "type": "waiver",
+        "status": "pending",
+        "waiver_player_key": "422.p.11643",
+        "waiver_team_key": "422.l.115494.t.4",
+        "waiver_team_name": "Jeff's Quality Team",
+        "waiver_date": "2023-04-02",
+        "waiver_roster_reflect_key": "2023-04-02",
+        "waiver_priority": 1,
+        "waiver_priority_options": { "0": { "option": 1 }, "count": 1 },
+        "faab_bid": "0"
+      },
+      {
+        "players": {
+          "0": {
+            "player": [
+              [
+                { "player_key": "422.p.11643" },
+                { "player_id": "11643" },
+                {
+                  "name": {
+                    "full": "Seth Brown",
+                    "first": "Seth",
+                    "last": "Brown",
+                    "ascii_first": "Seth",
+                    "ascii_last": "Brown"
+                  }
+                },
+                { "editorial_team_abbr": "OAK" },
+                { "display_position": "1B,OF" },
+                { "position_type": "B" }
+              ],
+              {
+                "transaction_data": {
+                  "type": "add",
+                  "source_type": "waivers",
+                  "destination_type": "team",
+                  "destination_team_key": "422.l.115494.t.4",
+                  "destination_team_name": "Jeff's Quality Team"
+                }
+              }
+            ]
+          },
+          "1": {
+            "player": [
+              [
+                { "player_key": "422.p.11124" },
+                { "player_id": "11124" },
+                {
+                  "name": {
+                    "full": "Ramón Laureano",
+                    "first": "Ramón",
+                    "last": "Laureano",
+                    "ascii_first": "Ramón",
+                    "ascii_last": "Laureano"
+                  }
+                },
+                { "editorial_team_abbr": "OAK" },
+                { "display_position": "OF" },
+                { "position_type": "B" }
+              ],
+              {
+                "transaction_data": {
+                  "type": "drop",
+                  "source_type": "team",
+                  "source_team_key": "422.l.115494.t.4",
+                  "source_team_name": "Jeff's Quality Team",
+                  "destination_type": "waivers"
+                }
+              }
+            ]
+          },
+          "count": 2
+        }
+      }
+    ],
+    "max_games_played": 162,
+    "max_innings_pitched": 1400
+  }
+]

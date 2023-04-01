@@ -1,4 +1,8 @@
 import { TeamClient } from "../../common/interfaces/Team";
+import {
+  getChild,
+  parseStringToInt,
+} from "../../common/services/utilities.service";
 import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**
@@ -12,51 +16,72 @@ import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service
 export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
   const teams: TeamClient[] = [];
   const standings = await getAllStandings(uid);
-  const gamesJSON = standings.fantasy_content.users[0].user[1].games;
-  // logger.log(games); //use this to debug the JSON object and see all data
-  // Loop through each "game" (nfl, nhl, nba, mlb)
-  for (const key in gamesJSON) {
-    if (key !== "count") {
-      const game = gamesJSON[key].game[0];
-      const leagues = gamesJSON[key].game[1].leagues;
-      // Loop through each league within the game
-      // TODO: Make this more robust with the help of the getChild function
-      for (const key in leagues) {
-        if (key !== "count") {
-          const allTeams = leagues[key].league[1].standings[0].teams;
-          const usersTeam = getUsersTeam(allTeams);
-          const teamObj: TeamClient = {
-            game_name: game.name,
-            game_code: game.code,
-            game_season: game.season,
-            game_is_over: game.is_game_over,
-            team_key: usersTeam.team[0][0].team_key,
-            team_name: usersTeam.team[0][2].name,
-            team_url: usersTeam.team[0][4].url,
-            team_logo: usersTeam.team[0][5].team_logos[0].team_logo.url,
-            league_name: leagues[key].league[0].name,
-            num_teams: leagues[key].league[0].num_teams,
-            rank: usersTeam.team[2].team_standings.rank,
-            points_for: usersTeam.team[2].team_standings.points_for,
-            points_against: usersTeam.team[2].team_standings.points_against,
-            points_back: usersTeam.team[2].team_standings.points_back,
-            outcome_totals: usersTeam.team[2].team_standings.outcome_totals,
-            scoring_type: leagues[key].league[0].scoring_type,
-            start_date: Date.parse(leagues[key].league[0].start_date),
-            end_date: Date.parse(leagues[key].league[0].end_date),
-            weekly_deadline: leagues[key].league[0].weekly_deadline,
-            edit_key: leagues[key].league[0].edit_key,
-            is_approved: true,
-            is_setting_lineups: false,
-            last_updated: -1,
-          };
-          teams.push(teamObj);
-        }
-      }
+
+  const gamesJSON = getChild(standings.fantasy_content.users[0].user, "games");
+
+  for (const gameKey of Object.keys(gamesJSON).filter(
+    (key) => key !== "count"
+  )) {
+    const gameJSON = gamesJSON[gameKey].game;
+    const leaguesJSON = getChild(gameJSON, "leagues");
+
+    for (const leagueKey of Object.keys(leaguesJSON).filter(
+      (key) => key !== "count"
+    )) {
+      const league = leaguesJSON[leagueKey].league;
+      const allTeams = getChild(getChild(league, "standings"), "teams");
+      const leagueSettings = getChild(league, "settings");
+      const usersTeam = getUsersTeam(allTeams).team;
+      const teamStandings = getChild(usersTeam, "team_standings");
+      const teamObj: TeamClient = {
+        game_name: getChild(gameJSON, "name"),
+        game_code: getChild(gameJSON, "code"),
+        game_season: getChild(gameJSON, "season"),
+        game_is_over: getChild(gameJSON, "is_game_over"),
+        team_key: getChild(usersTeam[0], "team_key"),
+        team_name: getChild(usersTeam[0], "name"),
+        team_url: getChild(usersTeam[0], "url"),
+        team_logo: getChild(usersTeam[0], "team_logos")[0].team_logo.url,
+        league_name: getChild(league, "name"),
+        num_teams: getChild(league, "num_teams"),
+        rank: teamStandings.rank,
+        points_for: teamStandings.points_for,
+        points_against: teamStandings.points_against,
+        points_back: teamStandings.points_back,
+        outcome_totals: teamStandings.outcome_totals,
+        scoring_type: getChild(league, "scoring_type"),
+        start_date: Date.parse(getChild(league, "start_date")),
+        end_date: Date.parse(getChild(league, "end_date")),
+        weekly_deadline: getChild(league, "weekly_deadline"),
+        waiver_rule: getChild(leagueSettings, "waiver_rule"),
+        faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
+        current_weekly_adds: parseStringToInt(
+          getChild(usersTeam[0], "roster_adds").value,
+          0
+        ),
+        current_season_adds: parseStringToInt(
+          getChild(usersTeam[0], "number_of_moves"),
+          0
+        ),
+        max_weekly_adds: parseStringToInt(
+          getChild(leagueSettings, "max_weekly_adds")
+        ),
+        max_season_adds: parseStringToInt(getChild(leagueSettings, "max_adds")),
+        max_games_played: parseStringToInt(
+          getChild(leagueSettings, "max_games_played")
+        ),
+        max_innings_pitched: parseStringToInt(
+          getChild(leagueSettings, "max_innings_pitched")
+        ),
+        edit_key: getChild(league, "edit_key"),
+        is_approved: true,
+        is_setting_lineups: false,
+        last_updated: -1,
+      };
+      teams.push(teamObj);
     }
   }
-  // logger.log("Fetched teams from Yahoo API:");
-  // logger.log(teams);
+  // console.log(JSON.stringify(teams));
   return teams;
 }
 
@@ -68,7 +93,7 @@ export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
 function getUsersTeam(allTeams: any): any {
   // TODO: Could remove this by changing the API call to return the user's team
   for (const key in allTeams) {
-    if (key !== "count" && allTeams[key].team[0][3].is_owned_by_current_login) {
+    if (getChild(allTeams[key]?.team[0], "is_owned_by_current_login")) {
       return allTeams[key];
     }
   }

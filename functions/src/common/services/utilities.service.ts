@@ -9,12 +9,12 @@ const { GoogleAuth } = require("google-auth-library");
  * @return {*} - The value of the property
  */
 export function getChild(array: any[], key: string) {
-  for (const element of array) {
-    if (element[key]) {
-      return element[key];
-    }
-  }
-  return null;
+  const element = array.find((o) => o[key] !== undefined);
+  return element ? element[key] : null;
+}
+
+export function parseStringToInt(value: string, defaultValue = -1): number {
+  return parseInt(value) || defaultValue;
 }
 
 let auth: any;

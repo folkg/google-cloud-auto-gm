@@ -85,7 +85,7 @@ export async function getRostersByTeamID(
     "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
     "/leagues;league_keys=" +
     leagueKeys +
-    ";out=settings/teams/roster;date=" +
+    ";out=settings/teams;out=transactions,roster_alerts;transactions.types=waiver,pending_trade/roster;date=" +
     date +
     "/players;out=percent_started,percent_owned,ranks,opponent,starting_status" +
     ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
@@ -147,8 +147,7 @@ export async function getFreeAgents(
 export async function getAllStandings(uid: string): Promise<any> {
   try {
     const { data } = await httpGetAxios(
-      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/" +
-        "leagues/standings?format=json",
+      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues;out=settings,standings?format=json",
       uid
     );
     return data;

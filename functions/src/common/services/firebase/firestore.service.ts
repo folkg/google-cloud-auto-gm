@@ -124,8 +124,6 @@ export async function getActiveTeamsForLeagues(leagues: string[]) {
     return Promise.reject(error);
   }
 
-  result.docs.find((doc) => doc.data().game_code === "nhl");
-
   return result;
 }
 

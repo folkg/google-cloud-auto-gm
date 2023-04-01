@@ -1,9 +1,6 @@
-// required to initialize firebase-admin and firestore
-// import "./firebase";
 import { postRosterAddDropTransaction } from "../yahooAPI.service";
 const js2xmlparser = require("js2xmlparser");
 
-// if we want to run the first test with the actual API, we need to uncomment the import firebase above, and comment out the below.
 jest.mock("firebase-admin", () => ({
   initializeApp: jest.fn(),
   firestore: jest.fn(),
@@ -13,37 +10,6 @@ const yahooHttpService = require("../yahooHttp.service");
 describe("YahooAPI Service", () => {
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  // Danger: This test will actually perform API calls to Yahoo! and will drop players if not mocked.
-  xit("should actually make a move in Yahoo", async () => {
-    const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
-
-    const transaction = {
-      sameDayTransactions: true,
-      teamKey: "418.l.201581.t.1",
-      players: [
-        {
-          playerKey: "418.p.5295",
-          transactionType: "drop",
-        },
-        {
-          playerKey: "418.p.5069",
-          transactionType: "add",
-        },
-      ],
-    };
-
-    expect.assertions(1);
-    let result = false;
-    try {
-      result = await postRosterAddDropTransaction(transaction, uid);
-      console.log("result: " + result);
-    } catch (error) {
-      console.error(error);
-      expect(error).toBeDefined();
-    }
-    expect(result).toBe(true);
   });
 
   it("should call API to drop players", async () => {

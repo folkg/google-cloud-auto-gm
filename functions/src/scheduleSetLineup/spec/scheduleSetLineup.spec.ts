@@ -152,6 +152,45 @@ describe("scheduleSetLineup", () => {
     expect(spyFetchStartingPlayers).toHaveBeenCalledWith("mlb");
   });
 
+  it("should only enqueue tasks with a start date in the past", async () => {
+    const teams = [
+      {
+        uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1",
+        team_key: "419.l.14950.t.2",
+        start_date: Date.now() + 10000,
+      },
+      {
+        uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1",
+        team_key: "419.l.19947.t.6",
+        start_date: 123456789,
+      },
+      {
+        uid: "xAyXmaHKO3aRm9J3fnj2rgZRPnX2",
+        team_key: "414.l.358976.t.4",
+        start_date: Date.now() + 10000,
+      },
+    ];
+
+    // mock the querySnapshot object
+    const teamsSnapshot = mockTeamsSnapshot(teams);
+
+    mockGetActiveTeamsForLeagues.mockReturnValue(
+      Promise.resolve(teamsSnapshot)
+    );
+
+    await scheduleSetLineup();
+
+    expect(mockQueue.enqueue).toHaveBeenCalledTimes(1); // check if the enqueue method was called twice
+    expect(mockQueue.enqueue).toHaveBeenCalledWith(
+      // check if the enqueue method was called with the correct arguments for the first user
+      { uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1", teams: [teams[1]] },
+      {
+        dispatchDeadlineSeconds: 60 * 5,
+        uri: mockFunctionUrl,
+      }
+    );
+  });
+
   it("should not execute if there are no leagues", async () => {
     mockLeaguesToSetLineupsFor.mockReturnValue(Promise.resolve([]));
     const logSpy = jest.spyOn(logger, "log");
