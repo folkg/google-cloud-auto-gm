@@ -14,7 +14,7 @@ import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email.service";
 import { datePSTString } from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
-import { setStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
+import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
 
 export const db = firestore();
@@ -123,6 +123,8 @@ export async function getActiveTeamsForLeagues(leagues: string[]) {
   } catch (error) {
     return Promise.reject(error);
   }
+
+  result.docs.find((doc) => doc.data().game_code === "nhl");
 
   return result;
 }
@@ -236,11 +238,11 @@ export async function getIntradayTeams(
     return teamsSnapshot;
   } catch (error) {
     logger.error(
-      `Error fetching Intraday ${league.toUpperCase} teams from firestore`,
+      `Error fetching Intraday ${league.toUpperCase()} teams from firestore`,
       error
     );
     throw new Error(
-      `Error fetching Intraday ${league.toUpperCase} teams from firestore`
+      `Error fetching Intraday ${league.toUpperCase()} teams from firestore`
     );
   }
 }
@@ -267,11 +269,11 @@ export async function storeStartingPlayersInFirestore(
     });
   } catch (error) {
     logger.error(
-      `Error storing starting ${league.toUpperCase} players in Firestore`,
+      `Error storing starting ${league.toUpperCase()} players in Firestore`,
       error
     );
     throw new Error(
-      `Error storing starting ${league.toUpperCase} players in Firestore`
+      `Error storing starting ${league.toUpperCase()} players in Firestore`
     );
   }
 }
@@ -289,7 +291,6 @@ export async function getStartingPlayersFromFirestore(
   league: string
 ): Promise<string[]> {
   const startingPlayersRef = db.collection("startingPlayers");
-  console.log("Getting starting players from Firestore");
   try {
     const startingPlayersSnapshot: DocumentSnapshot<DocumentData> =
       await startingPlayersRef.doc(league).get();
@@ -307,14 +308,14 @@ export async function getStartingPlayersFromFirestore(
     // or don't exist in firebase, fetch them from Yahoo API
     console.log("Starting players not found in Firestore");
     try {
-      await setStartingPlayers(league);
+      await fetchStartingPlayers(league);
       return getStartingPlayersFromFirestore(league);
     } catch (error) {
       logger.error(error);
     }
   } catch (error) {
     logger.error(
-      `Error getting starting ${league.toUpperCase} players from Firestore`,
+      `Error getting starting ${league.toUpperCase()} players from Firestore`,
       error
     );
   }

@@ -13,10 +13,6 @@ const mockLeaguesToSetLineupsFor = jest.spyOn(
   "leaguesToSetLineupsFor"
 );
 
-jest.mock("../../common/services/yahooAPI/yahooStartingPlayer.service", () => ({
-  fetchStartingGoaliesYahoo: jest.fn(() => Promise.resolve()),
-}));
-
 const mockQueue = {
   enqueue: jest.fn(() => Promise.resolve()),
 };
@@ -41,7 +37,9 @@ jest.mock("firebase-admin/functions", () => {
 
 describe("scheduleSetLineup", () => {
   beforeEach(() => {
-    mockLeaguesToSetLineupsFor.mockReturnValue(Promise.resolve(["nhl", "mlb"]));
+    mockLeaguesToSetLineupsFor.mockReturnValue(
+      Promise.resolve(["nhl", "mlb", "nba"])
+    );
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -53,10 +51,12 @@ describe("scheduleSetLineup", () => {
   );
 
   function mockTeamsSnapshot(teams: any) {
-    return teams.map((team: any) => ({
-      id: team.team_key,
-      data: () => team,
-    }));
+    return {
+      docs: teams.map((team: any) => ({
+        id: team.team_key,
+        data: () => team,
+      })),
+    };
   }
 
   it("should enqueue tasks for each active user with playing teams", async () => {
@@ -104,6 +104,52 @@ describe("scheduleSetLineup", () => {
         uri: mockFunctionUrl,
       }
     );
+  });
+
+  it("should fetch starting players for NHL and MLB", async () => {
+    const teams = [
+      {
+        uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1",
+        team_key: "419.l.14950.t.2",
+        game_code: "nhl",
+        start_date: 123456789,
+      },
+      {
+        uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1",
+        team_key: "419.l.19947.t.6",
+        game_code: "mlb",
+        start_date: 123456789,
+      },
+      {
+        uid: "xAyXmaHKO3aRm9J3fnj2rgZRPnX2",
+        team_key: "414.l.358976.t.4",
+        game_code: "nba",
+        start_date: 123456789,
+      },
+    ];
+
+    // mock the querySnapshot object
+    const teamsSnapshot = mockTeamsSnapshot(teams);
+    console.log(JSON.stringify(teamsSnapshot.docs.map((t: any) => t.data())));
+    mockGetActiveTeamsForLeagues.mockReturnValue(
+      Promise.resolve(teamsSnapshot)
+    );
+
+    const spyFetchStartingPlayers = jest
+      .spyOn(
+        require("../../common/services/yahooAPI/yahooStartingPlayer.service"),
+        "fetchStartingPlayers"
+      )
+      .mockImplementation(() => {
+        console.log("test");
+        return Promise.resolve();
+      });
+
+    await scheduleSetLineup();
+
+    expect(spyFetchStartingPlayers).toHaveBeenCalledTimes(2);
+    expect(spyFetchStartingPlayers).toHaveBeenCalledWith("nhl");
+    expect(spyFetchStartingPlayers).toHaveBeenCalledWith("mlb");
   });
 
   it("should not execute if there are no leagues", async () => {

@@ -1,4 +1,4 @@
-import { setStartingPlayers } from "../yahooStartingPlayer.service";
+import { fetchStartingPlayers } from "../yahooStartingPlayer.service";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({
@@ -79,7 +79,7 @@ describe("Test setStartingPlayers()", function () {
 
   test("test NHL setStartingPlayers", async function () {
     const league = "nhl";
-    await setStartingPlayers(league);
+    await fetchStartingPlayers(league);
     expect(spyGetIntradayTeams).toHaveBeenCalledWith(league);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledTimes(1);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledWith(
@@ -89,7 +89,7 @@ describe("Test setStartingPlayers()", function () {
   });
   test("test MLB setStartingPlayers", async function () {
     const league = "mlb";
-    await setStartingPlayers(league);
+    await fetchStartingPlayers(league);
     expect(spyGetIntradayTeams).toHaveBeenCalledWith(league);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledTimes(1);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledWith(
@@ -99,7 +99,7 @@ describe("Test setStartingPlayers()", function () {
   });
   test("test NBA setStartingPlayers", async function () {
     const league = "nba";
-    await setStartingPlayers(league);
+    await fetchStartingPlayers(league);
     expect(spyGetIntradayTeams).toHaveBeenCalledWith(league);
     expect(spyStoreStartingPlayersInFirestore).not.toHaveBeenCalled();
   });

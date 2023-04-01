@@ -38,12 +38,12 @@ export async function setUsersLineup(
     return;
   }
 
-  const anyNHLTeam = firestoreTeams.find((team) => team.game_code === "nhl");
-  if (anyNHLTeam) {
+  const hasNHLTeam = firestoreTeams.some((team) => team.game_code === "nhl");
+  if (hasNHLTeam) {
     await initStartingGoalies();
   }
-  const anyMLBTeam = firestoreTeams.find((team) => team.game_code === "mlb");
-  if (anyMLBTeam) {
+  const hasMLBTeam = firestoreTeams.some((team) => team.game_code === "mlb");
+  if (hasMLBTeam) {
     await initStartingPitchers();
   }
 

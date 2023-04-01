@@ -1,36 +1,20 @@
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
-import { getFunctions, TaskQueue } from "firebase-admin/functions";
+import { TaskQueue, getFunctions } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { getActiveTeamsForLeagues } from "../../common/services/firebase/firestore.service";
 import { getFunctionUrl } from "../../common/services/utilities.service";
-import { setStartingPlayers } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import {
   enqueueUsersTeams,
   leaguesToSetLineupsFor,
   mapUsersToActiveTeams,
+  setStartingPlayersForToday,
 } from "./scheduling.service";
 
 export async function scheduleSetLineup() {
   const leagues: string[] = await leaguesToSetLineupsFor();
-
   if (leagues.length === 0) {
     logger.log("No leagues to set lineups for.");
     return;
-  }
-
-  if (leagues.includes("nhl")) {
-    try {
-      await setStartingPlayers("nhl");
-    } catch (error) {
-      logger.error("Error fetching starting goalies from Yahoo ", error);
-    }
-  }
-  if (leagues.includes("mlb")) {
-    try {
-      await setStartingPlayers("mlb");
-    } catch (error) {
-      logger.error("Error fetching starting pitchers from Yahoo ", error);
-    }
   }
 
   let teamsSnapshot: QuerySnapshot<DocumentData>;
@@ -44,8 +28,9 @@ export async function scheduleSetLineup() {
     return;
   }
 
-  const activeUsers: Map<string, any[]> = mapUsersToActiveTeams(teamsSnapshot);
+  await setStartingPlayersForToday(teamsSnapshot);
 
+  const activeUsers: Map<string, any[]> = mapUsersToActiveTeams(teamsSnapshot);
   if (activeUsers.size === 0) {
     logger.log("No users to set lineups for");
     return;

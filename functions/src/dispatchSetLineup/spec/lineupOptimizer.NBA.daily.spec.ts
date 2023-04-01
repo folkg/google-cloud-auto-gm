@@ -9,10 +9,6 @@ jest.mock("firebase-admin", () => ({
 
 xdescribe("Test LineupOptimizer Class NBA Daily", function () {
   // NBA should be very similar to NHL, so we'll just test a few things
-  beforeEach(() => {
-    jest.resetModules();
-  });
-
   it("One healthy on IL, one IL on IL, one injured on roster", async function () {
     const roster: ITeam = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");
     const lo = new LineupOptimizer(roster);

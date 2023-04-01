@@ -40,10 +40,12 @@ describe("scheduleWeeklyLeagueTransactions", () => {
   );
 
   function mockTeamsSnapshot(teams: any) {
-    return teams.map((team: any) => ({
-      id: team.team_key,
-      data: () => team,
-    }));
+    return {
+      docs: teams.map((team: any) => ({
+        id: team.team_key,
+        data: () => team,
+      })),
+    };
   }
 
   it("should enqueue tasks for each active user with playing teams", async () => {

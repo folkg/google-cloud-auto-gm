@@ -26,7 +26,7 @@ export function getMLBStartingPitchers(): string[] {
  * @param {string} league - the league to fetch starting goalies for
  * @return {Promise<void>} void
  */
-export async function setStartingPlayers(league: string): Promise<void> {
+export async function fetchStartingPlayers(league: string): Promise<void> {
   // get a team from firestore where weekly_deadline='intraday' and game='nhl'
   // we will use their access token to get the starting goalies for all users
 
@@ -35,7 +35,7 @@ export async function setStartingPlayers(league: string): Promise<void> {
   );
   if (teamsSnapshot.empty) {
     throw new Error(
-      `No teams found with weekly_deadline='intraday' and game=${league.toUpperCase}`
+      `No teams found with weekly_deadline='intraday' and game=${league.toUpperCase()}`
     );
   }
 
@@ -74,7 +74,7 @@ async function parseStartingPlayersFromYahoo(
   leagueKey: string
 ): Promise<string[]> {
   logger.log(
-    `Loading starting players from Yahoo for ${league.toUpperCase}. Logging this to see if it's called more than once.`
+    `Loading starting players from Yahoo for ${league.toUpperCase()}. Logging this to see if it's called more than once.`
   );
   const result: string[] = [];
 

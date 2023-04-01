@@ -4,6 +4,7 @@ import { TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { db } from "../../common/services/firebase/firestore.service";
 import { datePSTString } from "../../common/services/utilities.service";
+import { fetchStartingPlayers } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import { GameStartTimes } from "../interfaces/gameStartTime";
 
 /**
@@ -196,6 +197,28 @@ async function getGameTimesSportsnet(
   return { [league]: gameTimesArray };
 }
 
+export async function setStartingPlayersForToday(
+  teamsSnapshot: QuerySnapshot<DocumentData>
+) {
+  const leaguesWithStarters = ["nhl", "mlb"];
+
+  for (const league of leaguesWithStarters) {
+    const hasTeam = teamsSnapshot?.docs?.some(
+      (doc) => doc.data().game_code === league
+    );
+    if (hasTeam) {
+      try {
+        await fetchStartingPlayers(league);
+      } catch (error) {
+        logger.error(
+          `Error fetching starting players for ${league.toUpperCase()} from Yahoo`,
+          error
+        );
+      }
+    }
+  }
+}
+
 export function mapUsersToActiveTeams(
   teamsSnapshot: QuerySnapshot<DocumentData>
 ) {
@@ -204,14 +227,14 @@ export function mapUsersToActiveTeams(
     return new Map();
   }
 
-  // create a map of user_id to list of teams
   const result: Map<string, any[]> = new Map();
-  teamsSnapshot.forEach((doc) => {
+  teamsSnapshot?.docs?.forEach((doc) => {
     const team = doc.data();
     const uid = team.uid;
     team.team_key = doc.id;
 
-    // only add teams where the season has started
+    // We cannot query for both start_date <= Date.now() and end_date >= Date.now()
+    // in firebase, so we need to filter start date locally
     if (team.start_date <= Date.now()) {
       const userTeams = result.get(uid);
       if (userTeams === undefined) {
@@ -220,6 +243,11 @@ export function mapUsersToActiveTeams(
         userTeams.push(team);
       }
     }
+  });
+
+  // log all user keys
+  result.forEach((teams, uid) => {
+    logger.log(`Found ${teams.length} teams for user ${uid}`);
   });
 
   return result;
