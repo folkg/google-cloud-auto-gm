@@ -3,7 +3,7 @@ import { ITeam } from "../interfaces/ITeam";
 import {
   performWeeklyLeagueTransactions,
   setUsersLineup,
-} from "../services/lineupOptimizer.service";
+} from "../services/setLineups.service";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({

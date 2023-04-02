@@ -145,7 +145,7 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
           getChild(player, "selected_position"),
           "position"
         ),
-        is_editable: getChild(player, "is_editable") === 1 ? true : false,
+        is_editable: getChild(player, "is_editable") === 1,
         is_playing: !opponent || opponent === "Bye" ? false : true,
         injury_status: getChild(player[0], "status_full") || "Healthy",
         percent_started: getPercentObject(player, "percent_started"),
@@ -154,8 +154,7 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
           ? getChild(getChild(player, "starting_status"), "is_starting")
           : "N/A",
         ranks: getPlayerRanks(player),
-        is_undroppable:
-          getChild(player[0], "is_undroppable") === "1" ? true : false,
+        is_undroppable: getChild(player[0], "is_undroppable") === "1",
       };
 
       result.push(playerObject);

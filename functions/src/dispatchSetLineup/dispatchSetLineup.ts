@@ -1,6 +1,6 @@
 import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
-import { setUsersLineup } from "./services/lineupOptimizer.service";
+import { setUsersLineup } from "./services/setLineups.service";
 
 // could increase maxConcurrentDispatches if we get more users.
 export const taskQueueConfig = {
