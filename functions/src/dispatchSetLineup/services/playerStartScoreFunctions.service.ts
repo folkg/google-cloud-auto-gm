@@ -65,8 +65,7 @@ export function dailyScoreFunction(): (player: IPlayer) => number {
  *  returns a score.
  */
 export function nhlScoreFunction(): (player: IPlayer) => number {
-  // TODO: need to add a test for this
-  const starters = getNHLStartingGoalies() ?? [];
+  const startingGoalies = getNHLStartingGoalies() ?? [];
   return (player: IPlayer) => {
     // The base score will be percent_started
     // percent_started has been broken before, so percent owned is a backup
@@ -74,7 +73,7 @@ export function nhlScoreFunction(): (player: IPlayer) => number {
 
     const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
     const isStartingGoalie = player.eligible_positions.includes("G")
-      ? isStartingPlayer(player, starters)
+      ? isStartingPlayer(player, startingGoalies)
       : false;
     if (!player.is_playing) {
       score *= NOT_PLAYING_FACTOR;
@@ -97,25 +96,25 @@ export function nhlScoreFunction(): (player: IPlayer) => number {
  *  returns a score.
  */
 export function mlbScoreFunction(): (player: IPlayer) => number {
-  const starters = getMLBStartingPitchers() ?? [];
+  const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: IPlayer) => {
     // The base score will be percent_started
     // percent_started has been broken before, so percent owned is a backup
     let score = player.percent_started ?? player.percent_owned;
 
     const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
-    const isStartingPitcher = player.eligible_positions.some((pos) =>
+    const isStarting = player.eligible_positions.some((pos) =>
       ["P", "SP", "RP"].includes(pos)
     )
-      ? isStartingPlayer(player, starters)
-      : false;
+      ? isStartingPlayer(player, startingPitchers)
+      : player.is_starting;
     if (!player.is_playing) {
       score *= NOT_PLAYING_FACTOR;
     }
     if (isPlayerInjured) {
       score *= INJURY_FACTOR;
     }
-    if (isStartingPitcher) {
+    if (isStarting) {
       score *= STARTING_FACTOR;
     }
     return score;
