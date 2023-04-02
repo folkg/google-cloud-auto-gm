@@ -65,6 +65,43 @@ export function datePSTString(date: Date): string {
   return dateString;
 }
 
+export function getPacificStartOfDay(timestamp: number): number {
+  return getPacificDayBoundary(timestamp, true);
+}
+
+export function getPacificEndOfDay(timestamp: number): number {
+  return getPacificDayBoundary(timestamp, false);
+}
+
+function getPacificDayBoundary(
+  timestamp: number,
+  isStartOfDay: boolean
+): number {
+  const date = new Date(timestamp);
+  const [hours, minutes, seconds, ms] = isStartOfDay
+    ? [0, 0, 0, 0]
+    : [23, 59, 59, 999];
+  date.setUTCHours(hours, minutes, seconds, ms);
+
+  // Adjust for Pacific Time Zone offset
+  date.setHours(date.getHours() + getPacificOffset(date));
+
+  return date.getTime();
+}
+
+function getPacificOffset(date: Date) {
+  // You would think there would be a better way to do this, but there isn't without using a library.
+  const year = date.getUTCFullYear();
+  const dstStart = new Date(Date.UTC(year, 2, 8, 10)); // Second Sunday in March at 2am Pacific Time (daylight saving time starts)
+  const dstEnd = new Date(Date.UTC(year, 10, 1, 9)); // First Sunday in November at 2am Pacific Time (daylight saving time ends)
+  dstStart.setUTCHours(dstStart.getUTCHours() - 7);
+  dstEnd.setUTCHours(dstEnd.getUTCHours() - 8);
+  const isDstInEffect =
+    date.getTime() >= dstStart.getTime() && date.getTime() < dstEnd.getTime();
+  const pacificOffset = isDstInEffect ? 7 : 8;
+  return pacificOffset;
+}
+
 /**
  * Takes an array and a predicate function and returns an array of two arrays.
  * The first array contains all the elements that satisfy the predicate.

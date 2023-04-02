@@ -1,3 +1,8 @@
+import {
+  getPacificEndOfDay,
+  getPacificStartOfDay,
+} from "../services/utilities.service";
+
 export interface TeamFirestore {
   uid: string;
   game_code: string;
@@ -37,8 +42,8 @@ export function clientToFirestore(team: TeamClient): TeamFirestore {
   return {
     uid,
     game_code,
-    start_date,
-    end_date,
+    start_date: getPacificStartOfDay(start_date),
+    end_date: getPacificEndOfDay(end_date),
     weekly_deadline,
     is_approved,
     is_setting_lineups,
