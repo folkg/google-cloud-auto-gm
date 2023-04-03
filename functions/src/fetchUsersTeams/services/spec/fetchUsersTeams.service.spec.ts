@@ -16,6 +16,11 @@ describe("fetchUsersTeams", () => {
     mockGetAllStandings.mockReturnValue(input);
 
     const teams = await fetchTeamsYahoo("test");
+    // const fs = require("fs");
+    // fs.writeFileSync(
+    //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/fetchUsersTeams/services/spec/output.json",
+    //   JSON.stringify(teams)
+    // );
 
     expect(teams).toEqual(expectedOutput);
   });

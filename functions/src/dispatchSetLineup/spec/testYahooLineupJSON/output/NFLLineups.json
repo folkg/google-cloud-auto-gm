@@ -338,7 +338,7 @@
     "weekly_deadline": null,
     "edit_key": "17",
     "game_code": "nfl",
-    "num_teams_in_league": 14,
+    "num_teams": 14,
     "roster_positions": {
       "WR": 3,
       "RB": 2,
@@ -718,7 +718,7 @@
     "weekly_deadline": null,
     "edit_key": "17",
     "game_code": "nfl",
-    "num_teams_in_league": 12,
+    "num_teams": 12,
     "roster_positions": {
       "QB": 1,
       "WR": 2,

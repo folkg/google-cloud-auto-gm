@@ -47,11 +47,11 @@ xdescribe("Yahoo API Live Integration Tests", () => {
   xit("should getAllStandings", async () => {
     const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1"; // Graeme Folk
     const JSONresponse = await getAllStandings(uid);
-    const fs = require("fs");
-    fs.writeFileSync(
-      "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/fetchUsersTeams/services/spec/input.json",
-      JSON.stringify(JSONresponse)
-    );
+    // const fs = require("fs");
+    // fs.writeFileSync(
+    //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/fetchUsersTeams/services/spec/input.json",
+    //   JSON.stringify(JSONresponse)
+    // );
     expect(JSONresponse).toBeDefined();
   });
 });

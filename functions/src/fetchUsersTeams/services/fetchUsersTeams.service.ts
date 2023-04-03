@@ -1,6 +1,8 @@
-import { TeamClient } from "../../common/interfaces/Team";
+import { TeamYahooAngular } from "../../common/interfaces/Team";
 import {
   getChild,
+  getPacificEndOfDay,
+  getPacificStartOfDay,
   parseStringToInt,
 } from "../../common/services/utilities.service";
 import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service";
@@ -11,10 +13,12 @@ import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service
  * @export
  * @async
  * @param {string} uid The firebase uid
- * @return {Promise<TeamClient[]>} The user's teams
+ * @return {Promise<TeamYahooAngular[]>} The user's teams
  */
-export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
-  const teams: TeamClient[] = [];
+export async function fetchTeamsYahoo(
+  uid: string
+): Promise<TeamYahooAngular[]> {
+  const teams: TeamYahooAngular[] = [];
   const standings = await getAllStandings(uid);
 
   const gamesJSON = getChild(standings.fantasy_content.users[0].user, "games");
@@ -33,7 +37,7 @@ export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
       const leagueSettings = getChild(league, "settings");
       const usersTeam = getUsersTeam(allTeams).team;
       const teamStandings = getChild(usersTeam, "team_standings");
-      const teamObj: TeamClient = {
+      const teamObj: TeamYahooAngular = {
         game_name: getChild(gameJSON, "name"),
         game_code: getChild(gameJSON, "code"),
         game_season: getChild(gameJSON, "season"),
@@ -50,8 +54,10 @@ export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
         points_back: teamStandings.points_back,
         outcome_totals: teamStandings.outcome_totals,
         scoring_type: getChild(league, "scoring_type"),
-        start_date: Date.parse(getChild(league, "start_date")),
-        end_date: Date.parse(getChild(league, "end_date")),
+        start_date: getPacificStartOfDay(
+          Date.parse(getChild(league, "start_date"))
+        ),
+        end_date: getPacificEndOfDay(Date.parse(getChild(league, "end_date"))),
         weekly_deadline: getChild(league, "weekly_deadline"),
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
@@ -74,9 +80,6 @@ export async function fetchTeamsYahoo(uid: string): Promise<TeamClient[]> {
           getChild(leagueSettings, "max_innings_pitched")
         ),
         edit_key: getChild(league, "edit_key"),
-        is_approved: true,
-        is_setting_lineups: false,
-        last_updated: -1,
       };
       teams.push(teamObj);
     }

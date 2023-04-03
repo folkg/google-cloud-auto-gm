@@ -31,7 +31,7 @@ export class Team implements Team {
       player.start_score = playerStartScoreFunction(player);
       player.ownership_score = ownershipScoreFunction(
         player,
-        this.num_teams_in_league * this.numStandardRosterSpots
+        this.num_teams * this.numStandardRosterSpots
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });

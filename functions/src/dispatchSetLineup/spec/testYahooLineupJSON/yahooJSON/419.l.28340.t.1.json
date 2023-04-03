@@ -464,7 +464,7 @@
                                       }
                                     },
                                     [],
-                                    { "league_scoring_type": "roto" },
+                                    { "scoring_type": "roto" },
                                     [],
                                     [],
                                     { "has_draft_grade": 0 },

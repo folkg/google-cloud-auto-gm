@@ -369,7 +369,7 @@
                                       }
                                     },
                                     [],
-                                    { "league_scoring_type": "point" },
+                                    { "scoring_type": "point" },
                                     [],
                                     { "draft_position": 1 },
                                     { "has_draft_grade": 0 },

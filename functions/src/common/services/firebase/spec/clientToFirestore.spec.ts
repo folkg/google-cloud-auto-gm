@@ -1,7 +1,7 @@
-import { TeamClient, clientToFirestore } from "../../../interfaces/Team";
+import { TeamYahooAngular, yahooToFirestore } from "../../../interfaces/Team";
 
 describe("clientToFirestore", () => {
-  const mockTeam: TeamClient = {
+  const mockTeam: TeamYahooAngular = {
     uid: "gibberish_uid",
     game_name: "game name",
     game_code: "game code",
@@ -24,14 +24,11 @@ describe("clientToFirestore", () => {
       percentage: "60%",
     },
     scoring_type: "scoring type",
-    start_date: 1680469367000, //  Sunday April 02, 2023 14:02:47 GMT-0700 (Pacific Daylight Time)
-    end_date: 1680814967000, //  Thursday April 06, 2023 14:02:47 GMT-0700 (Pacific Daylight Time)
+    start_date: 1680418800000, //  Sunday April 02, 2023 14:02:47 GMT-0700 (Pacific Daylight Time)
+    end_date: 1680850799999, //  Thursday April 06, 2023 14:02:47 GMT-0700 (Pacific Daylight Time)
     weekly_deadline: "Sun 4:15pm ET",
     waiver_rule: "waiver rule",
     edit_key: "edit key",
-    is_approved: true,
-    is_setting_lineups: false,
-    last_updated: Date.now(),
     faab_balance: 100,
     current_weekly_adds: 2,
     current_season_adds: 25,
@@ -49,12 +46,15 @@ describe("clientToFirestore", () => {
     weekly_deadline: mockTeam.weekly_deadline,
     is_approved: true,
     is_setting_lineups: false,
-    last_updated: mockTeam.last_updated,
     allow_dropping: false,
     allow_adding: false,
+    allow_add_drops: false,
+    allow_transactions: false,
+    allow_waiver_adds: false,
+    last_updated: -1,
   };
 
   it("should convert a teamclient object to a teamFirestore object", () => {
-    expect(clientToFirestore(mockTeam)).toEqual(expectedOutput);
+    expect(yahooToFirestore(mockTeam)).toEqual(expectedOutput);
   });
 });

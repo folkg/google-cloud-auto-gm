@@ -6,9 +6,9 @@ import {
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import {
-  TeamClient,
+  TeamYahooAngular,
   TeamFirestore,
-  clientToFirestore,
+  yahooToFirestore,
 } from "../../interfaces/Team";
 import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email.service";
@@ -158,12 +158,12 @@ export async function getActiveWeeklyTeams() {
  *
  * @export
  * @async
- * @param {TeamClient[]} missingTeams - Teams that are in Yahoo but not in Firestore
+ * @param {TeamYahooAngular[]} missingTeams - Teams that are in Yahoo but not in Firestore
  * @param {TeamFirestore[]} extraTeams - Teams that are in Firestore but not in Yahoo
  * @param {string} uid - The user id
  */
 export async function syncTeamsInFirebase(
-  missingTeams: TeamClient[],
+  missingTeams: TeamYahooAngular[],
   extraTeams: TeamFirestore[],
   uid: string
 ) {
@@ -174,7 +174,7 @@ export async function syncTeamsInFirebase(
     if (mTeam.end_date < Date.now()) continue;
 
     mTeam.uid = uid; // uid is not present in TeamClient
-    const data: TeamFirestore = clientToFirestore(mTeam);
+    const data: TeamFirestore = yahooToFirestore(mTeam);
 
     const docId = String(mTeam.team_key);
     const docRef = db.collection(collectionPath).doc(docId);

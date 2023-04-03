@@ -337,7 +337,7 @@
   "weekly_deadline": null,
   "edit_key": "2023-03-26",
   "game_code": "nba",
-  "num_teams_in_league": 12,
+  "num_teams": 12,
   "roster_positions": {
     "PG": 1,
     "SG": 1,

@@ -489,7 +489,7 @@
                                       }
                                     },
                                     [],
-                                    { "league_scoring_type": "head" },
+                                    { "scoring_type": "head" },
                                     [],
                                     { "draft_position": 7 },
                                     { "has_draft_grade": 0 },
@@ -3981,7 +3981,7 @@
                                       }
                                     },
                                     [],
-                                    { "league_scoring_type": "head" },
+                                    { "scoring_type": "head" },
                                     [],
                                     { "draft_position": 5 },
                                     { "has_draft_grade": 0 },
@@ -7176,7 +7176,7 @@
                                       }
                                     },
                                     [],
-                                    { "league_scoring_type": "point" },
+                                    { "scoring_type": "point" },
                                     [],
                                     { "draft_position": 1 },
                                     { "has_draft_grade": 0 },
@@ -10337,7 +10337,7 @@
                                       }
                                     },
                                     { "clinched_playoffs": 1 },
-                                    { "league_scoring_type": "head" },
+                                    { "scoring_type": "head" },
                                     [],
                                     { "draft_position": 1 },
                                     { "has_draft_grade": 0 },

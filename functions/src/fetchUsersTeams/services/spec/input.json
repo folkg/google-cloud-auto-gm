@@ -945,7 +945,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1035,7 +1035,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1125,7 +1125,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1215,7 +1215,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1305,7 +1305,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1396,7 +1396,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1486,7 +1486,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1575,7 +1575,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1665,7 +1665,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1754,7 +1754,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1844,7 +1844,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -1935,7 +1935,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -2027,7 +2027,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -2117,7 +2117,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         [],
                                         {
@@ -3196,7 +3196,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 12 },
                                         {
@@ -3281,7 +3281,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 8 },
                                         {
@@ -3366,7 +3366,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 3 },
                                         {
@@ -3451,7 +3451,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 10 },
                                         {
@@ -3536,7 +3536,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 6 },
                                         {
@@ -3622,7 +3622,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 1 },
                                         {
@@ -3707,7 +3707,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 2 },
                                         {
@@ -3792,7 +3792,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 4 },
                                         {
@@ -3877,7 +3877,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 7 },
                                         {
@@ -3962,7 +3962,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 11 },
                                         {
@@ -4047,7 +4047,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 9 },
                                         {
@@ -4133,7 +4133,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 5 },
                                         {
@@ -4697,7 +4697,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -4981,7 +4981,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -5265,7 +5265,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -5549,7 +5549,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -5834,7 +5834,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -6118,7 +6118,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -6402,7 +6402,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -6686,7 +6686,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -6970,7 +6970,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -7255,7 +7255,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -7539,7 +7539,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -7823,7 +7823,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -8536,7 +8536,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 6 },
                                         { "has_draft_grade": 0 },
@@ -8690,7 +8690,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 10 },
                                         { "has_draft_grade": 0 },
@@ -8844,7 +8844,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 1 },
                                         { "has_draft_grade": 0 },
@@ -8998,7 +8998,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 3 },
                                         { "has_draft_grade": 0 },
@@ -9152,7 +9152,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 4 },
                                         { "has_draft_grade": 0 },
@@ -9307,7 +9307,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 5 },
                                         { "has_draft_grade": 0 },
@@ -9461,7 +9461,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 7 },
                                         { "has_draft_grade": 0 },
@@ -9615,7 +9615,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 8 },
                                         { "has_draft_grade": 0 },
@@ -9769,7 +9769,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 9 },
                                         { "has_draft_grade": 0 },
@@ -9923,7 +9923,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 12 },
                                         { "has_draft_grade": 0 },
@@ -10076,7 +10076,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 2 },
                                         { "has_draft_grade": 0 },
@@ -10229,7 +10229,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 11 },
                                         { "has_draft_grade": 0 },
@@ -10798,7 +10798,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -11058,7 +11058,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -11318,7 +11318,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -11580,7 +11580,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -11840,7 +11840,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -12100,7 +12100,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -12360,7 +12360,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -12620,7 +12620,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -12879,7 +12879,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -13139,7 +13139,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -13399,7 +13399,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -13659,7 +13659,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "roto" },
+                                        { "scoring_type": "roto" },
                                         [],
                                         [],
                                         { "has_draft_grade": 0 },
@@ -14323,7 +14323,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 11 },
                                         { "has_draft_grade": 0 },
@@ -14477,7 +14477,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 1 },
                                         { "has_draft_grade": 0 },
@@ -14631,7 +14631,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 10 },
                                         { "has_draft_grade": 0 },
@@ -14785,7 +14785,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 7 },
                                         { "has_draft_grade": 0 },
@@ -14939,7 +14939,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 9 },
                                         { "has_draft_grade": 0 },
@@ -15093,7 +15093,7 @@
                                           }
                                         },
                                         { "clinched_playoffs": 1 },
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 2 },
                                         { "has_draft_grade": 0 },
@@ -15248,7 +15248,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 4 },
                                         { "has_draft_grade": 0 },
@@ -15403,7 +15403,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 5 },
                                         { "has_draft_grade": 0 },
@@ -15557,7 +15557,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 3 },
                                         { "has_draft_grade": 0 },
@@ -15711,7 +15711,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 6 },
                                         { "has_draft_grade": 0 },
@@ -15865,7 +15865,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 12 },
                                         { "has_draft_grade": 0 },
@@ -16019,7 +16019,7 @@
                                           }
                                         },
                                         [],
-                                        { "league_scoring_type": "head" },
+                                        { "scoring_type": "head" },
                                         [],
                                         { "draft_position": 8 },
                                         { "has_draft_grade": 0 },

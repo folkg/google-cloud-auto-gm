@@ -470,7 +470,7 @@
     "weekly_deadline": "",
     "edit_key": "2023-03-18",
     "game_code": "nhl",
-    "num_teams_in_league": 12,
+    "num_teams": 12,
     "roster_positions": {
       "C": 2,
       "LW": 2,
@@ -482,16 +482,17 @@
       "IR": 1,
       "IR+": 2
     },
-    "league_scoring_type": "roto",
+    "scoring_type": "roto",
     "current_weekly_adds": 1,
     "current_season_adds": 26,
     "max_weekly_adds": -1,
     "max_season_adds": 70,
-    "start_date": 1665100800000,
-    "end_date": 1681430400000,
+    "start_date": 1665126000000,
+    "end_date": 1681541999999,
     "faab_balance": -1,
     "waiver_rule": "all",
     "max_games_played": -1,
-    "max_innings_pitched": -1
+    "max_innings_pitched": -1,
+    "transactions": []
   }
 ]

@@ -1,5 +1,7 @@
 import {
   getChild,
+  getPacificEndOfDay,
+  getPacificStartOfDay,
   parseStringToInt,
 } from "../../common/services/utilities.service";
 import { ITeam } from "../interfaces/ITeam";
@@ -65,9 +67,9 @@ export async function fetchRostersFromYahoo(
         weekly_deadline: getChild(league, "weekly_deadline"),
         edit_key: getChild(league, "edit_key"),
         game_code: getChild(gameJSON, "code"),
-        num_teams_in_league: getChild(league, "num_teams"),
+        num_teams: getChild(league, "num_teams"),
         roster_positions: rosterPositions,
-        league_scoring_type: getChild(usersTeam[0], "league_scoring_type"),
+        scoring_type: getChild(usersTeam[0], "scoring_type"),
         current_weekly_adds: parseStringToInt(
           getChild(usersTeam[0], "roster_adds").value,
           0
@@ -80,11 +82,14 @@ export async function fetchRostersFromYahoo(
           getChild(leagueSettings, "max_weekly_adds")
         ),
         max_season_adds: parseStringToInt(getChild(leagueSettings, "max_adds")),
-        start_date: Date.parse(getChild(league, "start_date")),
-        end_date: Date.parse(getChild(league, "end_date")),
+        start_date: getPacificStartOfDay(
+          Date.parse(getChild(league, "start_date"))
+        ),
+        end_date: getPacificEndOfDay(Date.parse(getChild(league, "end_date"))),
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
-        transactions: getChild(usersTeam, "transactions")?.[0]?.transaction,
+        transactions:
+          getChild(usersTeam, "transactions")?.[0]?.transaction ?? [],
         max_games_played: parseStringToInt(
           getChild(leagueSettings, "max_games_played")
         ),

@@ -10,9 +10,9 @@ export interface ITeam {
   start_date: number;
   end_date: number;
   game_code: string;
-  num_teams_in_league: number;
+  num_teams: number;
   roster_positions: { [key: string]: number };
-  league_scoring_type: string;
+  scoring_type: string;
   waiver_rule: string;
   transactions: any[];
   current_weekly_adds: number;
@@ -22,6 +22,9 @@ export interface ITeam {
   faab_balance: number;
   max_games_played: number;
   max_innings_pitched: number;
+  allow_transactions?: boolean;
   allow_dropping?: boolean;
   allow_adding?: boolean;
+  allow_add_drops?: boolean;
+  allow_waiver_adds?: boolean;
 }

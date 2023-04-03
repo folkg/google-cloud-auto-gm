@@ -93,6 +93,22 @@ function enrichTeamsWithFirestoreSettings(
     const firestoreTeam = firestoreTeams.find(
       (firestoreTeam) => firestoreTeam.team_key === yahooTeam.team_key
     );
+
+    // check if any property from yahooTeam overwrites firestoreTeam
+    for (const key in firestoreTeam) {
+      if (
+        yahooTeam.hasOwnProperty(key) &&
+        yahooTeam[key as keyof ITeam] !== firestoreTeam[key]
+      ) {
+        console.log(
+          `Property ${key} from yahooTeam is overwriting ${key} from firestoreTeam with a different value`
+        );
+        // call another function here to patch the differences in firestore
+        // patchTeamProperty(key, yahooTeam[key], firestoreTeam.team_key);
+        break;
+      }
+    }
+
     return {
       allow_adding: firestoreTeam?.allow_adding ?? false,
       allow_dropping: firestoreTeam?.allow_dropping ?? false,

@@ -477,7 +477,7 @@
                                       }
                                     },
                                     { "clinched_playoffs": 1 },
-                                    { "league_scoring_type": "head" },
+                                    { "scoring_type": "head" },
                                     [],
                                     { "draft_position": 4 },
                                     { "has_draft_grade": 0 },

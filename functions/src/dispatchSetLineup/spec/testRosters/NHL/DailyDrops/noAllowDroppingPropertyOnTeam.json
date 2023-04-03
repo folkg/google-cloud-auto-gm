@@ -469,7 +469,7 @@
   "edit_key": "2023-03-18",
   "weekly_deadline": null,
   "game_code": "nhl",
-  "num_teams_in_league": 12,
+  "num_teams": 12,
   "roster_positions": {
     "C": 2,
     "LW": 2,
