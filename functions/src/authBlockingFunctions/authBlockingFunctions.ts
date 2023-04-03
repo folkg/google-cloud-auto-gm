@@ -1,6 +1,7 @@
 import { logger } from "firebase-functions";
 import * as functionsV1 from "firebase-functions/v1";
 import { db } from "../common/services/firebase/firestore.service";
+import { FirestoreUser } from "./interfaces/FirestoreUser";
 
 export const beforeSignInV1 = functionsV1.auth
   .user()
@@ -8,10 +9,12 @@ export const beforeSignInV1 = functionsV1.auth
     const credential = context.credential;
     if (credential) {
       const uid = user.uid;
-      const data = {
-        accessToken: credential.accessToken,
-        refreshToken: credential.refreshToken,
+      const data: FirestoreUser = {
+        accessToken: credential.accessToken ?? "",
+        refreshToken: credential.refreshToken ?? "",
         tokenExpirationTime: Date.parse(credential.expirationTime as string),
+        freeTrialExpirationTime: -1,
+        subscriptionExpirationTime: -1,
       };
 
       try {
