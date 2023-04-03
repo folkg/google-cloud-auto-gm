@@ -1,4 +1,5 @@
 import { logger } from "firebase-functions";
+import { updateTeamFirestore } from "../../common/services/firebase/firestore.service";
 import {
   datePSTString,
   is2DArrayEmpty,
@@ -50,6 +51,8 @@ export async function setUsersLineup(
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
 
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
+  await patchTeamChangesInFirestore(usersTeams, firestoreTeams);
+
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
@@ -94,27 +97,48 @@ function enrichTeamsWithFirestoreSettings(
       (firestoreTeam) => firestoreTeam.team_key === yahooTeam.team_key
     );
 
-    // check if any property from yahooTeam overwrites firestoreTeam
-    for (const key in firestoreTeam) {
-      if (
-        yahooTeam.hasOwnProperty(key) &&
-        yahooTeam[key as keyof ITeam] !== firestoreTeam[key]
-      ) {
-        console.log(
-          `Property ${key} from yahooTeam is overwriting ${key} from firestoreTeam with a different value`
-        );
-        // call another function here to patch the differences in firestore
-        // patchTeamProperty(key, yahooTeam[key], firestoreTeam.team_key);
-        break;
-      }
-    }
-
     return {
       allow_adding: firestoreTeam?.allow_adding ?? false,
       allow_dropping: firestoreTeam?.allow_dropping ?? false,
       ...yahooTeam,
     };
   });
+}
+
+async function patchTeamChangesInFirestore(
+  yahooTeams: ITeam[],
+  firestoreTeams: any[]
+): Promise<void> {
+  const sharedKeys = Object.keys(firestoreTeams[0]).filter((key) =>
+    yahooTeams[0].hasOwnProperty(key)
+  );
+  for (const firestoreTeam of firestoreTeams) {
+    const yahooTeam = yahooTeams.find(
+      (yahooTeam) => firestoreTeam.team_key === yahooTeam.team_key
+    );
+    if (!yahooTeam) return;
+
+    const differences: { [key: string]: any } = {};
+    sharedKeys.forEach((key) => {
+      const yahooValue = yahooTeam[key as keyof ITeam];
+      const firestoreValue = firestoreTeam[key];
+      if (yahooValue !== firestoreValue) {
+        differences[key] = yahooValue;
+      }
+    });
+
+    if (Object.keys(differences).length > 0) {
+      logger.info(
+        `different values between yahoo and firestore teams for team ${yahooTeam.team_key}`,
+        differences
+      );
+      await updateTeamFirestore(
+        firestoreTeam.uid,
+        yahooTeam.team_key,
+        differences
+      );
+    }
+  }
 }
 
 async function processTodaysLineupChanges(

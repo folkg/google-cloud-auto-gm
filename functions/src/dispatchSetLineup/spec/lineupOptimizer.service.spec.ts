@@ -17,6 +17,14 @@ jest.mock("../../common/services/yahooAPI/yahooStartingPlayer.service", () => ({
   getNHLStartingGoalies: jest.fn().mockReturnValue([]),
 }));
 
+// mock Firestore services
+const spyUpdateTeamFirestore = jest
+  .spyOn(
+    require("../../common/services/firebase/firestore.service"),
+    "updateTeamFirestore"
+  )
+  .mockImplementation(() => Promise.resolve());
+
 // To mock and spy on yahooAPI calls
 const yahooAPI = require("../../common/services/yahooAPI/yahooAPI.service");
 
@@ -33,6 +41,33 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
   // fetchRostersFromYahoo() should throw an error and cause the function to exit.
   // putLineupChanges() should throw an error and cause the function to exit.
   // postRosterAddDropTransaction() should have caught errors and allow the function to continue.
+  it("should patch differences between Yahoo and Firestore teams", async () => {
+    const uid = "testUID";
+    const teamKey = "419.l.28340.t.1";
+    const teams = [{ uid, team_key: teamKey, start_date: 1, end_date: 1 }];
+
+    const rosters: ITeam[] = [
+      require("./testRosters/NHL/Daily/optimalRoster.json"),
+    ];
+
+    const spyFetchRostersFromYahoo = jest
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockReturnValue(Promise.resolve(rosters));
+
+    // mock the API calls
+    jest.spyOn(yahooAPI, "putLineupChanges").mockReturnValue(Promise.resolve());
+    jest
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve());
+
+    await setUsersLineup(uid, teams);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
+    expect(spyUpdateTeamFirestore).toHaveBeenCalledTimes(1);
+    expect(spyUpdateTeamFirestore).toHaveBeenCalledWith(uid, teamKey, {
+      start_date: 1617220000,
+      end_date: 1817220000,
+    });
+  });
 
   it("should do nothing for already optimal lineup", async () => {
     const uid = "testUID";

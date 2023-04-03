@@ -217,6 +217,23 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
   }
 }
 
+export async function updateTeamFirestore(
+  uid: string,
+  teamKey: string,
+  data: Partial<TeamFirestore>
+) {
+  const teamRef = db.collection(`users/${uid}/teams`).doc(teamKey);
+  try {
+    await teamRef.update(data);
+    logger.info(`Updated team ${teamKey} for user ${uid} in Firestore`);
+  } catch (error) {
+    logger.error(
+      `Error in updateTeamFirestore for User: ${uid} and team: ${teamKey}`,
+      error
+    );
+  }
+}
+
 /**
  *
  * @async
