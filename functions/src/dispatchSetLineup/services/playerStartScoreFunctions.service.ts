@@ -23,16 +23,16 @@ export function playerStartScoreFunctionFactory(
   weeklyDeadline: string
 ) {
   if (gameCode === "nfl") {
-    return nflScoreFunction();
+    return NFLScoreFunction();
   } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
     // weeklyDeadline will be something like "1" to represent Monday
     return weeklyLineupScoreFunction();
   } else if (gameCode === "nhl") {
-    return nhlScoreFunction();
+    return NHLScoreFunction();
   } else if (gameCode === "mlb") {
-    return mlbScoreFunction();
+    return MLBScoreFunction();
   }
-  return dailyScoreFunction();
+  return NBAScoreFunction();
 }
 
 /**
@@ -42,19 +42,10 @@ export function playerStartScoreFunctionFactory(
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function dailyScoreFunction(): (player: IPlayer) => number {
+export function NBAScoreFunction(): (player: IPlayer) => number {
   return (player: IPlayer) => {
-    // The base score will be percent_started
-    // percent_started has been broken before, so percent owned is a backup
-    let score = player.percent_started ?? player.percent_owned;
-
-    if (!player.is_playing || player.is_starting === 0) {
-      score *= NOT_PLAYING_FACTOR;
-    }
-    if (!HEALTHY_STATUS_LIST.includes(player.injury_status)) {
-      score *= INJURY_FACTOR;
-    }
-    return score;
+    const score = getInitialScore(player);
+    return applyScoreFactors(score, player);
   };
 }
 /**
@@ -64,27 +55,15 @@ export function dailyScoreFunction(): (player: IPlayer) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function nhlScoreFunction(): (player: IPlayer) => number {
+export function NHLScoreFunction(): (player: IPlayer) => number {
   const startingGoalies = getNHLStartingGoalies() ?? [];
   return (player: IPlayer) => {
-    // The base score will be percent_started
-    // percent_started has been broken before, so percent owned is a backup
-    let score = player.percent_started ?? player.percent_owned;
-
-    const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
     const isStartingGoalie = player.eligible_positions.includes("G")
       ? isStartingPlayer(player, startingGoalies)
       : false;
-    if (!player.is_playing) {
-      score *= NOT_PLAYING_FACTOR;
-    }
-    if (isPlayerInjured) {
-      score *= INJURY_FACTOR;
-    }
-    if (isStartingGoalie) {
-      score *= STARTING_FACTOR;
-    }
-    return score;
+
+    const score = getInitialScore(player);
+    return applyScoreFactors(score, player, isStartingGoalie);
   };
 }
 
@@ -95,38 +74,18 @@ export function nhlScoreFunction(): (player: IPlayer) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function mlbScoreFunction(): (player: IPlayer) => number {
+export function MLBScoreFunction(): (player: IPlayer) => number {
   const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: IPlayer) => {
-    // The base score will be percent_started
-    // percent_started has been broken before, so percent owned is a backup
-    let score = player.percent_started ?? player.percent_owned;
-
-    const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
     const isStarting = player.eligible_positions.some((pos) =>
       ["P", "SP", "RP"].includes(pos)
     )
       ? isStartingPlayer(player, startingPitchers)
-      : player.is_starting;
-    if (!player.is_playing) {
-      score *= NOT_PLAYING_FACTOR;
-    }
-    if (isPlayerInjured) {
-      score *= INJURY_FACTOR;
-    }
-    if (isStarting) {
-      score *= STARTING_FACTOR;
-    }
-    return score;
-  };
-}
+      : player.is_starting === 1;
 
-function isStartingPlayer(player: IPlayer, starters: string[]): boolean {
-  if (starters.length === 0) {
-    // default to is_starting flag if we can't get the starters array
-    return player.is_starting === 1;
-  }
-  return starters.includes(player.player_key);
+    const score = getInitialScore(player);
+    return applyScoreFactors(score, player, isStarting);
+  };
 }
 
 /**
@@ -136,24 +95,11 @@ function isStartingPlayer(player: IPlayer, starters: string[]): boolean {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function nflScoreFunction(): (player: IPlayer) => number {
+export function NFLScoreFunction(): (player: IPlayer) => number {
   return (player: IPlayer) => {
-    // The score will be percent_started / rank_projected_week
-    // TODO: Does rank_projected_week factor in injury status already?
-
-    // The base score will be percent_started
-    // percent_started has been broken before, so percent owned is a backup
-    let score = player.percent_started ?? player.percent_owned;
-
-    score = (score / player.ranks.projectedWeek) * 100;
-    if (!player.is_playing) {
-      score *= NOT_PLAYING_FACTOR;
-    }
-    if (!HEALTHY_STATUS_LIST.includes(player.injury_status)) {
-      score *= INJURY_FACTOR;
-    }
-
-    return score;
+    // TODO: Does rank_projected_week factor in injury status already? We might be double counting, but does it matter?
+    const score = (getInitialScore(player) / player.ranks.projectedWeek) * 100;
+    return applyScoreFactors(score, player);
   };
 }
 /**
@@ -167,7 +113,38 @@ export function weeklyLineupScoreFunction(): (player: IPlayer) => number {
   return (player: IPlayer) => {
     // The score will be the inverse of their projected rank for the next week
     // We will not factor in injury status as Yahoo has already accounted for it
-    const score = 100 / player.ranks.next7Days;
-    return score;
+    return 100 / player.ranks.next7Days;
   };
+}
+
+function getInitialScore(player: IPlayer): number {
+  // The base score will be percent_started
+  // percent_started has been broken before, so percent owned is a backup
+  return player.percent_started ?? player.percent_owned;
+}
+
+function applyScoreFactors(
+  score: number,
+  player: IPlayer,
+  isStartingPlayer: boolean = false
+) {
+  const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
+  if (isPlayerInjured) {
+    score *= INJURY_FACTOR;
+  }
+  if (!player.is_playing) {
+    score *= NOT_PLAYING_FACTOR;
+  }
+  if (isStartingPlayer) {
+    score *= STARTING_FACTOR;
+  }
+  return score;
+}
+
+function isStartingPlayer(player: IPlayer, starters: string[]): boolean {
+  if (starters.length === 0) {
+    // default to is_starting flag if we can't get the starters array
+    return player.is_starting === 1;
+  }
+  return starters.includes(player.player_key);
 }
