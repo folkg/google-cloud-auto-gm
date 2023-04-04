@@ -39,8 +39,8 @@ export async function scheduleSetLineup() {
   let queue: TaskQueue<Record<string, any>>;
   let targetUri: string;
   try {
-    queue = getFunctions().taskQueue("dispatchsetlineup");
-    targetUri = await getFunctionUrl("dispatchsetlineup");
+    queue = getFunctions().taskQueue("lineup-dispatchsetlineup");
+    targetUri = await getFunctionUrl("lineup-dispatchsetlineup");
   } catch (error) {
     logger.error("Error getting task queue. ", error);
     return;

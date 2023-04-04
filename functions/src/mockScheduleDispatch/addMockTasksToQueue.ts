@@ -7,8 +7,8 @@ export const addmocktaskstoqueue = onRequest(async (req, res) => {
   let queue: TaskQueue<Record<string, any>>;
   let targetUri: string;
   try {
-    queue = getFunctions().taskQueue("mockdispatchsetlineup");
-    targetUri = await getFunctionUrl("mockdispatchsetlineup");
+    queue = getFunctions().taskQueue("lineup-mockdispatchsetlineup");
+    targetUri = await getFunctionUrl("lineup-mockdispatchsetlineup");
   } catch (error) {
     logger.error("Error getting task queue. ", error);
     return;
