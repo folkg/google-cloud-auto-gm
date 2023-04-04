@@ -29,6 +29,16 @@ export const beforeSignInV1 = functionsV1.auth
     }
   });
 
+export const beforeCreateV1 = functionsV1.auth.user().beforeCreate((user) => {
+  // force all users to verify their email addresses initially
+  if (user) {
+    return {
+      emailVerified: false,
+    };
+  }
+  return {};
+});
+
 // import { beforeUserCreated } from "firebase-functions/v2/identity";
 
 // export const beforecreate = beforeUserCreated((event) => {
