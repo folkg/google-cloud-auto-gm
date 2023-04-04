@@ -23,16 +23,16 @@ export function playerStartScoreFunctionFactory(
   weeklyDeadline: string
 ) {
   if (gameCode === "nfl") {
-    return NFLScoreFunction();
+    return scoreFunctionNFL();
   } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
     // weeklyDeadline will be something like "1" to represent Monday
-    return weeklyLineupScoreFunction();
+    return scoreFunctionWeeklyLineup();
   } else if (gameCode === "nhl") {
-    return NHLScoreFunction();
+    return scoreFunctionNHL();
   } else if (gameCode === "mlb") {
-    return MLBScoreFunction();
+    return scoreFunctionMLB();
   }
-  return NBAScoreFunction();
+  return scoreFunctionNBA();
 }
 
 /**
@@ -42,7 +42,7 @@ export function playerStartScoreFunctionFactory(
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function NBAScoreFunction(): (player: IPlayer) => number {
+export function scoreFunctionNBA(): (player: IPlayer) => number {
   return (player: IPlayer) => {
     const score = getInitialScore(player);
     return applyScoreFactors(score, player);
@@ -55,7 +55,7 @@ export function NBAScoreFunction(): (player: IPlayer) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function NHLScoreFunction(): (player: IPlayer) => number {
+export function scoreFunctionNHL(): (player: IPlayer) => number {
   const startingGoalies = getNHLStartingGoalies() ?? [];
   return (player: IPlayer) => {
     const isStartingGoalie = player.eligible_positions.includes("G")
@@ -74,7 +74,7 @@ export function NHLScoreFunction(): (player: IPlayer) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function MLBScoreFunction(): (player: IPlayer) => number {
+export function scoreFunctionMLB(): (player: IPlayer) => number {
   const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: IPlayer) => {
     const isStarting = player.eligible_positions.some((pos) =>
@@ -95,7 +95,7 @@ export function MLBScoreFunction(): (player: IPlayer) => number {
  * @return {()} - A function that takes a player and returns a score.
  *  returns a score.
  */
-export function NFLScoreFunction(): (player: IPlayer) => number {
+export function scoreFunctionNFL(): (player: IPlayer) => number {
   return (player: IPlayer) => {
     // TODO: Does rank_projected_week factor in injury status already? We might be double counting, but does it matter?
     const score = (getInitialScore(player) / player.ranks.projectedWeek) * 100;
@@ -109,7 +109,7 @@ export function NFLScoreFunction(): (player: IPlayer) => number {
  *
  * @return {()} - A function that takes a player and returns a score.
  */
-export function weeklyLineupScoreFunction(): (player: IPlayer) => number {
+export function scoreFunctionWeeklyLineup(): (player: IPlayer) => number {
   return (player: IPlayer) => {
     // The score will be the inverse of their projected rank for the next week
     // We will not factor in injury status as Yahoo has already accounted for it
@@ -126,7 +126,7 @@ function getInitialScore(player: IPlayer): number {
 function applyScoreFactors(
   score: number,
   player: IPlayer,
-  isStartingPlayer: boolean = false
+  isStartingPlayer = false
 ) {
   const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
   if (isPlayerInjured) {
