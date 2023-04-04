@@ -44,7 +44,7 @@ describe("clientToFirestore", () => {
     start_date: 1680418800000, //  Monday April 02, 2023 00:00:00 GMT-0700 (Pacific Daylight Time)
     end_date: 1680850799999, //  Sunday April 07, 2023 23:59:59 GMT-0700 (Pacific Daylight Time)
     weekly_deadline: mockTeam.weekly_deadline,
-    is_approved: true,
+    is_subscribed: true,
     is_setting_lineups: false,
     allow_dropping: false,
     allow_adding: false,

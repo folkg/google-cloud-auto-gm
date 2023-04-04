@@ -13,8 +13,9 @@ export const beforeSignInV1 = functionsV1.auth
         accessToken: credential.accessToken ?? "",
         refreshToken: credential.refreshToken ?? "",
         tokenExpirationTime: Date.parse(credential.expirationTime as string),
-        freeTrialExpirationTime: -1,
         subscriptionExpirationTime: -1,
+        isFreeTrialActivated: false,
+        isSubscribed: false,
       };
 
       try {

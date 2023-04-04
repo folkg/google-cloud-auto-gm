@@ -5,7 +5,7 @@ export interface TeamFirestore {
   start_date: number;
   end_date: number;
   weekly_deadline: string | number;
-  is_approved: boolean;
+  is_subscribed: boolean;
   is_setting_lineups: boolean;
   last_updated: number;
   allow_transactions: boolean;
@@ -32,7 +32,7 @@ export function yahooToFirestore(team: TeamYahooAngular): TeamFirestore {
     start_date,
     end_date,
     weekly_deadline,
-    is_approved: true,
+    is_subscribed: true,
     is_setting_lineups: false,
     last_updated: -1,
     allow_transactions: false,
