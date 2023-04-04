@@ -109,9 +109,10 @@ async function patchTeamChangesInFirestore(
   yahooTeams: ITeam[],
   firestoreTeams: any[]
 ): Promise<void> {
-  const sharedKeys = Object.keys(firestoreTeams[0]).filter((key) =>
-    yahooTeams[0].hasOwnProperty(key)
+  const sharedKeys = Object.keys(firestoreTeams[0]).filter(
+    (key) => key in yahooTeams[0]
   );
+
   for (const firestoreTeam of firestoreTeams) {
     const yahooTeam = yahooTeams.find(
       (yahooTeam) => firestoreTeam.team_key === yahooTeam.team_key
