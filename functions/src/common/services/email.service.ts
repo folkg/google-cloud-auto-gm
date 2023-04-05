@@ -22,6 +22,7 @@ export async function sendFeedbackEmail(
   title: string,
   message: string
 ): Promise<boolean> {
+  // const templateId = "d-f99cd8e8058f44dc83c74c523cc92840";
   const msg = {
     to: "fantasyautocoach+feedback@gmail.com",
     from: "feedback@fantasyautocoach.com",
@@ -52,18 +53,30 @@ export async function sendFeedbackEmail(
 export async function sendUserEmail(
   uid: string,
   title: string,
-  message: string
+  body: string[],
+  buttonText: string = "",
+  buttonUrl: string = ""
 ): Promise<boolean> {
-  const userEmailAddress = (await auth().getUser(uid)).email;
-  if (!userEmailAddress) {
-    throw new Error("User does not have a valid email address");
+  const user = await auth().getUser(uid);
+  if (!user) {
+    throw new Error("Not a valid user");
   }
+  const userEmailAddress = user.email;
+  const displayName = user.displayName;
+
+  const templateData = {
+    displayName,
+    body,
+    buttonText,
+    buttonUrl,
+  };
 
   const msg = {
     to: userEmailAddress,
     from: "customersupport@fantasyautocoach.com",
     subject: title,
-    text: message,
+    templateId: "d-68da1ae2303d4400b9eabad0a034c262",
+    dynamicTemplateData: templateData,
   };
 
   try {

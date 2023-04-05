@@ -47,10 +47,16 @@ export async function loadYahooAccessToken(
       revokeRefreshToken(uid);
       sendUserEmail(
         uid,
-        "Fantasy AutoCoach: Yahoo Authentication Error",
-        "You Yahoo access has expired and your lineups are not currently being set!\n" +
-          "Please visit the Fantasy AutoCoach website and sign-in again to re-authenticate.\n" +
-          "https://auto-gm-372620.web.app/"
+        "Urgent Action Required: Yahoo Authentication Error",
+        [
+          "Your Yahoo access has expired and your lineups are no longer being managed by Fantasy AutoCoach.",
+          "Please visit the Fantasy AutoCoach website below and sign in again with Yahoo so that we can continue to " +
+            "manage your teams. Once you sign in, you will be re-directed to your dashabord and we " +
+            "will have everything we need to continue managing your teams. Thank you for your assistance, and we " +
+            "apologize for the inconvenience.",
+        ],
+        "Sign In",
+        "https://fantasyautocoach.com/"
       );
       logger.error(`Error refreshing access token for user: ${uid}`, error);
       throw new Error(`Could not refresh access token for user: ${uid}`);
