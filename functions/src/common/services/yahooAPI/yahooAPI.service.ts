@@ -11,6 +11,7 @@ import {
   httpPutAxios,
 } from "./yahooHttp.service";
 const js2xmlparser = require("js2xmlparser");
+require("dotenv").config();
 
 /**
  * Refresh the Yahoo access token for the given user

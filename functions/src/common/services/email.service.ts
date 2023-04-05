@@ -1,9 +1,9 @@
 import { auth } from "firebase-admin";
 import { logger } from "firebase-functions";
-import { createTransport, Transporter } from "nodemailer";
-import SMTPTransport = require("nodemailer/lib/smtp-transport");
 
-let transporter: Transporter<SMTPTransport.SentMessageInfo>;
+const sgMail = require("@sendgrid/mail");
+require("dotenv").config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
  * Send an email to the AutoCoach gmail account from the client UI
@@ -21,34 +21,22 @@ export async function sendFeedbackEmail(
   feedbackType: string,
   title: string,
   message: string
-): Promise<void> {
-  transporter = createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.NODEMAILER_GMAIL_ADDRESS,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-  });
-
-  const mailOptions = {
-    from:
-      "'AutoCoach " +
-      feedbackType +
-      "' <" +
-      process.env.NODEMAILER_GMAIL_ADDRESS +
-      ">",
+): Promise<boolean> {
+  const msg = {
+    to: "fantasyautocoach+feedback@gmail.com",
+    from: "feedback@fantasyautocoach.com",
     replyTo: userEmail,
-    to: process.env.NODEMAILER_GMAIL_ADDRESS,
-    subject: "[" + feedbackType + "] " + title,
+    subject: `[${feedbackType}] ${title}`,
     text: message,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
   } catch (error) {
     logger.error("feedback email failed to send: ", error);
     throw new Error("Failed to send feedback email");
   }
+  return true;
 }
 
 /**
@@ -66,32 +54,20 @@ export async function sendUserEmail(
   title: string,
   message: string
 ): Promise<boolean> {
-  transporter = createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.NODEMAILER_GMAIL_ADDRESS,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-  });
-
   const userEmailAddress = (await auth().getUser(uid)).email;
   if (!userEmailAddress) {
     throw new Error("User does not have a valid email address");
   }
 
-  const mailOptions = {
-    from:
-      "'Fantasy AutoCoach " +
-      "' <" +
-      process.env.NODEMAILER_GMAIL_ADDRESS +
-      ">",
+  const msg = {
     to: userEmailAddress,
+    from: "customersupport@fantasyautocoach.com",
     subject: title,
     text: message,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     return true;
   } catch (error) {
     logger.log("user email failed to send: " + error);
