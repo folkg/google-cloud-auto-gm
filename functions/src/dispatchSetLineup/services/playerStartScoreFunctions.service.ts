@@ -133,7 +133,7 @@ function applyScoreFactors(
   if (isPlayerInjured) {
     score *= INJURY_FACTOR;
   }
-  if (!player.is_playing || player.is_starting === 0) {
+  if (!player.is_playing) {
     score *= NOT_PLAYING_FACTOR;
   }
   if (isStartingPlayer) {
