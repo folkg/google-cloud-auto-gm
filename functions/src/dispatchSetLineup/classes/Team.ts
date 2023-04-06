@@ -121,8 +121,10 @@ export class Team implements Team {
     return this._editablePlayers.filter((player) => !player.isStartingRoster());
   }
 
-  public get inactiveListPlayers(): Player[] {
-    return this._editablePlayers.filter((player) => player.isInactiveList());
+  public get inactiveListEligiblePlayers(): Player[] {
+    return this._editablePlayers.filter((player) =>
+      player.isInactiveListEligible()
+    );
   }
 
   public get inactiveOnRosterPlayers(): Player[] {

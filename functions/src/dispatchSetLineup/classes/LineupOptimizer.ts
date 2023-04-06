@@ -289,7 +289,7 @@ export class LineupOptimizer {
 
     if (playerA.hasLowerStartScoreThanAll(startingPlayersList)) {
       this.logInfo(
-        `Player ${playerA.player_name} is worse than all players in target array. Skipping.`
+        `Player ${playerA.player_name} ${playerA.start_score} is worse than all players in target array. Skipping.`
       );
       return undefined;
     }
@@ -328,7 +328,7 @@ export class LineupOptimizer {
   private threeWaySwap(playerA: Player, playerB: Player): Player | undefined {
     this.logInfo("attempting to find a three way swap");
     const playerCTargetList: Player[] = playerA.isInactiveList()
-      ? this.team.inactiveListPlayers
+      ? this.team.inactiveListEligiblePlayers
       : this.team.startingPlayers;
 
     const playerC = this.findPlayerCforOptimization(

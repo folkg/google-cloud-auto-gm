@@ -29,6 +29,12 @@ export class Player implements Player {
     return INACTIVE_POSITION_LIST.includes(this.selected_position);
   }
 
+  isInactiveListEligible(): boolean {
+    return this.eligible_positions.some((position) =>
+      INACTIVE_POSITION_LIST.includes(position)
+    );
+  }
+
   isActiveRoster(): boolean {
     return !INACTIVE_POSITION_LIST.includes(this.selected_position);
   }
