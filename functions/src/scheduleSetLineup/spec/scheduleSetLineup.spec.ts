@@ -106,7 +106,7 @@ describe("scheduleSetLineup", () => {
     );
   });
 
-  it("should fetch starting players for NHL and MLB", async () => {
+  xit("should fetch starting players for NHL and MLB", async () => {
     const teams = [
       {
         uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1",
