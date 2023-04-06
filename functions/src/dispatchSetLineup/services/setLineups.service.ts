@@ -153,7 +153,14 @@ async function processTodaysLineupChanges(
     const lo = new LineupOptimizer(team);
     const lineupChanges = lo.optimizeStartingLineup();
     result.push(lo.getCurrentTeamState());
-    lo.isSuccessfullyOptimized(); // will log any errors, we could remove this later once we're confident in the optimizer
+    // will log any errors, we could remove this later once we're confident in the optimizer
+    const isOptimalLineup = lo.isSuccessfullyOptimized();
+    if (!isOptimalLineup) {
+      logger.error(
+        `Original roster for problematic team ${team.team_key}`,
+        team
+      );
+    }
     if (lineupChanges) {
       allLineupChanges.push(lineupChanges);
     }

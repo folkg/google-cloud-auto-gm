@@ -3,4 +3,4 @@ initializeApp();
 
 exports.authBlock = require("./authBlockingFunctions");
 exports.email = require("./emailFunctions");
-exports.lineup = require("./yahooFunctions");
+exports.lineup = require("./lineupFunctions");
