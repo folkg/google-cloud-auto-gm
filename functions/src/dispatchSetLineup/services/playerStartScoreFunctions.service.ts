@@ -120,7 +120,8 @@ export function scoreFunctionWeeklyLineup(): (player: IPlayer) => number {
 function getInitialScore(player: IPlayer): number {
   // The base score will be percent_started
   // percent_started has been broken before, so percent owned is a backup
-  return player.percent_started ?? player.percent_owned;
+  // Also make sure we return at least 1 to prevent issues with subsequent factors
+  return (player.percent_started ?? player.percent_owned) || 1;
 }
 
 function applyScoreFactors(
@@ -132,7 +133,7 @@ function applyScoreFactors(
   if (isPlayerInjured) {
     score *= INJURY_FACTOR;
   }
-  if (!player.is_playing) {
+  if (!player.is_playing || player.is_starting === 0) {
     score *= NOT_PLAYING_FACTOR;
   }
   if (isStartingPlayer) {
