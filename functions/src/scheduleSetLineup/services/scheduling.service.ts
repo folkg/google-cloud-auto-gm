@@ -223,7 +223,6 @@ export function mapUsersToActiveTeams(
   teamsSnapshot: QuerySnapshot<DocumentData>
 ) {
   if (teamsSnapshot.size === 0) {
-    logger.log("No teams found to process weekly transactions for.");
     return new Map();
   }
 
