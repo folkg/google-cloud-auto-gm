@@ -7,7 +7,7 @@ import {
 
 const NOT_PLAYING_FACTOR = 0.0001;
 const INJURY_FACTOR = 0.01;
-const STARTING_FACTOR = 100;
+const STARTING_FACTOR = 10;
 /**
  * Returns the proper score function used to compare players on the same
  * fantasy roster in order to decide who to start and who to sit.
@@ -75,16 +75,29 @@ export function scoreFunctionNHL(): (player: IPlayer) => number {
  *  returns a score.
  */
 export function scoreFunctionMLB(): (player: IPlayer) => number {
+  const NOT_STARTING_BATTER_FACTOR = 0.1;
   const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: IPlayer) => {
-    const isStarting = player.eligible_positions.some((pos) =>
+    const isPitcher = player.eligible_positions.some((pos) =>
       ["P", "SP", "RP"].includes(pos)
-    )
-      ? isStartingPlayer(player, startingPitchers)
-      : player.is_starting === 1;
+    );
 
-    const score = getInitialScore(player);
-    return applyScoreFactors(score, player, isStarting);
+    let isStartingPitcher = false;
+    // boost the score for starting pitchers, but penalize non-starting batters
+
+    // this is because batters get confirmed later in the day, so we don't want to
+    // leave a good player, late confirmation on the bench. Rely on crowdsourcing to
+    // get the starting batters right.
+    let score = getInitialScore(player);
+    if (isPitcher) {
+      isStartingPitcher = isStartingPlayer(player, startingPitchers);
+    } else {
+      if (player.is_starting === 0) {
+        score *= NOT_STARTING_BATTER_FACTOR;
+      }
+    }
+
+    return applyScoreFactors(score, player, isStartingPitcher);
   };
 }
 

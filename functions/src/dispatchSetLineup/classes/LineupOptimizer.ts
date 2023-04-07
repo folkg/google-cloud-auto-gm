@@ -597,24 +597,6 @@ export class LineupOptimizer {
       return false;
     }
 
-    const suboptimalStarters = this.team.reservePlayers.some(
-      (reservePlayer) =>
-        reservePlayer.is_starting === 1 &&
-        this.team.startingPlayers.some(
-          (startingPlayer) =>
-            startingPlayer.is_starting !== 1 &&
-            reservePlayer.isEligibleToSwapWith(startingPlayer)
-        )
-    );
-    if (suboptimalStarters) {
-      logger.error(
-        `Suboptimal Starters: reservePlayers are starting and some eligible players on Roster are not ${this.team.team_key}`,
-        this.team,
-        this.deltaPlayerPositions
-      );
-      return false;
-    }
-
     return true;
   }
 }

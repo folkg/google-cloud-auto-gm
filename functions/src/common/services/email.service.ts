@@ -47,15 +47,17 @@ export async function sendFeedbackEmail(
  * @async
  * @param {string} uid The user id of the user to send the email to
  * @param {string} title The title of the email
- * @param {string} message The message of the email
+ * @param {string} body The message of the email
+ * @param {string} [buttonText=""] The text of the button
+ * @param {string} [buttonUrl=""] The url of the button
  * @return {Promise<boolean>} The result of the email send
  */
 export async function sendUserEmail(
   uid: string,
   title: string,
   body: string[],
-  buttonText: string = "",
-  buttonUrl: string = ""
+  buttonText = "",
+  buttonUrl = ""
 ): Promise<boolean> {
   const user = await auth().getUser(uid);
   if (!user) {
