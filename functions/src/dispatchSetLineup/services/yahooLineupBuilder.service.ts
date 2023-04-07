@@ -82,10 +82,8 @@ export async function fetchRostersFromYahoo(
           getChild(leagueSettings, "max_weekly_adds")
         ),
         max_season_adds: parseStringToInt(getChild(leagueSettings, "max_adds")),
-        start_date: getPacificStartOfDay(
-          Date.parse(getChild(league, "start_date"))
-        ),
-        end_date: getPacificEndOfDay(Date.parse(getChild(league, "end_date"))),
+        start_date: getPacificStartOfDay(getChild(league, "start_date")),
+        end_date: getPacificEndOfDay(getChild(league, "end_date")),
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
         transactions:

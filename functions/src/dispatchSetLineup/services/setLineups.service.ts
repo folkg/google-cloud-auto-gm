@@ -1,7 +1,7 @@
 import { logger } from "firebase-functions";
 import { updateTeamFirestore } from "../../common/services/firebase/firestore.service";
 import {
-  datePSTString,
+  getPacificTimeDateString,
   is2DArrayEmpty,
 } from "../../common/services/utilities.service";
 import {
@@ -341,7 +341,7 @@ function getTeamKeysFromTransactions(
 function tomorrowsDateAsString(): string {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  return datePSTString(tomorrow);
+  return getPacificTimeDateString(tomorrow);
 }
 
 /**
@@ -420,6 +420,7 @@ function isTransactionPaceBehindTimeline({
 }
 
 function getWeeklyProgressPST() {
+  // TODO: Update with spacetime
   const nowString = new Date().toLocaleString("en-US", {
     timeZone: "America/Los_Angeles",
   });

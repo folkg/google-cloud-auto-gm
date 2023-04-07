@@ -22,7 +22,8 @@
     "dotenv": "^16.0.3",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^4.2.1",
-    "js2xmlparser": "^5.0.0"
+    "js2xmlparser": "^5.0.0",
+    "spacetime": "^7.4.2"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",

@@ -12,7 +12,7 @@ import {
 } from "../../interfaces/Team";
 import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email.service";
-import { datePSTString } from "../utilities.service";
+import { getPacificTimeDateString } from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
@@ -286,7 +286,7 @@ export async function storeStartingPlayersInFirestore(
   try {
     await startingPlayersRef.doc(league).set({
       startingPlayers,
-      date: datePSTString(new Date()),
+      date: getPacificTimeDateString(new Date()),
     });
   } catch (error) {
     logger.error(
@@ -319,7 +319,7 @@ export async function getStartingPlayersFromFirestore(
     if (startingPlayersSnapshot.exists) {
       // check if the starting players were updated today
       const date: string = startingPlayersSnapshot.data()?.date;
-      const today = datePSTString(new Date());
+      const today = getPacificTimeDateString(new Date());
 
       if (date === today) {
         return startingPlayersSnapshot.data()?.startingPlayers;

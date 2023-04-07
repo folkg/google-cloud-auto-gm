@@ -54,10 +54,8 @@ export async function fetchTeamsYahoo(
         points_back: teamStandings.points_back,
         outcome_totals: teamStandings.outcome_totals,
         scoring_type: getChild(league, "scoring_type"),
-        start_date: getPacificStartOfDay(
-          Date.parse(getChild(league, "start_date"))
-        ),
-        end_date: getPacificEndOfDay(Date.parse(getChild(league, "end_date"))),
+        start_date: getPacificStartOfDay(getChild(league, "start_date")),
+        end_date: getPacificEndOfDay(getChild(league, "end_date")),
         weekly_deadline: getChild(league, "weekly_deadline"),
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),

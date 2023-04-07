@@ -3,7 +3,7 @@ import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { db } from "../../common/services/firebase/firestore.service";
-import { datePSTString } from "../../common/services/utilities.service";
+import { getPacificTimeDateString } from "../../common/services/utilities.service";
 import { fetchStartingPlayers } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import { GameStartTimes } from "../interfaces/gameStartTime";
 
@@ -20,7 +20,7 @@ import { GameStartTimes } from "../interfaces/gameStartTime";
  */
 export async function leaguesToSetLineupsFor(): Promise<string[]> {
   // load all of the game start times for today
-  const todayDate: string = datePSTString(new Date());
+  const todayDate: string = getPacificTimeDateString(new Date());
   let leagues: string[];
   const { loadedFromDB, gameStartTimes } = await loadTodaysGames(todayDate);
   if (loadedFromDB) {

@@ -1,4 +1,5 @@
 const { GoogleAuth } = require("google-auth-library");
+const spacetime = require("spacetime"); // jest does not like the es module import syntax
 
 /**
  * The properties of the Player object are not consistent.
@@ -47,59 +48,39 @@ export async function getFunctionUrl(name: string, location = "us-central1") {
 }
 
 /**
- * convert date (PST) to a string in the format YYYY-MM-DD
+ * convert date (PT) to a string in the format YYYY-MM-DD
  *
  * @param {Date} date - The date to convert
- * @return {string}
+ * @return {string} - The date, pacific time, in the format YYYY-MM-DD
  */
-export function datePSTString(date: Date): string {
-  const datePTC: string = date.toLocaleDateString("en-US", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  const dateParts: string[] = datePTC.split("/");
-  const dateString: string =
-    dateParts[2] + "-" + dateParts[0] + "-" + dateParts[1];
-  return dateString;
+export function getPacificTimeDateString(date: Date): string {
+  const t = spacetime(date, "Canada/Pacific");
+  const year = String(t.year);
+  const month = String(t.month).padStart(2, "0");
+  const day = String(t.date).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
-export function getPacificStartOfDay(timestamp: number): number {
-  return getPacificDayBoundary(timestamp, true);
+/**
+ * get the start of the day in pacific time (00:00:00.000)
+ *
+ * @export
+ * @param {string} date - The date string to convert
+ * @return {number} - The start of the day in pacific time
+ */
+export function getPacificStartOfDay(date: string): number {
+  return spacetime(date, "Canada/Pacific").startOf("day").epoch;
 }
 
-export function getPacificEndOfDay(timestamp: number): number {
-  return getPacificDayBoundary(timestamp, false);
-}
-
-function getPacificDayBoundary(
-  timestamp: number,
-  isStartOfDay: boolean
-): number {
-  const date = new Date(timestamp);
-  const [hours, minutes, seconds, ms] = isStartOfDay
-    ? [0, 0, 0, 0]
-    : [23, 59, 59, 999];
-  date.setUTCHours(hours, minutes, seconds, ms);
-
-  // Adjust for Pacific Time Zone offset
-  date.setHours(date.getHours() + getPacificOffset(date));
-
-  return date.getTime();
-}
-
-function getPacificOffset(date: Date) {
-  // You would think there would be a better way to do this, but there isn't without using a library.
-  const year = date.getUTCFullYear();
-  const dstStart = new Date(Date.UTC(year, 2, 8, 10)); // Second Sunday in March at 2am Pacific Time (daylight saving time starts)
-  const dstEnd = new Date(Date.UTC(year, 10, 1, 9)); // First Sunday in November at 2am Pacific Time (daylight saving time ends)
-  dstStart.setUTCHours(dstStart.getUTCHours() - 7);
-  dstEnd.setUTCHours(dstEnd.getUTCHours() - 8);
-  const isDstInEffect =
-    date.getTime() >= dstStart.getTime() && date.getTime() < dstEnd.getTime();
-  const pacificOffset = isDstInEffect ? 7 : 8;
-  return pacificOffset;
+/**
+ * get the end of the day in pacific time (23:59:59.999)
+ *
+ * @export
+ * @param {string} date - The date string to convert
+ * @return {number} - The end of the day in pacific time
+ */
+export function getPacificEndOfDay(date: string): number {
+  return spacetime(date, "Canada/Pacific").endOf("day").epoch;
 }
 
 /**
