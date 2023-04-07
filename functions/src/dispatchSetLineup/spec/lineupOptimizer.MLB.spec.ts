@@ -11,8 +11,8 @@ jest.mock("firebase-admin", () => ({
 // const yahooStartingPlayerService = require("../../common/services/yahooAPI/yahooStartingPlayer.service");
 
 describe("Test LineupOptimizer Class MLB Daily", function () {
-  xtest("Already optimal roster", function () {
-    const roster: ITeam = require("./testRosters/MLB/?");
+  test("Already optimal roster", function () {
+    const roster: ITeam = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -28,7 +28,6 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(rosterModification.newPlayerPositions).toMatchObject({
-      "422.p.11074": "1B",
       "422.p.11232": "OF",
     });
   });
@@ -42,5 +41,77 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
       rosterModification.newPlayerPositions["422.p.10439"]
     );
     expect(rosterModification.newPlayerPositions["422.p.9616"]).toEqual("IL");
+  });
+  test("sample 1 should pass the isSuccessfullyOptimized test", function () {
+    const roster: ITeam = require("./testRosters/MLB/sample1.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.10577": "OF",
+
+      "422.p.9557": "BN",
+      "422.p.10923": "SS",
+      "422.p.10036": "2B",
+      "422.p.9876": "Util",
+
+      "422.p.10166": "C",
+      "422.p.9096": "BN",
+
+      "422.p.11014": "P",
+      "422.p.11251": "BN",
+    });
+  });
+  it("should move 2 starting pitchers to lineup, do nothing with bad starting batters on BN", function () {
+    const roster: ITeam = require("./testRosters/MLB/sample4.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["422.p.10660"]).toBeDefined();
+    expect(rosterModification.newPlayerPositions["422.p.11251"]).toBeDefined();
+    expect(
+      rosterModification.newPlayerPositions["422.p.9557"]
+    ).not.toBeDefined();
+    expect(
+      rosterModification.newPlayerPositions["422.p.12339"]
+    ).not.toBeDefined();
+    expect(
+      rosterModification.newPlayerPositions["422.p.9096"]
+    ).not.toBeDefined();
+  });
+  it("should move 2 starting pitchers to lineup, swap one non-starter to BN, leave other bad batters on BN", function () {
+    const roster: ITeam = require("./testRosters/MLB/sample5.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions["422.p.10660"]).toBeDefined();
+    expect(rosterModification.newPlayerPositions["422.p.11251"]).toBeDefined();
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "422.p.9096": "C",
+      "422.p.10166": "BN",
+    });
+    expect(
+      rosterModification.newPlayerPositions["422.p.9557"]
+    ).not.toBeDefined();
+    expect(
+      rosterModification.newPlayerPositions["422.p.12339"]
+    ).not.toBeDefined();
+  });
+  it("should move unconfirmed good batters to roster in favour of bad confirmed batters", function () {
+    const roster: ITeam = require("./testRosters/MLB/sample6.json");
+    const lo = new LineupOptimizer(roster);
+    lo.verbose = true;
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.11265": "OF",
+      "422.p.9858": "BN",
+      "422.p.11855": "C",
+      "422.p.9530": "BN",
+    });
   });
 });

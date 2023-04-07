@@ -147,13 +147,9 @@ async function processTodaysLineupChanges(
 
   const allLineupChanges: LineupChanges[] = [];
   for (const team of teams) {
-    if (team.game_code === "mlb")
-      console.log("MLB team before", JSON.stringify(team));
     const lo = new LineupOptimizer(team);
     const lineupChanges = lo.optimizeStartingLineup();
     result.push(lo.getCurrentTeamState());
-    if (team.game_code === "mlb")
-      console.log("MLB team after", JSON.stringify(lo.getCurrentTeamState()));
     // will log any errors, we could remove this later once we're confident in the optimizer
     const isOptimalLineup = lo.isSuccessfullyOptimized();
     if (!isOptimalLineup) {
