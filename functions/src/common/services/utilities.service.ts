@@ -55,9 +55,9 @@ export async function getFunctionUrl(name: string, location = "us-central1") {
  */
 export function getPacificTimeDateString(date: Date): string {
   const t = spacetime(date, "Canada/Pacific");
-  const year = String(t.year);
-  const month = String(t.month).padStart(2, "0");
-  const day = String(t.date).padStart(2, "0");
+  const year = String(t.year());
+  const month = String(t.month() + 1).padStart(2, "0");
+  const day = String(t.date()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 

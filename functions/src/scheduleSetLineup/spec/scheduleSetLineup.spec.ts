@@ -19,6 +19,7 @@ const mockQueue = {
 const mockFunctionUrl = jest.fn(() => Promise.resolve("https://example.com"));
 jest.mock("../../common/services/utilities.service", () => ({
   getFunctionUrl: jest.fn(() => mockFunctionUrl),
+  getCurrentPacificHour: jest.fn(() => 1),
 }));
 
 // mock the TaskQueue constructor
@@ -36,6 +37,7 @@ jest.mock("firebase-admin/functions", () => {
 });
 
 describe("scheduleSetLineup", () => {
+  beforeAll(() => {});
   beforeEach(() => {
     mockLeaguesToSetLineupsFor.mockReturnValue(
       Promise.resolve(["nhl", "mlb", "nba"])
