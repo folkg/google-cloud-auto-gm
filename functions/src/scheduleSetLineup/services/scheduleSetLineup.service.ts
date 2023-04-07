@@ -2,7 +2,10 @@ import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { TaskQueue, getFunctions } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { getActiveTeamsForLeagues } from "../../common/services/firebase/firestore.service";
-import { getFunctionUrl } from "../../common/services/utilities.service";
+import {
+  getCurrentPacificHour,
+  getFunctionUrl,
+} from "../../common/services/utilities.service";
 import {
   enqueueUsersTeams,
   leaguesToSetLineupsFor,
@@ -11,6 +14,10 @@ import {
 } from "./scheduling.service";
 
 export async function scheduleSetLineup() {
+  // We want the first run of the function to be at 1:55 AM Pacific Time
+  // Waiver claims hadn't been fully proceseed at 0:55 AM
+  if (getCurrentPacificHour() === 0) return;
+
   const leagues: string[] = await leaguesToSetLineupsFor();
   if (leagues.length === 0) {
     logger.log("No leagues to set lineups for.");

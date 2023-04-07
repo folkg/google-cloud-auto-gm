@@ -83,6 +83,10 @@ export function getPacificEndOfDay(date: string): number {
   return spacetime(date, "Canada/Pacific").endOf("day").epoch;
 }
 
+export function getCurrentPacificHour(): number {
+  return spacetime.now("Canada/Pacific").hour();
+}
+
 /**
  * Takes an array and a predicate function and returns an array of two arrays.
  * The first array contains all the elements that satisfy the predicate.
