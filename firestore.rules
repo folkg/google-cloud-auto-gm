@@ -12,7 +12,7 @@ service cloud.firestore {
         function isUpdateToSettingField() {
     			return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_setting_lineups']);
 				}
-    		allow update: if isUpdateToSettingField() && debug(resource.data.is_approved) == true && request.auth.uid == userId;
+    		allow update: if isUpdateToSettingField() && resource.data.is_subscribed == true && request.auth.uid == userId;
     	}
   	}
     
