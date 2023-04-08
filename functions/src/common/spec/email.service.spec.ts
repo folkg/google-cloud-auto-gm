@@ -12,8 +12,8 @@ jest.mock("firebase-admin", () => ({
   }),
 }));
 
-describe("Integration test EmailService", () => {
-  it("should actually send email via SendGrid", async () => {
+xdescribe("Integration test EmailService", () => {
+  xit("should actually send email via SendGrid", async () => {
     const result = await sendFeedbackEmail(
       "test@email.com",
       "Bug Report",

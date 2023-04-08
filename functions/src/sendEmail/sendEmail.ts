@@ -20,12 +20,13 @@ export const sendfeedbackemail = onCall(async (request) => {
   }
 
   const { userEmail, feedbackType, title, message } = data;
-  if (!userEmail || !feedbackType || !title || !message) {
+  if (userEmail ?? feedbackType ?? title ?? message) {
     throw new HttpsError(
       "invalid-argument",
       "All fields must be provided to send feedback email"
     );
   }
+
   let result = false;
   try {
     await sendFeedbackEmail(userEmail, feedbackType, title, message);
