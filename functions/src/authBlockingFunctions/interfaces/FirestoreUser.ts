@@ -3,6 +3,5 @@ export interface FirestoreUser {
   refreshToken: string;
   tokenExpirationTime: number;
   isFreeTrialActivated: boolean;
-  isSubscribed: boolean;
   subscriptionExpirationTime: number;
 }

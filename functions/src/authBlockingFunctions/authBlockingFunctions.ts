@@ -15,7 +15,6 @@ export const beforeSignInV1 = functionsV1.auth
         tokenExpirationTime: Date.parse(credential.expirationTime as string),
         subscriptionExpirationTime: -1,
         isFreeTrialActivated: false,
-        isSubscribed: false,
       };
 
       try {
