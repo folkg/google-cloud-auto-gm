@@ -83,11 +83,11 @@ export function scoreFunctionMLB(): (player: IPlayer) => number {
     );
 
     let isStartingPitcher = false;
-    // boost the score for starting pitchers, but penalize non-starting batters
+    // Boost the score for starting pitchers since they only get starting_status === 1.
 
-    // this is because batters get confirmed later in the day, so we don't want to
-    // leave a good player, late confirmation on the bench. Rely on crowdsourcing to
-    // get the starting batters right.
+    // Penalize non-starting batters if their starting_score === 0 instead, however,
+    // since there are often late confirmations and we don't want to leave a good
+    // unconfirmed player on the bench in favour of a bad confirmed starter.
     let score = getInitialScore(player);
     if (isPitcher) {
       isStartingPitcher = isStartingPlayer(player, startingPitchers);
@@ -156,9 +156,6 @@ function applyScoreFactors(
 }
 
 function isStartingPlayer(player: IPlayer, starters: string[]): boolean {
-  if (starters.length === 0) {
-    // default to is_starting flag if we can't get the starters array
-    return player.is_starting === 1;
-  }
-  return starters.includes(player.player_key);
+  // starters array is not always accurate, so we need to check both
+  return starters.includes(player.player_key) || player.is_starting === 1;
 }
