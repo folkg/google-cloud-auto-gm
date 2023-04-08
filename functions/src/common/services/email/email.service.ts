@@ -22,13 +22,18 @@ export async function sendFeedbackEmail(
   title: string,
   message: string
 ): Promise<boolean> {
-  // const templateId = "d-f99cd8e8058f44dc83c74c523cc92840";
+  const templateData = {
+    feedbackType,
+    title,
+    message,
+  };
+
   const msg = {
-    to: "fantasyautocoach+feedback@gmail.com",
-    from: "feedback@fantasyautocoach.com",
+    to: "customersupport@fantasyautocoach.com",
+    from: "Fantasy AutoCoach User Feedback <feedback@fantasyautocoach.com>",
     replyTo: userEmail,
-    subject: `[${feedbackType}] ${title}`,
-    text: message,
+    templateId: "d-f99cd8e8058f44dc83c74c523cc92840",
+    dynamicTemplateData: templateData,
   };
 
   try {
@@ -46,7 +51,7 @@ export async function sendFeedbackEmail(
  * @export
  * @async
  * @param {string} uid The user id of the user to send the email to
- * @param {string} title The title of the email
+ * @param {string} subject The title of the email
  * @param {string} body The message of the email
  * @param {string} [buttonText=""] The text of the button
  * @param {string} [buttonUrl=""] The url of the button
@@ -54,8 +59,8 @@ export async function sendFeedbackEmail(
  */
 export async function sendUserEmail(
   uid: string,
-  title: string,
-  body: string[],
+  subject: string,
+  body: any[],
   buttonText = "",
   buttonUrl = ""
 ): Promise<boolean> {
@@ -69,14 +74,14 @@ export async function sendUserEmail(
   const templateData = {
     displayName,
     body,
+    subject,
     buttonText,
     buttonUrl,
   };
 
   const msg = {
     to: userEmailAddress,
-    from: "customersupport@fantasyautocoach.com",
-    subject: title,
+    from: "Fantasy AutoCoach <customersupport@fantasyautocoach.com>",
     templateId: "d-68da1ae2303d4400b9eabad0a034c262",
     dynamicTemplateData: templateData,
   };

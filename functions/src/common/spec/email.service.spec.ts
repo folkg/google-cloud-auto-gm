@@ -1,4 +1,7 @@
-import { sendFeedbackEmail, sendUserEmail } from "../services/email.service";
+import {
+  sendFeedbackEmail,
+  sendUserEmail,
+} from "../services/email/email.service";
 jest.mock("firebase-admin", () => ({
   initializeApp: () => {},
   auth: () => ({
@@ -9,8 +12,8 @@ jest.mock("firebase-admin", () => ({
   }),
 }));
 
-xdescribe("Integration test EmailService", () => {
-  xit("should actually send email vi SendGrid", async () => {
+describe("Integration test EmailService", () => {
+  it("should actually send email via SendGrid", async () => {
     const result = await sendFeedbackEmail(
       "test@email.com",
       "Bug Report",
@@ -26,7 +29,7 @@ xdescribe("Integration test EmailService", () => {
       uid,
       "Urgent Action Required: Yahoo Authentication Error",
       [
-        "Your Yahoo access has expired and your lineups are no longer being managed by Fantasy AutoCoach.",
+        "<strong>Your Yahoo access has expired and your lineups are no longer being managed by Fantasy AutoCoach.</strong>",
         "Please visit the Fantasy AutoCoach website below and sign in again with Yahoo so that we can continue to " +
           "manage your teams. Once you sign in, you will be re-directed to your dashabord and we " +
           "will have everything we need to continue managing your teams. Thank you for your assistance, and we " +

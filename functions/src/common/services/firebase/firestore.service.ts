@@ -11,7 +11,7 @@ import {
   yahooToFirestore,
 } from "../../interfaces/Team";
 import { ReturnCredential, Token } from "../../interfaces/credential";
-import { sendUserEmail } from "../email.service";
+import { sendUserEmail } from "../email/email.service";
 import { getPacificTimeDateString } from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
@@ -49,7 +49,7 @@ export async function loadYahooAccessToken(
         uid,
         "Urgent Action Required: Yahoo Authentication Error",
         [
-          "Your Yahoo access has expired and your lineups are no longer being managed by Fantasy AutoCoach.",
+          "<strong>Your Yahoo access has expired and your lineups are no longer being managed by Fantasy AutoCoach.</strong>",
           "Please visit the Fantasy AutoCoach website below and sign in again with Yahoo so that we can continue to " +
             "manage your teams. Once you sign in, you will be re-directed to your dashabord and we " +
             "will have everything we need to continue managing your teams. Thank you for your assistance, and we " +
