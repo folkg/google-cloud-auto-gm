@@ -5,7 +5,7 @@ import {
   getNHLStartingGoalies,
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 
-const NOT_PLAYING_FACTOR = 0.00001;
+const NOT_PLAYING_FACTOR = 0.0001;
 const INJURY_FACTOR = 0.001;
 const STARTING_FACTOR = 10;
 /**
