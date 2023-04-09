@@ -15,10 +15,10 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
   //   jest.resetModules();
   // });
 
-  // afterEach(() => {
-  //   // restore the spy created with spyOn
-  //   jest.restoreAllMocks();
-  // });
+  afterEach(() => {
+    // restore the spy created with spyOn
+    jest.restoreAllMocks();
+  });
 
   // *** Test Optimization of Lineup using healthy players ***
   test("Already optimal roster", function () {
@@ -285,6 +285,34 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
     expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
+
+    // reset the mock configuration
+    jest
+      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
+      .mockRestore();
+  });
+
+  test("Bad goalies in NHL_STARTING_GOALIES array, good goalies with is_starting prop", function () {
+    const roster: ITeam = require("./testRosters/NHL/Daily/startingGoaliesOnBench3.json");
+    // mock NHL_STARTING_GOALIES array
+    jest
+      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
+      .mockReturnValue(["419.p.7593"]);
+    expect(yahooStartingPlayerService.getNHLStartingGoalies()).toEqual([
+      "419.p.7593",
+    ]);
+
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(
+      rosterModification.newPlayerPositions["419.p.6370"]
+    ).not.toBeDefined(); // on IR+, should not be moved
+    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("G");
 
     // reset the mock configuration
     jest
