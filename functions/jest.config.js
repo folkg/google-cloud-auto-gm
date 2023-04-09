@@ -1,6 +1,16 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
+// /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  preset: "ts-jest",
+  transform: {
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        isolatedModules: true,
+      },
+    ],
+  },
+  // transform: {
+  //   "^.+\\.ts$": "@swc/jest",
+  // },
   testEnvironment: "node",
   testMatch: ["**/spec/*.spec.ts"],
 };
