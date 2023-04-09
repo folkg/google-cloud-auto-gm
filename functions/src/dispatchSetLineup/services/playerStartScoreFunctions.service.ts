@@ -5,8 +5,8 @@ import {
   getNHLStartingGoalies,
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 
-const NOT_PLAYING_FACTOR = 0.0001;
-const INJURY_FACTOR = 0.01;
+const NOT_PLAYING_FACTOR = 0.00001;
+const INJURY_FACTOR = 0.001;
 const STARTING_FACTOR = 10;
 /**
  * Returns the proper score function used to compare players on the same
@@ -75,7 +75,7 @@ export function scoreFunctionNHL(): (player: IPlayer) => number {
  *  returns a score.
  */
 export function scoreFunctionMLB(): (player: IPlayer) => number {
-  const NOT_STARTING_BATTER_FACTOR = 0.1;
+  const NOT_STARTING_BATTER_FACTOR = 0.01;
   const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: IPlayer) => {
     const isPitcher = player.eligible_positions.some((pos) =>
