@@ -1,5 +1,6 @@
 import { auth } from "firebase-admin";
 import { logger } from "firebase-functions";
+import { AuthUserRecord } from "firebase-functions/lib/common/providers/identity";
 
 const sgMail = require("@sendgrid/mail");
 require("dotenv").config();
@@ -90,7 +91,39 @@ export async function sendUserEmail(
     await sgMail.send(msg);
     return true;
   } catch (error) {
-    logger.log("user email failed to send: " + error);
+    logger.error(`user email failed to send to ${userEmailAddress}: `, error);
+    return false;
+  }
+}
+
+export async function sendCustomVerificationEmail(
+  user: AuthUserRecord
+): Promise<boolean> {
+  const userEmailAddress = user?.email;
+  if (!userEmailAddress) {
+    throw new Error("Not a valid user");
+  }
+  const verificationLink = await auth().generateEmailVerificationLink(
+    userEmailAddress
+  );
+
+  const templateData = {
+    displayName: user?.displayName,
+    verificationLink,
+  };
+
+  const msg = {
+    to: userEmailAddress,
+    from: "Fantasy AutoCoach <customersupport@fantasyautocoach.com>",
+    templateId: "d-92a139e3829b43f5b7ce6b0645336a85",
+    dynamicTemplateData: templateData,
+  };
+
+  try {
+    await sgMail.send(msg);
+    return true;
+  } catch (error) {
+    logger.error("Welcome email failed to send for new user", error);
     return false;
   }
 }

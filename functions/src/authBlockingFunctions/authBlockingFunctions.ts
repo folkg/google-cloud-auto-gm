@@ -2,6 +2,7 @@ import { logger } from "firebase-functions";
 import * as functionsV1 from "firebase-functions/v1";
 import { db } from "../common/services/firebase/firestore.service";
 import { FirestoreUser } from "./interfaces/FirestoreUser";
+import { sendCustomVerificationEmail } from "../common/services/email/email.service";
 
 export const beforeSignInV1 = functionsV1.auth
   .user()
@@ -36,6 +37,14 @@ export const beforeCreateV1 = functionsV1.auth.user().beforeCreate((user) => {
     };
   }
   return {};
+});
+
+export const onCreateV1 = functionsV1.auth.user().onCreate((user) => {
+  if (user) {
+    sendCustomVerificationEmail(user);
+    return true;
+  }
+  return false;
 });
 
 // import { beforeUserCreated } from "firebase-functions/v2/identity";
