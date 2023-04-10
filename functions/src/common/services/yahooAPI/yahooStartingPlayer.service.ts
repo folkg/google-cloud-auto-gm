@@ -6,7 +6,7 @@ import {
   storeStartingPlayersInFirestore,
 } from "../firebase/firestore.service";
 import { getChild } from "../utilities.service";
-import { getStartingPlayers } from "./yahooAPI.service";
+import { getMLBSPFromYahoo, getStartingPlayers } from "./yahooAPI.service";
 
 let NHL_STARTING_GOALIES: string[];
 export function getNHLStartingGoalies(): string[] {
@@ -16,6 +16,16 @@ export function getNHLStartingGoalies(): string[] {
 let MLB_STARTING_PITCHERS: string[];
 export function getMLBStartingPitchers(): string[] {
   return MLB_STARTING_PITCHERS;
+}
+
+let MLB_SP: Set<string>;
+export function getMLBSP(): Set<string> {
+  return MLB_SP;
+}
+
+export async function fetchMLBSPList(): Promise<void> {
+  const mlbSP: string[] = await getMLBSPFromYahoo();
+  MLB_SP = new Set(mlbSP);
 }
 
 /**
@@ -100,10 +110,6 @@ export async function initStartingGoalies(): Promise<void> {
     logger.log(
       "Initialized NHL starting goalies global array from Firestore. Logging this to see how many times it is called."
     );
-  } else {
-    logger.log(
-      "NHL starting goalies global array already initialized within this instance, NOT fetching from Firestore."
-    );
   }
 }
 
@@ -113,9 +119,15 @@ export async function initStartingPitchers(): Promise<void> {
     logger.log(
       "Initialized MLB starting pitchers global array from Firestore. Logging this to see how many times it is called."
     );
-  } else {
+  }
+}
+
+export async function initMLBSP(): Promise<void> {
+  if (!MLB_SP) {
+    // TODO: This is not the correct code, MLBSP will be a different firestore collection
+    MLB_SP = new Set(await getStartingPlayersFromFirestore("mlb"));
     logger.log(
-      "MLB starting pitchers global array already initialized within this instance, NOT fetching from Firestore."
+      "Initialized MLB SP global set from Firestore. Logging this to see how many times it is called."
     );
   }
 }

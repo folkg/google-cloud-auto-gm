@@ -9,10 +9,14 @@ const API_URL = "https://fantasysports.yahooapis.com/fantasy/v2/";
  * @export
  * @async
  * @param {string} url - the url to fetch
- * @param {string} uid The firebase uid of the user
+ * @param {?string} [uid] - the firebase uid of the user
  * @return {unknown} - the response from the API
  */
-export async function httpGetAxios(url: string, uid: string) {
+export async function httpGetAxios(url: string, uid?: string) {
+  if (!uid) {
+    return axios.get(API_URL + url);
+  }
+
   const credential = await loadYahooAccessToken(uid);
   const accessToken = credential.accessToken;
 

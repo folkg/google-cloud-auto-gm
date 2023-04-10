@@ -10,6 +10,7 @@ import {
   httpPostAxiosUnauth,
   httpPutAxios,
 } from "./yahooHttp.service";
+import { getChild } from "../utilities.service";
 const js2xmlparser = require("js2xmlparser");
 require("dotenv").config();
 
@@ -194,6 +195,48 @@ export async function getStartingPlayers(
     const errMessage = `Error in getStartingPlayers. User: ${uid} League: ${leagueKey} Position: ${positions}`;
     handleAxiosError(err, errMessage);
   }
+}
+
+export async function getMLBSPFromYahoo() {
+  try {
+    // There should be at least 200 SP, so we need to make 8 calls, then loop for more
+    const urlBase = `games;game_keys=mlb/players;position=SP;out=percent_owned;sort=R_PO;start=`;
+    const initialGetRequests = [];
+    for (let i = 0; i < 8; i++) {
+      initialGetRequests.push(httpGetAxios(`${urlBase}${i * 25}?format=json`));
+    }
+    const playerJSONs = await Promise.all(initialGetRequests);
+    const playerKeys = playerJSONs.flatMap((response) =>
+      parsePlayerKeysFromYahooJSON(response.data)
+    );
+    // TODO: This isn't quite right. We need to flag if the player ownership is 0 somewhere
+    if (playerKeys[-1]) {
+      // There are more than 200 SP, so we need to loop for more
+      let i = 0;
+      while (playerKeys[-1]) {
+        const { data } = await httpGetAxios(
+          `${urlBase}${(i + 8) * 25}?format=json`
+        );
+        playerKeys.push(...parsePlayerKeysFromYahooJSON(data));
+        i++;
+      }
+    }
+    // TODO: Move the parse starting players logic from the yahooStartingPlayer service into here for the getStartingPlayers function too
+    return playerKeys;
+  } catch (err: AxiosError | unknown) {
+    handleAxiosError(err, "Error in getMLBSPFromYahoo");
+  }
+}
+
+function parsePlayerKeysFromYahooJSON(playersJSON: any): string[] {
+  const result: string[] = [];
+  const players = playersJSON.fantasy_content.league[1].players;
+  for (const key in players) {
+    if (key !== "count") {
+      result.push(getChild(players[key].player[0], "player_key"));
+    }
+  }
+  return result;
 }
 
 /**
