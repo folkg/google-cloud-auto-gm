@@ -7,10 +7,15 @@ jest.mock("firebase-admin", () => ({
   firestore: jest.fn(),
 }));
 
-// Use this to mock the global NHL_STARTING_GOALIES array where needed
-// const yahooStartingPlayerService = require("../../common/services/yahooAPI/yahooStartingPlayer.service");
+// Use this to mock the global MLB_STARTING_PITCHERS array where needed
+const yahooStartingPlayerService = require("../../common/services/yahooAPI/yahooStartingPlayer.service");
 
 describe("Test LineupOptimizer Class MLB Daily", function () {
+  afterEach(() => {
+    // restore the spy created with spyOn
+    jest.restoreAllMocks();
+  });
+
   test("Already optimal roster", function () {
     const roster: ITeam = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
@@ -103,7 +108,6 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   it("should move unconfirmed good batters to roster in favour of bad confirmed batters", function () {
     const roster: ITeam = require("./testRosters/MLB/sample6.json");
     const lo = new LineupOptimizer(roster);
-    lo.verbose = true;
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
@@ -112,6 +116,56 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
       "422.p.9858": "BN",
       "422.p.11855": "C",
       "422.p.9530": "BN",
+    });
+  });
+  it("should move non-starting SP to BN in favour of unconfirmed RP using Pitchers Array", function () {
+    const roster: ITeam = require("./testRosters/MLB/sample7.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    jest
+      .spyOn(yahooStartingPlayerService, "getMLBStartingPitchers")
+      .mockReturnValue(["422.p.10597", "422.p.11398"]);
+    expect(yahooStartingPlayerService.getMLBStartingPitchers()).toEqual([
+      "422.p.10597",
+      "422.p.11398",
+    ]);
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.10970": "BN",
+      "422.p.11750": "BN",
+      "422.p.11251": "P",
+      "422.p.10660": "P",
+    });
+  });
+
+  it("should move non-starting SP to BN in favour of unconfirmed RP NOT using Pitchers Array", function () {
+    const roster: ITeam = require("./testRosters/MLB/sample7.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.10970": "BN",
+      "422.p.11750": "BN",
+      "422.p.11251": "P",
+      "422.p.10660": "P",
+    });
+  });
+  it("should not alarm for empty roster positions where there are no players eligible to fill unfilled positions", function () {
+    const roster: ITeam = require("./testRosters/MLB/unfilledRosterPositions.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.10504": "BN",
+      "422.p.10566": "Util",
+      "422.p.11391": "MI",
     });
   });
 });

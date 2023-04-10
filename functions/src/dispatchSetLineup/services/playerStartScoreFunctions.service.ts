@@ -7,7 +7,7 @@ import {
 
 const NOT_PLAYING_FACTOR = 0.00001;
 const INJURY_FACTOR = 0.001;
-const STARTING_FACTOR = 10;
+const STARTING_FACTOR = 100;
 /**
  * Returns the proper score function used to compare players on the same
  * fantasy roster in order to decide who to start and who to sit.
@@ -75,28 +75,32 @@ export function scoreFunctionNHL(): (player: IPlayer) => number {
  *  returns a score.
  */
 export function scoreFunctionMLB(): (player: IPlayer) => number {
-  const NOT_STARTING_BATTER_FACTOR = 0.01;
+  const NOT_STARTING_FACTOR = 0.01;
   const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: IPlayer) => {
-    const isPitcher = player.eligible_positions.some((pos) =>
-      ["P", "SP", "RP"].includes(pos)
-    );
-
-    let isStartingPitcher = false;
+    // TODO: Do we need to boost the score for starting pitchers? Or is it superfluous?
     // Boost the score for starting pitchers since they only get starting_status === 1.
+    // Penalize the non-starting SP pitchers so they don't start over an RP that is playing.
 
     // Penalize non-starting batters if their starting_score === 0 instead, however,
     // since there are often late confirmations and we don't want to leave a good
     // unconfirmed player on the bench in favour of a bad confirmed starter.
-    let score = getInitialScore(player);
+    const isPitcher = player.eligible_positions.some((pos) =>
+      ["P", "SP", "RP"].includes(pos)
+    );
+    let isStartingPitcher = false;
     if (isPitcher) {
       isStartingPitcher = isStartingPlayer(player, startingPitchers);
-    } else {
-      if (player.is_starting === 0) {
-        score *= NOT_STARTING_BATTER_FACTOR;
-      }
     }
+    const isNonStartingSP =
+      player.eligible_positions.includes("SP") &&
+      !player.eligible_positions.includes("RP") &&
+      !isStartingPitcher;
 
+    let score = getInitialScore(player);
+    if (player.is_starting === 0 || isNonStartingSP) {
+      score *= NOT_STARTING_FACTOR;
+    }
     return applyScoreFactors(score, player, isStartingPitcher);
   };
 }
