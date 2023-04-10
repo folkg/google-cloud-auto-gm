@@ -23,8 +23,8 @@ export async function scheduleWeeklyLeagueTransactions() {
   let queue: TaskQueue<Record<string, any>>;
   let targetUri: string;
   try {
-    queue = getFunctions().taskQueue("dispatchweeklyleaguetransactions");
-    targetUri = await getFunctionUrl("dispatchweeklyleaguetransactions");
+    queue = getFunctions().taskQueue("lineup-dispatchweeklyleaguetransactions");
+    targetUri = await getFunctionUrl("lineup-dispatchweeklyleaguetransactions");
   } catch (error) {
     logger.error("Error getting task queue. ", error);
     return;
