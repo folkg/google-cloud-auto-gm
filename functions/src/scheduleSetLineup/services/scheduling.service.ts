@@ -200,7 +200,7 @@ async function getGameTimesSportsnet(
 export async function setStartingPlayersForToday(
   teamsSnapshot: QuerySnapshot<DocumentData>
 ) {
-  const leaguesWithStarters = ["nhl", "mlb"];
+  const leaguesWithStarters = ["nhl"]; // , "mlb"
 
   for (const league of leaguesWithStarters) {
     const hasTeam = teamsSnapshot?.docs?.some(
