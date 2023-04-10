@@ -31,7 +31,7 @@ exports.testsetlineups = onRequest(async (req, res) => {
   //   // { team_key: "419.l.59985.t.12" },
   // ]; // Graeme Folk
 
-  const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
+  const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2"; // Jeff Barnes
   const teams = [
     // { team_key: "414.l.358976.t.4", game_code: "nfl" },
     // { team_key: "419.l.91560.t.5", game_code: "nhl" },
@@ -43,9 +43,9 @@ exports.testsetlineups = onRequest(async (req, res) => {
     // { team_key: "422.l.16955.t.10", game_code: "mlb" },
     // { team_key: "422.l.17808.t.2", game_code: "mlb" },
     // { team_key: "422.l.34143.t.10", game_code: "mlb" },
-    // { team_key: "422.l.58716.t.20", game_code: "mlb" },
+    { team_key: "422.l.58716.t.20", game_code: "mlb" },
     // { team_key: "422.l.67019.t.4", game_code: "mlb" },
-    { team_key: "422.l.90351.t.2", game_code: "mlb", allow_dropping: true },
+    // { team_key: "422.l.90351.t.2", game_code: "mlb", allow_dropping: true },
   ];
   // Jeff Barnes
 

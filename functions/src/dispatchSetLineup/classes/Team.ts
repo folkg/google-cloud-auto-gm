@@ -184,7 +184,8 @@ export class Team implements Team {
 
   public get overfilledPositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
-      (position) => this.unfilledPositionCounter[position] < 0
+      (position) =>
+        position !== "BN" && this.unfilledPositionCounter[position] < 0
     );
   }
 

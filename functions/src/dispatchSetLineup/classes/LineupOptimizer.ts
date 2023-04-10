@@ -548,26 +548,49 @@ export class LineupOptimizer {
    * @return {boolean}
    */
   public isSuccessfullyOptimized(): boolean {
+    let result = true;
+    result = this.checkForUnfilledRosterPositions() && result;
+    result = this.checkForOverfilledRosterPositions() && result;
+    result = this.checkForIllegallyMovedPlayers() && result;
+    result = this.checkForSuboptimalLineup() && result;
+    return result;
+  }
+
+  private checkForUnfilledRosterPositions(): boolean {
     const unfilledActiveRosterPositions = this.team.unfilledActivePositions;
-    if (unfilledActiveRosterPositions.length > 0) {
+    const reservePlayersEligibleForUnfilledPositions =
+      this.team.reservePlayers.filter(
+        (player) =>
+          player.isActiveRoster() &&
+          player.eligible_positions.some((position) =>
+            unfilledActiveRosterPositions.includes(position)
+          )
+      );
+    if (reservePlayersEligibleForUnfilledPositions.length > 0) {
       logger.error(
         `Suboptimal Lineup: unfilledRosterPositions for team ${this.team.team_key}: ${unfilledActiveRosterPositions}`,
+        reservePlayersEligibleForUnfilledPositions,
         this.team,
-        this.deltaPlayerPositions
+        { deltaPlayerPositions: this.deltaPlayerPositions }
       );
       return false;
     }
+    return true;
+  }
 
+  private checkForOverfilledRosterPositions(): boolean {
     const overfilledPositions = this.team.overfilledPositions;
     if (overfilledPositions.length > 0) {
       logger.error(
         `Illegal Lineup: Too many players at positions: ${overfilledPositions} for team ${this.team.team_key}`,
         this.team,
-        this.deltaPlayerPositions
+        { deltaPlayerPositions: this.deltaPlayerPositions }
       );
       return false;
     }
-
+    return true;
+  }
+  private checkForIllegallyMovedPlayers(): any {
     const illegallyMovedPlayers = Object.keys(this.deltaPlayerPositions).filter(
       (movedPlayerKey) =>
         this.team.illegalPlayers.some(
@@ -578,11 +601,13 @@ export class LineupOptimizer {
       logger.error(
         `Illegal Lineup: illegalPlayers moved for team ${this.team.team_key}: ${illegallyMovedPlayers}`,
         this.team,
-        this.deltaPlayerPositions
+        { deltaPlayerPositions: this.deltaPlayerPositions }
       );
       return false;
     }
-
+    return true;
+  }
+  private checkForSuboptimalLineup(): any {
     const suboptimalLineup = this.team.reservePlayers.some((reservePlayer) =>
       this.team.startingPlayers.some((startingPlayer) =>
         reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)
@@ -592,11 +617,10 @@ export class LineupOptimizer {
       logger.error(
         `Suboptimal Lineup: reservePlayers have higher scores than startingPlayers for team ${this.team.team_key}`,
         this.team,
-        this.deltaPlayerPositions
+        { deltaPlayerPositions: this.deltaPlayerPositions }
       );
       return false;
     }
-
     return true;
   }
 }
