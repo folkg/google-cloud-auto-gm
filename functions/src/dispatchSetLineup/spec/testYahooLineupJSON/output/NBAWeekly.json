@@ -360,8 +360,7 @@
     "end_date": 1680505199999,
     "faab_balance": -1,
     "waiver_rule": "all",
-    "max_games_played": -1,
-    "max_innings_pitched": -1,
+
     "transactions": []
   }
 ]

@@ -401,9 +401,7 @@
     "end_date": 1681541999999,
     "faab_balance": 100,
     "waiver_rule": "continuous",
-    "transactions": [],
-    "max_games_played": -1,
-    "max_innings_pitched": -1
+    "transactions": []
   },
   {
     "team_key": "419.l.91564.t.11",
@@ -785,9 +783,7 @@
     "end_date": 1681541999999,
     "faab_balance": 99,
     "waiver_rule": "continuous",
-    "transactions": [],
-    "max_games_played": -1,
-    "max_innings_pitched": -1
+    "transactions": []
   },
   {
     "team_key": "418.l.200641.t.9",
@@ -1150,8 +1146,6 @@
     "end_date": 1680505199999,
     "faab_balance": 100,
     "waiver_rule": "continuous",
-    "transactions": [],
-    "max_games_played": -1,
-    "max_innings_pitched": -1
+    "transactions": []
   }
 ]

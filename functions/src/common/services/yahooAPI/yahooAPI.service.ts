@@ -87,7 +87,7 @@ export async function getRostersByTeamID(
     "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
     "/leagues;league_keys=" +
     leagueKeys +
-    ";out=settings/teams;out=transactions,roster_alerts;transactions.types=waiver,pending_trade/roster;date=" +
+    ";out=settings/teams;out=transactions,games_played;transactions.types=waiver,pending_trade/roster;date=" +
     date +
     "/players;out=percent_started,percent_owned,ranks,opponent,starting_status" +
     ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
@@ -200,7 +200,8 @@ export async function getStartingPlayers(
 export async function getMLBSPFromYahoo() {
   try {
     // There should be at least 200 SP, so we need to make 8 calls, then loop for more
-    const urlBase = `games;game_keys=mlb/players;position=SP;out=percent_owned;sort=R_PO;start=`;
+    const urlBase =
+      "games;game_keys=mlb/players;position=SP;out=percent_owned;sort=R_PO;start=";
     const initialGetRequests = [];
     for (let i = 0; i < 8; i++) {
       initialGetRequests.push(httpGetAxios(`${urlBase}${i * 25}?format=json`));

@@ -4,7 +4,7 @@ import {
   getPacificStartOfDay,
   parseStringToInt,
 } from "../../common/services/utilities.service";
-import { ITeam } from "../interfaces/ITeam";
+import { GamesPlayed, ITeam, InningsPitched } from "../interfaces/ITeam";
 import { IPlayer, PlayerRanks } from "../interfaces/IPlayer";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
 
@@ -58,7 +58,10 @@ export async function fetchRostersFromYahoo(
       const players: IPlayer[] = getPlayersFromRoster(
         usersTeamRoster[0].players
       );
+      const gamesPlayedArray = getGamesPlayedArray(usersTeam);
+      const inningsPitchedArray = getInningsPitchedArray(usersTeam);
 
+      // TODO: Could add max/current adds condtionally as well
       const rosterObject: ITeam = {
         team_key: getChild(usersTeam[0], "team_key"),
         players: players,
@@ -88,12 +91,8 @@ export async function fetchRostersFromYahoo(
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
         transactions:
           getChild(usersTeam, "transactions")?.[0]?.transaction ?? [],
-        max_games_played: parseStringToInt(
-          getChild(leagueSettings, "max_games_played")
-        ),
-        max_innings_pitched: parseStringToInt(
-          getChild(leagueSettings, "max_innings_pitched")
-        ),
+        ...(gamesPlayedArray && { games_played: gamesPlayedArray }),
+        ...(inningsPitchedArray && { innings_pitched: inningsPitchedArray }),
       };
       result.push(rosterObject);
     }
@@ -101,6 +100,24 @@ export async function fetchRostersFromYahoo(
   // logger.log("Fetched rosters from Yahoo API:");
   // console.log(JSON.stringify(result));
   return result;
+}
+
+function getGamesPlayedArray(usersTeam: any): GamesPlayed[] | undefined {
+  return getChild(usersTeam, "games_played")
+    ?.find(
+      (element: any) =>
+        element.games_played_by_position_type.position_type !== "P"
+    )
+    ?.games_played_by_position_type.games_played?.map(
+      (element: any) => element.games_played_by_position
+    );
+}
+
+function getInningsPitchedArray(usersTeam: any): InningsPitched[] | undefined {
+  return getChild(usersTeam, "games_played")?.find(
+    (element: any) =>
+      element.games_played_by_position_type.position_type === "P"
+  )?.games_played_by_position_type.innings_pitched;
 }
 
 /**
