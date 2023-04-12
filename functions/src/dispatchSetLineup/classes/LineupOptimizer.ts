@@ -208,6 +208,7 @@ export class LineupOptimizer {
       playerB,
       this.team.editablePlayers
     );
+    // TODO: Need to add playerB back to stack if their new position is BN
     if (playerC) {
       this.logInfo("three-way swap found!");
       if (playerA.isInactiveList() && playerB.isActiveRoster()) {
@@ -230,7 +231,7 @@ export class LineupOptimizer {
     while (reservePlayers.length > 0) {
       const playerA = reservePlayers.pop();
       if (!playerA) break;
-      if (playerA.isStartingRoster()) continue;
+      if (playerA.isStartingRosterPlayer()) continue;
       this.logInfo(`playerA: ${playerA.player_name}`);
 
       let proceedToLookForUnfilledPositionInStarters = true;
@@ -277,7 +278,7 @@ export class LineupOptimizer {
         );
         // only return playerB to go back into the reserve list if it was moved to the IL
         if (playerMovedToReserve?.isInactiveList()) return playerMovedToReserve;
-        if (playerMovedToReserve?.isStartingRoster()) return undefined;
+        if (playerMovedToReserve?.isStartingRosterPlayer()) return undefined;
       }
     }
     return undefined;
@@ -536,7 +537,10 @@ export class LineupOptimizer {
     return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.find(
       (playerC: Player) =>
         playerA.start_score > playerC.start_score &&
-        playerB.start_score > playerC.start_score
+        playerB.start_score > playerC.start_score &&
+        (playerC.isReservePlayer()
+          ? playerA.start_score > playerB.start_score
+          : true)
     );
   }
 
@@ -608,14 +612,27 @@ export class LineupOptimizer {
     return true;
   }
   private checkForSuboptimalLineup(): any {
-    const suboptimalLineup = this.team.reservePlayers.some((reservePlayer) =>
-      this.team.startingPlayers.some((startingPlayer) =>
-        reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)
+    const suboptimalBNPlayers = this.team.reservePlayers
+      .filter((reservePlayer) =>
+        this.team.startingPlayers.some((startingPlayer) =>
+          reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)
+        )
       )
-    );
-    if (suboptimalLineup) {
+      .map((player) => player.player_key);
+
+    if (suboptimalBNPlayers.length > 0) {
+      const suboptimalRosterPlayers = this.team.startingPlayers
+        .filter((startingPlayer) =>
+          this.team.reservePlayers.some((reservePlayer) =>
+            reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)
+          )
+        )
+        .map((player) => player.player_key);
+
       logger.error(
         `Suboptimal Lineup: reservePlayers have higher scores than startingPlayers for team ${this.team.team_key}`,
+        { BNPlayers: suboptimalBNPlayers },
+        { RosterPlayers: suboptimalRosterPlayers },
         this.team,
         { deltaPlayerPositions: this.deltaPlayerPositions }
       );

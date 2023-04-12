@@ -168,4 +168,43 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
       "422.p.11391": "MI",
     });
   });
+  it("should not move Roster player to BN in 3-way unless they are worse than playerA", function () {
+    const roster: ITeam = require("./testRosters/MLB/bug1_higherScores.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    // expect(rosterModification.newPlayerPositions).toEqual({
+    //   "422.p.10185": "IL",
+    //   "422.p.10322": "2B",
+    //   "422.p.10898": "P",
+    //   "422.p.10910": "SP",
+    //   "422.p.8193": "P",
+    //   "422.p.9057": "P",
+    //   "422.p.9121": "SP",
+    // });
+
+    expect(rosterModification.newPlayerPositions).toBeDefined();
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
+  it("should not move Roster player to BN in 3-way unless they are worse than playerA(2)", function () {
+    const roster: ITeam = require("./testRosters/MLB/bug2_higherScores.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    // expect(rosterModification.newPlayerPositions).toEqual({
+    //   "422.p.10185": "IL",
+    //   "422.p.10322": "2B",
+    //   "422.p.10898": "P",
+    //   "422.p.10910": "SP",
+    //   "422.p.8193": "P",
+    //   "422.p.9057": "P",
+    //   "422.p.9121": "SP",
+    // });
+
+    expect(rosterModification.newPlayerPositions).toBeDefined();
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
 });

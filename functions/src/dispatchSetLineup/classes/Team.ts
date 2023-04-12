@@ -118,7 +118,7 @@ export class Team implements Team {
    * @type {Player[]}
    */
   public get reservePlayers(): Player[] {
-    return this._editablePlayers.filter((player) => !player.isStartingRoster());
+    return this._editablePlayers.filter((player) => player.isReservePlayer());
   }
 
   public get inactiveListEligiblePlayers(): Player[] {

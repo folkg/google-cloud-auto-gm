@@ -39,11 +39,15 @@ export class Player implements Player {
     return !INACTIVE_POSITION_LIST.includes(this.selected_position);
   }
 
-  isStartingRoster(): boolean {
+  isStartingRosterPlayer(): boolean {
     return (
       this.selected_position !== "BN" &&
       !INACTIVE_POSITION_LIST.includes(this.selected_position)
     );
+  }
+
+  isReservePlayer(): boolean {
+    return !this.isStartingRosterPlayer();
   }
 
   isIllegalPosition(): boolean {
