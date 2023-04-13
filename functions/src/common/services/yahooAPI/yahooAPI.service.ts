@@ -11,6 +11,7 @@ import {
   httpPutAxios,
 } from "./yahooHttp.service";
 import { getChild } from "../utilities.service";
+import { resolveContent } from "nodemailer/lib/shared";
 const js2xmlparser = require("js2xmlparser");
 require("dotenv").config();
 
@@ -253,16 +254,20 @@ export async function putLineupChanges(
   lineupChanges: LineupChanges[],
   uid: string
 ): Promise<void> {
-  const promises = [];
+  const promises: Promise<void>[] = [];
+
   for (const lineupChange of lineupChanges) {
-    const { teamKey, coverageType, coveragePeriod, newPlayerPositions } =
-      lineupChange;
-    if (Object.keys(newPlayerPositions).length !== 0) {
+    const { newPlayerPositions, teamKey } = lineupChange;
+    if (Object.keys(newPlayerPositions).length === 0) {
+      await updateFirestoreTimestamp(uid, teamKey);
+      return;
+    } else {
       const players = [];
       for (const [playerKey, position] of Object.entries(newPlayerPositions)) {
         players.push({ player_key: playerKey, position });
       }
 
+      const { coverageType, coveragePeriod } = lineupChange;
       const data = {
         roster: {
           coverage_type: coverageType,
@@ -273,27 +278,31 @@ export async function putLineupChanges(
 
       const XML_NAMESPACE = "fantasy_content";
       const xmlBody = js2xmlparser.parse(XML_NAMESPACE, data);
-      promises.push(
-        httpPutAxios(uid, `team/${teamKey}/roster?format=json`, xmlBody)
-      );
-    } else {
-      updateFirestoreTimestamp(uid, teamKey);
+      promises.push(putRosterChangePromise(uid, teamKey, xmlBody));
     }
   }
 
-  // TODO: WIP
   const results = await Promise.allSettled(promises);
   for (const result of results) {
     if (result.status === "rejected") {
-      logger.error(`Error in putLineupChanges. User: ${uid} Team: ${teamKey}`);
       logger.error(result.reason);
-    } else {
-      logger.log(
-        `Successfully put roster changes for team: ${teamKey} for user: ${uid}`
-      );
-      updateFirestoreTimestamp(uid, teamKey);
     }
   }
+  if (results.some((result) => result.status === "rejected")) {
+    throw new Error(`Error in putLineupChanges. User: ${uid}`);
+  }
+}
+
+async function putRosterChangePromise(
+  uid: string,
+  teamKey: string,
+  xmlBody: any
+) {
+  await httpPutAxios(uid, `team/${teamKey}/roster?format=json`, xmlBody);
+  logger.log(
+    `Successfully put roster changes for team: ${teamKey} for user: ${uid}`
+  );
+  await updateFirestoreTimestamp(uid, teamKey);
 }
 
 /**
