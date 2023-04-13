@@ -11,7 +11,6 @@ import {
   httpPutAxios,
 } from "./yahooHttp.service";
 import { getChild } from "../utilities.service";
-import { resolveContent } from "nodemailer/lib/shared";
 const js2xmlparser = require("js2xmlparser");
 require("dotenv").config();
 
