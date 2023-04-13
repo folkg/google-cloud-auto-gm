@@ -201,4 +201,29 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
     expect(isSuccessfullyOptimized).toEqual(true);
   });
+
+  it("should move playerB to stack in 3-way and optimize the roster", function () {
+    const roster: ITeam = require("./testRosters/MLB/bug4_higherScores.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions["422.p.8180"]).not.toEqual(
+      "BN"
+    );
+    expect(
+      rosterModification.newPlayerPositions["422.p.10597"]
+    ).not.toBeDefined();
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
+  it.only("should optimize bug5", function () {
+    const roster: ITeam = require("./testRosters/MLB/bug5_unfilledRosterPositions.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+    expect(rosterModification.newPlayerPositions).toBeDefined();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
 });

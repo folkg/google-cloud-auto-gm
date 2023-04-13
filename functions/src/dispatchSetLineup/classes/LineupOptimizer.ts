@@ -338,9 +338,10 @@ export class LineupOptimizer {
       playerCTargetList
     );
     if (playerC) {
+      const playerMovedToReserve = playerA.isInactiveList() ? playerB : playerC;
       this.swapPlayers(playerA, playerB);
       this.swapPlayers(playerB, playerC);
-      return playerA.isInactiveList() ? playerB : playerC;
+      return playerMovedToReserve;
     }
     return undefined;
   }
