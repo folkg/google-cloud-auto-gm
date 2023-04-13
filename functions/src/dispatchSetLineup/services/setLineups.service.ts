@@ -80,7 +80,7 @@ export async function performWeeklyLeagueTransactions(
       await postAllTransactions(transactions, uid);
     } catch (error) {
       logger.error("Error in performTransactionsForWeeklyLeagues()");
-      logger.error("Teams object: ", usersTeams);
+      logger.error("User teams object: ", { usersTeams });
     }
   }
 }
@@ -169,8 +169,8 @@ async function processTodaysLineupChanges(
       await putLineupChanges(allLineupChanges, uid);
     } catch (error) {
       logger.error(error);
-      logger.error("Lineup changes object: ", allLineupChanges);
-      logger.error("Teams object: ", teams);
+      logger.error("Lineup changes object: ", { allLineupChanges });
+      logger.error("Original teams object: ", { teams });
       throw error;
     }
   }
@@ -191,7 +191,7 @@ async function processTransactionsForSameDayChanges(
       await postAllTransactions(transactions, uid);
     } catch (error) {
       logger.error("Error in processTransactionsForSameDayChanges()", error);
-      logger.error("Teams object: ", originalTeams);
+      logger.error("Original teams object: ", { originalTeams });
     }
     // returns a new deep copy of the teams with the updated player transactions
     result = await refetchAndPatchTeams(transactions, uid, originalTeams);
@@ -227,7 +227,7 @@ async function processTransactionsForNextDayChanges(
       await postAllTransactions(transactions, uid);
     } catch (error) {
       logger.error("Error in processTransactionsForNextDayChanges()", error);
-      logger.error("Teams object: ", originalTeams);
+      logger.error("Original teams object: ", { originalTeams });
     }
   }
 }
