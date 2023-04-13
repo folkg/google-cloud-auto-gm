@@ -562,18 +562,22 @@ export class LineupOptimizer {
 
   private checkForUnfilledRosterPositions(): boolean {
     const unfilledActiveRosterPositions = this.team.unfilledActivePositions;
-    const reservePlayersEligibleForUnfilledPositions =
-      this.team.reservePlayers.filter(
+    const reservePlayersEligibleForUnfilledPositions = this.team.reservePlayers
+      .filter(
         (player) =>
           player.isActiveRoster() &&
           player.eligible_positions.some((position) =>
             unfilledActiveRosterPositions.includes(position)
           )
-      );
+      )
+      .map((player) => player.player_key);
     if (reservePlayersEligibleForUnfilledPositions.length > 0) {
       logger.error(
         `Suboptimal Lineup: unfilledRosterPositions for team ${this.team.team_key}: ${unfilledActiveRosterPositions}`,
-        reservePlayersEligibleForUnfilledPositions,
+        {
+          eligiblePlayersForUnfilledPositions:
+            reservePlayersEligibleForUnfilledPositions,
+        },
         this.team,
         { deltaPlayerPositions: this.deltaPlayerPositions }
       );

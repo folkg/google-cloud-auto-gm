@@ -160,6 +160,7 @@ export class Team implements Team {
   public get unfilledActivePositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
+        position !== "BN" &&
         !INACTIVE_POSITION_LIST.includes(position) &&
         this.unfilledPositionCounter[position] > 0
     );

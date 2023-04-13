@@ -216,14 +216,4 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     ).not.toBeDefined();
     expect(isSuccessfullyOptimized).toEqual(true);
   });
-
-  it.only("should optimize bug5", function () {
-    const roster: ITeam = require("./testRosters/MLB/bug5_unfilledRosterPositions.json");
-    const lo = new LineupOptimizer(roster);
-    const rosterModification = lo.optimizeStartingLineup();
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
-    expect(rosterModification.newPlayerPositions).toBeDefined();
-
-    expect(isSuccessfullyOptimized).toEqual(true);
-  });
 });
