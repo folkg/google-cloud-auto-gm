@@ -259,7 +259,6 @@ export async function putLineupChanges(
     const { newPlayerPositions, teamKey } = lineupChange;
     if (Object.keys(newPlayerPositions).length === 0) {
       await updateFirestoreTimestamp(uid, teamKey);
-      return;
     } else {
       const players = [];
       for (const [playerKey, position] of Object.entries(newPlayerPositions)) {
