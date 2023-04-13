@@ -537,7 +537,6 @@ export class LineupOptimizer {
     return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.find(
       (playerC: Player) =>
         playerA.start_score > playerC.start_score &&
-        playerB.start_score > playerC.start_score &&
         (playerC.isReservePlayer()
           ? playerA.start_score > playerB.start_score
           : true)

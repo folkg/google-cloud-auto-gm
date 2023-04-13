@@ -174,16 +174,6 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    // expect(rosterModification.newPlayerPositions).toEqual({
-    //   "422.p.10185": "IL",
-    //   "422.p.10322": "2B",
-    //   "422.p.10898": "P",
-    //   "422.p.10910": "SP",
-    //   "422.p.8193": "P",
-    //   "422.p.9057": "P",
-    //   "422.p.9121": "SP",
-    // });
-
     expect(rosterModification.newPlayerPositions).toBeDefined();
     expect(isSuccessfullyOptimized).toEqual(true);
   });
@@ -193,18 +183,22 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
-
-    // expect(rosterModification.newPlayerPositions).toEqual({
-    //   "422.p.10185": "IL",
-    //   "422.p.10322": "2B",
-    //   "422.p.10898": "P",
-    //   "422.p.10910": "SP",
-    //   "422.p.8193": "P",
-    //   "422.p.9057": "P",
-    //   "422.p.9121": "SP",
-    // });
-
+    // TODO: Add output object as we expect it to be
     expect(rosterModification.newPlayerPositions).toBeDefined();
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
+  it("should optimize IL players in 3-way swap even playerB > playerC", function () {
+    const roster: ITeam = require("./testRosters/MLB/bug3_higherScores.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions).toMatchObject({
+      "422.p.9616": "IL",
+      "422.p.11826": "BN",
+      "422.p.9823": "P",
+    });
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 });
