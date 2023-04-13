@@ -16,6 +16,7 @@ import { getPacificTimeDateString } from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
+import { AxiosError } from "axios";
 
 export const db = firestore();
 
@@ -41,23 +42,29 @@ export async function loadYahooAccessToken(
     let token: Token;
     try {
       token = await refreshYahooAccessToken(docData.refreshToken);
-    } catch (error) {
-      // Revoking the refresh token will force the user to re-authenticate with Yahoo
-      // Send an email to the user to let them know
-      revokeRefreshToken(uid);
-      sendUserEmail(
-        uid,
-        "Urgent Action Required: Yahoo Authentication Error",
-        [
-          "<strong>Your Yahoo access has expired and your lineups are no longer being managed by Fantasy AutoCoach.</strong>",
-          "Please visit the Fantasy AutoCoach website below and sign in again with Yahoo so that we can continue to " +
-            "manage your teams. Once you sign in, you will be re-directed to your dashabord and we " +
-            "will have everything we need to continue managing your teams. Thank you for your assistance, and we " +
-            "apologize for the inconvenience.",
-        ],
-        "Sign In",
-        "https://fantasyautocoach.com/"
-      );
+    } catch (error: AxiosError | any) {
+      const errorRespose = error.response;
+      if (
+        errorRespose?.data?.error === "invalid_grant" &&
+        errorRespose?.data?.error_description === "Invalid refresh token"
+      ) {
+        // Revoking the refresh token will force the user to re-authenticate with Yahoo
+        // Send an email to the user to let them know that their access has expired
+        revokeRefreshToken(uid);
+        sendUserEmail(
+          uid,
+          "Urgent Action Required: Yahoo Authentication Error",
+          [
+            "<strong>Your Yahoo access has expired and your lineups are no longer being managed by Fantasy AutoCoach.</strong>",
+            "Please visit the Fantasy AutoCoach website below and sign in again with Yahoo so that we can continue to " +
+              "manage your teams. Once you sign in, you will be re-directed to your dashabord and we " +
+              "will have everything we need to continue managing your teams. Thank you for your assistance, and we " +
+              "apologize for the inconvenience.",
+          ],
+          "Sign In",
+          "https://fantasyautocoach.com/"
+        );
+      }
       logger.error(`Error refreshing access token for user: ${uid}`, error);
       throw new Error(`Could not refresh access token for user: ${uid}`);
     }

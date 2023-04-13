@@ -3,16 +3,13 @@ import axiosRetry from "axios-retry";
 import { loadYahooAccessToken } from "../firebase/firestore.service";
 
 const API_URL = "https://fantasysports.yahooapis.com/fantasy/v2/";
-const shouldRetry = (error: any) => {
-  return (
-    axiosRetry.isNetworkError(error) ||
-    axiosRetry.isRetryableError(error) ||
-    error.code === "ECONNABORTED" ||
-    (error.response && error.response.status === 429)
-  );
-};
+const shouldRetry = (error: any) =>
+  axiosRetry.isNetworkError(error) ||
+  axiosRetry.isRetryableError(error) ||
+  error.code === "ECONNABORTED" ||
+  error.response?.status === 429;
 axiosRetry(axios, {
-  retries: 5,
+  retries: 3,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: shouldRetry,
 });

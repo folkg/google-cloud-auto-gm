@@ -369,9 +369,9 @@ function handleAxiosError(
   const errMessage = message ? `${message}. ` : "";
   if (err.response) {
     logger.error(errMessage, err.response);
-    throw new Error(
-      `${errMessage}Error status: ${err.response.status}: ${err.response.data}`
-    );
+    const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
+    enrichedError.response = err.response;
+    throw enrichedError;
   } else if (err.request) {
     logger.error(errMessage, err.request);
     throw new Error(`${errMessage}${err.request}`);
