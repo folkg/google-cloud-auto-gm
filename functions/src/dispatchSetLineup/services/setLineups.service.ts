@@ -48,6 +48,7 @@ export async function setUsersLineup(
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
 
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
+  if (usersTeams.length === 0) return;
   await patchTeamChangesInFirestore(usersTeams, firestoreTeams);
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
