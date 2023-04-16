@@ -128,13 +128,17 @@ export async function fetchTeamsFirestore(
  */
 export async function getActiveTeamsForLeagues(leagues: string[]) {
   let result: QuerySnapshot<DocumentData>;
-
   try {
     const teamsRef = db.collectionGroup("teams");
     result = await teamsRef
       .where("is_setting_lineups", "==", true)
       .where("end_date", ">=", Date.now())
       .where("game_code", "in", leagues)
+      .where("weekly_deadline", "in", [
+        "",
+        "intraday",
+        getCurrentPacificNumDay().toString(),
+      ])
       .get();
   } catch (error) {
     return Promise.reject(error);
