@@ -1114,55 +1114,60 @@
     "end_date": 1696229999999,
     "faab_balance": 98,
     "waiver_rule": "continuous",
-    "transactions": [
-      {
-        "transaction_key": "422.l.119198.w.c.3_9871_0",
-        "type": "waiver",
-        "status": "pending",
-        "waiver_player_key": "422.p.9871",
-        "waiver_team_key": "422.l.119198.t.3",
-        "waiver_team_name": "Jeff's Outstanding Team",
-        "waiver_date": "2023-04-11",
-        "waiver_roster_reflect_key": "2023-04-11",
-        "waiver_priority": 1,
-        "waiver_priority_options": { "0": { "option": 1 }, "count": 1 },
-        "faab_bid": "0"
-      },
-      {
-        "players": {
-          "0": {
-            "player": [
-              [
-                { "player_key": "422.p.9871" },
-                { "player_id": "9871" },
-                {
-                  "name": {
-                    "full": "Orlando Arcia",
-                    "first": "Orlando",
-                    "last": "Arcia",
-                    "ascii_first": "Orlando",
-                    "ascii_last": "Arcia"
-                  }
-                },
-                { "editorial_team_abbr": "ATL" },
-                { "display_position": "2B,SS,OF" },
-                { "position_type": "B" }
-              ],
-              {
-                "transaction_data": {
-                  "type": "add",
-                  "source_type": "waivers",
-                  "destination_type": "team",
-                  "destination_team_key": "422.l.119198.t.3",
-                  "destination_team_name": "Jeff's Outstanding Team"
-                }
-              }
-            ]
+    "transactions": {
+      "0": {
+        "transaction": [
+          {
+            "transaction_key": "422.l.119198.w.c.3_9871_0",
+            "type": "waiver",
+            "status": "pending",
+            "waiver_player_key": "422.p.9871",
+            "waiver_team_key": "422.l.119198.t.3",
+            "waiver_team_name": "Jeff's Outstanding Team",
+            "waiver_date": "2023-04-11",
+            "waiver_roster_reflect_key": "2023-04-11",
+            "waiver_priority": 1,
+            "waiver_priority_options": { "0": { "option": 1 }, "count": 1 },
+            "faab_bid": "0"
           },
-          "count": 1
-        }
-      }
-    ]
+          {
+            "players": {
+              "0": {
+                "player": [
+                  [
+                    { "player_key": "422.p.9871" },
+                    { "player_id": "9871" },
+                    {
+                      "name": {
+                        "full": "Orlando Arcia",
+                        "first": "Orlando",
+                        "last": "Arcia",
+                        "ascii_first": "Orlando",
+                        "ascii_last": "Arcia"
+                      }
+                    },
+                    { "editorial_team_abbr": "ATL" },
+                    { "display_position": "2B,SS,OF" },
+                    { "position_type": "B" }
+                  ],
+                  {
+                    "transaction_data": {
+                      "type": "add",
+                      "source_type": "waivers",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.119198.t.3",
+                      "destination_team_name": "Jeff's Outstanding Team"
+                    }
+                  }
+                ]
+              },
+              "count": 1
+            }
+          }
+        ]
+      },
+      "count": 1
+    }
   },
   {
     "team_key": "422.l.34143.t.10",

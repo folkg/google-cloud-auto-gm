@@ -89,8 +89,7 @@ export async function fetchRostersFromYahoo(
         end_date: getPacificEndOfDay(getChild(league, "end_date")),
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
-        transactions:
-          getChild(usersTeam, "transactions")?.[0]?.transaction ?? [],
+        transactions: getChild(usersTeam, "transactions") ?? [],
         ...(gamesPlayedArray && { games_played: gamesPlayedArray }),
         ...(inningsPitchedArray && { innings_pitched: inningsPitchedArray }),
       };
