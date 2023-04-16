@@ -8,11 +8,6 @@ jest.mock("firebase-admin", () => ({
 
 // To mock the result from yahooAPI getRostersByTeamID()
 const yahooAPIService = require("../../common/services/yahooAPI/yahooAPI.service");
-// describe("integration test", function () {
-//   test("specific user's lineup", async function () {
-//     const teams = ["419.l.28340.t.1"];
-//   });
-// });
 describe("Test fetchRostersFromYahoo", function () {
   afterEach(() => {
     // restore the spy created with spyOn
