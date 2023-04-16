@@ -136,7 +136,7 @@ describe("Test fetchRostersFromYahoo", function () {
       .mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
-    // const fs = require("fs");
+    const fs = require("fs");
     // fs.writeFileSync(
     //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/dispatchSetLineup/spec/testYahooLineupJSON/output/MLBpendingTransactions.json",
     //   JSON.stringify(result)

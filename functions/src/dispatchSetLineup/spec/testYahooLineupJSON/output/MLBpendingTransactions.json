@@ -626,510 +626,499 @@
     "end_date": 1696229999999,
     "faab_balance": 89,
     "waiver_rule": "continuous",
-    "transactions": {
-      "0": {
-        "transaction": [
-          {
-            "transaction_key": "422.l.139314.w.c.12_9193_8616",
-            "type": "waiver",
-            "status": "pending",
-            "waiver_player_key": "422.p.9193",
-            "waiver_team_key": "422.l.139314.t.12",
-            "waiver_team_name": "KershawCrew20",
-            "waiver_date": "2023-04-17",
-            "waiver_roster_reflect_key": "2023-04-17",
-            "waiver_priority": 1,
-            "waiver_priority_options": { "0": { "option": 1 }, "count": 1 },
-            "faab_bid": "0"
-          },
-          {
-            "players": {
-              "0": {
-                "player": [
-                  [
-                    { "player_key": "422.p.9193" },
-                    { "player_id": "9193" },
-                    {
-                      "name": {
-                        "full": "Will Smith",
-                        "first": "Will",
-                        "last": "Smith",
-                        "ascii_first": "Will",
-                        "ascii_last": "Smith"
-                      }
-                    },
-                    { "editorial_team_abbr": "TEX" },
-                    { "display_position": "RP" },
-                    { "position_type": "P" }
-                  ],
+    "transactions": [
+      [
+        {
+          "transaction_key": "422.l.139314.w.c.12_9193_8616",
+          "type": "waiver",
+          "status": "pending",
+          "waiver_player_key": "422.p.9193",
+          "waiver_team_key": "422.l.139314.t.12",
+          "waiver_team_name": "KershawCrew20",
+          "waiver_date": "2023-04-17",
+          "waiver_roster_reflect_key": "2023-04-17",
+          "waiver_priority": 1,
+          "waiver_priority_options": { "0": { "option": 1 }, "count": 1 },
+          "faab_bid": "0"
+        },
+        {
+          "players": {
+            "0": {
+              "player": [
+                [
+                  { "player_key": "422.p.9193" },
+                  { "player_id": "9193" },
                   {
-                    "transaction_data": {
-                      "type": "add",
-                      "source_type": "waivers",
+                    "name": {
+                      "full": "Will Smith",
+                      "first": "Will",
+                      "last": "Smith",
+                      "ascii_first": "Will",
+                      "ascii_last": "Smith"
+                    }
+                  },
+                  { "editorial_team_abbr": "TEX" },
+                  { "display_position": "RP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": {
+                    "type": "add",
+                    "source_type": "waivers",
+                    "destination_type": "team",
+                    "destination_team_key": "422.l.139314.t.12",
+                    "destination_team_name": "KershawCrew20"
+                  }
+                }
+              ]
+            },
+            "1": {
+              "player": [
+                [
+                  { "player_key": "422.p.8616" },
+                  { "player_id": "8616" },
+                  {
+                    "name": {
+                      "full": "Aroldis Chapman",
+                      "first": "Aroldis",
+                      "last": "Chapman",
+                      "ascii_first": "Aroldis",
+                      "ascii_last": "Chapman"
+                    }
+                  },
+                  { "editorial_team_abbr": "KC" },
+                  { "display_position": "RP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": {
+                    "type": "drop",
+                    "source_type": "team",
+                    "source_team_key": "422.l.139314.t.12",
+                    "source_team_name": "KershawCrew20",
+                    "destination_type": "waivers"
+                  }
+                }
+              ]
+            },
+            "count": 2
+          }
+        }
+      ],
+      [
+        {
+          "transaction_key": "422.l.139314.pt.21",
+          "type": "pending_trade",
+          "status": "proposed",
+          "trader_team_key": "422.l.139314.t.12",
+          "trader_team_name": "KershawCrew20",
+          "tradee_team_key": "422.l.139314.t.11",
+          "tradee_team_name": "Mike's Legit Team",
+          "trade_proposed_time": "1681542343",
+          "tradee_unused_roster_spots": -2,
+          "current_login_can_respond": 0,
+          "trade_roster_reflect_key": "2023-04-19",
+          "trade_note": "what do you say? Springs is legit, Elder looks INCREDIBLY GOOD... and Robbie Ray is hurt..."
+        },
+        {
+          "players": {
+            "0": {
+              "player": [
+                [
+                  { "player_key": "422.p.12120" },
+                  { "player_id": "12120" },
+                  {
+                    "name": {
+                      "full": "Bryce Elder",
+                      "first": "Bryce",
+                      "last": "Elder",
+                      "ascii_first": "Bryce",
+                      "ascii_last": "Elder"
+                    }
+                  },
+                  { "editorial_team_abbr": "ATL" },
+                  { "display_position": "SP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
+                    {
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.12",
+                      "source_team_name": "KershawCrew20",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.11",
+                      "destination_team_name": "Mike's Legit Team"
+                    }
+                  ]
+                }
+              ]
+            },
+            "1": {
+              "player": [
+                [
+                  { "player_key": "422.p.11121" },
+                  { "player_id": "11121" },
+                  {
+                    "name": {
+                      "full": "Jeffrey Springs",
+                      "first": "Jeffrey",
+                      "last": "Springs",
+                      "ascii_first": "Jeffrey",
+                      "ascii_last": "Springs"
+                    }
+                  },
+                  { "editorial_team_abbr": "TB" },
+                  { "display_position": "SP,RP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
+                    {
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.12",
+                      "source_team_name": "KershawCrew20",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.11",
+                      "destination_team_name": "Mike's Legit Team"
+                    }
+                  ]
+                }
+              ]
+            },
+            "2": {
+              "player": [
+                [
+                  { "player_key": "422.p.9691" },
+                  { "player_id": "9691" },
+                  {
+                    "name": {
+                      "full": "Robbie Ray",
+                      "first": "Robbie",
+                      "last": "Ray",
+                      "ascii_first": "Robbie",
+                      "ascii_last": "Ray"
+                    }
+                  },
+                  { "editorial_team_abbr": "SEA" },
+                  { "display_position": "SP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
+                    {
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.11",
+                      "source_team_name": "Mike's Legit Team",
                       "destination_type": "team",
                       "destination_team_key": "422.l.139314.t.12",
                       "destination_team_name": "KershawCrew20"
                     }
-                  }
-                ]
-              },
-              "1": {
-                "player": [
-                  [
-                    { "player_key": "422.p.8616" },
-                    { "player_id": "8616" },
-                    {
-                      "name": {
-                        "full": "Aroldis Chapman",
-                        "first": "Aroldis",
-                        "last": "Chapman",
-                        "ascii_first": "Aroldis",
-                        "ascii_last": "Chapman"
-                      }
-                    },
-                    { "editorial_team_abbr": "KC" },
-                    { "display_position": "RP" },
-                    { "position_type": "P" }
-                  ],
+                  ]
+                }
+              ]
+            },
+            "count": 3
+          }
+        }
+      ],
+      [
+        {
+          "transaction_key": "422.l.139314.pt.23",
+          "type": "pending_trade",
+          "status": "proposed",
+          "trader_team_key": "422.l.139314.t.12",
+          "trader_team_name": "KershawCrew20",
+          "tradee_team_key": "422.l.139314.t.9",
+          "tradee_team_name": "christopher's Best Team",
+          "trade_proposed_time": "1681542558",
+          "tradee_unused_roster_spots": -1,
+          "current_login_can_respond": 0,
+          "trade_roster_reflect_key": "2023-04-19",
+          "trade_note": "2 for 1... springs has been looking very good... And Elder looks INCREDIBLY GREAT!"
+        },
+        {
+          "players": {
+            "0": {
+              "player": [
+                [
+                  { "player_key": "422.p.12120" },
+                  { "player_id": "12120" },
                   {
-                    "transaction_data": {
-                      "type": "drop",
+                    "name": {
+                      "full": "Bryce Elder",
+                      "first": "Bryce",
+                      "last": "Elder",
+                      "ascii_first": "Bryce",
+                      "ascii_last": "Elder"
+                    }
+                  },
+                  { "editorial_team_abbr": "ATL" },
+                  { "display_position": "SP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
+                    {
+                      "type": "pending_trade",
                       "source_type": "team",
                       "source_team_key": "422.l.139314.t.12",
                       "source_team_name": "KershawCrew20",
-                      "destination_type": "waivers"
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.9",
+                      "destination_team_name": "christopher's Best Team"
                     }
-                  }
-                ]
-              },
-              "count": 2
-            }
+                  ]
+                }
+              ]
+            },
+            "1": {
+              "player": [
+                [
+                  { "player_key": "422.p.11121" },
+                  { "player_id": "11121" },
+                  {
+                    "name": {
+                      "full": "Jeffrey Springs",
+                      "first": "Jeffrey",
+                      "last": "Springs",
+                      "ascii_first": "Jeffrey",
+                      "ascii_last": "Springs"
+                    }
+                  },
+                  { "editorial_team_abbr": "TB" },
+                  { "display_position": "SP,RP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
+                    {
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.12",
+                      "source_team_name": "KershawCrew20",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.9",
+                      "destination_team_name": "christopher's Best Team"
+                    }
+                  ]
+                }
+              ]
+            },
+            "2": {
+              "player": [
+                [
+                  { "player_key": "422.p.11057" },
+                  { "player_id": "11057" },
+                  {
+                    "name": {
+                      "full": "Pablo López",
+                      "first": "Pablo",
+                      "last": "López",
+                      "ascii_first": "Pablo",
+                      "ascii_last": "López"
+                    }
+                  },
+                  { "editorial_team_abbr": "MIN" },
+                  { "display_position": "SP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
+                    {
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.9",
+                      "source_team_name": "christopher's Best Team",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.12",
+                      "destination_team_name": "KershawCrew20"
+                    }
+                  ]
+                }
+              ]
+            },
+            "count": 3
           }
-        ]
-      },
-      "1": {
-        "transaction": [
-          {
-            "transaction_key": "422.l.139314.pt.21",
-            "type": "pending_trade",
-            "status": "proposed",
-            "trader_team_key": "422.l.139314.t.12",
-            "trader_team_name": "KershawCrew20",
-            "tradee_team_key": "422.l.139314.t.11",
-            "tradee_team_name": "Mike's Legit Team",
-            "trade_proposed_time": "1681542343",
-            "tradee_unused_roster_spots": -2,
-            "current_login_can_respond": 0,
-            "trade_roster_reflect_key": "2023-04-19",
-            "trade_note": "what do you say? Springs is legit, Elder looks INCREDIBLY GOOD... and Robbie Ray is hurt..."
-          },
-          {
-            "players": {
-              "0": {
-                "player": [
-                  [
-                    { "player_key": "422.p.12120" },
-                    { "player_id": "12120" },
-                    {
-                      "name": {
-                        "full": "Bryce Elder",
-                        "first": "Bryce",
-                        "last": "Elder",
-                        "ascii_first": "Bryce",
-                        "ascii_last": "Elder"
-                      }
-                    },
-                    { "editorial_team_abbr": "ATL" },
-                    { "display_position": "SP" },
-                    { "position_type": "P" }
-                  ],
+        }
+      ],
+      [
+        {
+          "transaction_key": "422.l.139314.pt.28",
+          "type": "pending_trade",
+          "status": "proposed",
+          "trader_team_key": "422.l.139314.t.12",
+          "trader_team_name": "KershawCrew20",
+          "tradee_team_key": "422.l.139314.t.5",
+          "tradee_team_name": "Thou Shalt Steal!",
+          "trade_proposed_time": "1681620019",
+          "tradee_unused_roster_spots": 0,
+          "current_login_can_respond": 0,
+          "trade_roster_reflect_key": "2023-04-19",
+          "trade_note": "this? What would you take for Springs?"
+        },
+        {
+          "players": {
+            "0": {
+              "player": [
+                [
+                  { "player_key": "422.p.11121" },
+                  { "player_id": "11121" },
                   {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.12",
-                        "source_team_name": "KershawCrew20",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.11",
-                        "destination_team_name": "Mike's Legit Team"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "1": {
-                "player": [
-                  [
-                    { "player_key": "422.p.11121" },
-                    { "player_id": "11121" },
+                    "name": {
+                      "full": "Jeffrey Springs",
+                      "first": "Jeffrey",
+                      "last": "Springs",
+                      "ascii_first": "Jeffrey",
+                      "ascii_last": "Springs"
+                    }
+                  },
+                  { "editorial_team_abbr": "TB" },
+                  { "display_position": "SP,RP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
                     {
-                      "name": {
-                        "full": "Jeffrey Springs",
-                        "first": "Jeffrey",
-                        "last": "Springs",
-                        "ascii_first": "Jeffrey",
-                        "ascii_last": "Springs"
-                      }
-                    },
-                    { "editorial_team_abbr": "TB" },
-                    { "display_position": "SP,RP" },
-                    { "position_type": "P" }
-                  ],
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.12",
+                      "source_team_name": "KershawCrew20",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.5",
+                      "destination_team_name": "Thou Shalt Steal!"
+                    }
+                  ]
+                }
+              ]
+            },
+            "1": {
+              "player": [
+                [
+                  { "player_key": "422.p.11381" },
+                  { "player_id": "11381" },
                   {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.12",
-                        "source_team_name": "KershawCrew20",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.11",
-                        "destination_team_name": "Mike's Legit Team"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "2": {
-                "player": [
-                  [
-                    { "player_key": "422.p.9691" },
-                    { "player_id": "9691" },
+                    "name": {
+                      "full": "Logan Gilbert",
+                      "first": "Logan",
+                      "last": "Gilbert",
+                      "ascii_first": "Logan",
+                      "ascii_last": "Gilbert"
+                    }
+                  },
+                  { "editorial_team_abbr": "SEA" },
+                  { "display_position": "SP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
                     {
-                      "name": {
-                        "full": "Robbie Ray",
-                        "first": "Robbie",
-                        "last": "Ray",
-                        "ascii_first": "Robbie",
-                        "ascii_last": "Ray"
-                      }
-                    },
-                    { "editorial_team_abbr": "SEA" },
-                    { "display_position": "SP" },
-                    { "position_type": "P" }
-                  ],
-                  {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.11",
-                        "source_team_name": "Mike's Legit Team",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.12",
-                        "destination_team_name": "KershawCrew20"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "count": 3
-            }
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.5",
+                      "source_team_name": "Thou Shalt Steal!",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.12",
+                      "destination_team_name": "KershawCrew20"
+                    }
+                  ]
+                }
+              ]
+            },
+            "count": 2
           }
-        ]
-      },
-      "2": {
-        "transaction": [
-          {
-            "transaction_key": "422.l.139314.pt.23",
-            "type": "pending_trade",
-            "status": "proposed",
-            "trader_team_key": "422.l.139314.t.12",
-            "trader_team_name": "KershawCrew20",
-            "tradee_team_key": "422.l.139314.t.9",
-            "tradee_team_name": "christopher's Best Team",
-            "trade_proposed_time": "1681542558",
-            "tradee_unused_roster_spots": -1,
-            "current_login_can_respond": 0,
-            "trade_roster_reflect_key": "2023-04-19",
-            "trade_note": "2 for 1... springs has been looking very good... And Elder looks INCREDIBLY GREAT!"
-          },
-          {
-            "players": {
-              "0": {
-                "player": [
-                  [
-                    { "player_key": "422.p.12120" },
-                    { "player_id": "12120" },
-                    {
-                      "name": {
-                        "full": "Bryce Elder",
-                        "first": "Bryce",
-                        "last": "Elder",
-                        "ascii_first": "Bryce",
-                        "ascii_last": "Elder"
-                      }
-                    },
-                    { "editorial_team_abbr": "ATL" },
-                    { "display_position": "SP" },
-                    { "position_type": "P" }
-                  ],
+        }
+      ],
+      [
+        {
+          "transaction_key": "422.l.139314.pt.30",
+          "type": "pending_trade",
+          "status": "proposed",
+          "trader_team_key": "422.l.139314.t.12",
+          "trader_team_name": "KershawCrew20",
+          "tradee_team_key": "422.l.139314.t.5",
+          "tradee_team_name": "Thou Shalt Steal!",
+          "trade_proposed_time": "1681623515",
+          "tradee_unused_roster_spots": 0,
+          "current_login_can_respond": 0,
+          "trade_roster_reflect_key": "2023-04-19",
+          "trade_note": "I know he is out for 2 months, but he is still VERY GOOD once he returns... What WOULD you take for Springs? I can do it for May or Grayson or Luzardo?"
+        },
+        {
+          "players": {
+            "0": {
+              "player": [
+                [
+                  { "player_key": "422.p.11121" },
+                  { "player_id": "11121" },
                   {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.12",
-                        "source_team_name": "KershawCrew20",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.9",
-                        "destination_team_name": "christopher's Best Team"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "1": {
-                "player": [
-                  [
-                    { "player_key": "422.p.11121" },
-                    { "player_id": "11121" },
+                    "name": {
+                      "full": "Jeffrey Springs",
+                      "first": "Jeffrey",
+                      "last": "Springs",
+                      "ascii_first": "Jeffrey",
+                      "ascii_last": "Springs"
+                    }
+                  },
+                  { "editorial_team_abbr": "TB" },
+                  { "display_position": "SP,RP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
                     {
-                      "name": {
-                        "full": "Jeffrey Springs",
-                        "first": "Jeffrey",
-                        "last": "Springs",
-                        "ascii_first": "Jeffrey",
-                        "ascii_last": "Springs"
-                      }
-                    },
-                    { "editorial_team_abbr": "TB" },
-                    { "display_position": "SP,RP" },
-                    { "position_type": "P" }
-                  ],
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.12",
+                      "source_team_name": "KershawCrew20",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.5",
+                      "destination_team_name": "Thou Shalt Steal!"
+                    }
+                  ]
+                }
+              ]
+            },
+            "1": {
+              "player": [
+                [
+                  { "player_key": "422.p.10898" },
+                  { "player_id": "10898" },
                   {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.12",
-                        "source_team_name": "KershawCrew20",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.9",
-                        "destination_team_name": "christopher's Best Team"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "2": {
-                "player": [
-                  [
-                    { "player_key": "422.p.11057" },
-                    { "player_id": "11057" },
+                    "name": {
+                      "full": "Dustin May",
+                      "first": "Dustin",
+                      "last": "May",
+                      "ascii_first": "Dustin",
+                      "ascii_last": "May"
+                    }
+                  },
+                  { "editorial_team_abbr": "LAD" },
+                  { "display_position": "SP" },
+                  { "position_type": "P" }
+                ],
+                {
+                  "transaction_data": [
                     {
-                      "name": {
-                        "full": "Pablo López",
-                        "first": "Pablo",
-                        "last": "López",
-                        "ascii_first": "Pablo",
-                        "ascii_last": "López"
-                      }
-                    },
-                    { "editorial_team_abbr": "MIN" },
-                    { "display_position": "SP" },
-                    { "position_type": "P" }
-                  ],
-                  {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.9",
-                        "source_team_name": "christopher's Best Team",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.12",
-                        "destination_team_name": "KershawCrew20"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "count": 3
-            }
+                      "type": "pending_trade",
+                      "source_type": "team",
+                      "source_team_key": "422.l.139314.t.5",
+                      "source_team_name": "Thou Shalt Steal!",
+                      "destination_type": "team",
+                      "destination_team_key": "422.l.139314.t.12",
+                      "destination_team_name": "KershawCrew20"
+                    }
+                  ]
+                }
+              ]
+            },
+            "count": 2
           }
-        ]
-      },
-      "3": {
-        "transaction": [
-          {
-            "transaction_key": "422.l.139314.pt.28",
-            "type": "pending_trade",
-            "status": "proposed",
-            "trader_team_key": "422.l.139314.t.12",
-            "trader_team_name": "KershawCrew20",
-            "tradee_team_key": "422.l.139314.t.5",
-            "tradee_team_name": "Thou Shalt Steal!",
-            "trade_proposed_time": "1681620019",
-            "tradee_unused_roster_spots": 0,
-            "current_login_can_respond": 0,
-            "trade_roster_reflect_key": "2023-04-19",
-            "trade_note": "this? What would you take for Springs?"
-          },
-          {
-            "players": {
-              "0": {
-                "player": [
-                  [
-                    { "player_key": "422.p.11121" },
-                    { "player_id": "11121" },
-                    {
-                      "name": {
-                        "full": "Jeffrey Springs",
-                        "first": "Jeffrey",
-                        "last": "Springs",
-                        "ascii_first": "Jeffrey",
-                        "ascii_last": "Springs"
-                      }
-                    },
-                    { "editorial_team_abbr": "TB" },
-                    { "display_position": "SP,RP" },
-                    { "position_type": "P" }
-                  ],
-                  {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.12",
-                        "source_team_name": "KershawCrew20",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.5",
-                        "destination_team_name": "Thou Shalt Steal!"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "1": {
-                "player": [
-                  [
-                    { "player_key": "422.p.11381" },
-                    { "player_id": "11381" },
-                    {
-                      "name": {
-                        "full": "Logan Gilbert",
-                        "first": "Logan",
-                        "last": "Gilbert",
-                        "ascii_first": "Logan",
-                        "ascii_last": "Gilbert"
-                      }
-                    },
-                    { "editorial_team_abbr": "SEA" },
-                    { "display_position": "SP" },
-                    { "position_type": "P" }
-                  ],
-                  {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.5",
-                        "source_team_name": "Thou Shalt Steal!",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.12",
-                        "destination_team_name": "KershawCrew20"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "count": 2
-            }
-          }
-        ]
-      },
-      "4": {
-        "transaction": [
-          {
-            "transaction_key": "422.l.139314.pt.30",
-            "type": "pending_trade",
-            "status": "proposed",
-            "trader_team_key": "422.l.139314.t.12",
-            "trader_team_name": "KershawCrew20",
-            "tradee_team_key": "422.l.139314.t.5",
-            "tradee_team_name": "Thou Shalt Steal!",
-            "trade_proposed_time": "1681623515",
-            "tradee_unused_roster_spots": 0,
-            "current_login_can_respond": 0,
-            "trade_roster_reflect_key": "2023-04-19",
-            "trade_note": "I know he is out for 2 months, but he is still VERY GOOD once he returns... What WOULD you take for Springs? I can do it for May or Grayson or Luzardo?"
-          },
-          {
-            "players": {
-              "0": {
-                "player": [
-                  [
-                    { "player_key": "422.p.11121" },
-                    { "player_id": "11121" },
-                    {
-                      "name": {
-                        "full": "Jeffrey Springs",
-                        "first": "Jeffrey",
-                        "last": "Springs",
-                        "ascii_first": "Jeffrey",
-                        "ascii_last": "Springs"
-                      }
-                    },
-                    { "editorial_team_abbr": "TB" },
-                    { "display_position": "SP,RP" },
-                    { "position_type": "P" }
-                  ],
-                  {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.12",
-                        "source_team_name": "KershawCrew20",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.5",
-                        "destination_team_name": "Thou Shalt Steal!"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "1": {
-                "player": [
-                  [
-                    { "player_key": "422.p.10898" },
-                    { "player_id": "10898" },
-                    {
-                      "name": {
-                        "full": "Dustin May",
-                        "first": "Dustin",
-                        "last": "May",
-                        "ascii_first": "Dustin",
-                        "ascii_last": "May"
-                      }
-                    },
-                    { "editorial_team_abbr": "LAD" },
-                    { "display_position": "SP" },
-                    { "position_type": "P" }
-                  ],
-                  {
-                    "transaction_data": [
-                      {
-                        "type": "pending_trade",
-                        "source_type": "team",
-                        "source_team_key": "422.l.139314.t.5",
-                        "source_team_name": "Thou Shalt Steal!",
-                        "destination_type": "team",
-                        "destination_team_key": "422.l.139314.t.12",
-                        "destination_team_name": "KershawCrew20"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "count": 2
-            }
-          }
-        ]
-      },
-      "count": 5
-    }
+        }
+      ]
+    ]
   }
 ]
