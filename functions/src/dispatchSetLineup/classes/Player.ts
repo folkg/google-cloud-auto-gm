@@ -101,4 +101,10 @@ export class Player implements Player {
       (player) => player.ownership_score >= this.ownership_score
     );
   }
+
+  makeInelliglbeForIL(): void {
+    this.eligible_positions = this.eligible_positions.filter(
+      (position) => !INACTIVE_POSITION_LIST.includes(position)
+    );
+  }
 }

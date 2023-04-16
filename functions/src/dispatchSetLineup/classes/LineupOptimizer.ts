@@ -48,6 +48,9 @@ export class LineupOptimizer {
       return this.formatLineupChange();
     }
 
+    // TODO: If a player is in a pending transaction, do not make them eligible for moving to IL
+    // TODO: If there are waiver claims for empty roster spots, do not move players to Roster
+
     this.resolveAllIllegalPlayers();
     this.optimizeReserveToStaringPlayers();
 
