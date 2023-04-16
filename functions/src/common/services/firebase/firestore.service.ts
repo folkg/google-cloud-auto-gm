@@ -12,7 +12,10 @@ import {
 } from "../../interfaces/Team";
 import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email/email.service";
-import { getPacificTimeDateString } from "../utilities.service";
+import {
+  getCurrentPacificNumDay,
+  getPacificTimeDateString,
+} from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
@@ -157,7 +160,7 @@ export async function getActiveWeeklyTeams() {
       .where("is_setting_lineups", "==", true)
       .where("allow_transactions", "==", true)
       .where("end_date", ">=", Date.now())
-      .where("weekly_deadline", "==", "1")
+      .where("weekly_deadline", "==", getCurrentPacificNumDay().toString())
       .get();
   } catch (error) {
     return Promise.reject(error);

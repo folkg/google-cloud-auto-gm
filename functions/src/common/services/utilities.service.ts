@@ -83,8 +83,24 @@ export function getPacificEndOfDay(date: string): number {
   return spacetime(date, "Canada/Pacific").endOf("day").epoch;
 }
 
+/**
+ * get the current hour in pacific time
+ *
+ * @export
+ * @return {number} - The current hour in pacific time
+ */
 export function getCurrentPacificHour(): number {
   return spacetime.now("Canada/Pacific").hour();
+}
+
+/**
+ * 	Return the current day of the week (Pacific Time) as an integer, starting on sunday (day-0)
+ *
+ * @export
+ * @return {number} - The current day of the week (Pacific Time) as an integer, starting on sunday (day-0)
+ */
+export function getCurrentPacificNumDay(): number {
+  return spacetime.now("Canada/Pacific").day();
 }
 
 /**

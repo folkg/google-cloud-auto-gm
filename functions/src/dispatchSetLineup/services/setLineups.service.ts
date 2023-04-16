@@ -309,7 +309,7 @@ function getTeamsWithSameDayTransactions(teams: ITeam[]): ITeam[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping) &&
-      team.weekly_deadline !== "1" &&
+      (team.weekly_deadline === "intraday" || team.weekly_deadline === "") &&
       team.edit_key === team.coverage_period
   );
 }
@@ -318,7 +318,7 @@ function getTeamsForNextDayTransactions(teams: ITeam[]): ITeam[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping) &&
-      team.weekly_deadline !== "1" &&
+      (team.weekly_deadline === "intraday" || team.weekly_deadline === "") &&
       team.edit_key !== team.coverage_period
   );
 }

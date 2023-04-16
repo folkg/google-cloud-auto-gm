@@ -82,7 +82,8 @@ export class Team implements Team {
 
   public get sameDayTransactions(): boolean {
     return (
-      this.weekly_deadline !== "1" && this.edit_key === this.coverage_period
+      (this.weekly_deadline === "" || this.weekly_deadline === "intraday") &&
+      this.edit_key === this.coverage_period
     );
   }
 
