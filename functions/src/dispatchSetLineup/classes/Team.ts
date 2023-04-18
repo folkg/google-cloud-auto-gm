@@ -198,7 +198,7 @@ export class Team implements Team {
     );
   }
 
-  public get unfilledActivePositions(): string[] {
+  public get unfilledStartingPositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         position !== "BN" &&
@@ -211,15 +211,6 @@ export class Team implements Team {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         INACTIVE_POSITION_LIST.includes(position) &&
-        this.unfilledPositionCounter[position] > 0
-    );
-  }
-
-  public get unfilledStartingPositions(): string[] {
-    return Object.keys(this.unfilledPositionCounter).filter(
-      (position) =>
-        position !== "BN" &&
-        !INACTIVE_POSITION_LIST.includes(position) &&
         this.unfilledPositionCounter[position] > 0
     );
   }
@@ -237,7 +228,7 @@ export class Team implements Team {
       if (!INACTIVE_POSITION_LIST.includes(position))
         acc += unfilledPositions[position];
       return acc;
-    }, 0);
+    }, -this.pendingAddDropDifferential);
   }
 
   public get numStandardRosterSpots(): number {

@@ -137,7 +137,7 @@ export class LineupOptimizer {
 
       unfilledPositionTargetList = this.team.unfilledInactivePositions;
     } else {
-      unfilledPositionTargetList = this.team.unfilledActivePositions;
+      unfilledPositionTargetList = this.team.unfilledStartingPositions;
     }
 
     success = this.movePlayerToUnfilledPositionInTargetList(
@@ -191,7 +191,7 @@ export class LineupOptimizer {
       `attempting to move playerB ${playerB.player_name} to unfilled position`
     );
     const illegalPlayerACannotMoveToOpenRosterSpot =
-      playerA.isInactiveList() && this.team.numEmptyRosterSpots === 0;
+      playerA.isInactiveList() && this.team.numEmptyRosterSpots <= 0;
 
     const unfilledPositionTargetList = illegalPlayerACannotMoveToOpenRosterSpot
       ? this.team.unfilledInactivePositions
@@ -476,7 +476,7 @@ export class LineupOptimizer {
     this.logInfo(`numEmptyRosterSpots ${this.team.numEmptyRosterSpots}`);
     if (!player.isInactiveList()) return false;
 
-    if (this.team.numEmptyRosterSpots === 0) {
+    if (this.team.numEmptyRosterSpots <= 0) {
       const success = this.openOneRosterSpot(player);
       if (!success) return false;
     }
@@ -564,7 +564,7 @@ export class LineupOptimizer {
   }
 
   private checkForUnfilledRosterPositions(): boolean {
-    const unfilledActiveRosterPositions = this.team.unfilledActivePositions;
+    const unfilledActiveRosterPositions = this.team.unfilledStartingPositions;
     const reservePlayersEligibleForUnfilledPositions = this.team.reservePlayers
       .filter(
         (player) =>

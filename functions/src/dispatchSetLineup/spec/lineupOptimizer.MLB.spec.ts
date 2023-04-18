@@ -216,4 +216,49 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     ).not.toBeDefined();
     expect(isSuccessfullyOptimized).toEqual(true);
   });
+
+  it("should NOT move player to IL if they are in a pending transaction (waiver)", () => {
+    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsWIL.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
+  it("should move player to IL if they are only in a proposed trade", () => {
+    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsTradeWIL.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.10660": "IL",
+      "422.p.106602": "BN",
+    });
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
+  it("should NOT move player from IL to 'open' BN spot if there are pending added players", () => {
+    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsDiff+1.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
+  it("should move player from IL to 'open' BN spot if there are NOT pending added players", () => {
+    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsDiff0.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.106602": "BN",
+    });
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
 });
