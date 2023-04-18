@@ -27,30 +27,16 @@ export class LineupOptimizer {
     return this.team.toITeamObject();
   }
 
-  public findDropPlayerTransactions(): PlayerTransaction[] {
-    // find drops by attempting to move healthy players off IL unsuccessfully
-    this.resolveHealthyPlayersOnIL();
-    // Separate functions for add players and add/drop players
-    // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
-    // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
-    // Any players added by the above will be available for the next round of swaps
-    // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
-    return this.playerTransactions;
-  }
-
-  findAddPlayerTransactions(): PlayerTransaction[] {
-    throw new Error("Method not implemented.");
-  }
-
   public optimizeStartingLineup(): LineupChanges {
     if (this.team.editablePlayers.length === 0) {
       this.logInfo(`no players to optimize for team ${this.team.team_key}`);
       return this.formatLineupChange();
     }
 
-    // TODO: If a player is in a pending transaction, do not make them eligible for moving to IL
-    // TODO: If there are waiver claims for empty roster spots, do not move players to Roster
+    // TODO: Check max games played and call this.team.reduceAvailableRosterSpots(position)
+    // if position on pace for more than total by x%
 
+    this.resolveOverfilledPositions();
     this.resolveAllIllegalPlayers();
     this.optimizeReserveToStaringPlayers();
 
@@ -93,6 +79,34 @@ export class LineupOptimizer {
       }
     });
     return result;
+  }
+
+  private resolveOverfilledPositions(): void {
+    const overfilledPositions = this.team.overfilledPositions;
+    for (const position of overfilledPositions) {
+      // this.team.unfilledPositionCounter is recalculated on each call
+      while (this.team.unfilledPositionCounter?.[position] < 0) {
+        const worstPlayerAtPosition = Team.sortAscendingByScore(
+          this.team.getPlayersAt(position)
+        )[0];
+        this.movePlayerToPosition(worstPlayerAtPosition, "BN");
+      }
+    }
+  }
+
+  public findDropPlayerTransactions(): PlayerTransaction[] {
+    // find drops by attempting to move healthy players off IL unsuccessfully
+    this.resolveHealthyPlayersOnIL();
+    // Separate functions for add players and add/drop players
+    // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
+    // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
+    // Any players added by the above will be available for the next round of swaps
+    // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
+    return this.playerTransactions;
+  }
+
+  public findAddPlayerTransactions(): PlayerTransaction[] {
+    throw new Error("Method not implemented.");
   }
 
   private resolveHealthyPlayersOnIL(): void {

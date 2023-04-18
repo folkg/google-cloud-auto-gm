@@ -106,8 +106,8 @@ export class Team implements Team {
    * @static
    * @param {Player[]} players - array of players to sort
    */
-  static sortAscendingByScore(players: Player[]) {
-    players.sort((a, b) => a.start_score - b.start_score);
+  static sortAscendingByScore(players: Player[]): Player[] {
+    return players.sort((a, b) => a.start_score - b.start_score);
   }
 
   /**
@@ -116,8 +116,8 @@ export class Team implements Team {
    * @static
    * @param {Player[]} players - array of players to sort
    */
-  static sortDescendingByScore(players: Player[]) {
-    players.sort((a, b) => b.start_score - a.start_score);
+  static sortDescendingByScore(players: Player[]): Player[] {
+    return players.sort((a, b) => b.start_score - a.start_score);
   }
 
   public get sameDayTransactions(): boolean {
@@ -184,7 +184,7 @@ export class Team implements Team {
     );
   }
 
-  private get unfilledPositionCounter(): { [key: string]: number } {
+  public get unfilledPositionCounter(): { [key: string]: number } {
     const result = { ...this.roster_positions };
     this.players.forEach((player) => {
       result[player.selected_position]--;
@@ -260,5 +260,21 @@ export class Team implements Team {
       }, 0);
       return { position: positionScore };
     });
+  }
+
+  public getPlayersAt(position: string): Player[] {
+    return this._editablePlayers.filter(
+      (player) => player.selected_position === position
+    );
+  }
+
+  public reduceAvailableRosterSpots(position: string, quantity = 1): void {
+    if (
+      !INACTIVE_POSITION_LIST.includes(position) &&
+      this.roster_positions.hasOwnProperty(position)
+    ) {
+      this.roster_positions[position] -= quantity;
+      this.roster_positions["BN"] += quantity;
+    }
   }
 }
