@@ -250,6 +250,18 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
+  it("should move player from IL to 'open' BN spot if there are pending added players, but more empty spots", () => {
+    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsDiff+1ExtraSpot.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.106602": "BN",
+    });
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
+
   it("should move player from IL to 'open' BN spot if there are NOT pending added players", () => {
     const roster: ITeam = require("./testRosters/MLB/pendingTransactionsDiff0.json");
     const lo = new LineupOptimizer(roster);
