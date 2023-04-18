@@ -1,4 +1,3 @@
-// import { logger } from "firebase-functions";
 import { getChild } from "../../common/services/utilities.service";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { ITeam } from "../interfaces/ITeam";
@@ -12,12 +11,9 @@ export interface Team extends ITeam {
 }
 export class Team implements Team {
   private _editablePlayers: Player[];
-  private pendingTransactionCount: { [key: string]: number } = {};
+  private _pendingAddDropDifferential: number = 0;
 
   constructor(team: ITeam) {
-    // TODO: Change Team to ITeam everywhere
-    // get rid of the team property in LineupOptimizer and just use this Roster object.
-    // return the .toTeam() method from the LineupOptimizer
     const teamCopy = structuredClone(team) as Team;
     teamCopy.players = teamCopy.players.map((player) => new Player(player));
     Object.assign(this, teamCopy);
@@ -38,7 +34,7 @@ export class Team implements Team {
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
     this.processPendingTransactions();
-    // logger.log(
+    // console.log(
     //   this._allPlayers
     //     .sort((a, b) => b.ownership_score - a.ownership_score)
     //     .map(
@@ -54,42 +50,43 @@ export class Team implements Team {
 
   private processPendingTransactions(): void {
     this.transactions?.forEach((transaction) => {
-      // TODO: Is this what an accepted trade looks like too? "proposed" is all I have seen so far.
-      const isPendingTransaction =
-        getChild(transaction, "status") === "pending";
-      const playersObject = getChild(transaction, "players");
+      // TODO: Is this what an accepted trade looks like too ("pending")? "proposed" is all I have seen so far.
+      if (getChild(transaction, "status") !== "pending") return;
 
+      const playersObject = getChild(transaction, "players");
       for (const key in playersObject) {
         if (key !== "count") {
-          if (isPendingTransaction) {
-            // TODO: If a player is in a proposed trade, can they be added to the IL? Is his inside or outside the IF?
-            const playerInTransaction = playersObject[key];
-            this.makeTransactionPlayerILInnelligible(playerInTransaction);
-
-            // only count for officially "pending" transactions, not "proposed" trades
-            this.countPendingAddDrops(playerInTransaction);
-          }
+          // TODO: If a player is in a proposed trade, can they be added to the IL?
+          const playerInTransaction = playersObject[key].player;
+          this.makeTransactionPlayerILInelligible(playerInTransaction);
+          // only count for officially "pending" transactions, not "proposed" trades
+          this.changePendingAddDrops(playerInTransaction);
         }
       }
     });
   }
 
-  private countPendingAddDrops(playerInTransaction: any) {
+  private changePendingAddDrops(playerInTransaction: any) {
+    // sometimes transaction_data is an array of size 1, sometimes just the object. Why, Yahoo?
+    let transactionData = getChild(playerInTransaction, "transaction_data");
+    if (Array.isArray(transactionData)) {
+      transactionData = transactionData[0];
+    }
     const isAddingPlayer =
-      getChild(playerInTransaction.player, "transaction_data")
-        .destination_team_key === this.team_key;
-    const transactionType = isAddingPlayer ? "add" : "drop";
-    this.pendingTransactionCount[transactionType] =
-      (this.pendingTransactionCount[transactionType] || 0) + 1;
+      transactionData.destination_team_key === this.team_key;
+    this._pendingAddDropDifferential += isAddingPlayer ? 1 : -1;
   }
 
-  private makeTransactionPlayerILInnelligible(playerInTransaction: any) {
+  private makeTransactionPlayerILInelligible(playerInTransaction: any) {
     const matchingTeamPlayer = this.players.find(
       (player) =>
-        player.player_key ===
-        getChild(playerInTransaction.player[0], "player_key")
+        player.player_key === getChild(playerInTransaction[0], "player_key")
     );
     matchingTeamPlayer?.makeInelliglbeForIL();
+  }
+
+  public get pendingAddDropDifferential() {
+    return this._pendingAddDropDifferential;
   }
 
   /**
