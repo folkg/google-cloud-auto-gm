@@ -1,14 +1,14 @@
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { getFunctions, TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
-import { getActiveWeeklyTeams } from "../../common/services/firebase/firestore.service";
+import { getTomorrowsActiveWeeklyTeams } from "../../common/services/firebase/firestore.service";
 import { getFunctionUrl } from "../../common/services/utilities.service";
 import { enqueueUsersTeams, mapUsersToActiveTeams } from "./scheduling.service";
 
 export async function scheduleWeeklyLeagueTransactions() {
   let teamsSnapshot: QuerySnapshot<DocumentData>;
   try {
-    teamsSnapshot = await getActiveWeeklyTeams();
+    teamsSnapshot = await getTomorrowsActiveWeeklyTeams();
   } catch (error) {
     logger.error("Error fetching weekly teams from Firebase.", error);
     return;

@@ -155,7 +155,7 @@ export async function getActiveTeamsForLeagues(leagues: string[]) {
  * @async
  * @return {unknown} - An array of teams from Firestore
  */
-export async function getActiveWeeklyTeams() {
+export async function getTomorrowsActiveWeeklyTeams() {
   let result: QuerySnapshot<DocumentData>;
 
   try {
@@ -164,7 +164,11 @@ export async function getActiveWeeklyTeams() {
       .where("is_setting_lineups", "==", true)
       .where("allow_transactions", "==", true)
       .where("end_date", ">=", Date.now())
-      .where("weekly_deadline", "==", getCurrentPacificNumDay().toString())
+      .where(
+        "weekly_deadline",
+        "==",
+        (getCurrentPacificNumDay() + 1).toString()
+      )
       .get();
   } catch (error) {
     return Promise.reject(error);
