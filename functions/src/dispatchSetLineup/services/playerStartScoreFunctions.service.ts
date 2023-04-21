@@ -51,7 +51,7 @@ export function scoreFunctionMaxGamesPlayed(
   const CHURN_THRESHOLD = 0.9;
   return (player: IPlayer) => {
     const paceKeeper = getPaceKeeper(player);
-    if (paceKeeper == undefined) return 0;
+    if (paceKeeper === undefined) return 0;
     if (paceKeeper.projected < paceKeeper.max * CHURN_THRESHOLD) {
       return churnFunction(player);
     }

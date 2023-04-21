@@ -11,7 +11,7 @@ export interface Team extends ITeam {
 }
 export class Team implements Team {
   private _editablePlayers: Player[];
-  private _pendingAddDropDifferential: number = 0;
+  private _pendingAddDropDifferential = 0;
 
   constructor(team: ITeam) {
     const teamCopy = structuredClone(team) as Team;
@@ -105,6 +105,7 @@ export class Team implements Team {
    *
    * @static
    * @param {Player[]} players - array of players to sort
+   * @return {Player[]} - sorted array of players
    */
   static sortAscendingByScore(players: Player[]): Player[] {
     return players.sort((a, b) => a.start_score - b.start_score);
@@ -115,6 +116,7 @@ export class Team implements Team {
    *
    * @static
    * @param {Player[]} players - array of players to sort
+   * @return {Player[]} - sorted array of players
    */
   static sortDescendingByScore(players: Player[]): Player[] {
     return players.sort((a, b) => b.start_score - a.start_score);
@@ -271,7 +273,7 @@ export class Team implements Team {
   public reduceAvailableRosterSpots(position: string, quantity = 1): void {
     if (
       !INACTIVE_POSITION_LIST.includes(position) &&
-      this.roster_positions.hasOwnProperty(position)
+      this.roster_positions[position] !== undefined
     ) {
       this.roster_positions[position] -= quantity;
       this.roster_positions["BN"] += quantity;
