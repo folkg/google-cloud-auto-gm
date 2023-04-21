@@ -44,58 +44,55 @@ export function playerStartScoreFunctionFactory(
 
 export function scoreFunctionMaxGamesPlayed(
   gamesPlayed: GamesPlayed[],
-  maximizeFn: (player: IPlayer) => number,
+  churnFunction: (player: IPlayer) => number,
   inningsPitched?: InningsPitched
 ): (player: IPlayer) => number {
-  // TODO: Does this conservative factor make sense? Idea is to make it impossible for positions that churn to disrupt other positions
-  // that are in conservative mode.
   const CONSERVATIVE_FACTOR = 1000;
   const CHURN_THRESHOLD = 0.9;
   return (player: IPlayer) => {
-    // TODO: Do we even need the churn function? Maybe, yea.
+    const paceKeeper = getPaceKeeper(player);
+    if (paceKeeper == undefined) return 0;
+    if (paceKeeper.projected < paceKeeper.max * CHURN_THRESHOLD) {
+      return churnFunction(player);
+    }
+
+    // TODO: This whole function seems messy. Need to get it on paper first, then clean up.
+    const NUM_PLAYERS_IN_LEAGUE = 100; // should get the actual number from the caller
+    let score =
+      CONSERVATIVE_FACTOR *
+      ownershipScoreFunction(player, NUM_PLAYERS_IN_LEAGUE);
+    score = applyInjuryScoreFactors(score, player);
+    // score boost will make it harder to replace players currently in lineup
+    return score + getScoreBoost(player, paceKeeper);
+  };
+
+  function getPaceKeeper(player: IPlayer) {
     const isPitcher =
       inningsPitched &&
       player.eligible_positions.some((pos) => ["P", "SP", "RP"].includes(pos));
-    let paceKeeper;
-    // TODO: Pull out common code
     if (isPitcher) {
-      paceKeeper = inningsPitched;
-      if (inningsPitched.projected < inningsPitched.max * CHURN_THRESHOLD) {
-        return maximizeFn(player);
-      }
-    } else {
-      const gp = gamesPlayed.find((gp) =>
-        player.eligible_positions.includes(gp.position)
-      );
-      paceKeeper = gp?.games_played;
-      if (
-        gp &&
-        gp.games_played.projected < gp.games_played.max * CHURN_THRESHOLD
-      ) {
-        return maximizeFn(player);
-      }
+      return inningsPitched;
     }
-    if (!paceKeeper) return 0;
-    // TODO: This whole function seems messy. Need to get it on paper first, then clean up.
-    const NUM_PLAYERS_IN_LEAGUE = 100;
-    const score =
-      CONSERVATIVE_FACTOR *
-      ownershipScoreFunction(player, NUM_PLAYERS_IN_LEAGUE);
-    const gamesPlayedPace = paceKeeper.projected / paceKeeper.max;
-    // score boost will make it harder to replace players currently in lineup
-    const scoreBoost =
-      (((gamesPlayedPace - CHURN_THRESHOLD) / (1 - CHURN_THRESHOLD)) *
-        CONSERVATIVE_FACTOR) /
-      10;
-    // We could be passing player class objects here instead of IPlayer and then call that helper function we have there
-    return (
-      score +
-      (player.selected_position !== "BN" &&
-      !INACTIVE_POSITION_LIST.includes(player.selected_position)
-        ? scoreBoost
-        : 0)
+    const gp = gamesPlayed.find((gp) =>
+      player.eligible_positions.includes(gp.position)
     );
-  };
+    return gp?.games_played;
+  }
+
+  function getScoreBoost(player: IPlayer, paceKeeper: any) {
+    // We could be passing player class objects here instead of IPlayer and then call that helper function we have there
+    const isActiveLineup =
+      player.selected_position !== "BN" &&
+      !INACTIVE_POSITION_LIST.includes(player.selected_position);
+    if (!isActiveLineup) return 0;
+
+    const currentPace = paceKeeper.projected / paceKeeper.max;
+    return (
+      ((currentPace - CHURN_THRESHOLD) / (1 - CHURN_THRESHOLD)) *
+      CONSERVATIVE_FACTOR *
+      10
+    );
+  }
 }
 
 /**
@@ -208,19 +205,24 @@ function applyScoreFactors(
   score: number,
   player: IPlayer,
   isStartingPlayer = false
-) {
+): number {
+  let result = applyInjuryScoreFactors(score, player);
+  if (!player.is_playing) {
+    result *= NOT_PLAYING_FACTOR;
+  }
+  if (isStartingPlayer) {
+    result *= STARTING_FACTOR;
+  }
+  return result;
+}
+
+function applyInjuryScoreFactors(score: number, player: IPlayer): number {
   const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
   if (isPlayerInjured) {
     score *= INJURY_FACTOR;
     if (isLTIR(player)) {
       score *= LTIR_FACTOR;
     }
-  }
-  if (!player.is_playing) {
-    score *= NOT_PLAYING_FACTOR;
-  }
-  if (isStartingPlayer) {
-    score *= STARTING_FACTOR;
   }
   return score;
 }
