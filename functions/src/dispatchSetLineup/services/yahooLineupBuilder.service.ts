@@ -126,7 +126,7 @@ function getGamesPlayedArray(usersTeam: any): GamesPlayed[] | undefined {
     );
 }
 
-function getInningsPitchedArray(usersTeam: any): InningsPitched[] | undefined {
+function getInningsPitchedArray(usersTeam: any): InningsPitched | undefined {
   return getChild(usersTeam, "games_played")?.find(
     (element: any) =>
       element.games_played_by_position_type.position_type === "P"
