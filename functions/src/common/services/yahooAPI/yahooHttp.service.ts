@@ -10,7 +10,6 @@ const shouldRetry = (error: any) =>
   error.response?.status === 429;
 axiosRetry(axios, {
   retries: 3,
-  retryDelay: axiosRetry.exponentialDelay,
   retryCondition: shouldRetry,
 });
 
