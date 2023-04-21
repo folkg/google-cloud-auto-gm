@@ -273,4 +273,17 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
     expect(isSuccessfullyOptimized).toEqual(true);
   });
+
+  it("should move Altuve to BN and Walls to Util", () => {
+    const roster: ITeam = require("./testRosters/MLB/userRequest_1.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.11891": "Util",
+      "422.p.8996": "BN",
+    });
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
 });

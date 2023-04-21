@@ -45,8 +45,8 @@ xdescribe("Yahoo API Live Integration Tests", () => {
   });
 
   xit("should getRostersByTeamID(2)", async () => {
-    const uid = "InIZew09mZbXzekIqlwVMiBoY2u2"; // real user!!!
-    const JSONresponse = await getRostersByTeamID(["422.l.139314.t.12"], uid);
+    const uid = "LimuNc51OoelVHOOw4rQjWTflUh2"; // real user!!!
+    const JSONresponse = await getRostersByTeamID(["422.l.20786.t.11"], uid);
     console.log(JSON.stringify(JSONresponse));
     expect(JSONresponse).toBeDefined();
   });

@@ -136,12 +136,32 @@ describe("Test fetchRostersFromYahoo", function () {
       .mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
-    const fs = require("fs");
+    // const fs = require("fs");
     // fs.writeFileSync(
     //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/dispatchSetLineup/spec/testYahooLineupJSON/output/MLBpendingTransactions.json",
     //   JSON.stringify(result)
     // );
 
     expect(result).toEqual(expected);
+  });
+
+  xtest("lazy utility to convert a JSON to an ITeam", async function () {
+    const teams = ["test"];
+    const uid = "test";
+    const yahooJSON = require("?");
+    // const expected = require("./testYahooLineupJSON/output/MLBpendingTransactions.json");
+
+    // mock the JSON result from yahooAPI getRostersByTeamID()
+    jest
+      .spyOn(yahooAPIService, "getRostersByTeamID")
+      .mockReturnValue(yahooJSON);
+
+    const result = await fetchRostersFromYahoo(teams, uid);
+    // const fs = require("fs");
+    // fs.writeFileSync(
+    //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/dispatchSetLineup/spec/testRosters/MLB/userRequest_2.json",
+    //   JSON.stringify(result)
+    // );
+    // expect(result).toEqual(expected);
   });
 });
