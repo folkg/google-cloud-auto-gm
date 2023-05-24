@@ -50,17 +50,18 @@ export class Team implements Team {
 
   private processPendingTransactions(): void {
     this.transactions?.forEach((transaction) => {
-      // TODO: Is this what an accepted trade looks like too ("pending")? "proposed" is all I have seen so far.
-      if (getChild(transaction, "status") !== "pending") return;
-
       const playersObject = getChild(transaction, "players");
+      const isPendingTransaction =
+        getChild(transaction, "status") === "pending";
+
       for (const key in playersObject) {
         if (key !== "count") {
-          // TODO: If a player is in a proposed trade, can they be added to the IL?
           const playerInTransaction = playersObject[key].player;
           this.makeTransactionPlayerILInelligible(playerInTransaction);
           // only count for officially "pending" transactions, not "proposed" trades
-          this.changePendingAddDrops(playerInTransaction);
+          if (isPendingTransaction) {
+            this.changePendingAddDrops(playerInTransaction);
+          }
         }
       }
     });
@@ -82,6 +83,10 @@ export class Team implements Team {
       (player) =>
         player.player_key === getChild(playerInTransaction[0], "player_key")
     );
+
+    // Don't make a player ineligible if they are already on the IL
+    if (matchingTeamPlayer?.isInactiveList()) return;
+
     matchingTeamPlayer?.makeInelliglbeForIL();
   }
 
