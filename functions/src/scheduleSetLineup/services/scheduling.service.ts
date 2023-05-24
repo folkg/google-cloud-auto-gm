@@ -244,11 +244,6 @@ export function mapUsersToActiveTeams(
     }
   });
 
-  // log all user keys
-  result.forEach((teams, uid) => {
-    logger.log(`Found ${teams.length} teams for user ${uid}`);
-  });
-
   return result;
 }
 

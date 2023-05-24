@@ -27,27 +27,16 @@ export class LineupOptimizer {
     return this.team.toITeamObject();
   }
 
-  public findDropPlayerTransactions(): PlayerTransaction[] {
-    // find drops by attempting to move healthy players off IL unsuccessfully
-    this.resolveHealthyPlayersOnIL();
-    // Separate functions for add players and add/drop players
-    // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
-    // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
-    // Any players added by the above will be available for the next round of swaps
-    // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
-    return this.playerTransactions;
-  }
-
-  findAddPlayerTransactions(): PlayerTransaction[] {
-    throw new Error("Method not implemented.");
-  }
-
   public optimizeStartingLineup(): LineupChanges {
     if (this.team.editablePlayers.length === 0) {
       this.logInfo(`no players to optimize for team ${this.team.team_key}`);
       return this.formatLineupChange();
     }
 
+    // TODO: Check max games played and call this.team.reduceAvailableRosterSpots(position)
+    // if position on pace for more than total by x%
+
+    this.resolveOverfilledPositions();
     this.resolveAllIllegalPlayers();
     this.optimizeReserveToStaringPlayers();
 
@@ -92,6 +81,34 @@ export class LineupOptimizer {
     return result;
   }
 
+  private resolveOverfilledPositions(): void {
+    const overfilledPositions = this.team.overfilledPositions;
+    for (const position of overfilledPositions) {
+      // this.team.unfilledPositionCounter is recalculated on each call
+      while (this.team.unfilledPositionCounter?.[position] < 0) {
+        const worstPlayerAtPosition = Team.sortAscendingByScore(
+          this.team.getPlayersAt(position)
+        )[0];
+        this.movePlayerToPosition(worstPlayerAtPosition, "BN");
+      }
+    }
+  }
+
+  public findDropPlayerTransactions(): PlayerTransaction[] {
+    // find drops by attempting to move healthy players off IL unsuccessfully
+    this.resolveHealthyPlayersOnIL();
+    // Separate functions for add players and add/drop players
+    // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
+    // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
+    // Any players added by the above will be available for the next round of swaps
+    // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
+    return this.playerTransactions;
+  }
+
+  public findAddPlayerTransactions(): PlayerTransaction[] {
+    throw new Error("Method not implemented.");
+  }
+
   private resolveHealthyPlayersOnIL(): void {
     const healthyPlayersOnIL = this.team.healthyOnIL;
     if (healthyPlayersOnIL.length === 0) return;
@@ -134,7 +151,7 @@ export class LineupOptimizer {
 
       unfilledPositionTargetList = this.team.unfilledInactivePositions;
     } else {
-      unfilledPositionTargetList = this.team.unfilledActivePositions;
+      unfilledPositionTargetList = this.team.unfilledStartingPositions;
     }
 
     success = this.movePlayerToUnfilledPositionInTargetList(
@@ -188,7 +205,7 @@ export class LineupOptimizer {
       `attempting to move playerB ${playerB.player_name} to unfilled position`
     );
     const illegalPlayerACannotMoveToOpenRosterSpot =
-      playerA.isInactiveList() && this.team.numEmptyRosterSpots === 0;
+      playerA.isInactiveList() && this.team.numEmptyRosterSpots <= 0;
 
     const unfilledPositionTargetList = illegalPlayerACannotMoveToOpenRosterSpot
       ? this.team.unfilledInactivePositions
@@ -473,7 +490,7 @@ export class LineupOptimizer {
     this.logInfo(`numEmptyRosterSpots ${this.team.numEmptyRosterSpots}`);
     if (!player.isInactiveList()) return false;
 
-    if (this.team.numEmptyRosterSpots === 0) {
+    if (this.team.numEmptyRosterSpots <= 0) {
       const success = this.openOneRosterSpot(player);
       if (!success) return false;
     }
@@ -561,7 +578,7 @@ export class LineupOptimizer {
   }
 
   private checkForUnfilledRosterPositions(): boolean {
-    const unfilledActiveRosterPositions = this.team.unfilledActivePositions;
+    const unfilledActiveRosterPositions = this.team.unfilledStartingPositions;
     const reservePlayersEligibleForUnfilledPositions = this.team.reservePlayers
       .filter(
         (player) =>

@@ -36,7 +36,7 @@ describe("scheduleWeeklyLeagueTransactions", () => {
 
   const mockGetActiveWeeklyTeams = jest.spyOn(
     require("../../common/services/firebase/firestore.service"),
-    "getActiveWeeklyTeams"
+    "getTomorrowsActiveWeeklyTeams"
   );
 
   function mockTeamsSnapshot(teams: any) {

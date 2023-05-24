@@ -12,7 +12,10 @@ import {
 } from "../../interfaces/Team";
 import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email/email.service";
-import { getPacificTimeDateString } from "../utilities.service";
+import {
+  getCurrentPacificNumDay,
+  getPacificTimeDateString,
+} from "../utilities.service";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
@@ -125,13 +128,17 @@ export async function fetchTeamsFirestore(
  */
 export async function getActiveTeamsForLeagues(leagues: string[]) {
   let result: QuerySnapshot<DocumentData>;
-
   try {
     const teamsRef = db.collectionGroup("teams");
     result = await teamsRef
       .where("is_setting_lineups", "==", true)
       .where("end_date", ">=", Date.now())
       .where("game_code", "in", leagues)
+      .where("weekly_deadline", "in", [
+        "",
+        "intraday",
+        getCurrentPacificNumDay().toString(),
+      ])
       .get();
   } catch (error) {
     return Promise.reject(error);
@@ -148,7 +155,7 @@ export async function getActiveTeamsForLeagues(leagues: string[]) {
  * @async
  * @return {unknown} - An array of teams from Firestore
  */
-export async function getActiveWeeklyTeams() {
+export async function getTomorrowsActiveWeeklyTeams() {
   let result: QuerySnapshot<DocumentData>;
 
   try {
@@ -157,7 +164,11 @@ export async function getActiveWeeklyTeams() {
       .where("is_setting_lineups", "==", true)
       .where("allow_transactions", "==", true)
       .where("end_date", ">=", Date.now())
-      .where("weekly_deadline", "==", "1")
+      .where(
+        "weekly_deadline",
+        "==",
+        (getCurrentPacificNumDay() + 1).toString()
+      )
       .get();
   } catch (error) {
     return Promise.reject(error);

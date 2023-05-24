@@ -1,4 +1,4 @@
-// import { logger } from "firebase-functions";
+import { getChild } from "../../common/services/utilities.service";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { ITeam } from "../interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
@@ -11,11 +11,9 @@ export interface Team extends ITeam {
 }
 export class Team implements Team {
   private _editablePlayers: Player[];
+  private _pendingAddDropDifferential = 0;
 
   constructor(team: ITeam) {
-    // TODO: Change Team to ITeam everywhere
-    // get rid of the team property in LineupOptimizer and just use this Roster object.
-    // return the .toTeam() method from the LineupOptimizer
     const teamCopy = structuredClone(team) as Team;
     teamCopy.players = teamCopy.players.map((player) => new Player(player));
     Object.assign(this, teamCopy);
@@ -35,7 +33,8 @@ export class Team implements Team {
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
-    // logger.log(
+    this.processPendingTransactions();
+    // console.log(
     //   this._allPlayers
     //     .sort((a, b) => b.ownership_score - a.ownership_score)
     //     .map(
@@ -47,6 +46,52 @@ export class Team implements Team {
     //         player.percent_owned
     //     )
     // );
+  }
+
+  private processPendingTransactions(): void {
+    this.transactions?.forEach((transaction) => {
+      const playersObject = getChild(transaction, "players");
+      const isPendingTransaction =
+        getChild(transaction, "status") === "pending";
+
+      for (const key in playersObject) {
+        if (key !== "count") {
+          const playerInTransaction = playersObject[key].player;
+          this.makeTransactionPlayerILInelligible(playerInTransaction);
+          // only count for officially "pending" transactions, not "proposed" trades
+          if (isPendingTransaction) {
+            this.changePendingAddDrops(playerInTransaction);
+          }
+        }
+      }
+    });
+  }
+
+  private changePendingAddDrops(playerInTransaction: any) {
+    // sometimes transaction_data is an array of size 1, sometimes just the object. Why, Yahoo?
+    let transactionData = getChild(playerInTransaction, "transaction_data");
+    if (Array.isArray(transactionData)) {
+      transactionData = transactionData[0];
+    }
+    const isAddingPlayer =
+      transactionData.destination_team_key === this.team_key;
+    this._pendingAddDropDifferential += isAddingPlayer ? 1 : -1;
+  }
+
+  private makeTransactionPlayerILInelligible(playerInTransaction: any) {
+    const matchingTeamPlayer = this.players.find(
+      (player) =>
+        player.player_key === getChild(playerInTransaction[0], "player_key")
+    );
+
+    // Don't make a player ineligible if they are already on the IL
+    if (matchingTeamPlayer?.isInactiveList()) return;
+
+    matchingTeamPlayer?.makeInelliglbeForIL();
+  }
+
+  public get pendingAddDropDifferential() {
+    return this._pendingAddDropDifferential;
   }
 
   /**
@@ -65,9 +110,10 @@ export class Team implements Team {
    *
    * @static
    * @param {Player[]} players - array of players to sort
+   * @return {Player[]} - sorted array of players
    */
-  static sortAscendingByScore(players: Player[]) {
-    players.sort((a, b) => a.start_score - b.start_score);
+  static sortAscendingByScore(players: Player[]): Player[] {
+    return players.sort((a, b) => a.start_score - b.start_score);
   }
 
   /**
@@ -75,14 +121,16 @@ export class Team implements Team {
    *
    * @static
    * @param {Player[]} players - array of players to sort
+   * @return {Player[]} - sorted array of players
    */
-  static sortDescendingByScore(players: Player[]) {
-    players.sort((a, b) => b.start_score - a.start_score);
+  static sortDescendingByScore(players: Player[]): Player[] {
+    return players.sort((a, b) => b.start_score - a.start_score);
   }
 
   public get sameDayTransactions(): boolean {
     return (
-      this.weekly_deadline !== "1" && this.edit_key === this.coverage_period
+      (this.weekly_deadline === "" || this.weekly_deadline === "intraday") &&
+      this.edit_key === this.coverage_period
     );
   }
 
@@ -143,7 +191,7 @@ export class Team implements Team {
     );
   }
 
-  private get unfilledPositionCounter(): { [key: string]: number } {
+  public get unfilledPositionCounter(): { [key: string]: number } {
     const result = { ...this.roster_positions };
     this.players.forEach((player) => {
       result[player.selected_position]--;
@@ -157,7 +205,7 @@ export class Team implements Team {
     );
   }
 
-  public get unfilledActivePositions(): string[] {
+  public get unfilledStartingPositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         position !== "BN" &&
@@ -170,15 +218,6 @@ export class Team implements Team {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         INACTIVE_POSITION_LIST.includes(position) &&
-        this.unfilledPositionCounter[position] > 0
-    );
-  }
-
-  public get unfilledStartingPositions(): string[] {
-    return Object.keys(this.unfilledPositionCounter).filter(
-      (position) =>
-        position !== "BN" &&
-        !INACTIVE_POSITION_LIST.includes(position) &&
         this.unfilledPositionCounter[position] > 0
     );
   }
@@ -196,7 +235,7 @@ export class Team implements Team {
       if (!INACTIVE_POSITION_LIST.includes(position))
         acc += unfilledPositions[position];
       return acc;
-    }, 0);
+    }, -this.pendingAddDropDifferential);
   }
 
   public get numStandardRosterSpots(): number {
@@ -228,5 +267,21 @@ export class Team implements Team {
       }, 0);
       return { position: positionScore };
     });
+  }
+
+  public getPlayersAt(position: string): Player[] {
+    return this._editablePlayers.filter(
+      (player) => player.selected_position === position
+    );
+  }
+
+  public reduceAvailableRosterSpots(position: string, quantity = 1): void {
+    if (
+      !INACTIVE_POSITION_LIST.includes(position) &&
+      this.roster_positions[position] !== undefined
+    ) {
+      this.roster_positions[position] -= quantity;
+      this.roster_positions["BN"] += quantity;
+    }
   }
 }

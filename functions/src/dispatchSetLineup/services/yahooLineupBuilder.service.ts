@@ -89,8 +89,9 @@ export async function fetchRostersFromYahoo(
         end_date: getPacificEndOfDay(getChild(league, "end_date")),
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
-        transactions:
-          getChild(usersTeam, "transactions")?.[0]?.transaction ?? [],
+        transactions: createTransactionArray(
+          getChild(usersTeam, "transactions")
+        ),
         ...(gamesPlayedArray && { games_played: gamesPlayedArray }),
         ...(inningsPitchedArray && { innings_pitched: inningsPitchedArray }),
       };
@@ -99,6 +100,18 @@ export async function fetchRostersFromYahoo(
   }
   // logger.log("Fetched rosters from Yahoo API:");
   // console.log(JSON.stringify(result));
+  return result;
+}
+
+function createTransactionArray(transactions: any): any[] {
+  const result: any[] = [];
+  if (!transactions) return result;
+
+  Object.keys(transactions).forEach((key) => {
+    if (key !== "count") {
+      result.push(transactions[key].transaction);
+    }
+  });
   return result;
 }
 
@@ -113,7 +126,7 @@ function getGamesPlayedArray(usersTeam: any): GamesPlayed[] | undefined {
     );
 }
 
-function getInningsPitchedArray(usersTeam: any): InningsPitched[] | undefined {
+function getInningsPitchedArray(usersTeam: any): InningsPitched | undefined {
   return getChild(usersTeam, "games_played")?.find(
     (element: any) =>
       element.games_played_by_position_type.position_type === "P"

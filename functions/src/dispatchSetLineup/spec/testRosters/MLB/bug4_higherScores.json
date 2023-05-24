@@ -30,107 +30,109 @@
   "max_weekly_adds": 6,
   "message": "Error: Original roster for problematic team 422.l.139314.t.12\n    at entryFromArgs (/workspace/node_modules/firebase-functions/lib/logger/index.js:130:19)\n    at Object.error (/workspace/node_modules/firebase-functions/lib/logger/index.js:116:11)\n    at processTodaysLineupChanges (/workspace/lib/dispatchSetLineup/services/setLineups.service.js:104:41)\n    at setUsersLineup (/workspace/lib/dispatchSetLineup/services/setLineups.service.js:41:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async /workspace/lib/dispatchSetLineup/dispatchSetLineup.js:35:16\n    at async /workspace/node_modules/firebase-functions/lib/common/providers/tasks.js:62:17",
   "transactions": [
-    {
-      "type": "waiver",
-      "waiver_player_key": "422.p.9597",
-      "status": "pending",
-      "waiver_priority": 1,
-      "waiver_date": "2023-04-14",
-      "waiver_team_name": "KershawCrew20",
-      "faab_bid": "0",
-      "waiver_team_key": "422.l.139314.t.12",
-      "waiver_priority_options": {
-        "0": {
-          "option": 1
+    [
+      {
+        "type": "waiver",
+        "waiver_player_key": "422.p.9597",
+        "status": "pending",
+        "waiver_priority": 1,
+        "waiver_date": "2023-04-14",
+        "waiver_team_name": "KershawCrew20",
+        "faab_bid": "0",
+        "waiver_team_key": "422.l.139314.t.12",
+        "waiver_priority_options": {
+          "0": {
+            "option": 1
+          },
+          "count": 1
         },
-        "count": 1
+        "waiver_roster_reflect_key": "2023-04-14",
+        "transaction_key": "422.l.139314.w.c.12_9597_11103"
       },
-      "waiver_roster_reflect_key": "2023-04-14",
-      "transaction_key": "422.l.139314.w.c.12_9597_11103"
-    },
-    {
-      "players": {
-        "0": {
-          "player": [
-            [
-              {
-                "player_key": "422.p.9597"
-              },
-              {
-                "player_id": "9597"
-              },
-              {
-                "name": {
-                  "full": "Noah Syndergaard",
-                  "last": "Syndergaard",
-                  "ascii_first": "Noah",
-                  "ascii_last": "Syndergaard",
-                  "first": "Noah"
+      {
+        "players": {
+          "0": {
+            "player": [
+              [
+                {
+                  "player_key": "422.p.9597"
+                },
+                {
+                  "player_id": "9597"
+                },
+                {
+                  "name": {
+                    "full": "Noah Syndergaard",
+                    "last": "Syndergaard",
+                    "ascii_first": "Noah",
+                    "ascii_last": "Syndergaard",
+                    "first": "Noah"
+                  }
+                },
+                {
+                  "editorial_team_abbr": "LAD"
+                },
+                {
+                  "display_position": "SP"
+                },
+                {
+                  "position_type": "P"
                 }
-              },
+              ],
               {
-                "editorial_team_abbr": "LAD"
-              },
-              {
-                "display_position": "SP"
-              },
-              {
-                "position_type": "P"
-              }
-            ],
-            {
-              "transaction_data": {
-                "source_type": "waivers",
-                "type": "add",
-                "destination_type": "team",
-                "destination_team_key": "422.l.139314.t.12",
-                "destination_team_name": "KershawCrew20"
-              }
-            }
-          ]
-        },
-        "1": {
-          "player": [
-            [
-              {
-                "player_key": "422.p.11103"
-              },
-              {
-                "player_id": "11103"
-              },
-              {
-                "name": {
-                  "full": "Cole Irvin",
-                  "first": "Cole",
-                  "last": "Irvin",
-                  "ascii_first": "Cole",
-                  "ascii_last": "Irvin"
+                "transaction_data": {
+                  "source_type": "waivers",
+                  "type": "add",
+                  "destination_type": "team",
+                  "destination_team_key": "422.l.139314.t.12",
+                  "destination_team_name": "KershawCrew20"
                 }
-              },
-              {
-                "editorial_team_abbr": "BAL"
-              },
-              {
-                "display_position": "SP"
-              },
-              {
-                "position_type": "P"
               }
-            ],
-            {
-              "transaction_data": {
-                "source_team_key": "422.l.139314.t.12",
-                "type": "drop",
-                "source_type": "team",
-                "source_team_name": "KershawCrew20",
-                "destination_type": "waivers"
+            ]
+          },
+          "1": {
+            "player": [
+              [
+                {
+                  "player_key": "422.p.11103"
+                },
+                {
+                  "player_id": "11103"
+                },
+                {
+                  "name": {
+                    "full": "Cole Irvin",
+                    "first": "Cole",
+                    "last": "Irvin",
+                    "ascii_first": "Cole",
+                    "ascii_last": "Irvin"
+                  }
+                },
+                {
+                  "editorial_team_abbr": "BAL"
+                },
+                {
+                  "display_position": "SP"
+                },
+                {
+                  "position_type": "P"
+                }
+              ],
+              {
+                "transaction_data": {
+                  "source_team_key": "422.l.139314.t.12",
+                  "type": "drop",
+                  "source_type": "team",
+                  "source_team_name": "KershawCrew20",
+                  "destination_type": "waivers"
+                }
               }
-            }
-          ]
-        },
-        "count": 2
+            ]
+          },
+          "count": 2
+        }
       }
-    }
+    ]
   ],
   "current_weekly_adds": 5,
   "allow_dropping": false,

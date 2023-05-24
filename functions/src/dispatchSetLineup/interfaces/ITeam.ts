@@ -16,7 +16,7 @@ export interface ITeam {
   waiver_rule: string;
   transactions: any[];
   games_played?: GamesPlayed[];
-  innings_pitched?: InningsPitched[];
+  innings_pitched?: InningsPitched;
   current_weekly_adds: number;
   current_season_adds: number;
   max_weekly_adds: number;

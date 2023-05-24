@@ -8,3 +8,4 @@ export const HEALTHY_STATUS_LIST = [
 ];
 // Roster positions considered to be inactive
 export const INACTIVE_POSITION_LIST = ["IR", "IR+", "IL", "IL+", "NA"];
+export const LONG_TERM_IL_POSITIONS_LIST = ["IL", "IR"];

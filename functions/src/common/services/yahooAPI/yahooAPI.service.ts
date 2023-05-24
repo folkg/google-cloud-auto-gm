@@ -370,6 +370,10 @@ export async function postRosterAddDropTransaction(
   }
 }
 
+// TODO: Handle from Yahoo data.error.description = 'Invalid cookie, please log in again.' status = 401
+// It seems we don't need to revoke the token. What do we need to do? Axios retry? Refetch access token?
+// See team 422.l.54890.t.13 for example. Error @ 2023-04-16 13:55:12.916 MDT
+
 /**
  * Handle the axios error
  *
@@ -382,7 +386,7 @@ function handleAxiosError(
 ): never {
   const errMessage = message ? `${message}. ` : "";
   if (err.response) {
-    logger.error(errMessage, err.response);
+    logger.error(errMessage, err);
     const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
     enrichedError.response = err.response;
     throw enrichedError;

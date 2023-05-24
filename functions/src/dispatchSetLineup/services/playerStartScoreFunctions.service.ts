@@ -1,12 +1,19 @@
 import { IPlayer } from "../interfaces/IPlayer";
-import { HEALTHY_STATUS_LIST } from "../helpers/constants";
+import {
+  HEALTHY_STATUS_LIST,
+  INACTIVE_POSITION_LIST,
+  LONG_TERM_IL_POSITIONS_LIST,
+} from "../helpers/constants";
 import {
   getMLBStartingPitchers,
   getNHLStartingGoalies,
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
+import { GamesPlayed, InningsPitched } from "../interfaces/ITeam";
+import { ownershipScoreFunction } from "./playerOwnershipScoreFunctions.service";
 
-const NOT_PLAYING_FACTOR = 0.00001;
-const INJURY_FACTOR = 0.001;
+const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001
+const INJURY_FACTOR = 1e-3; // 0.001
+const LTIR_FACTOR = 1e-1; // 0.1 // extra penalty on top of INJURY_FACTOR
 const STARTING_FACTOR = 100;
 /**
  * Returns the proper score function used to compare players on the same
@@ -33,6 +40,59 @@ export function playerStartScoreFunctionFactory(
     return scoreFunctionMLB();
   }
   return scoreFunctionNBA();
+}
+
+export function scoreFunctionMaxGamesPlayed(
+  gamesPlayed: GamesPlayed[],
+  churnFunction: (player: IPlayer) => number,
+  inningsPitched?: InningsPitched
+): (player: IPlayer) => number {
+  const CONSERVATIVE_FACTOR = 1000;
+  const CHURN_THRESHOLD = 0.9;
+  return (player: IPlayer) => {
+    const paceKeeper = getPaceKeeper(player);
+    if (paceKeeper === undefined) return 0;
+    if (paceKeeper.projected < paceKeeper.max * CHURN_THRESHOLD) {
+      return churnFunction(player);
+    }
+
+    // TODO: This whole function seems messy. Need to get it on paper first, then clean up.
+    const NUM_PLAYERS_IN_LEAGUE = 100; // should get the actual number from the caller
+    let score =
+      CONSERVATIVE_FACTOR *
+      ownershipScoreFunction(player, NUM_PLAYERS_IN_LEAGUE);
+    score = applyInjuryScoreFactors(score, player);
+    // score boost will make it harder to replace players currently in lineup
+    return score + getScoreBoost(player, paceKeeper);
+  };
+
+  function getPaceKeeper(player: IPlayer) {
+    const isPitcher =
+      inningsPitched &&
+      player.eligible_positions.some((pos) => ["P", "SP", "RP"].includes(pos));
+    if (isPitcher) {
+      return inningsPitched;
+    }
+    const gp = gamesPlayed.find((gp) =>
+      player.eligible_positions.includes(gp.position)
+    );
+    return gp?.games_played;
+  }
+
+  function getScoreBoost(player: IPlayer, paceKeeper: any) {
+    // We could be passing player class objects here instead of IPlayer and then call that helper function we have there
+    const isActiveLineup =
+      player.selected_position !== "BN" &&
+      !INACTIVE_POSITION_LIST.includes(player.selected_position);
+    if (!isActiveLineup) return 0;
+
+    const currentPace = paceKeeper.projected / paceKeeper.max;
+    return (
+      ((currentPace - CHURN_THRESHOLD) / (1 - CHURN_THRESHOLD)) *
+      CONSERVATIVE_FACTOR *
+      10
+    );
+  }
 }
 
 /**
@@ -75,7 +135,7 @@ export function scoreFunctionNHL(): (player: IPlayer) => number {
  *  returns a score.
  */
 export function scoreFunctionMLB(): (player: IPlayer) => number {
-  const NOT_STARTING_FACTOR = 0.01;
+  const NOT_STARTING_FACTOR = 1e-2; // 0.01
   const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: IPlayer) => {
     // TODO: Do we need to boost the score for starting pitchers? Or is it superfluous?
@@ -98,7 +158,7 @@ export function scoreFunctionMLB(): (player: IPlayer) => number {
       !isStartingPitcher;
 
     let score = getInitialScore(player);
-    if (player.is_starting === 0 || isNonStartingSP) {
+    if (player.is_starting === 0 || isNonStartingSP || isLTIR(player)) {
       score *= NOT_STARTING_FACTOR;
     }
     return applyScoreFactors(score, player, isStartingPitcher);
@@ -145,16 +205,24 @@ function applyScoreFactors(
   score: number,
   player: IPlayer,
   isStartingPlayer = false
-) {
+): number {
+  let result = applyInjuryScoreFactors(score, player);
+  if (!player.is_playing) {
+    result *= NOT_PLAYING_FACTOR;
+  }
+  if (isStartingPlayer) {
+    result *= STARTING_FACTOR;
+  }
+  return result;
+}
+
+function applyInjuryScoreFactors(score: number, player: IPlayer): number {
   const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
   if (isPlayerInjured) {
     score *= INJURY_FACTOR;
-  }
-  if (!player.is_playing) {
-    score *= NOT_PLAYING_FACTOR;
-  }
-  if (isStartingPlayer) {
-    score *= STARTING_FACTOR;
+    if (isLTIR(player)) {
+      score *= LTIR_FACTOR;
+    }
   }
   return score;
 }
@@ -162,4 +230,11 @@ function applyScoreFactors(
 function isStartingPlayer(player: IPlayer, starters: string[]): boolean {
   // starters array is not always accurate, so we need to check both
   return starters.includes(player.player_key) || player.is_starting === 1;
+}
+
+// TODO: If we us
+function isLTIR(player: IPlayer): boolean {
+  return player.eligible_positions.some((pos) =>
+    LONG_TERM_IL_POSITIONS_LIST.includes(pos)
+  );
 }
