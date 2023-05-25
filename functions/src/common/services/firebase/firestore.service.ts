@@ -53,8 +53,8 @@ export async function loadYahooAccessToken(
       ) {
         // Revoking the refresh token will force the user to re-authenticate with Yahoo
         // Send an email to the user to let them know that their access has expired
-        revokeRefreshToken(uid);
-        sendUserEmail(
+        await revokeRefreshToken(uid);
+        await sendUserEmail(
           uid,
           "Urgent Action Required: Yahoo Authentication Error",
           [
@@ -88,6 +88,22 @@ export async function loadYahooAccessToken(
     };
   }
   return credential;
+}
+
+/**
+ * Set the refresh token to sentinel value in the database for the specified user
+ *
+ * @export
+ * @async
+ * @param {string} uid - The user id
+ * @return {*} - Nothing
+ */
+export async function flagRefreshToken(uid: string) {
+  try {
+    await db.collection("users").doc(uid).update({ refreshToken: "-1" });
+  } catch (error) {
+    logger.error(`Error setting refresh token to null for user: ${uid}`, error);
+  }
 }
 
 /**
