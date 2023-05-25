@@ -78,7 +78,10 @@ export async function loadYahooAccessToken(
       throw new Error(`Could not refresh access token for user: ${uid}`);
     }
     try {
-      await db.collection("users").doc(uid).update(token);
+      await db
+        .collection("users")
+        .doc(uid)
+        .update({ ...token });
     } catch (error) {
       logger.error(`Error storing token in Firestore for user: ${uid}`, error);
     }
