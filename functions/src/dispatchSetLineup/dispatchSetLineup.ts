@@ -1,6 +1,7 @@
 import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { setUsersLineup } from "./services/setLineups.service";
+import { RevokedRefreshTokenError } from "../common/services/firebase/errors";
 
 // could increase maxConcurrentDispatches if we get more users.
 export const taskQueueConfig = {
@@ -36,8 +37,12 @@ export const dispatchsetlineup = onTaskDispatched(
     try {
       return await setUsersLineup(uid, teams);
     } catch (error) {
-      logger.error(`Error setting lineup for user ${uid}:`, error);
-      logger.error("User's teams: ", teams);
+      if (error instanceof RevokedRefreshTokenError) {
+        logger.log(error);
+      } else {
+        logger.error(`Error setting lineup for user ${uid}:`, error);
+        logger.error("User's teams: ", teams);
+      }
     }
   }
 );

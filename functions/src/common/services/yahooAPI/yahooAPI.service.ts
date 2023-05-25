@@ -11,6 +11,7 @@ import {
   httpPutAxios,
 } from "./yahooHttp.service";
 import { getChild } from "../utilities.service";
+import { RevokedRefreshTokenError } from "../firebase/errors";
 const js2xmlparser = require("js2xmlparser");
 require("dotenv").config();
 
@@ -385,7 +386,9 @@ function handleAxiosError(
   message: string | null
 ): never {
   const errMessage = message ? `${message}. ` : "";
-  if (err.response) {
+  if (err instanceof RevokedRefreshTokenError) {
+    throw err;
+  } else if (err.response) {
     logger.error(errMessage, err);
     const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
     enrichedError.response = err.response;

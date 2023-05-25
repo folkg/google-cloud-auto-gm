@@ -20,6 +20,7 @@ import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
 import { revokeRefreshToken } from "./revokeRefreshToken.service";
 import { AxiosError } from "axios";
+import { RevokedRefreshTokenError } from "./errors";
 
 export const db = firestore();
 
@@ -36,6 +37,11 @@ export async function loadYahooAccessToken(
   const docData = doc.data();
   if (!doc.exists || !docData) {
     throw new Error(`No access token found for user ${uid}`);
+  }
+  if (docData.refreshToken === "-1") {
+    throw new RevokedRefreshTokenError(
+      `User ${uid} has revoked access. Stopping all actions for this user.`
+    );
   }
 
   // return the current token if it is valid, or refresh the token if not
