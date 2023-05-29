@@ -67,7 +67,9 @@ export class Team implements Team {
   private artificiallyReduceRosterSpots() {
     assert(this.games_played !== undefined);
     for (const position of this.games_played) {
-      if (position.games_played.projected > position.games_played.max) {
+      // Use a 1.5% buffer to allow for some day-to-day variance
+      // Results in an 83.23 roster spot requirement for 82 games max, or 164.43 for 162 games max
+      if (position.games_played.projected > position.games_played.max * 1.015) {
         this.reduceAvailableRosterSpots(position.position, 1);
       }
     }
