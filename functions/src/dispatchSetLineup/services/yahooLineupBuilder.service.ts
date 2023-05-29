@@ -25,13 +25,8 @@ export async function fetchRostersFromYahoo(
 ): Promise<ITeam[]> {
   const result: ITeam[] = [];
 
-  const yahooRostersJSON = await getRostersByTeamID(teams, uid, date);
-  // console.log(JSON.stringify(yahooRostersJSON));
-  const gamesJSON = getChild(
-    yahooRostersJSON.fantasy_content.users[0].user,
-    "games"
-  );
-  // console.log(games); //use this to debug the JSON object and see all data
+  const yahooJSON = await getRostersByTeamID(teams, uid, date);
+  const gamesJSON = getChild(yahooJSON.fantasy_content.users[0].user, "games");
 
   // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const gameKey of Object.keys(gamesJSON).filter(
@@ -39,13 +34,14 @@ export async function fetchRostersFromYahoo(
   )) {
     const gameJSON = gamesJSON[gameKey].game;
     const leaguesJSON = getChild(gameJSON, "leagues");
+
     // Loop through each league within the game
     for (const leagueKey of Object.keys(leaguesJSON).filter(
       (key) => key !== "count"
     )) {
       const league = leaguesJSON[leagueKey].league;
-      const usersTeam = getChild(league, "teams")[0].team;
       const leagueSettings = getChild(league, "settings");
+      const usersTeam = getChild(league, "teams")[0].team;
       const usersTeamRoster = getChild(usersTeam, "roster");
       const isEditable = usersTeamRoster.is_editable;
       if (!isEditable) {

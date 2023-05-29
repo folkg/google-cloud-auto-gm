@@ -5,7 +5,7 @@ import {
   getPacificStartOfDay,
   parseStringToInt,
 } from "../../common/services/utilities.service";
-import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service";
+import { getUsersTeams } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**
  * Get the user's teams from the Yahoo API
@@ -18,25 +18,27 @@ import { getAllStandings } from "../../common/services/yahooAPI/yahooAPI.service
 export async function fetchTeamsYahoo(
   uid: string
 ): Promise<TeamYahooAngular[]> {
-  const teams: TeamYahooAngular[] = [];
-  const standings = await getAllStandings(uid);
+  const result: TeamYahooAngular[] = [];
 
-  const gamesJSON = getChild(standings.fantasy_content.users[0].user, "games");
+  const yahooJSON = await getUsersTeams(uid);
+  const gamesJSON = getChild(yahooJSON.fantasy_content.users[0].user, "games");
 
+  // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const gameKey of Object.keys(gamesJSON).filter(
     (key) => key !== "count"
   )) {
     const gameJSON = gamesJSON[gameKey].game;
     const leaguesJSON = getChild(gameJSON, "leagues");
 
+    // Loop through each league within the game
     for (const leagueKey of Object.keys(leaguesJSON).filter(
       (key) => key !== "count"
     )) {
       const league = leaguesJSON[leagueKey].league;
-      const allTeams = getChild(getChild(league, "standings"), "teams");
       const leagueSettings = getChild(league, "settings");
-      const usersTeam = getUsersTeam(allTeams).team;
+      const usersTeam = getChild(league, "teams")[0].team;
       const teamStandings = getChild(usersTeam, "team_standings");
+
       const teamObj: TeamYahooAngular = {
         game_name: getChild(gameJSON, "name"),
         game_code: getChild(gameJSON, "code"),
@@ -79,23 +81,9 @@ export async function fetchTeamsYahoo(
         ),
         edit_key: getChild(league, "edit_key"),
       };
-      teams.push(teamObj);
+      result.push(teamObj);
     }
   }
-  // console.log(JSON.stringify(teams));
-  return teams;
-}
 
-/**
- * Find the team managed by the current login
- * @param {*} allTeams - an object containing all teams in the league
- * @return {*} an object containing just the user's team
- */
-function getUsersTeam(allTeams: any): any {
-  // TODO: Could remove this by changing the API call to return the user's team
-  for (const key in allTeams) {
-    if (getChild(allTeams[key]?.team[0], "is_owned_by_current_login")) {
-      return allTeams[key];
-    }
-  }
+  return result;
 }

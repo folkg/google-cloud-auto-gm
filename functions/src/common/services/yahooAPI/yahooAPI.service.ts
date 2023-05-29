@@ -140,22 +140,22 @@ export async function getFreeAgents(
 }
 
 /**
- * Get all the standings for all the leagues for all the games from Yahoo
+ * Get the standings for a specific user's team in a league
  *
  * @export
  * @async
- * @param {string} uid The firebase uid
- * @return {Promise<any>} The Yahoo JSON object containing league standings
+ * @param {string} uid - The firebase uid
+ * @return {Promise<any>} The Yahoo JSON object containing team's standings data and settings
  */
-export async function getAllStandings(uid: string): Promise<any> {
+export async function getUsersTeams(uid: string): Promise<any> {
   try {
     const { data } = await httpGetAxios(
-      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues;out=settings,standings?format=json",
+      "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues;out=settings/teams;out=standings?format=json",
       uid
     );
     return data;
   } catch (err: AxiosError | unknown) {
-    const errMessage = `Error in getAllStandings. User: ${uid}`;
+    const errMessage = `Error in getUserStandings. User: ${uid}`;
     handleAxiosError(err, errMessage);
   }
 }
