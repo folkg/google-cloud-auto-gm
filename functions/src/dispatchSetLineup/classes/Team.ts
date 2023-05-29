@@ -2,8 +2,12 @@ import { getChild } from "../../common/services/utilities.service";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { ITeam } from "../interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
-import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
+import {
+  playerStartScoreFunctionFactory,
+  scoreFunctionMaxGamesPlayed,
+} from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
+import assert = require("assert/strict");
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
 export interface Team extends ITeam {
@@ -20,19 +24,31 @@ export class Team implements Team {
 
     this._editablePlayers = this.players.filter((player) => player.is_editable);
 
-    const playerStartScoreFunction = playerStartScoreFunctionFactory(
+    const numPlayersInLeague = this.num_teams * this.numStandardRosterSpots;
+    let playerStartScoreFunction = playerStartScoreFunctionFactory(
       this.game_code,
       this.weekly_deadline
     );
+
+    if (this.games_played !== undefined) {
+      this.artificiallyReduceRosterSpots();
+      playerStartScoreFunction = scoreFunctionMaxGamesPlayed(
+        playerStartScoreFunction,
+        numPlayersInLeague,
+        this.games_played,
+        this.innings_pitched
+      );
+    }
 
     this.players.forEach((player) => {
       player.start_score = playerStartScoreFunction(player);
       player.ownership_score = ownershipScoreFunction(
         player,
-        this.num_teams * this.numStandardRosterSpots
+        numPlayersInLeague
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
+
     this.processPendingTransactions();
     // console.log(
     //   this._allPlayers
@@ -46,6 +62,25 @@ export class Team implements Team {
     //         player.percent_owned
     //     )
     // );
+  }
+
+  private artificiallyReduceRosterSpots() {
+    assert(this.games_played !== undefined);
+    for (const position of this.games_played) {
+      if (position.games_played.projected > position.games_played.max) {
+        this.reduceAvailableRosterSpots(position.position, 1);
+      }
+    }
+  }
+
+  private reduceAvailableRosterSpots(position: string, quantity = 1): void {
+    if (
+      !INACTIVE_POSITION_LIST.includes(position) &&
+      this.roster_positions[position] !== undefined
+    ) {
+      this.roster_positions[position] -= quantity;
+      this.roster_positions["BN"] += quantity;
+    }
   }
 
   private processPendingTransactions(): void {
@@ -273,15 +308,5 @@ export class Team implements Team {
     return this._editablePlayers.filter(
       (player) => player.selected_position === position
     );
-  }
-
-  public reduceAvailableRosterSpots(position: string, quantity = 1): void {
-    if (
-      !INACTIVE_POSITION_LIST.includes(position) &&
-      this.roster_positions[position] !== undefined
-    ) {
-      this.roster_positions[position] -= quantity;
-      this.roster_positions["BN"] += quantity;
-    }
   }
 }

@@ -43,6 +43,7 @@ export function playerStartScoreFunctionFactory(
 
 export function scoreFunctionMaxGamesPlayed(
   churnFunction: (player: Player) => number,
+  numPlayersInLeague: number,
   gamesPlayed: GamesPlayed[],
   inningsPitched?: InningsPitched
 ): (player: Player) => number {
@@ -56,11 +57,9 @@ export function scoreFunctionMaxGamesPlayed(
       return churnFunction(player);
     }
 
-    // TODO: This whole function seems messy. Need to get it on paper first, then clean up.
-    const NUM_PLAYERS_IN_LEAGUE = 100; // should get the actual number from the caller
     let score =
       CHANGE_RESISTANCE_FACTOR *
-      ownershipScoreFunction(player, NUM_PLAYERS_IN_LEAGUE);
+      ownershipScoreFunction(player, numPlayersInLeague);
     score = applyInjuryScoreFactors(score, player);
 
     // score boost will make it harder to replace players currently in lineup
@@ -81,9 +80,9 @@ export function scoreFunctionMaxGamesPlayed(
   }
 
   /**
-   * Returns a score boost based on the player's current pace toward 
+   * Returns a score boost based on the player's current pace toward
    * the max games played / max innings pitched for that position.
-   * 
+   *
    * This is intended to make it harder to replace players that are currently
    * in the lineup, but allow for easier replacement as the pace towards the
    * max slows down.
@@ -92,7 +91,7 @@ export function scoreFunctionMaxGamesPlayed(
    * @param {*} paceKeeper - The paceKeeper object for the player (either games_played or innings_pitched)
    * @return {number} - a score boost between 0 and 10 (x CONSERVATIVE_FACTOR)
    */
-  function getScoreBoost(player: Player, paceKeeper: any) : number {
+  function getScoreBoost(player: Player, paceKeeper: any): number {
     if (player.isReservePlayer()) return 0;
 
     const currentPace = paceKeeper.projected / paceKeeper.max;

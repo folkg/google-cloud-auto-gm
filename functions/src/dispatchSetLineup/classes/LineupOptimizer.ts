@@ -33,9 +33,6 @@ export class LineupOptimizer {
       return this.formatLineupChange();
     }
 
-    // TODO: Check max games played and call this.team.reduceAvailableRosterSpots(position)
-    // if position on pace for more than total by x%
-
     this.resolveOverfilledPositions();
     this.resolveAllIllegalPlayers();
     this.optimizeReserveToStaringPlayers();
@@ -45,7 +42,6 @@ export class LineupOptimizer {
       this.createPlayerPositionDictionary(this.team.editablePlayers)
     );
 
-    // Return the roster modification object if there are changes
     return this.formatLineupChange();
   }
 
