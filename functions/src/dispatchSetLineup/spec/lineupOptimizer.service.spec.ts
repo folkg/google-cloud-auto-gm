@@ -1,5 +1,5 @@
 import { LineupChanges } from "../interfaces/LineupChanges";
-import { ITeam } from "../interfaces/ITeam";
+import { ITeam } from "../../common/interfaces/ITeam";
 import {
   performWeeklyLeagueTransactions,
   setUsersLineup,

@@ -1,5 +1,5 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeam } from "../interfaces/ITeam";
+import { ITeam } from "../../common/interfaces/ITeam";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({

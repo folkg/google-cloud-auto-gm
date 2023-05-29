@@ -1,5 +1,5 @@
 import { logger } from "firebase-functions";
-import { ITeam } from "../interfaces/ITeam";
+import { ITeam } from "../../common/interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { Player } from "./Player";

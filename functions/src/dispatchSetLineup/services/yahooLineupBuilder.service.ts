@@ -4,8 +4,8 @@ import {
   getPacificStartOfDay,
   parseStringToInt,
 } from "../../common/services/utilities.service";
-import { GamesPlayed, ITeam, InningsPitched } from "../interfaces/ITeam";
-import { IPlayer, PlayerRanks } from "../interfaces/IPlayer";
+import { GamesPlayed, ITeam, InningsPitched } from "../../common/interfaces/ITeam";
+import { IPlayer, PlayerRanks } from "../../common/interfaces/IPlayer";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
 
 /**

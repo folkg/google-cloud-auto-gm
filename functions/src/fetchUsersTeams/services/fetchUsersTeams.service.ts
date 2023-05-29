@@ -1,4 +1,4 @@
-import { TeamYahooAngular } from "../../common/interfaces/Team";
+import { TeamYahooAngular } from "../../common/interfaces/ITeam";
 import {
   getChild,
   getPacificEndOfDay,

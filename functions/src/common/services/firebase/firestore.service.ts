@@ -6,10 +6,10 @@ import {
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import {
-  TeamYahooAngular,
+  TeamAngular,
   TeamFirestore,
   yahooToFirestore,
-} from "../../interfaces/Team";
+} from "../../interfaces/ITeam";
 import { ReturnCredential, Token } from "../../interfaces/credential";
 import { sendUserEmail } from "../email/email.service";
 import {
@@ -207,12 +207,12 @@ export async function getTomorrowsActiveWeeklyTeams() {
  *
  * @export
  * @async
- * @param {TeamYahooAngular[]} missingTeams - Teams that are in Yahoo but not in Firestore
+ * @param {TeamAngular[]} missingTeams - Teams that are in Yahoo but not in Firestore
  * @param {TeamFirestore[]} extraTeams - Teams that are in Firestore but not in Yahoo
  * @param {string} uid - The user id
  */
 export async function syncTeamsInFirebase(
-  missingTeams: TeamYahooAngular[],
+  missingTeams: TeamAngular[],
   extraTeams: TeamFirestore[],
   uid: string
 ) {

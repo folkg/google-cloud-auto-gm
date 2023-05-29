@@ -1,14 +1,14 @@
-import { IPlayer } from "../interfaces/IPlayer";
+import { IPlayer } from "../../common/interfaces/IPlayer";
+import { GamesPlayed, InningsPitched } from "../../common/interfaces/ITeam";
+import {
+  getMLBStartingPitchers,
+  getNHLStartingGoalies,
+} from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,
   LONG_TERM_IL_POSITIONS_LIST,
 } from "../helpers/constants";
-import {
-  getMLBStartingPitchers,
-  getNHLStartingGoalies,
-} from "../../common/services/yahooAPI/yahooStartingPlayer.service";
-import { GamesPlayed, InningsPitched } from "../interfaces/ITeam";
 import { ownershipScoreFunction } from "./playerOwnershipScoreFunctions.service";
 
 const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001

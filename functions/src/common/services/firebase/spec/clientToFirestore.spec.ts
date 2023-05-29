@@ -1,4 +1,4 @@
-import { TeamYahooAngular, yahooToFirestore } from "../../../interfaces/Team";
+import { TeamYahooAngular, yahooToFirestore } from "../../../interfaces/ITeam";
 
 describe("clientToFirestore", () => {
   const mockTeam: TeamYahooAngular = {

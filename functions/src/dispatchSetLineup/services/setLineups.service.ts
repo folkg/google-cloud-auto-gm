@@ -10,7 +10,7 @@ import {
 } from "../../common/services/yahooAPI/yahooAPI.service";
 import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeam } from "../interfaces/ITeam";
+import { ITeam } from "../../common/interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";

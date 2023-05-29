@@ -2,7 +2,7 @@ import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,
 } from "../helpers/constants";
-import { IPlayer } from "../interfaces/IPlayer";
+import { IPlayer } from "../../common/interfaces/IPlayer";
 
 export interface Player extends IPlayer {
   start_score: number;

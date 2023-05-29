@@ -1,6 +1,6 @@
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { TeamYahooAngular, TeamFirestore } from "../common/interfaces/Team";
+import { TeamYahooAngular, TeamFirestore } from "../common/interfaces/ITeam";
 import {
   fetchTeamsFirestore,
   syncTeamsInFirebase,
