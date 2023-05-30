@@ -74,16 +74,26 @@ export class Team implements Team {
         this.reduceAvailableRosterSpots(position.position, 1);
       }
     }
+    if (this.innings_pitched !== undefined) {
+      if (this.innings_pitched.projected > this.innings_pitched.max * 1.015) {
+        this.reduceAvailableRosterSpots("P", 1) ||
+          this.reduceAvailableRosterSpots("RP", 1) ||
+          this.reduceAvailableRosterSpots("SP", 1);
+      }
+    }
   }
 
-  private reduceAvailableRosterSpots(position: string, quantity = 1): void {
+  private reduceAvailableRosterSpots(position: string, quantity = 1): boolean {
     if (
       !INACTIVE_POSITION_LIST.includes(position) &&
       this.roster_positions[position] !== undefined
     ) {
-      this.roster_positions[position] -= quantity;
-      this.roster_positions["BN"] += quantity;
+      const reduction = Math.min(quantity, this.roster_positions[position]);
+      this.roster_positions[position] -= reduction;
+      this.roster_positions["BN"] += reduction;
+      return true;
     }
+    return false;
   }
 
   private processPendingTransactions(): void {

@@ -150,7 +150,7 @@ describe("Test LineupOptimizer Class MLB with positions above Max Games Played l
     });
   });
 
-  it("should bench the worst pitcher", function () {
+  it("should bench the worst pitcher (P)", function () {
     const roster: ITeam = require("./testRosters/MLB/weekly/10.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
@@ -159,7 +159,7 @@ describe("Test LineupOptimizer Class MLB with positions above Max Games Played l
     expect(isSuccessfullyOptimized).toEqual(true);
 
     expect(rosterModification.newPlayerPositions).toEqual({
-      "422.p.10096": "BN",
+      "422.p.10660": "BN",
     });
   });
 });
