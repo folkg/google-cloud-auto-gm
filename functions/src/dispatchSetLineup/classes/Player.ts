@@ -25,6 +25,10 @@ export class Player implements Player {
     Object.assign(this, player);
   }
 
+  compareStartScore(playerB: Player): number {
+    return this.start_score - playerB.start_score;
+  }
+
   isInactiveList(): boolean {
     return INACTIVE_POSITION_LIST.includes(this.selected_position);
   }

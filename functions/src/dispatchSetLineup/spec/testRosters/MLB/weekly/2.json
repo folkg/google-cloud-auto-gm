@@ -607,31 +607,31 @@
   "games_played": [
     {
       "position": "C",
-      "games_played": { "played": 42, "max": 162, "projected": 149 }
+      "games_played": { "played": 42, "max": 162, "projected": 162 }
     },
     {
       "position": "1B",
-      "games_played": { "played": 51, "max": 162, "projected": 158 }
+      "games_played": { "played": 51, "max": 162, "projected": 162 }
     },
     {
       "position": "2B",
-      "games_played": { "played": 54, "max": 162, "projected": 161 }
+      "games_played": { "played": 54, "max": 162, "projected": 162 }
     },
     {
       "position": "3B",
-      "games_played": { "played": 48, "max": 162, "projected": 155 }
+      "games_played": { "played": 48, "max": 162, "projected": 162 }
     },
     {
       "position": "SS",
-      "games_played": { "played": 54, "max": 162, "projected": 161 }
+      "games_played": { "played": 54, "max": 162, "projected": 162 }
     },
     {
       "position": "OF",
-      "games_played": { "played": 133, "max": 486, "projected": 456 }
+      "games_played": { "played": 133, "max": 486, "projected": 486 }
     },
     {
       "position": "Util",
-      "games_played": { "played": 102, "max": 324, "projected": 317 }
+      "games_played": { "played": 102, "max": 324, "projected": 324 }
     }
   ],
   "innings_pitched": {

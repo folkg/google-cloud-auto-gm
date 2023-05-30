@@ -381,7 +381,7 @@ export class LineupOptimizer {
     let inactivePlayersOnRoster: Player[] = this.team.inactiveOnRosterPlayers;
     if (playerToOpenSpotFor) {
       inactivePlayersOnRoster = inactivePlayersOnRoster.filter(
-        (player) => playerToOpenSpotFor.start_score > player.start_score
+        (player) => playerToOpenSpotFor.compareStartScore(player) > 0
       );
     }
     Team.sortAscendingByScore(inactivePlayersOnRoster);
@@ -550,9 +550,9 @@ export class LineupOptimizer {
   ): Player | undefined {
     return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.find(
       (playerC: Player) =>
-        playerA.start_score > playerC.start_score &&
+        playerA.compareStartScore(playerC) > 0 &&
         (playerC.isReservePlayer()
-          ? playerA.start_score > playerB.start_score
+          ? playerA.compareStartScore(playerB) > 0
           : true)
     );
   }

@@ -25,15 +25,16 @@ export class Team implements Team {
     this._editablePlayers = this.players.filter((player) => player.is_editable);
 
     const numPlayersInLeague = this.num_teams * this.numStandardRosterSpots;
-    let playerStartScoreFunction = playerStartScoreFunctionFactory(
-      this.game_code,
-      this.weekly_deadline
-    );
 
-    if (this.games_played !== undefined) {
+    let playerStartScoreFunction: (player: Player) => number;
+    if (this.games_played === undefined) {
+      playerStartScoreFunction = playerStartScoreFunctionFactory(
+        this.game_code,
+        this.weekly_deadline
+      );
+    } else {
       this.artificiallyReduceRosterSpots();
       playerStartScoreFunction = scoreFunctionMaxGamesPlayed(
-        playerStartScoreFunction,
         numPlayersInLeague,
         this.games_played,
         this.innings_pitched

@@ -9,6 +9,7 @@ import {
 } from "../helpers/constants";
 import { GamesPlayed, InningsPitched } from "../interfaces/ITeam";
 import { ownershipScoreFunction } from "./playerOwnershipScoreFunctions.service";
+import assert = require("assert/strict");
 
 const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001
 const INJURY_FACTOR = 1e-3; // 0.001
@@ -41,29 +42,41 @@ export function playerStartScoreFunctionFactory(
   return scoreFunctionNBA();
 }
 
+/**
+ * Returns a score function for leagues with a Maximum Games Played limit.
+ *
+ * @export
+ * @param {number} numPlayersInLeague - The number of players in the league
+ * @param {GamesPlayed[]} gamesPlayed - The maximum games played object for the Team
+ * @param {?InningsPitched} [inningsPitched] - The maximum innings pitched object for the Team
+ * @return {()} - A function that takes a player and returns a score.
+ */
 export function scoreFunctionMaxGamesPlayed(
-  churnFunction: (player: Player) => number,
   numPlayersInLeague: number,
   gamesPlayed: GamesPlayed[],
   inningsPitched?: InningsPitched
 ): (player: Player) => number {
-  const CHANGE_RESISTANCE_FACTOR = 1000; // a factor to make sure players using the churn function don't surpass players not using it
-  const CHURN_THRESHOLD = 0.9; // if projected games played is less than 90% of max, then churn players freely
+  const CHURN_THRESHOLD = 0.9; // if projected games played is less than 90% of max, then churn players freely (primarily penalize players who are injured or not starting)
   return (player: Player) => {
-    const paceKeeper = getPaceKeeper(player);
-    if (paceKeeper === undefined) return 0;
+    assert(
+      gamesPlayed !== undefined,
+      "gamesPlayed should never be undefined if scoreFunctionMaxGamesPlayed() is called"
+    );
 
-    if (paceKeeper.projected < paceKeeper.max * CHURN_THRESHOLD) {
-      return churnFunction(player);
+    const paceKeeper = getPaceKeeper(player);
+    const currentPace = paceKeeper.projected / paceKeeper.max ?? 1;
+
+    let score = ownershipScoreFunction(player, numPlayersInLeague);
+    score = applyInjuryScoreFactors(score, player);
+    if (!player.isInactiveListEligible()) {
+      if (currentPace > CHURN_THRESHOLD) {
+        score += getScoreBoost(player, currentPace);
+      } else {
+        score *= getScorePenaltyFactor(player);
+      }
     }
 
-    let score =
-      CHANGE_RESISTANCE_FACTOR *
-      ownershipScoreFunction(player, numPlayersInLeague);
-    score = applyInjuryScoreFactors(score, player);
-
-    // score boost will make it harder to replace players currently in lineup
-    return score + getScoreBoost(player, paceKeeper);
+    return score;
   };
 
   function getPaceKeeper(player: Player) {
@@ -73,9 +86,34 @@ export function scoreFunctionMaxGamesPlayed(
     if (isPitcher) {
       return inningsPitched;
     }
-    const gp = gamesPlayed.find((gp) =>
-      player.eligible_positions.includes(gp.position)
-    );
+
+    let gp = gamesPlayed.find((gp) => player.selected_position === gp.position);
+    if (!gp) {
+      // if the player's selected position is "BN" or IL and does not match a gp, use their minimum eligible position
+      // really only used to determine if a player's position current pace is above or below the churn threshold
+      gp = gamesPlayed
+        .filter((gp) => player.eligible_positions.includes(gp.position))
+        .reduce(
+          (prev, curr) => {
+            if (
+              curr.games_played.projected / curr.games_played.max <
+              prev.games_played.projected / prev.games_played.max
+            ) {
+              return curr;
+            }
+            return prev;
+          },
+          {
+            position: "null",
+            games_played: {
+              played: 0,
+              projected: Number.POSITIVE_INFINITY,
+              max: 1,
+            },
+          }
+        );
+    }
+
     return gp?.games_played;
   }
 
@@ -88,19 +126,29 @@ export function scoreFunctionMaxGamesPlayed(
    * max slows down.
    *
    * @param {Player} player - The player to get a score boost for
-   * @param {*} paceKeeper - The paceKeeper object for the player (either games_played or innings_pitched)
-   * @return {number} - a score boost between 0 and 10 (x CONSERVATIVE_FACTOR)
+   * @param {number} currentPace - The player's position's current pace towards the max
+   * @return {number} - a score boost between 0 and 10
    */
-  function getScoreBoost(player: Player, paceKeeper: any): number {
+  function getScoreBoost(player: Player, currentPace: number): number {
     if (player.isReservePlayer()) return 0;
 
-    const currentPace = paceKeeper.projected / paceKeeper.max;
+    return ((currentPace - CHURN_THRESHOLD) / (1 - CHURN_THRESHOLD)) * 10;
+  }
 
-    return (
-      ((currentPace - CHURN_THRESHOLD) / (1 - CHURN_THRESHOLD)) *
-      CHANGE_RESISTANCE_FACTOR *
-      10
-    );
+  /**
+   * Returns a score penalty factor based on whether or not the player has a game today.
+   *
+   * This is intended to introduce more churn by swapping in players with games more regularly.
+   *
+   * @param {Player} player - The player to get a score penalty factor for
+   * @return {number} - a score penalty factor between 0 and 1
+   */
+  function getScorePenaltyFactor(player: Player): number {
+    let result = 1;
+    if (!player.is_playing) {
+      result *= NOT_PLAYING_FACTOR;
+    }
+    return result;
   }
 }
 
