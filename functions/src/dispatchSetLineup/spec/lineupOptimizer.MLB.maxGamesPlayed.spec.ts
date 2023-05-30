@@ -74,6 +74,20 @@ describe("Test LineupOptimizer Class MLB with Max Games Played limits all positi
 
     expect(rosterModification.newPlayerPositions).toEqual({});
   });
+
+  it("should move a higher rated pitcher from BN to Roster", function () {
+    const roster: ITeam = require("./testRosters/MLB/weekly/13.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.9585": "P",
+      "422.p.10660": "BN",
+    });
+  });
 });
 
 describe("Test LineupOptimizer Class MLB with Max Games Played limits some positions below 0.9 threshold - churn", function () {
@@ -129,6 +143,31 @@ describe("Test LineupOptimizer Class MLB with Max Games Played limits some posit
       "422.p.9096": "Util",
       "422.p.9540": "1B",
     });
+  });
+
+  it("Should move a pitcher from BN to Roster", function () {
+    const roster: ITeam = require("./testRosters/MLB/weekly/11.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(rosterModification.newPlayerPositions).toEqual({
+      "422.p.9585": "P",
+      "422.p.8918": "BN",
+    });
+  });
+
+  it("Should NOT move a pitcher from BN to Roster", function () {
+    const roster: ITeam = require("./testRosters/MLB/weekly/12.json");
+    const lo = new LineupOptimizer(roster);
+    const rosterModification = lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+
+    expect(rosterModification.newPlayerPositions).toEqual({});
   });
 });
 

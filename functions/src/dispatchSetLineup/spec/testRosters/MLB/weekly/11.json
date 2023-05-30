@@ -159,7 +159,7 @@
       "player_key": "422.p.11643",
       "player_name": "Seth Brown",
       "eligible_positions": ["1B", "OF", "Util"],
-      "selected_position": "BN",
+      "selected_position": "OF",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "Healthy",
@@ -215,28 +215,6 @@
         "last14Days": 600,
         "next7Days": 933,
         "restOfSeason": 418,
-        "last4Weeks": -1,
-        "projectedWeek": -1,
-        "next4Weeks": -1
-      },
-      "is_undroppable": false
-    },
-    {
-      "player_key": "422.p.9414",
-      "player_name": "Joc Pederson",
-      "eligible_positions": ["OF", "Util", "IL"],
-      "selected_position": "OF",
-      "is_editable": true,
-      "is_playing": true,
-      "injury_status": "10-Day Injured List",
-      "percent_started": null,
-      "percent_owned": 1,
-      "is_starting": "N/A",
-      "ranks": {
-        "last30Days": 647,
-        "last14Days": 938,
-        "next7Days": 1204,
-        "restOfSeason": 596,
         "last4Weeks": -1,
         "projectedWeek": -1,
         "next4Weeks": -1
@@ -491,7 +469,7 @@
       "eligible_positions": ["SP", "P"],
       "selected_position": "P",
       "is_editable": true,
-      "is_playing": true,
+      "is_playing": false,
       "injury_status": "Healthy",
       "percent_started": 35,
       "percent_owned": 56,
@@ -501,6 +479,50 @@
         "last14Days": 867,
         "next7Days": 257,
         "restOfSeason": 336,
+        "last4Weeks": -1,
+        "projectedWeek": -1,
+        "next4Weeks": -1
+      },
+      "is_undroppable": false
+    },
+    {
+      "player_key": "422.p.9585",
+      "player_name": "Julio Urías",
+      "eligible_positions": ["SP", "P"],
+      "selected_position": "BN",
+      "is_editable": true,
+      "is_playing": true,
+      "injury_status": "Healthy",
+      "percent_started": 2,
+      "percent_owned": 94,
+      "is_starting": "N/A",
+      "ranks": {
+        "last30Days": 227,
+        "last14Days": 859,
+        "next7Days": 2294,
+        "restOfSeason": 74,
+        "last4Weeks": -1,
+        "projectedWeek": -1,
+        "next4Weeks": -1
+      },
+      "is_undroppable": false
+    },
+    {
+      "player_key": "422.p.9414",
+      "player_name": "Joc Pederson",
+      "eligible_positions": ["OF", "Util", "IL"],
+      "selected_position": "IL",
+      "is_editable": true,
+      "is_playing": true,
+      "injury_status": "10-Day Injured List",
+      "percent_started": null,
+      "percent_owned": 1,
+      "is_starting": "N/A",
+      "ranks": {
+        "last30Days": 647,
+        "last14Days": 938,
+        "next7Days": 1204,
+        "restOfSeason": 596,
         "last4Weeks": -1,
         "projectedWeek": -1,
         "next4Weeks": -1
@@ -545,28 +567,6 @@
         "last14Days": 1395,
         "next7Days": 1667,
         "restOfSeason": 1160,
-        "last4Weeks": -1,
-        "projectedWeek": -1,
-        "next4Weeks": -1
-      },
-      "is_undroppable": false
-    },
-    {
-      "player_key": "422.p.9585",
-      "player_name": "Julio Urías",
-      "eligible_positions": ["SP", "P", "IL"],
-      "selected_position": "IL",
-      "is_editable": true,
-      "is_playing": true,
-      "injury_status": "15-Day Injured List",
-      "percent_started": 2,
-      "percent_owned": 94,
-      "is_starting": "N/A",
-      "ranks": {
-        "last30Days": 227,
-        "last14Days": 859,
-        "next7Days": 2294,
-        "restOfSeason": 74,
         "last4Weeks": -1,
         "projectedWeek": -1,
         "next4Weeks": -1
@@ -637,6 +637,6 @@
   "innings_pitched": {
     "pitched": "425.2",
     "max": "1400",
-    "projected": "1400"
+    "projected": "700"
   }
 }
