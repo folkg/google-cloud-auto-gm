@@ -52,11 +52,14 @@ export function playerStartScoreFunctionFactory(
  * @return {()} - A function that takes a player and returns a score.
  */
 export function scoreFunctionMaxGamesPlayed(
+  seasonTimeProgress: number,
   numPlayersInLeague: number,
   gamesPlayed: GamesPlayed[],
   inningsPitched?: InningsPitched
 ): (player: Player) => number {
-  const CHURN_THRESHOLD = 0.9; // if projected games played is less than 90% of max, then churn players freely (primarily penalize players who are injured or not starting)
+  // if projected games played is less than churnThreshold, then churn players more freely
+  // churnThreshold will be between 0.9 and 1.0 depending on the season time progress
+  const churnThreshold = 0.9 + Math.min(seasonTimeProgress * 0.09, 0.09);
   return (player: Player) => {
     assert(
       gamesPlayed !== undefined,
@@ -69,7 +72,7 @@ export function scoreFunctionMaxGamesPlayed(
     let score = ownershipScoreFunction(player, numPlayersInLeague);
     score = applyInjuryScoreFactors(score, player);
     if (!player.isInactiveListEligible()) {
-      if (currentPace > CHURN_THRESHOLD) {
+      if (currentPace > churnThreshold) {
         score += getScoreBoost(player, currentPace);
       } else {
         score *= getScorePenaltyFactor(player);
@@ -132,7 +135,7 @@ export function scoreFunctionMaxGamesPlayed(
   function getScoreBoost(player: Player, currentPace: number): number {
     if (player.isReservePlayer()) return 0;
 
-    return ((currentPace - CHURN_THRESHOLD) / (1 - CHURN_THRESHOLD)) * 10;
+    return ((currentPace - churnThreshold) / (1 - churnThreshold)) * 10;
   }
 
   /**
