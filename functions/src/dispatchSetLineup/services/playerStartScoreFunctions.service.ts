@@ -46,6 +46,7 @@ export function playerStartScoreFunctionFactory(
  * Returns a score function for leagues with a Maximum Games Played limit.
  *
  * @export
+ * @param {number} seasonTimeProgress - The season time progress as a decimal between 0 and 1
  * @param {number} numPlayersInLeague - The number of players in the league
  * @param {GamesPlayed[]} gamesPlayed - The maximum games played object for the Team
  * @param {?InningsPitched} [inningsPitched] - The maximum innings pitched object for the Team

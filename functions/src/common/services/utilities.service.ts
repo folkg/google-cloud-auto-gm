@@ -109,7 +109,7 @@ export function getCurrentPacificNumDay(): number {
  * Useful for mocking the current time in tests, if we ever need to.
  *
  * @export
- * @returns {number}
+ * @return {number}
  */
 export function getNow(): number {
   return spacetime.now().epoch;
