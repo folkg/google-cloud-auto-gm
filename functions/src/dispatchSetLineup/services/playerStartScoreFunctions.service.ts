@@ -13,6 +13,7 @@ import assert = require("assert/strict");
 
 const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001
 const INJURY_FACTOR = 1e-3; // 0.001
+const NOT_STARTING_FACTOR = 1e-2; // 0.01
 const LTIR_FACTOR = 1e-1; // 0.1 // extra penalty on top of INJURY_FACTOR
 const STARTING_FACTOR = 100;
 /**
@@ -148,11 +149,9 @@ export function scoreFunctionMaxGamesPlayed(
    * @return {number} - a score penalty factor between 0 and 1
    */
   function getScorePenaltyFactor(player: Player): number {
-    let result = 1;
-    if (!player.is_playing) {
-      result *= NOT_PLAYING_FACTOR;
-    }
-    return result;
+    return !player.is_playing || player.is_starting === 0
+      ? NOT_PLAYING_FACTOR
+      : 1;
   }
 }
 
@@ -196,7 +195,6 @@ export function scoreFunctionNHL(): (player: Player) => number {
  *  returns a score.
  */
 export function scoreFunctionMLB(): (player: Player) => number {
-  const NOT_STARTING_FACTOR = 1e-2; // 0.01
   const startingPitchers = getMLBStartingPitchers() ?? [];
   return (player: Player) => {
     // TODO: Do we need to boost the score for starting pitchers? Or is it superfluous?
@@ -206,20 +204,19 @@ export function scoreFunctionMLB(): (player: Player) => number {
     // Penalize non-starting batters if their starting_score === 0 instead, however,
     // since there are often late confirmations and we don't want to leave a good
     // unconfirmed player on the bench in favour of a bad confirmed starter.
-    const isPitcher = player.eligible_positions.some((pos) =>
-      ["P", "SP", "RP"].includes(pos)
-    );
-    let isStartingPitcher = false;
-    if (isPitcher) {
-      isStartingPitcher = isStartingPlayer(player, startingPitchers);
-    }
+
+    const isStartingPitcher =
+      player.eligible_positions.some((pos) =>
+        ["P", "SP", "RP"].includes(pos)
+      ) && isStartingPlayer(player, startingPitchers);
+
     const isNonStartingSP =
       player.eligible_positions.includes("SP") &&
       !player.eligible_positions.includes("RP") &&
       !isStartingPitcher;
 
     let score = getInitialScore(player);
-    if (player.is_starting === 0 || isNonStartingSP || isLTIR(player)) {
+    if (player.is_starting === 0 || isNonStartingSP || player.isLTIR()) {
       score *= NOT_STARTING_FACTOR;
     }
     return applyScoreFactors(score, player, isStartingPitcher);
@@ -231,7 +228,6 @@ export function scoreFunctionMLB(): (player: Player) => number {
  * Higher scores are better.
  *
  * @return {()} - A function that takes a player and returns a score.
- *  returns a score.
  */
 export function scoreFunctionNFL(): (player: Player) => number {
   return (player: Player) => {
@@ -270,8 +266,7 @@ function applyScoreFactors(
   let result = applyInjuryScoreFactors(score, player);
   if (!player.is_playing) {
     result *= NOT_PLAYING_FACTOR;
-  }
-  if (isStartingPlayer) {
+  } else if (isStartingPlayer) {
     result *= STARTING_FACTOR;
   }
   return result;
@@ -281,7 +276,7 @@ function applyInjuryScoreFactors(score: number, player: Player): number {
   const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
   if (isPlayerInjured) {
     score *= INJURY_FACTOR;
-    if (isLTIR(player)) {
+    if (player.isLTIR()) {
       score *= LTIR_FACTOR;
     }
   }
@@ -291,11 +286,4 @@ function applyInjuryScoreFactors(score: number, player: Player): number {
 function isStartingPlayer(player: Player, starters: string[]): boolean {
   // starters array is not always accurate, so we need to check both
   return starters.includes(player.player_key) || player.is_starting === 1;
-}
-
-// TODO: If we us
-function isLTIR(player: Player): boolean {
-  return player.eligible_positions.some((pos) =>
-    LONG_TERM_IL_POSITIONS_LIST.includes(pos)
-  );
 }

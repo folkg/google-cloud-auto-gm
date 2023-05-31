@@ -1,6 +1,7 @@
 import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,
+  LONG_TERM_IL_POSITIONS_LIST,
 } from "../helpers/constants";
 import { IPlayer } from "../interfaces/IPlayer";
 
@@ -36,6 +37,12 @@ export class Player implements Player {
   isInactiveListEligible(): boolean {
     return this.eligible_positions.some((position) =>
       INACTIVE_POSITION_LIST.includes(position)
+    );
+  }
+
+  isLTIR(): boolean {
+    return this.eligible_positions.some((position) =>
+      LONG_TERM_IL_POSITIONS_LIST.includes(position)
     );
   }
 
