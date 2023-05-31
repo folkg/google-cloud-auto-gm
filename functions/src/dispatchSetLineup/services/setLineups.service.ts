@@ -8,7 +8,10 @@ import {
   postRosterAddDropTransaction,
   putLineupChanges,
 } from "../../common/services/yahooAPI/yahooAPI.service";
-import { initStartingGoalies } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
+import {
+  initStartingGoalies,
+  initStartingPitchers,
+} from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { ITeam } from "../interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
@@ -40,10 +43,10 @@ export async function setUsersLineup(
   if (hasNHLTeam) {
     await initStartingGoalies();
   }
-  // const hasMLBTeam = firestoreTeams.some((team) => team.game_code === "mlb");
-  // if (hasMLBTeam) {
-  //   await initStartingPitchers();
-  // }
+  const hasMLBTeam = firestoreTeams.some((team) => team.game_code === "mlb");
+  if (hasMLBTeam) {
+    await initStartingPitchers();
+  }
 
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
 
