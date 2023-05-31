@@ -1,9 +1,13 @@
-import { getChild } from "../../common/services/utilities.service";
+import { getChild, getNow } from "../../common/services/utilities.service";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { ITeam } from "../../common/interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
-import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
+import {
+  playerStartScoreFunctionFactory,
+  scoreFunctionMaxGamesPlayed,
+} from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
+import assert = require("assert/strict");
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
 export interface Team extends ITeam {
@@ -20,19 +24,35 @@ export class Team implements Team {
 
     this._editablePlayers = this.players.filter((player) => player.is_editable);
 
-    const playerStartScoreFunction = playerStartScoreFunctionFactory(
-      this.game_code,
-      this.weekly_deadline
-    );
+    const numPlayersInLeague = this.num_teams * this.numStandardRosterSpots;
+
+    let playerStartScoreFunction: (player: Player) => number;
+    if (this.games_played === undefined) {
+      playerStartScoreFunction = playerStartScoreFunctionFactory(
+        this.game_code,
+        this.weekly_deadline
+      );
+    } else {
+      this.artificiallyReduceRosterSpots();
+      const seasonTimeProgress =
+        (getNow() - this.start_date) / (this.end_date - this.start_date);
+      playerStartScoreFunction = scoreFunctionMaxGamesPlayed(
+        seasonTimeProgress,
+        numPlayersInLeague,
+        this.games_played,
+        this.innings_pitched
+      );
+    }
 
     this.players.forEach((player) => {
       player.start_score = playerStartScoreFunction(player);
       player.ownership_score = ownershipScoreFunction(
         player,
-        this.num_teams * this.numStandardRosterSpots
+        numPlayersInLeague
       );
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
+
     this.processPendingTransactions();
     // console.log(
     //   this._allPlayers
@@ -46,6 +66,44 @@ export class Team implements Team {
     //         player.percent_owned
     //     )
     // );
+  }
+
+  private artificiallyReduceRosterSpots() {
+    assert(this.games_played !== undefined);
+    const BUFFER = 0.015;
+    for (const position of this.games_played) {
+      // Use a 1.5% buffer to allow for some day-to-day variance
+      // Results in an 83.23 roster spot requirement for 82 games max, or 164.43 for 162 games max
+      if (
+        position.games_played.projected >
+        position.games_played.max * (1 + BUFFER)
+      ) {
+        this.reduceAvailableRosterSpots(position.position, 1);
+      }
+    }
+    if (this.innings_pitched !== undefined) {
+      if (
+        this.innings_pitched.projected >
+        this.innings_pitched.max * (1 + BUFFER)
+      ) {
+        this.reduceAvailableRosterSpots("P", 1) ||
+          this.reduceAvailableRosterSpots("RP", 1) ||
+          this.reduceAvailableRosterSpots("SP", 1);
+      }
+    }
+  }
+
+  private reduceAvailableRosterSpots(position: string, quantity = 1): boolean {
+    if (
+      !INACTIVE_POSITION_LIST.includes(position) &&
+      this.roster_positions[position] !== undefined
+    ) {
+      const reduction = Math.min(quantity, this.roster_positions[position]);
+      this.roster_positions[position] -= reduction;
+      this.roster_positions["BN"] += reduction;
+      return true;
+    }
+    return false;
   }
 
   private processPendingTransactions(): void {
@@ -273,15 +331,5 @@ export class Team implements Team {
     return this._editablePlayers.filter(
       (player) => player.selected_position === position
     );
-  }
-
-  public reduceAvailableRosterSpots(position: string, quantity = 1): void {
-    if (
-      !INACTIVE_POSITION_LIST.includes(position) &&
-      this.roster_positions[position] !== undefined
-    ) {
-      this.roster_positions[position] -= quantity;
-      this.roster_positions["BN"] += quantity;
-    }
   }
 }

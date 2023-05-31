@@ -104,6 +104,18 @@ export function getCurrentPacificNumDay(): number {
 }
 
 /**
+ * Return now() as an epoch number.
+ *
+ * Useful for mocking the current time in tests, if we ever need to.
+ *
+ * @export
+ * @return {number}
+ */
+export function getNow(): number {
+  return spacetime.now().epoch;
+}
+
+/**
  * Takes an array and a predicate function and returns an array of two arrays.
  * The first array contains all the elements that satisfy the predicate.
  * The second array contains all the elements that do not satisfy the predicate.
