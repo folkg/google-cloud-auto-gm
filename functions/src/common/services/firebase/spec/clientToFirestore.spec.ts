@@ -1,7 +1,7 @@
-import { TeamYahooAngular, yahooToFirestore } from "../../../interfaces/ITeam";
+import { TeamAngular, yahooToFirestore } from "../../../interfaces/ITeam";
 
 describe("clientToFirestore", () => {
-  const mockTeam: TeamYahooAngular = {
+  const mockTeam: TeamAngular = {
     uid: "gibberish_uid",
     game_name: "game name",
     game_code: "game code",
@@ -39,19 +39,20 @@ describe("clientToFirestore", () => {
   };
 
   const expectedOutput = {
-    uid: mockTeam.uid,
-    game_code: mockTeam.game_code,
-    start_date: 1680418800000, //  Monday April 02, 2023 00:00:00 GMT-0700 (Pacific Daylight Time)
-    end_date: 1680850799999, //  Sunday April 07, 2023 23:59:59 GMT-0700 (Pacific Daylight Time)
-    weekly_deadline: mockTeam.weekly_deadline,
+    uid: "",
     is_subscribed: true,
     is_setting_lineups: false,
+    last_updated: -1,
+    game_code: mockTeam.game_code,
+    team_key: mockTeam.team_key,
+    start_date: mockTeam.start_date,
+    end_date: mockTeam.end_date,
+    weekly_deadline: mockTeam.weekly_deadline,
     allow_dropping: false,
     allow_adding: false,
     allow_add_drops: false,
     allow_transactions: false,
     allow_waiver_adds: false,
-    last_updated: -1,
   };
 
   it("should convert a teamclient object to a teamFirestore object", () => {

@@ -91,31 +91,27 @@ export interface InningsPitched {
  * @return {TeamFirestore} - The converted team
  */
 export function yahooToFirestore(team: TeamAngular): TeamFirestore {
-  /* eslint-disable camelcase */
-  const {
-    uid = "",
-    team_key,
-    game_code,
-    start_date,
-    end_date,
-    weekly_deadline,
-  } = team;
-
-  return {
-    uid,
-    team_key,
-    game_code,
-    start_date,
-    end_date,
-    weekly_deadline,
-    is_subscribed: true,
-    is_setting_lineups: false,
-    last_updated: -1,
+  const commonTeam: CommonTeam = {
+    team_key: team.team_key,
+    game_code: team.game_code,
+    start_date: team.start_date,
+    end_date: team.end_date,
+    weekly_deadline: team.weekly_deadline,
+  };
+  const optionsTeam: OptionsTeam = {
     allow_transactions: false,
     allow_dropping: false,
     allow_adding: false,
     allow_add_drops: false,
     allow_waiver_adds: false,
   };
-  /* eslint-enable camelcase */
+
+  return {
+    uid: "",
+    is_subscribed: true,
+    is_setting_lineups: false,
+    last_updated: -1,
+    ...commonTeam,
+    ...optionsTeam,
+  };
 }

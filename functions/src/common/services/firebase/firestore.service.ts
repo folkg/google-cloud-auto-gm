@@ -222,7 +222,7 @@ export async function syncTeamsInFirebase(
   for (const mTeam of missingTeams) {
     if (mTeam.end_date < Date.now()) continue;
 
-    mTeam.uid = uid; // uid is not present in TeamClient
+    mTeam.uid = uid; // uid is not present in TeamAngular
     const data: TeamFirestore = yahooToFirestore(mTeam);
 
     const docId = String(mTeam.team_key);
