@@ -13,7 +13,7 @@ import {
   initStartingPitchers,
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeam } from "../../common/interfaces/ITeam";
+import { ITeam, TeamFirestore } from "../../common/interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
@@ -30,7 +30,7 @@ import assert = require("assert/strict");
  */
 export async function setUsersLineup(
   uid: string,
-  firestoreTeams: any[]
+  firestoreTeams: TeamFirestore[]
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -62,7 +62,7 @@ export async function setUsersLineup(
 
 export async function performWeeklyLeagueTransactions(
   uid: string,
-  firestoreTeams: any[]
+  firestoreTeams: TeamFirestore[]
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -91,7 +91,7 @@ export async function performWeeklyLeagueTransactions(
 
 function enrichTeamsWithFirestoreSettings(
   yahooTeams: ITeam[],
-  firestoreTeams: any[]
+  firestoreTeams: TeamFirestore[]
 ): ITeam[] {
   return yahooTeams.map((yahooTeam) => {
     const firestoreTeam = firestoreTeams.find(
@@ -108,7 +108,7 @@ function enrichTeamsWithFirestoreSettings(
 
 async function patchTeamChangesInFirestore(
   yahooTeams: ITeam[],
-  firestoreTeams: any[]
+  firestoreTeams: TeamFirestore[]
 ): Promise<void> {
   const sharedKeys = Object.keys(firestoreTeams[0]).filter(
     (key) => key in yahooTeams[0]
@@ -123,7 +123,7 @@ async function patchTeamChangesInFirestore(
     const differences: { [key: string]: any } = {};
     sharedKeys.forEach((key) => {
       const yahooValue = yahooTeam[key as keyof ITeam];
-      const firestoreValue = firestoreTeam[key];
+      const firestoreValue = firestoreTeam[key as keyof TeamFirestore];
       if (yahooValue !== firestoreValue) {
         differences[key] = yahooValue;
       }

@@ -49,8 +49,25 @@ exports.testsetlineups = onRequest(async (req, res) => {
   ];
   // Jeff Barnes
 
+  const firestoreTeams = teams.map((team) => ({
+    uid,
+    team_key: team.team_key,
+    game_code: team.game_code,
+    is_subscribed: true,
+    is_setting_lineups: true,
+    last_updated: Date.now(),
+    allow_transactions: false,
+    allow_dropping: false,
+    allow_adding: false,
+    allow_add_drops: false,
+    allow_waiver_adds: false,
+    start_date: 1,
+    end_date: Number.MAX_SAFE_INTEGER,
+    weekly_deadline: "2021-04-01",
+  }));
+
   try {
-    return await setUsersLineup(uid, teams);
+    return await setUsersLineup(uid, firestoreTeams);
   } catch (error) {
     logger.log("Error in testsetlineups: ", error);
   }

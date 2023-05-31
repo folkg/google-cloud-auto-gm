@@ -1,27 +1,16 @@
 import { IPlayer } from "./IPlayer";
 
-interface TeamCommon {
-  uid?: string;
+interface CommonTeam {
   team_key: string;
   game_code: string;
   start_date: number;
   end_date: number;
-  weekly_deadline: string | number;
-  allow_transactions: boolean;
-  allow_dropping: boolean;
-  allow_adding: boolean;
-  allow_add_drops: boolean;
-  allow_waiver_adds: boolean;
+  weekly_deadline: string;
 }
 
-export interface TeamFirestore extends Omit<TeamCommon, "team_key"> {
-  team_key?: string;
-  is_subscribed: boolean;
-  is_setting_lineups: boolean;
-  last_updated: number;
-}
-
-interface TeamYahoo extends TeamCommon {
+interface YahooTeam extends CommonTeam {
+  num_teams: number;
+  edit_key: string;
   faab_balance: number;
   current_weekly_adds: number;
   current_season_adds: number;
@@ -31,7 +20,23 @@ interface TeamYahoo extends TeamCommon {
   waiver_rule: string;
 }
 
-export interface TeamAngular extends TeamYahoo {
+interface OptionsTeam {
+  allow_transactions: boolean;
+  allow_dropping: boolean;
+  allow_adding: boolean;
+  allow_add_drops: boolean;
+  allow_waiver_adds: boolean;
+}
+
+export interface TeamFirestore extends CommonTeam, OptionsTeam {
+  uid: string;
+  is_subscribed: boolean;
+  is_setting_lineups: boolean;
+  last_updated: number;
+}
+
+export interface TeamAngular extends YahooTeam {
+  uid?: string;
   max_games_played: number;
   max_innings_pitched: number;
   game_name: string;
@@ -53,23 +58,14 @@ export interface TeamAngular extends TeamYahoo {
   };
 }
 
-export interface ITeam extends TeamYahoo {
+export interface ITeam extends YahooTeam, Partial<OptionsTeam> {
   players: IPlayer[];
   coverage_type: string;
   coverage_period: string;
-  edit_key: string;
-  num_teams: number;
   roster_positions: { [key: string]: number };
-  scoring_type: string;
-  waiver_rule: string;
   transactions: any[];
   games_played?: GamesPlayed[];
   innings_pitched?: InningsPitched;
-  current_weekly_adds: number;
-  current_season_adds: number;
-  max_weekly_adds: number;
-  max_season_adds: number;
-  faab_balance: number;
 }
 
 export interface GamesPlayed {
@@ -88,7 +84,7 @@ export interface InningsPitched {
 }
 
 /**
- * Converts a TeamClient to a TeamFirestore
+ * Converts a TeamAngular to a TeamFirestore
  *
  * @export
  * @param {TeamAngular} team - The team to convert
@@ -96,10 +92,18 @@ export interface InningsPitched {
  */
 export function yahooToFirestore(team: TeamAngular): TeamFirestore {
   /* eslint-disable camelcase */
-  const { uid = "", game_code, start_date, end_date, weekly_deadline } = team;
+  const {
+    uid = "",
+    team_key,
+    game_code,
+    start_date,
+    end_date,
+    weekly_deadline,
+  } = team;
 
   return {
     uid,
+    team_key,
     game_code,
     start_date,
     end_date,
