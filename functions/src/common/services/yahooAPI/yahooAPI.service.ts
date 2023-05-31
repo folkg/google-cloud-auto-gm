@@ -389,7 +389,7 @@ function handleAxiosError(
   if (err instanceof RevokedRefreshTokenError) {
     throw err;
   } else if (err.response) {
-    logger.error(errMessage, err);
+    logger.error(errMessage, err, err.response.data);
     const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
     enrichedError.response = err.response;
     throw enrichedError;
