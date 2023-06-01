@@ -38,7 +38,6 @@ export async function setUsersLineup(
     logger.log(`No teams for user ${uid}`);
     return;
   }
-  logger.debug(`Loaded ${firestoreTeams.length} teams for user ${uid}`);
 
   const hasNHLTeam = firestoreTeams.some((team) => team.game_code === "nhl");
   if (hasNHLTeam) {
@@ -48,21 +47,17 @@ export async function setUsersLineup(
   if (hasMLBTeam) {
     await initStartingPitchers();
   }
-  logger.debug(`Loaded starting players for user ${uid}`);
 
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
 
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
-  logger.debug(`Loaded ${usersTeams.length} teams for user ${uid}`);
   if (usersTeams.length === 0) return;
   await patchTeamChangesInFirestore(usersTeams, firestoreTeams);
-  logger.debug(`Patched ${usersTeams.length} teams for user ${uid}`);
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
   usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
   await processTransactionsForNextDayChanges(usersTeams, uid);
-  logger.debug(`Completed setUsersLineup() for ${uid}`);
 }
 
 export async function performWeeklyLeagueTransactions(
@@ -161,8 +156,6 @@ async function processTodaysLineupChanges(
     result.push(lo.getCurrentTeamState());
     // will log any errors, we could remove this later once we're confident in the optimizer
     const isOptimalLineup = lo.isSuccessfullyOptimized();
-    logger.debug(`Original roster for team ${team.team_key}`, team);
-    logger.debug(`Changes for team ${team.team_key}`, lineupChanges);
     if (!isOptimalLineup) {
       logger.error(
         `Original roster for problematic team ${team.team_key}`,
@@ -178,7 +171,6 @@ async function processTodaysLineupChanges(
     // if there is a failure calling the Yahoo API, an error will be thrown, and we will let it propagate up
     try {
       await putLineupChanges(allLineupChanges, uid);
-      logger.debug(`Successfully updated lineups for user ${uid}`);
     } catch (error) {
       logger.error(error);
       logger.error("Lineup changes object: ", { allLineupChanges });
@@ -201,19 +193,12 @@ async function processTransactionsForSameDayChanges(
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
-      logger.debug(
-        `Successfully processed today's transactions for user ${uid}`,
-        {
-          transactions,
-        }
-      );
     } catch (error) {
       logger.error("Error in processTransactionsForSameDayChanges()", error);
       logger.error("Original teams object: ", { originalTeams });
     }
     // returns a new deep copy of the teams with the updated player transactions
     result = await refetchAndPatchTeams(transactions, uid, originalTeams);
-    logger.debug(`Successfully refetched teams for user ${uid}`);
   }
 
   return result;
@@ -239,18 +224,11 @@ async function processTransactionsForNextDayChanges(
     uid,
     tomorrowsDateAsString()
   );
-  logger.debug(`Successfully fetched tomorrow's rosters for user ${uid}`);
 
   const transactions = getPlayerTransactions(tomorrowsTeams);
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
-      logger.debug(
-        `Successfully processed tomorrow's transactions for user ${uid}`,
-        {
-          transactions,
-        }
-      );
     } catch (error) {
       logger.error("Error in processTransactionsForNextDayChanges()", error);
       logger.error("Original teams object: ", { originalTeams });
