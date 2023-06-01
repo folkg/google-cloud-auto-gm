@@ -1,6 +1,6 @@
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { TeamAngular, TeamFirestore } from "../common/interfaces/ITeam";
+import { ITeamAngular, ITeamFirestore } from "../common/interfaces/ITeam";
 import {
   fetchTeamsFirestore,
   syncTeamsInFirebase,
@@ -8,7 +8,7 @@ import {
 import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service";
 
 export const fetchuserteams = onCall(
-  async (request): Promise<TeamAngular[]> => {
+  async (request): Promise<ITeamAngular[]> => {
     const uid = request.auth?.uid;
     if (!uid) {
       throw new HttpsError(
@@ -36,9 +36,9 @@ export const fetchuserteams = onCall(
       (f) => !yahooTeams.some((y) => y.team_key === f.team_key)
     );
 
-    const teams: TeamAngular[] = [];
-    firestoreTeams.forEach((firestoreTeam: TeamFirestore) => {
-      const yahooTeam: TeamAngular | undefined = yahooTeams.find(
+    const teams: ITeamAngular[] = [];
+    firestoreTeams.forEach((firestoreTeam: ITeamFirestore) => {
+      const yahooTeam: ITeamAngular | undefined = yahooTeams.find(
         (y) => y.team_key === firestoreTeam.team_key
       );
       if (yahooTeam) {

@@ -1,4 +1,4 @@
-import { TeamAngular } from "../../common/interfaces/ITeam";
+import { ITeamAngular } from "../../common/interfaces/ITeam";
 import {
   getChild,
   getPacificEndOfDay,
@@ -13,10 +13,10 @@ import { getUsersTeams } from "../../common/services/yahooAPI/yahooAPI.service";
  * @export
  * @async
  * @param {string} uid The firebase uid
- * @return {Promise<TeamAngular[]>} The user's teams
+ * @return {Promise<ITeamAngular[]>} The user's teams
  */
-export async function fetchTeamsYahoo(uid: string): Promise<TeamAngular[]> {
-  const result: TeamAngular[] = [];
+export async function fetchTeamsYahoo(uid: string): Promise<ITeamAngular[]> {
+  const result: ITeamAngular[] = [];
 
   const yahooJSON = await getUsersTeams(uid);
   const gamesJSON = getChild(yahooJSON.fantasy_content.users[0].user, "games");
@@ -37,7 +37,7 @@ export async function fetchTeamsYahoo(uid: string): Promise<TeamAngular[]> {
       const usersTeam = getChild(league, "teams")[0].team;
       const teamStandings = getChild(usersTeam, "team_standings");
 
-      const teamObj: TeamAngular = {
+      const teamObj: ITeamAngular = {
         game_name: getChild(gameJSON, "name"),
         game_code: getChild(gameJSON, "code"),
         game_season: getChild(gameJSON, "season"),

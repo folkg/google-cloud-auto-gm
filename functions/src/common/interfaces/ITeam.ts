@@ -28,14 +28,14 @@ interface OptionsTeam {
   allow_waiver_adds: boolean;
 }
 
-export interface TeamFirestore extends CommonTeam, OptionsTeam {
+export interface ITeamFirestore extends CommonTeam, OptionsTeam {
   uid: string;
   is_subscribed: boolean;
   is_setting_lineups: boolean;
   last_updated: number;
 }
 
-export interface TeamAngular extends YahooTeam {
+export interface ITeamAngular extends YahooTeam {
   uid?: string;
   max_games_played: number;
   max_innings_pitched: number;
@@ -58,7 +58,7 @@ export interface TeamAngular extends YahooTeam {
   };
 }
 
-export interface ITeam extends YahooTeam, Partial<OptionsTeam> {
+export interface ITeamOptimizer extends YahooTeam, Partial<OptionsTeam> {
   players: IPlayer[];
   coverage_type: string;
   coverage_period: string;
@@ -87,10 +87,10 @@ export interface InningsPitched {
  * Converts a TeamAngular to a TeamFirestore
  *
  * @export
- * @param {TeamAngular} team - The team to convert
- * @return {TeamFirestore} - The converted team
+ * @param {ITeamAngular} team - The team to convert
+ * @return {ITeamFirestore} - The converted team
  */
-export function yahooToFirestore(team: TeamAngular): TeamFirestore {
+export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
   const commonTeam: CommonTeam = {
     team_key: team.team_key,
     game_code: team.game_code,

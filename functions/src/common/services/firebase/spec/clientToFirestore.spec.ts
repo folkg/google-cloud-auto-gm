@@ -1,7 +1,7 @@
-import { TeamAngular, yahooToFirestore } from "../../../interfaces/ITeam";
+import { ITeamAngular, yahooToFirestore } from "../../../interfaces/ITeam";
 
 describe("clientToFirestore", () => {
-  const mockTeam: TeamAngular = {
+  const mockTeam: ITeamAngular = {
     uid: "gibberish_uid",
     game_name: "game name",
     game_code: "game code",

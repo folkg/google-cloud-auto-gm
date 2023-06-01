@@ -1,5 +1,5 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeam } from "../../common/interfaces/ITeam";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({
@@ -17,7 +17,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   test("Already optimal roster", function () {
-    const roster: ITeam = require("./testRosters/MLB/optimal.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -27,7 +27,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   test("expect sample2 to move active BN players to Roster", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample2.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample2.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -37,7 +37,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
   });
   test("expect sample3 to move Jimenez to OF, Glasnow to IL", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample3.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample3.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -48,7 +48,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     expect(rosterModification.newPlayerPositions["422.p.9616"]).toEqual("IL");
   });
   test("sample 1 should pass the isSuccessfullyOptimized test", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample1.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample1.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -69,7 +69,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
   });
   it("should move 2 starting pitchers to lineup, do nothing with bad starting batters on BN", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample4.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample4.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -87,7 +87,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     ).not.toBeDefined();
   });
   it("should move 2 starting pitchers to lineup, swap one non-starter to BN, leave other bad batters on BN", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample5.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample5.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -106,7 +106,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     ).not.toBeDefined();
   });
   it("should move unconfirmed good batters to roster in favour of bad confirmed batters", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample6.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample6.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -119,7 +119,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
   });
   it("should move non-starting SP to BN in favour of unconfirmed RP using Pitchers Array", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample7.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample7.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -142,7 +142,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should move non-starting SP to BN in favour of unconfirmed RP NOT using Pitchers Array", function () {
-    const roster: ITeam = require("./testRosters/MLB/sample7.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/sample7.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -156,7 +156,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
   });
   it("should not alarm for empty roster positions where there are no players eligible to fill unfilled positions", function () {
-    const roster: ITeam = require("./testRosters/MLB/unfilledRosterPositions.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/unfilledRosterPositions.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -169,7 +169,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
   });
   it("should not move Roster player to BN in 3-way unless they are worse than playerA", function () {
-    const roster: ITeam = require("./testRosters/MLB/bug1_higherScores.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/bug1_higherScores.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -179,7 +179,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should not move Roster player to BN in 3-way unless they are worse than playerA(2)", function () {
-    const roster: ITeam = require("./testRosters/MLB/bug2_higherScores.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/bug2_higherScores.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -189,7 +189,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should optimize IL players in 3-way swap even playerB > playerC", function () {
-    const roster: ITeam = require("./testRosters/MLB/bug3_higherScores.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/bug3_higherScores.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -203,7 +203,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should move playerB to stack in 3-way and optimize the roster", function () {
-    const roster: ITeam = require("./testRosters/MLB/bug4_higherScores.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/bug4_higherScores.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -218,7 +218,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should NOT move player to IL if they are in a pending transaction (waiver)", () => {
-    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsWIL.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsWIL.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -228,7 +228,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   xit("should move player to IL if they are only in a proposed trade", () => {
-    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsTradeWIL.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsTradeWIL.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -241,7 +241,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should NOT move player to IL if they are only in a proposed trade", () => {
-    const roster: ITeam = require("./testRosters/MLB/bug_player_pending_trade.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/bug_player_pending_trade.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -251,7 +251,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should NOT move player from IL to 'open' BN spot if there are pending added players", () => {
-    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsDiff+1.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsDiff+1.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -261,7 +261,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should move player from IL to 'open' BN spot if there are pending added players, but more empty spots", () => {
-    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsDiff+1ExtraSpot.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsDiff+1ExtraSpot.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -273,7 +273,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should move player from IL to 'open' BN spot if there are NOT pending added players", () => {
-    const roster: ITeam = require("./testRosters/MLB/pendingTransactionsDiff0.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsDiff0.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
@@ -285,7 +285,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
   });
 
   it("should move Altuve to BN and Walls to Util", () => {
-    const roster: ITeam = require("./testRosters/MLB/userRequest_1.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/userRequest_1.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();

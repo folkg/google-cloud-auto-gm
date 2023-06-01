@@ -1,5 +1,5 @@
 import { logger } from "firebase-functions";
-import { ITeam } from "../../common/interfaces/ITeam";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { Player } from "./Player";
@@ -16,14 +16,14 @@ export class LineupOptimizer {
     if (this.verbose) logger.info(...args);
   }
 
-  constructor(team: ITeam) {
+  constructor(team: ITeamOptimizer) {
     this.team = new Team(team);
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.team.editablePlayers
     );
   }
 
-  public getCurrentTeamState(): ITeam {
+  public getCurrentTeamState(): ITeamOptimizer {
     return this.team.toITeamObject();
   }
 

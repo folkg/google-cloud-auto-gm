@@ -1,5 +1,5 @@
 import { LineupChanges } from "../interfaces/LineupChanges";
-import { ITeam } from "../../common/interfaces/ITeam";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 import {
   performWeeklyLeagueTransactions,
   setUsersLineup,
@@ -46,7 +46,7 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const teamKey = "419.l.28340.t.1";
     const teams = [{ uid, team_key: teamKey, start_date: 1, end_date: 1 }];
 
-    const rosters: ITeam[] = [
+    const rosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/Daily/optimalRoster.json"),
     ];
 
@@ -73,7 +73,7 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }];
 
-    const rosters: ITeam[] = [
+    const rosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/Daily/optimalRoster.json"),
     ];
 
@@ -109,7 +109,7 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
-    const rosters: ITeam[] = [
+    const rosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/DailyDrops/noDropsRequired.json"),
       require("./testRosters/NHL/IntradayDrops/noDropsRequired.json"),
     ];
@@ -152,7 +152,7 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
-    const rosters: ITeam[] = [
+    const rosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/Daily/oneSwapRequired.json"),
       require("./testRosters/NBA/Weekly/1SwapRequired1PlayerToMoveInto1EmptyRosterSpot.json"),
     ];
@@ -202,10 +202,10 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const teams = [{ team_key: "test1" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
     ];
-    const updatedRosters: ITeam[] = [
+    const updatedRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
     ];
     const transaction1 = {
@@ -285,10 +285,10 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const teams = [{ team_key: "test1" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
-    const tomorrowRosters: ITeam[] = [
+    const tomorrowRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/DailyDrops/RefetchedRosters/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
 
@@ -355,10 +355,10 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const teams = [{ team_key: "test1" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NBA/Daily/oneDropRequiredWithOptimization.json"),
     ];
-    const tomorrowRosters: ITeam[] = [
+    const tomorrowRosters: ITeamOptimizer[] = [
       require("./testRosters/NBA/Daily/RefetchedRosters/oneDropRequiredWithOptimization.json"),
     ];
 
@@ -425,15 +425,15 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
       require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
-    const updatedRosters: ITeam[] = [
+    const updatedRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
       require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
     ];
-    const tomorrowRosters: ITeam[] = [
+    const tomorrowRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/DailyDrops/RefetchedRosters/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
 
@@ -540,7 +540,7 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScoreNoDropProp.json"),
       require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimizationNoDropProp.json"),
     ];
@@ -725,7 +725,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const teams = [{ team_key: "test1" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
     ];
     const transaction1 = {
@@ -794,7 +794,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
-    const rosters: ITeam[] = [
+    const rosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/Daily/oneSwapRequired.json"),
       require("./testRosters/NBA/Weekly/1SwapRequired1PlayerToMoveInto1EmptyRosterSpot.json"),
     ];
@@ -851,10 +851,10 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const teams = [{ team_key: "test1" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
     ];
-    const updatedRosters: ITeam[] = [
+    const updatedRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
     ];
     const transaction1 = {
@@ -924,7 +924,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const teams = [{ team_key: "test1" }];
 
     // Set up mock data
-    const initialRosters: ITeam[] = [
+    const initialRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
 

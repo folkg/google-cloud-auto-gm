@@ -13,7 +13,7 @@ import {
   initStartingPitchers,
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeam, TeamFirestore } from "../../common/interfaces/ITeam";
+import { ITeamOptimizer, ITeamFirestore } from "../../common/interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
@@ -30,7 +30,7 @@ import assert = require("assert/strict");
  */
 export async function setUsersLineup(
   uid: string,
-  firestoreTeams: TeamFirestore[]
+  firestoreTeams: ITeamFirestore[]
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -62,7 +62,7 @@ export async function setUsersLineup(
 
 export async function performWeeklyLeagueTransactions(
   uid: string,
-  firestoreTeams: TeamFirestore[]
+  firestoreTeams: ITeamFirestore[]
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -90,9 +90,9 @@ export async function performWeeklyLeagueTransactions(
 }
 
 function enrichTeamsWithFirestoreSettings(
-  yahooTeams: ITeam[],
-  firestoreTeams: TeamFirestore[]
-): ITeam[] {
+  yahooTeams: ITeamOptimizer[],
+  firestoreTeams: ITeamFirestore[]
+): ITeamOptimizer[] {
   return yahooTeams.map((yahooTeam) => {
     const firestoreTeam = firestoreTeams.find(
       (firestoreTeam) => firestoreTeam.team_key === yahooTeam.team_key
@@ -107,8 +107,8 @@ function enrichTeamsWithFirestoreSettings(
 }
 
 async function patchTeamChangesInFirestore(
-  yahooTeams: ITeam[],
-  firestoreTeams: TeamFirestore[]
+  yahooTeams: ITeamOptimizer[],
+  firestoreTeams: ITeamFirestore[]
 ): Promise<void> {
   const sharedKeys = Object.keys(firestoreTeams[0]).filter(
     (key) => key in yahooTeams[0]
@@ -122,8 +122,8 @@ async function patchTeamChangesInFirestore(
 
     const differences: { [key: string]: any } = {};
     sharedKeys.forEach((key) => {
-      const yahooValue = yahooTeam[key as keyof ITeam];
-      const firestoreValue = firestoreTeam[key as keyof TeamFirestore];
+      const yahooValue = yahooTeam[key as keyof ITeamOptimizer];
+      const firestoreValue = firestoreTeam[key as keyof ITeamFirestore];
       if (yahooValue !== firestoreValue) {
         differences[key] = yahooValue;
       }
@@ -144,10 +144,10 @@ async function patchTeamChangesInFirestore(
 }
 
 async function processTodaysLineupChanges(
-  teams: ITeam[],
+  teams: ITeamOptimizer[],
   uid: string
-): Promise<ITeam[]> {
-  const result: ITeam[] = [];
+): Promise<ITeamOptimizer[]> {
+  const result: ITeamOptimizer[] = [];
 
   const allLineupChanges: LineupChanges[] = [];
   for (const team of teams) {
@@ -183,10 +183,10 @@ async function processTodaysLineupChanges(
 }
 
 async function processTransactionsForSameDayChanges(
-  originalTeams: ITeam[],
+  originalTeams: ITeamOptimizer[],
   uid: string
-): Promise<ITeam[]> {
-  let result: ITeam[] = originalTeams;
+): Promise<ITeamOptimizer[]> {
+  let result: ITeamOptimizer[] = originalTeams;
 
   const teams = getTeamsWithSameDayTransactions(originalTeams);
   const transactions = getPlayerTransactions(teams);
@@ -205,7 +205,7 @@ async function processTransactionsForSameDayChanges(
 }
 
 async function processTransactionsForNextDayChanges(
-  originalTeams: ITeam[],
+  originalTeams: ITeamOptimizer[],
   uid: string
 ): Promise<void> {
   // check if there are any transactions required for teams with next day changes
@@ -236,7 +236,7 @@ async function processTransactionsForNextDayChanges(
   }
 }
 
-function getPlayerTransactions(teams: ITeam[]): PlayerTransaction[][] {
+function getPlayerTransactions(teams: ITeamOptimizer[]): PlayerTransaction[][] {
   const result: PlayerTransaction[][] = [];
 
   for (const team of teams) {
@@ -266,8 +266,8 @@ function getPlayerTransactions(teams: ITeam[]): PlayerTransaction[][] {
 async function refetchAndPatchTeams(
   todaysPlayerTransactions: PlayerTransaction[][],
   uid: string,
-  originalTeams: ITeam[]
-): Promise<ITeam[]> {
+  originalTeams: ITeamOptimizer[]
+): Promise<ITeamOptimizer[]> {
   const result = structuredClone(originalTeams);
 
   const updatedTeamKeys = getTeamKeysFromTransactions(todaysPlayerTransactions);
@@ -275,7 +275,8 @@ async function refetchAndPatchTeams(
 
   updatedTeams.forEach((updatedTeam) => {
     const originalIdx = result.findIndex(
-      (originalTeam: ITeam) => originalTeam.team_key === updatedTeam.team_key
+      (originalTeam: ITeamOptimizer) =>
+        originalTeam.team_key === updatedTeam.team_key
     );
     result[originalIdx] = updatedTeam;
   });
@@ -308,7 +309,9 @@ async function postAllTransactions(
   // const results = await Promise.allSettled(allTransactionsPromises);
 }
 
-function getTeamsWithSameDayTransactions(teams: ITeam[]): ITeam[] {
+function getTeamsWithSameDayTransactions(
+  teams: ITeamOptimizer[]
+): ITeamOptimizer[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping) &&
@@ -317,7 +320,9 @@ function getTeamsWithSameDayTransactions(teams: ITeam[]): ITeam[] {
   );
 }
 
-function getTeamsForNextDayTransactions(teams: ITeam[]): ITeam[] {
+function getTeamsForNextDayTransactions(
+  teams: ITeamOptimizer[]
+): ITeamOptimizer[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping) &&
@@ -352,7 +357,7 @@ function tomorrowsDateAsString(): string {
  * The tolerance is used to allow for some leeway in the timeline
  * 
  *
- * @param {ITeam} {
+ * @param {ITeamOptimizer} {
   start_date,
   end_date,
   current_weekly_adds,
@@ -369,7 +374,7 @@ function isTransactionPaceBehindTimeline({
   max_weekly_adds: maxWeeklyAdds,
   current_season_adds: currentSeasonAdds,
   max_season_adds: maxSeasonAdds,
-}: ITeam): boolean {
+}: ITeamOptimizer): boolean {
   const TOLERANCE = 0.1;
 
   // TODO: Alternatively, current_weekly_adds <= weekProgress * max_weekly_adds + TOLERANCE * (max_weekly_adds - current_weekly_adds)

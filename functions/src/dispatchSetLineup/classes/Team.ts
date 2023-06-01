@@ -1,6 +1,6 @@
 import { getChild, getNow } from "../../common/services/utilities.service";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { ITeam } from "../../common/interfaces/ITeam";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
 import {
   playerStartScoreFunctionFactory,
@@ -10,14 +10,14 @@ import { Player } from "./Player";
 import assert = require("assert/strict");
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
-export interface Team extends ITeam {
+export interface Team extends ITeamOptimizer {
   players: Player[];
 }
 export class Team implements Team {
   private _editablePlayers: Player[];
   private _pendingAddDropDifferential = 0;
 
-  constructor(team: ITeam) {
+  constructor(team: ITeamOptimizer) {
     const teamCopy = structuredClone(team) as Team;
     teamCopy.players = teamCopy.players.map((player) => new Player(player));
     Object.assign(this, teamCopy);
@@ -151,11 +151,11 @@ export class Team implements Team {
    * Returns a deep clone of the team as an ITeam object
    *
    * @public
-   * @return {ITeam}
+   * @return {ITeamOptimizer}
    */
-  public toITeamObject(): ITeam {
+  public toITeamObject(): ITeamOptimizer {
     const { _editablePlayers, ...team } = this;
-    return structuredClone(team) as ITeam;
+    return structuredClone(team) as ITeamOptimizer;
   }
 
   /**

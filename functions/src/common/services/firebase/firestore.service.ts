@@ -6,8 +6,8 @@ import {
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import {
-  TeamAngular,
-  TeamFirestore,
+  ITeamAngular,
+  ITeamFirestore,
   yahooToFirestore,
 } from "../../interfaces/ITeam";
 import { ReturnCredential, Token } from "../../interfaces/credential";
@@ -120,11 +120,11 @@ export async function flagRefreshToken(uid: string) {
  *
  * @export
  * @param {string} uid - The user id
- * @return {Promise<TeamFirestore[]>} - An array of teams
+ * @return {Promise<ITeamFirestore[]>} - An array of teams
  */
 export async function fetchTeamsFirestore(
   uid: string
-): Promise<TeamFirestore[]> {
+): Promise<ITeamFirestore[]> {
   try {
     // get all teams for the user that have not ended
     const teamsRef = db.collection(`users/${uid}/teams`);
@@ -133,7 +133,7 @@ export async function fetchTeamsFirestore(
       .get();
 
     return teamsSnapshot.docs.map(
-      (doc) => ({ team_key: doc.id, ...doc.data() } as TeamFirestore)
+      (doc) => ({ team_key: doc.id, ...doc.data() } as ITeamFirestore)
     );
   } catch (error) {
     logger.error(`Error in fetchTeamsFirestore for User: ${uid}`, error);
@@ -207,13 +207,13 @@ export async function getTomorrowsActiveWeeklyTeams() {
  *
  * @export
  * @async
- * @param {TeamAngular[]} missingTeams - Teams that are in Yahoo but not in Firestore
- * @param {TeamFirestore[]} extraTeams - Teams that are in Firestore but not in Yahoo
+ * @param {ITeamAngular[]} missingTeams - Teams that are in Yahoo but not in Firestore
+ * @param {ITeamFirestore[]} extraTeams - Teams that are in Firestore but not in Yahoo
  * @param {string} uid - The user id
  */
 export async function syncTeamsInFirebase(
-  missingTeams: TeamAngular[],
-  extraTeams: TeamFirestore[],
+  missingTeams: ITeamAngular[],
+  extraTeams: ITeamFirestore[],
   uid: string
 ) {
   const batch = db.batch();
@@ -223,7 +223,7 @@ export async function syncTeamsInFirebase(
     if (mTeam.end_date < Date.now()) continue;
 
     mTeam.uid = uid; // uid is not present in TeamAngular
-    const data: TeamFirestore = yahooToFirestore(mTeam);
+    const data: ITeamFirestore = yahooToFirestore(mTeam);
 
     const docId = String(mTeam.team_key);
     const docRef = db.collection(collectionPath).doc(docId);
@@ -269,7 +269,7 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
 export async function updateTeamFirestore(
   uid: string,
   teamKey: string,
-  data: Partial<TeamFirestore>
+  data: Partial<ITeamFirestore>
 ) {
   const teamRef = db.collection(`users/${uid}/teams`).doc(teamKey);
   try {

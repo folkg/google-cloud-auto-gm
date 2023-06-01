@@ -4,7 +4,11 @@ import {
   getPacificStartOfDay,
   parseStringToInt,
 } from "../../common/services/utilities.service";
-import { GamesPlayed, ITeam, InningsPitched } from "../../common/interfaces/ITeam";
+import {
+  GamesPlayed,
+  ITeamOptimizer,
+  InningsPitched,
+} from "../../common/interfaces/ITeam";
 import { IPlayer, PlayerRanks } from "../../common/interfaces/IPlayer";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
 
@@ -16,14 +20,14 @@ import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.serv
  * @param {string[]} teams The team keys
  * @param {string} uid The firebase uid of the user
  * @param {string} [date=""] The date to get the roster for. If not provided, the default "" is today's date
- * @return {Promise<ITeam[]>} The roster objects
+ * @return {Promise<ITeamOptimizer[]>} The roster objects
  */
 export async function fetchRostersFromYahoo(
   teams: string[],
   uid: string,
   date = ""
-): Promise<ITeam[]> {
-  const result: ITeam[] = [];
+): Promise<ITeamOptimizer[]> {
+  const result: ITeamOptimizer[] = [];
 
   const yahooJSON = await getRostersByTeamID(teams, uid, date);
   const gamesJSON = getChild(yahooJSON.fantasy_content.users[0].user, "games");
@@ -58,7 +62,7 @@ export async function fetchRostersFromYahoo(
       const inningsPitchedArray = getInningsPitchedArray(usersTeam);
 
       // TODO: Could add max/current adds condtionally as well
-      const rosterObject: ITeam = {
+      const rosterObject: ITeamOptimizer = {
         team_key: getChild(usersTeam[0], "team_key"),
         players: players,
         coverage_type: coverageType,

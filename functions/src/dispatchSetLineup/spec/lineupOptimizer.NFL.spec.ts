@@ -1,5 +1,5 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeam } from "../../common/interfaces/ITeam";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({
@@ -13,7 +13,7 @@ xdescribe("Test LineupOptimizer Class NFL", function () {
   // });
 
   it("Optimal Lineup", async function () {
-    const roster: ITeam = require("./testRosters/NFL/optimalRoster.json");
+    const roster: ITeamOptimizer = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();

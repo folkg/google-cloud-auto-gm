@@ -1,5 +1,5 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeam } from "../../common/interfaces/ITeam";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 
 // mock firebase-admin
 jest.mock("firebase-admin", () => ({
@@ -10,7 +10,7 @@ jest.mock("firebase-admin", () => ({
 xdescribe("Test LineupOptimizer Class NBA Daily", function () {
   // NBA should be very similar to NHL, so we'll just test a few things
   it("One healthy on IL, one IL on IL, one injured on roster", async function () {
-    const roster: ITeam = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");
+    const roster: ITeamOptimizer = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
