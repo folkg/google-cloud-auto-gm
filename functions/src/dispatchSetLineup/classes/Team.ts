@@ -2,10 +2,7 @@ import { getChild, getNow } from "../../common/services/utilities.service";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
-import {
-  playerStartScoreFunctionFactory,
-  scoreFunctionMaxGamesPlayed,
-} from "../services/playerStartScoreFunctions.service";
+import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
 import assert = require("assert/strict");
 

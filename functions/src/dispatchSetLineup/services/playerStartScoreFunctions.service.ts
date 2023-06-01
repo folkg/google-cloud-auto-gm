@@ -28,8 +28,7 @@ type FactoryArgs = {
  *
  * @export
  * @async
- * @param {string} gameCode - The game code for the league
- * @param {string} weeklyDeadline - The weekly deadline for the league
+ * @param {FactoryArgs} args - The arguments to the factory function
  * @return {()} - A function that takes a player and returns a score.
  */
 export function playerStartScoreFunctionFactory(args: FactoryArgs) {
