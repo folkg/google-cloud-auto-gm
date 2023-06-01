@@ -278,6 +278,7 @@ export class LineupOptimizer {
       return undefined;
 
     for (const playerB of eligibleTargetPlayers) {
+      if (playerA.compareStartScore(playerB) === 0) continue;
       if (playerA.isEligibleAndHigherScoreThan(playerB)) {
         this.swapPlayers(playerA, playerB);
         return playerB;
@@ -635,7 +636,10 @@ export class LineupOptimizer {
           reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)
         )
       )
-      .map((player) => player.player_key);
+      .map((player) => ({
+        player_key: player.player_key,
+        start_score: player.start_score,
+      }));
 
     if (suboptimalBNPlayers.length > 0) {
       const suboptimalRosterPlayers = this.team.startingPlayers
@@ -644,7 +648,10 @@ export class LineupOptimizer {
             reservePlayer.isEligibleAndHigherScoreThan(startingPlayer)
           )
         )
-        .map((player) => player.player_key);
+        .map((player) => ({
+          player_key: player.player_key,
+          start_score: player.start_score,
+        }));
 
       logger.error(
         `Suboptimal Lineup: reservePlayers have higher scores than startingPlayers for team ${this.team.team_key}`,

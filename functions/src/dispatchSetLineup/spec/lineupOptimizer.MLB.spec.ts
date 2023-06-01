@@ -296,4 +296,13 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     });
     expect(isSuccessfullyOptimized).toEqual(true);
   });
+
+  it("Should not be an infinte loop and timeout", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/infinite_loop_equal_score.json");
+    const lo = new LineupOptimizer(roster);
+    lo.optimizeStartingLineup();
+    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+
+    expect(isSuccessfullyOptimized).toEqual(true);
+  });
 });

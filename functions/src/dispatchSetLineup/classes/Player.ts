@@ -27,7 +27,21 @@ export class Player implements Player {
   }
 
   compareStartScore(playerB: Player): number {
-    return this.start_score - playerB.start_score;
+    return this.compareScores(this.start_score, playerB.start_score);
+  }
+
+  compareOwnershipScore(playerB: Player): number {
+    return this.compareScores(this.ownership_score, playerB.ownership_score);
+  }
+
+  private compareScores(num1: number, num2: number) {
+    const FLOAT_EQUALITY_TOLERANCE = 1e-12;
+    const scoreDiff = num1 - num2;
+    if (Math.abs(scoreDiff) < FLOAT_EQUALITY_TOLERANCE) {
+      return 0;
+    } else {
+      return scoreDiff;
+    }
   }
 
   isInactiveList(): boolean {
@@ -69,6 +83,10 @@ export class Player implements Player {
     return HEALTHY_STATUS_LIST.includes(this.injury_status);
   }
 
+  hasSameScoreAs(playerB: Player) {
+    return this.compareStartScore(playerB) === 0;
+  }
+
   isEligibleToSwapWith(playerB: Player): boolean {
     return (
       playerB !== this &&
@@ -80,8 +98,7 @@ export class Player implements Player {
 
   isEligibleAndHigherScoreThan(playerB: Player): boolean {
     return (
-      this.start_score > playerB.start_score &&
-      this.isEligibleToSwapWith(playerB)
+      this.compareStartScore(playerB) > 0 && this.isEligibleToSwapWith(playerB)
     );
   }
 
@@ -102,14 +119,12 @@ export class Player implements Player {
   }
 
   hasLowerStartScoreThanAll(playersList: Player[]): boolean {
-    return playersList.every(
-      (player) => player.start_score >= this.start_score
-    );
+    return playersList.every((player) => this.compareStartScore(player) <= 0);
   }
 
   hasLowerOwnershipScoreThanAll(playersList: Player[]): boolean {
     return playersList.every(
-      (player) => player.ownership_score >= this.ownership_score
+      (player) => this.compareOwnershipScore(player) <= 0
     );
   }
 
