@@ -35,7 +35,7 @@ export const dispatchsetlineup = onTaskDispatched(
     }
 
     try {
-      return await setUsersLineup(uid, teams);
+      await setUsersLineup(uid, teams);
     } catch (error) {
       if (error instanceof RevokedRefreshTokenError) {
         logger.log(error);
