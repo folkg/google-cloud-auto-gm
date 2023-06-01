@@ -13,6 +13,15 @@ const INJURY_FACTOR = 1e-3; // 0.001
 const NOT_STARTING_FACTOR = 1e-2; // 0.01
 const LTIR_FACTOR = 1e-1; // 0.1 // extra penalty on top of INJURY_FACTOR
 const STARTING_FACTOR = 100;
+
+type FactoryArgs = {
+  gameCode: string;
+  weeklyDeadline: string;
+  seasonTimeProgress: number;
+  numPlayersInLeague: number;
+  gamesPlayed?: GamesPlayed[];
+  inningsPitched?: InningsPitched;
+};
 /**
  * Returns the proper score function used to compare players on the same
  * fantasy roster in order to decide who to start and who to sit.
@@ -23,11 +32,16 @@ const STARTING_FACTOR = 100;
  * @param {string} weeklyDeadline - The weekly deadline for the league
  * @return {()} - A function that takes a player and returns a score.
  */
-export function playerStartScoreFunctionFactory(
-  gameCode: string,
-  weeklyDeadline: string
-) {
-  if (gameCode === "nfl") {
+export function playerStartScoreFunctionFactory(args: FactoryArgs) {
+  const { gameCode, weeklyDeadline, gamesPlayed } = args;
+  if (gamesPlayed) {
+    return scoreFunctionMaxGamesPlayed(
+      args.seasonTimeProgress,
+      args.numPlayersInLeague,
+      gamesPlayed,
+      args.inningsPitched
+    );
+  } else if (gameCode === "nfl") {
     return scoreFunctionNFL();
   } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
     // weeklyDeadline will be something like "1" to represent Monday

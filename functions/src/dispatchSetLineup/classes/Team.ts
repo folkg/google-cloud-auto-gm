@@ -26,23 +26,15 @@ export class Team implements Team {
 
     const numPlayersInLeague = this.num_teams * this.numStandardRosterSpots;
 
-    let playerStartScoreFunction: (player: Player) => number;
-    if (this.games_played === undefined) {
-      playerStartScoreFunction = playerStartScoreFunctionFactory(
-        this.game_code,
-        this.weekly_deadline
-      );
-    } else {
-      this.artificiallyReduceRosterSpots();
-      const seasonTimeProgress =
-        (getNow() - this.start_date) / (this.end_date - this.start_date);
-      playerStartScoreFunction = scoreFunctionMaxGamesPlayed(
-        seasonTimeProgress,
-        numPlayersInLeague,
-        this.games_played,
-        this.innings_pitched
-      );
-    }
+    const playerStartScoreFunction = playerStartScoreFunctionFactory({
+      gameCode: this.game_code,
+      weeklyDeadline: this.weekly_deadline,
+      numPlayersInLeague,
+      seasonTimeProgress:
+        (getNow() - this.start_date) / (this.end_date - this.start_date),
+      gamesPlayed: this.games_played,
+      inningsPitched: this.innings_pitched,
+    });
 
     this.players.forEach((player) => {
       player.start_score = playerStartScoreFunction(player);
@@ -53,6 +45,9 @@ export class Team implements Team {
       player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
+    if (this.games_played) {
+      this.artificiallyReduceRosterSpots();
+    }
     this.processPendingTransactions();
     // console.log(
     //   this._allPlayers
