@@ -9,7 +9,7 @@ export class LineupOptimizer {
   private team: Team;
   private originalPlayerPositions: { [key: string]: string };
   private deltaPlayerPositions: { [key: string]: string } = {};
-  private playerTransactions: PlayerTransaction[] = [];
+  private _playerTransactions: PlayerTransaction[] = [];
 
   public verbose = false;
   private logInfo(...args: any[]) {
@@ -80,7 +80,7 @@ export class LineupOptimizer {
   private resolveOverfilledPositions(): void {
     const overfilledPositions = this.team.overfilledPositions;
     for (const position of overfilledPositions) {
-      // this.team.unfilledPositionCounter is recalculated on each call
+      // this.team.unfilledPositionCounter is recalculated on each call based on changes within loop
       while (this.team.unfilledPositionCounter?.[position] < 0) {
         const worstPlayerAtPosition = Team.sortAscendingByScore(
           this.team.getPlayersAt(position)
@@ -90,19 +90,36 @@ export class LineupOptimizer {
     }
   }
 
-  public findDropPlayerTransactions(): PlayerTransaction[] {
+  public get playerTransactions(): PlayerTransaction[] {
+    return this._playerTransactions.slice();
+  }
+
+  public findDropPlayerTransactions(): void {
     // find drops by attempting to move healthy players off IL unsuccessfully
     this.resolveHealthyPlayersOnIL();
     // Separate functions for add players and add/drop players
     // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
-    // TODO: Call addNewPlayersFromFA() if there are empty roster spots now freed by the above
     // Any players added by the above will be available for the next round of swaps
     // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
-    return this.playerTransactions;
   }
 
-  public findAddPlayerTransactions(): PlayerTransaction[] {
-    throw new Error("Method not implemented.");
+  public findAddPlayerTransactions(): void {
+    const numEmptyRosterSpots = this.team.numEmptyRosterSpots;
+    // free up roster spots on a loop with this.openOneRosterSpot() until false is returned
+    if (numEmptyRosterSpots === 0) return;
+    // Build the API call:
+    // check if adding from waivers are allowerd (has to be on contrinous waivers). Use "FA" only if waivers not allowed.
+    // Don't allow adding injured players to roster (too complicated with rules about whether leagues can add directly to IL)
+    // check if there are any positions that have no players at all, prioritize those positions. Determine how many open roster spots and how many positions to consider.
+
+    // Fetch players from API
+
+    // do we want to look at position scores/needs at all to factor score? Or just add the best available player?
+    // sort players by score
+
+    // add top x number of players to this._playerTransactions
+    // TODO: When to send email for confirmation, if we have that setting on?
+    // TODO: Compare the remaining players for add/drop if all empty spots are filled?
   }
 
   private resolveHealthyPlayersOnIL(): void {
@@ -268,7 +285,9 @@ export class LineupOptimizer {
         // if a player was swapped back into the reserve list, we need to
         // re-evaluate the player we just swapped to see if it can be moved back
         reservePlayers.push(playerMovedToReserve);
-      } else this.logInfo(`No swaps for playerA: ${playerA.player_name}`);
+      } else {
+        this.logInfo(`No swaps for playerA: ${playerA.player_name}`);
+      }
     }
   }
 
@@ -431,7 +450,7 @@ export class LineupOptimizer {
         },
       ],
     };
-    this.playerTransactions.push(pt);
+    this._playerTransactions.push(pt);
     this.logInfo(
       `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
     );
@@ -462,7 +481,7 @@ export class LineupOptimizer {
   }
 
   private getAlreadyDroppedPlayers() {
-    return this.playerTransactions
+    return this._playerTransactions
       .flatMap((transaction) => transaction.players)
       .filter((player) => player.transactionType === "drop")
       .map((player) => player.playerKey);

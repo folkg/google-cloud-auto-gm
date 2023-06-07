@@ -244,13 +244,15 @@ function getPlayerTransactions(teams: ITeamOptimizer[]): PlayerTransaction[][] {
     const lo = new LineupOptimizer(team);
 
     if (team.allow_dropping) {
-      playerTransactions = lo.findDropPlayerTransactions();
+      lo.findDropPlayerTransactions();
+      playerTransactions = lo.playerTransactions;
     }
 
     if (isTransactionPaceBehindTimeline(team)) {
       if (team.allow_adding) {
         // TODO: This method needs to actually be implemented. I'm not sure if the lo will be responsible for this or not
-        playerTransactions.push(...lo.findAddPlayerTransactions());
+        lo.findAddPlayerTransactions();
+        playerTransactions = lo.playerTransactions;
       }
       // TODO: Can add add/dropping here as well
     }
