@@ -23,6 +23,7 @@ module.exports = {
     "/coverage/**/*", // Ignore coverage files.
     "jest.config.js",
     "**/*.spec.ts",
+    "vite.config.ts"
   ],
   plugins: ["@typescript-eslint", "import"],
   rules: {
