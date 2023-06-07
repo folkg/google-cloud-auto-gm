@@ -107,7 +107,7 @@ export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
   };
 
   return {
-    uid: "",
+    uid: team.uid ?? "",
     is_subscribed: true,
     is_setting_lineups: false,
     last_updated: -1,

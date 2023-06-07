@@ -2,7 +2,7 @@ import { ITeamAngular, yahooToFirestore } from "../../../interfaces/ITeam";
 
 describe("clientToFirestore", () => {
   const mockTeam: ITeamAngular = {
-    uid: "gibberish_uid",
+    uid: "test_uid",
     game_name: "game name",
     game_code: "game code",
     game_season: "game season",
@@ -39,7 +39,7 @@ describe("clientToFirestore", () => {
   };
 
   const expectedOutput = {
-    uid: "",
+    uid: mockTeam.uid,
     is_subscribed: true,
     is_setting_lineups: false,
     last_updated: -1,
