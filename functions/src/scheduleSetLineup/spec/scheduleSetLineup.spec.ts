@@ -1,54 +1,57 @@
 import { scheduleSetLineup } from "../services/scheduleSetLineup.service";
 import { logger } from "firebase-functions";
+import { vi, describe, it, expect, afterEach, beforeEach } from "vitest";
+import * as schedulingService from "../services/scheduling.service";
+import * as firestoreService from "../../common/services/firebase/firestore.service";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
 // set up mocks
-const mockLeaguesToSetLineupsFor = jest.spyOn(
-  require("../services/scheduling.service"),
+const mockLeaguesToSetLineupsFor = vi.spyOn(
+  schedulingService,
   "leaguesToSetLineupsFor"
 );
 
 const mockQueue = {
-  enqueue: jest.fn(() => Promise.resolve()),
+  enqueue: vi.fn(() => Promise.resolve()),
 };
-const mockFunctionUrl = jest.fn(() => Promise.resolve("https://example.com"));
-jest.mock("../../common/services/utilities.service", () => ({
-  getFunctionUrl: jest.fn(() => mockFunctionUrl),
-  getCurrentPacificHour: jest.fn(() => 1),
+const mockFunctionUrl = vi.fn(() => Promise.resolve("https://example.com"));
+vi.mock("../../common/services/utilities.service", () => ({
+  getFunctionUrl: vi.fn(() => mockFunctionUrl),
+  getCurrentPacificHour: vi.fn(() => 1),
 }));
 
 // mock the TaskQueue constructor
-jest.mock("firebase-admin/functions", () => {
+vi.mock("firebase-admin/functions", () => {
   return {
-    TaskQueue: jest.fn().mockImplementation(() => {
+    TaskQueue: vi.fn().mockImplementation(() => {
       return {
-        enqueue: jest.fn(),
+        enqueue: vi.fn(),
       };
     }),
-    getFunctions: jest.fn(() => ({
-      taskQueue: jest.fn(() => mockQueue),
+    getFunctions: vi.fn(() => ({
+      taskQueue: vi.fn(() => mockQueue),
     })),
   };
 });
 
-describe("scheduleSetLineup", () => {
-  beforeAll(() => {});
+describe.concurrent("scheduleSetLineup", () => {
   beforeEach(() => {
     mockLeaguesToSetLineupsFor.mockReturnValue(
       Promise.resolve(["nhl", "mlb", "nba"])
     );
   });
+
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  const mockGetActiveTeamsForLeagues = jest.spyOn(
-    require("../../common/services/firebase/firestore.service"),
+  const mockGetActiveTeamsForLeagues = vi.spyOn(
+    firestoreService,
     "getActiveTeamsForLeagues"
   );
 
@@ -84,7 +87,7 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot)
+      Promise.resolve(teamsSnapshot as any)
     );
 
     await scheduleSetLineup();
@@ -108,7 +111,7 @@ describe("scheduleSetLineup", () => {
     );
   });
 
-  xit("should fetch starting players for NHL and MLB", async () => {
+  it.skip("should fetch starting players for NHL and MLB", async () => {
     const teams = [
       {
         uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1",
@@ -134,10 +137,10 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
     console.log(JSON.stringify(teamsSnapshot.docs.map((t: any) => t.data())));
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot)
+      Promise.resolve(teamsSnapshot as any)
     );
 
-    const spyFetchStartingPlayers = jest
+    const spyFetchStartingPlayers = vi
       .spyOn(
         require("../../common/services/yahooAPI/yahooStartingPlayer.service"),
         "fetchStartingPlayers"
@@ -177,7 +180,7 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot)
+      Promise.resolve(teamsSnapshot as any)
     );
 
     await scheduleSetLineup();
@@ -195,7 +198,7 @@ describe("scheduleSetLineup", () => {
 
   it("should not execute if there are no leagues", async () => {
     mockLeaguesToSetLineupsFor.mockReturnValue(Promise.resolve([]));
-    const logSpy = jest.spyOn(logger, "log");
+    const logSpy = vi.spyOn(logger, "log");
 
     await scheduleSetLineup();
 
@@ -204,8 +207,8 @@ describe("scheduleSetLineup", () => {
   });
 
   it("should not execute if there are no active users / teams", async () => {
-    mockGetActiveTeamsForLeagues.mockReturnValue(Promise.resolve([]));
-    const logSpy = jest.spyOn(logger, "log");
+    mockGetActiveTeamsForLeagues.mockReturnValue(Promise.resolve([] as any));
+    const logSpy = vi.spyOn(logger, "log");
 
     await scheduleSetLineup();
 

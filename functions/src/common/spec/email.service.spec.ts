@@ -2,7 +2,9 @@ import {
   sendFeedbackEmail,
   sendUserEmail,
 } from "../services/email/email.service";
-jest.mock("firebase-admin", () => ({
+import { vi, describe, it, expect, afterEach } from "vitest";
+
+vi.mock("firebase-admin", () => ({
   initializeApp: () => {},
   auth: () => ({
     getUser: () => ({
@@ -12,8 +14,8 @@ jest.mock("firebase-admin", () => ({
   }),
 }));
 
-xdescribe("Integration test EmailService", () => {
-  xit("should actually send email via SendGrid", async () => {
+describe.skip("Integration test EmailService", () => {
+  it("should actually send email via SendGrid", async () => {
     const result = await sendFeedbackEmail(
       "test@email.com",
       "Bug Report",
@@ -23,7 +25,7 @@ xdescribe("Integration test EmailService", () => {
     expect(result).toBeTruthy();
   });
 
-  xit("should send an error email via SendGrid", async () => {
+  it("should send an error email via SendGrid", async () => {
     const uid = "12345";
     const result = await sendUserEmail(
       uid,

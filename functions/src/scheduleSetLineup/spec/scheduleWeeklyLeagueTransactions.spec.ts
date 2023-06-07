@@ -1,41 +1,44 @@
 import { logger } from "firebase-functions";
 import { scheduleWeeklyLeagueTransactions } from "../services/scheduleWeeklyLeagueTansactions.service";
+import * as firestoreService from "../../common/services/firebase/firestore.service";
+import { vi, describe, it, expect, afterEach } from "vitest";
+import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
 const mockQueue = {
-  enqueue: jest.fn(() => Promise.resolve()),
+  enqueue: vi.fn(() => Promise.resolve()),
 };
-const mockFunctionUrl = jest.fn(() => Promise.resolve("https://example.com"));
-jest.mock("../../common/services/utilities.service", () => ({
-  getFunctionUrl: jest.fn(() => mockFunctionUrl),
+const mockFunctionUrl = vi.fn(() => Promise.resolve("https://example.com"));
+vi.mock("../../common/services/utilities.service", () => ({
+  getFunctionUrl: vi.fn(() => mockFunctionUrl),
 }));
 
 // mock the TaskQueue constructor
-jest.mock("firebase-admin/functions", () => {
+vi.mock("firebase-admin/functions", () => {
   return {
-    TaskQueue: jest.fn().mockImplementation(() => {
+    TaskQueue: vi.fn().mockImplementation(() => {
       return {
-        enqueue: jest.fn(),
+        enqueue: vi.fn(),
       };
     }),
-    getFunctions: jest.fn(() => ({
-      taskQueue: jest.fn(() => mockQueue),
+    getFunctions: vi.fn(() => ({
+      taskQueue: vi.fn(() => mockQueue),
     })),
   };
 });
 
-describe("scheduleWeeklyLeagueTransactions", () => {
+describe.concurrent("scheduleWeeklyLeagueTransactions", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  const mockGetActiveWeeklyTeams = jest.spyOn(
-    require("../../common/services/firebase/firestore.service"),
+  const mockGetActiveWeeklyTeams = vi.spyOn(
+    firestoreService,
     "getTomorrowsActiveWeeklyTeams"
   );
 
@@ -70,7 +73,9 @@ describe("scheduleWeeklyLeagueTransactions", () => {
     // mock the querySnapshot object
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
-    mockGetActiveWeeklyTeams.mockReturnValue(Promise.resolve(teamsSnapshot));
+    mockGetActiveWeeklyTeams.mockReturnValue(
+      Promise.resolve(teamsSnapshot as unknown as QuerySnapshot<DocumentData>)
+    );
 
     await scheduleWeeklyLeagueTransactions();
 
@@ -94,8 +99,10 @@ describe("scheduleWeeklyLeagueTransactions", () => {
   });
 
   it("should not execute if there are no active users / teams", async () => {
-    mockGetActiveWeeklyTeams.mockReturnValue(Promise.resolve([]));
-    const logSpy = jest.spyOn(logger, "log");
+    mockGetActiveWeeklyTeams.mockReturnValue(
+      Promise.resolve({ docs: [] } as unknown as QuerySnapshot<DocumentData>)
+    );
+    const logSpy = vi.spyOn(logger, "log");
 
     await scheduleWeeklyLeagueTransactions();
 

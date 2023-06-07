@@ -1,12 +1,15 @@
 import { fetchStartingPlayers } from "../yahooStartingPlayer.service";
+import * as firestoreService from "../../firebase/firestore.service";
+import * as yahooAPI from "../../yahooAPI/yahooAPI.service";
+import { vi, describe, test, expect, afterEach } from "vitest";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
-describe("Test setStartingPlayers()", function () {
+describe.concurrent("Test setStartingPlayers()", function () {
   const intradayTeamsObject = {
     docs: [
       {
@@ -54,22 +57,21 @@ describe("Test setStartingPlayers()", function () {
   ];
   const startingPlayersObject = require("./startingPlayersObject.json");
 
-  const firestoreService = require("../../firebase/firestore.service");
-  const spyGetIntradayTeams = jest.spyOn(firestoreService, "getIntradayTeams");
-  const spyStoreStartingPlayersInFirestore = jest.spyOn(
+  const spyGetIntradayTeams = vi.spyOn(firestoreService, "getIntradayTeams");
+  const spyStoreStartingPlayersInFirestore = vi.spyOn(
     firestoreService,
     "storeStartingPlayersInFirestore"
   );
 
   spyGetIntradayTeams.mockImplementation(() =>
-    Promise.resolve(intradayTeamsObject)
+    Promise.resolve(intradayTeamsObject as any)
   );
   spyStoreStartingPlayersInFirestore.mockImplementation(() =>
     Promise.resolve()
   );
-  jest
-    .spyOn(require("../../yahooAPI/yahooAPI.service"), "getStartingPlayers")
-    .mockImplementation(() => Promise.resolve(startingPlayersObject));
+  vi.spyOn(yahooAPI, "getStartingPlayers").mockImplementation(() =>
+    Promise.resolve(startingPlayersObject)
+  );
 
   afterEach(() => {
     // restore the spy created with spyOn

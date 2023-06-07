@@ -3,8 +3,9 @@ import {
   getPacificStartOfDay,
   getPacificTimeDateString,
 } from "../services/utilities.service";
+import { describe, test, expect } from "vitest";
 
-describe("Utilities test", function () {
+describe.concurrent("Utilities test", function () {
   test("single digit month, day ", function () {
     const date = new Date(2020, 0, 3, 1, 1, 1);
     const result = getPacificTimeDateString(date);

@@ -1,13 +1,14 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam";
+import { vi, describe, it, expect } from "vitest";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
-xdescribe("Test LineupOptimizer Class NBA Daily", function () {
+describe("Test LineupOptimizer Class NBA Daily", function () {
   // NBA should be very similar to NHL, so we'll just test a few things
   it("One healthy on IL, one IL on IL, one injured on roster", async function () {
     const roster: ITeamOptimizer = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");

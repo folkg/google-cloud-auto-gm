@@ -1,17 +1,18 @@
 import { fetchRostersFromYahoo } from "../services/yahooLineupBuilder.service";
+import * as yahooAPIService from "../../common/services/yahooAPI/yahooAPI.service";
+import { vi, describe, test, afterEach, expect } from "vitest";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
 // To mock the result from yahooAPI getRostersByTeamID()
-const yahooAPIService = require("../../common/services/yahooAPI/yahooAPI.service");
-describe("Test fetchRostersFromYahoo", function () {
+describe.concurrent("Test fetchRostersFromYahoo", function () {
   afterEach(() => {
     // restore the spy created with spyOn
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   test("Elite League roster", async function () {
@@ -21,9 +22,7 @@ describe("Test fetchRostersFromYahoo", function () {
     const expected = require("./testYahooLineupJSON/output/419.l.28340.t.1.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
@@ -37,9 +36,7 @@ describe("Test fetchRostersFromYahoo", function () {
     const expected = require("./testYahooLineupJSON/output/419.l.19947.t.6.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
@@ -52,9 +49,7 @@ describe("Test fetchRostersFromYahoo", function () {
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/NBAWeeklyNotEditable.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
@@ -68,9 +63,7 @@ describe("Test fetchRostersFromYahoo", function () {
     const expected = require("./testYahooLineupJSON/output/NBAWeekly.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
@@ -89,9 +82,7 @@ describe("Test fetchRostersFromYahoo", function () {
     const expected = require("./testYahooLineupJSON/output/2NHL&1NBA.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
     // const fs = require("fs");
@@ -110,9 +101,7 @@ describe("Test fetchRostersFromYahoo", function () {
     const expected = require("./testYahooLineupJSON/output/MLB.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
     // const fs = require("fs");
@@ -131,9 +120,7 @@ describe("Test fetchRostersFromYahoo", function () {
     const expected = require("./testYahooLineupJSON/output/MLBpendingTransactions.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
     // const fs = require("fs");
@@ -145,16 +132,14 @@ describe("Test fetchRostersFromYahoo", function () {
     expect(result).toEqual(expected);
   });
 
-  xtest("lazy utility to convert a JSON to an ITeam", async function () {
+  test.skip("lazy utility to convert a JSON to an ITeam", async function () {
     const teams = ["test"];
     const uid = "test";
     const yahooJSON = require("?");
     // const expected = require("./testYahooLineupJSON/output/MLBpendingTransactions.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
-    jest
-      .spyOn(yahooAPIService, "getRostersByTeamID")
-      .mockReturnValue(yahooJSON);
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
     // const fs = require("fs");

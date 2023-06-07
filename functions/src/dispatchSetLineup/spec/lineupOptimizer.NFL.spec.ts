@@ -1,18 +1,15 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam";
+import { vi, describe, test, it, expect } from "vitest";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
-xdescribe("Test LineupOptimizer Class NFL", function () {
-  // beforeEach(() => {
-  //   jest.resetModules();
-  // });
-
-  it("Optimal Lineup", async function () {
+describe("Test LineupOptimizer Class NFL", function () {
+  it.todo("Optimal Lineup", async function () {
     const roster: ITeamOptimizer = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();

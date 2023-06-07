@@ -1,14 +1,15 @@
 // Import the necessary dependencies and modules
 import { loadYahooAccessToken } from "../firestore.service";
 import { RevokedRefreshTokenError } from "../errors";
+import { vi, describe, it, expect } from "vitest";
 
 // Mock the necessary dependencies
-jest.mock("firebase-admin", () => {
-  const firestore = jest.fn(() => ({
-    collection: jest.fn(() => ({
-      doc: jest.fn(() => ({
-        get: jest.fn().mockResolvedValue({
-          data: jest.fn(() => ({
+vi.mock("firebase-admin", () => {
+  const firestore = vi.fn(() => ({
+    collection: vi.fn(() => ({
+      doc: vi.fn(() => ({
+        get: vi.fn().mockResolvedValue({
+          data: vi.fn(() => ({
             refreshToken: "-1",
           })),
           exists: true,
@@ -18,12 +19,12 @@ jest.mock("firebase-admin", () => {
   }));
 
   return {
-    initializeApp: jest.fn(),
+    initializeApp: vi.fn(),
     firestore,
   };
 });
 
-describe("loadYahooAccessToken", () => {
+describe.concurrent("loadYahooAccessToken", () => {
   it('should throw RevokedRefreshTokenError when refresh token is "-1"', async () => {
     try {
       await loadYahooAccessToken("123"); // Replace '123' with the actual user ID

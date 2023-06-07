@@ -1,9 +1,9 @@
 import { auth } from "firebase-admin";
 import { logger } from "firebase-functions";
 import { AuthUserRecord } from "firebase-functions/lib/common/providers/identity";
+import "dotenv/config";
 
 const sgMail = require("@sendgrid/mail");
-require("dotenv").config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
@@ -41,7 +41,7 @@ export async function sendFeedbackEmail(
     await sgMail.send(msg);
   } catch (error) {
     logger.error("feedback email failed to send: ", error);
-    throw new Error("Failed to send feedback email");
+    throw new Error(`Failed to send feedback email ${error}`);
   }
   return true;
 }

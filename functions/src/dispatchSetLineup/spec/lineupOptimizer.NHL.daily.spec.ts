@@ -1,23 +1,18 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam";
+import { vi, describe, test, afterEach, expect } from "vitest";
+import * as yahooStartingPlayerService from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
-// Use this to mock the global NHL_STARTING_GOALIES array where needed
-const yahooStartingPlayerService = require("../../common/services/yahooAPI/yahooStartingPlayer.service");
-
-describe("Test LineupOptimizer Class NHL Daily", function () {
-  // beforeEach(() => {
-  //   jest.resetModules();
-  // });
-
+describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
   afterEach(() => {
     // restore the spy created with spyOn
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   // *** Test Optimization of Lineup using healthy players ***
@@ -266,9 +261,10 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
   test("Starting Goalies on Bench using NHL_STARTING_GOALIES array", function () {
     const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench2.json");
     // mock NHL_STARTING_GOALIES array
-    jest
-      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
-      .mockReturnValue(["419.p.7593", "419.p.7163"]);
+    vi.spyOn(
+      yahooStartingPlayerService,
+      "getNHLStartingGoalies"
+    ).mockReturnValue(["419.p.7593", "419.p.7163"]);
     expect(yahooStartingPlayerService.getNHLStartingGoalies()).toEqual([
       "419.p.7593",
       "419.p.7163",
@@ -287,17 +283,16 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
 
     // reset the mock configuration
-    jest
-      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
-      .mockRestore();
+    vi.spyOn(yahooStartingPlayerService, "getNHLStartingGoalies").mockRestore();
   });
 
   test("Bad goalies in NHL_STARTING_GOALIES array, good goalies with is_starting prop", function () {
     const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench3.json");
     // mock NHL_STARTING_GOALIES array
-    jest
-      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
-      .mockReturnValue(["419.p.7593"]);
+    vi.spyOn(
+      yahooStartingPlayerService,
+      "getNHLStartingGoalies"
+    ).mockReturnValue(["419.p.7593"]);
     expect(yahooStartingPlayerService.getNHLStartingGoalies()).toEqual([
       "419.p.7593",
     ]);
@@ -315,9 +310,7 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("G");
 
     // reset the mock configuration
-    jest
-      .spyOn(yahooStartingPlayerService, "getNHLStartingGoalies")
-      .mockRestore();
+    vi.spyOn(yahooStartingPlayerService, "getNHLStartingGoalies").mockRestore();
   });
 
   test("Starting Goalies on Bench with no NHL_STARTING_GOALIES array set", function () {

@@ -1,15 +1,13 @@
 import { Team } from "../Team";
+import { vi, describe, it, expect } from "vitest";
 
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
-describe("Test Team Class", () => {
-  //   beforeEach(() => {
-  //     jest.resetModules();
-  //   });
+describe.concurrent("Test Team Class", () => {
   it("should remove IL eligible position from players in pending transactions", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactions.json");
+    const teamJSON = require("./MLBpendingTransactions.json");
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
@@ -17,8 +15,9 @@ describe("Test Team Class", () => {
     );
     expect(testPlayer?.eligible_positions).toEqual(["RP", "P", "BN"]);
   });
+
   it("should remove IR+ eligible position from players in pending transactions", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactionsWIR+.json");
+    const teamJSON = require("./MLBpendingTransactionsWIR+.json");
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
@@ -28,7 +27,7 @@ describe("Test Team Class", () => {
   });
 
   it("should remove IL eligible position from players in proposed trades", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactions.json");
+    const teamJSON = require("./MLBpendingTransactions.json");
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
@@ -42,7 +41,7 @@ describe("Test Team Class", () => {
   });
 
   it("should not remove IL eligibility from Bryce Elder in pending transaction if they are already on the IL", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactionsWpendingILtrade.json");
+    const teamJSON = require("./MLBpendingTransactionsWpendingILtrade.json");
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
@@ -56,28 +55,28 @@ describe("Test Team Class", () => {
   });
 
   it("should have an add/drop differential of 0", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactionsWIR+.json");
+    const teamJSON = require("./MLBpendingTransactionsWIR+.json");
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(0);
   });
 
   it("should have an add/drop differential of -1", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactionsWDifferential-1.json");
+    const teamJSON = require("./MLBpendingTransactionsWDifferential-1.json");
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(-1);
   });
 
   it("should affect add/drop differential if a player is in a 'pending' (not 'proposed') trade", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactionsWDifferential-2.json");
+    const teamJSON = require("./MLBpendingTransactionsWDifferential-2.json");
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(-2);
   });
 
   it("should have an add/drop differential of 2", () => {
-    const teamJSON = require("functions/src/dispatchSetLineup/classes/spec/MLBpendingTransactionsWDifferential2.json");
+    const teamJSON = require("./MLBpendingTransactionsWDifferential2.json");
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(2);

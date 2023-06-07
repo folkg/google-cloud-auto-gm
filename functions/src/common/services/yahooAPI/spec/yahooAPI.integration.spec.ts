@@ -1,13 +1,14 @@
 import "./firebase";
 import {
-  getAllStandings,
+  getUsersTeams,
   getRostersByTeamID,
   postRosterAddDropTransaction,
 } from "../yahooAPI.service";
+import { describe, it, expect } from "vitest";
 
-xdescribe("Yahoo API Live Integration Tests", () => {
+describe.skip("Yahoo API Live Integration Tests", () => {
   // Danger: This test will actually perform API calls to Yahoo! and will drop players if not mocked.
-  xit("should actually make a move in Yahoo", async () => {
+  it.skip("should actually make a move in Yahoo", async () => {
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
 
     const transaction = {
@@ -37,23 +38,23 @@ xdescribe("Yahoo API Live Integration Tests", () => {
     expect(result).toBe(true);
   });
 
-  xit("should getRostersByTeamID", async () => {
-    const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
-    const JSONresponse = await getRostersByTeamID(["422.l.115494.t.4"], uid);
+  it("should getRostersByTeamID", async () => {
+    const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2"; // Jeff Barnes
+    const JSONresponse = await getRostersByTeamID(["422.l.90351.t.2 "], uid);
     console.log(JSON.stringify(JSONresponse));
     expect(JSONresponse).toBeDefined();
   });
 
-  xit("should getRostersByTeamID(2)", async () => {
+  it("should getRostersByTeamID(2)", async () => {
     const uid = "LimuNc51OoelVHOOw4rQjWTflUh2"; // real user!!!
     const JSONresponse = await getRostersByTeamID(["422.l.20786.t.11"], uid);
     console.log(JSON.stringify(JSONresponse));
     expect(JSONresponse).toBeDefined();
   });
 
-  xit("should getAllStandings", async () => {
-    const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1"; // Graeme Folk
-    const JSONresponse = await getAllStandings(uid);
+  it("should getUserTeams", async () => {
+    const uid = "W8uNiMNNF8evwePX7aaFwvE8ojn1"; // Graeme Folk
+    const JSONresponse = await getUsersTeams(uid);
     // const fs = require("fs");
     // fs.writeFileSync(
     //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/fetchUsersTeams/services/spec/input.json",

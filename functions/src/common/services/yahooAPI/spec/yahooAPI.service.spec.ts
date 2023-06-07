@@ -1,15 +1,17 @@
 import { postRosterAddDropTransaction } from "../yahooAPI.service";
+import * as yahooHttpService from "../yahooHttp.service";
 const js2xmlparser = require("js2xmlparser");
 
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+import { vi, describe, it, expect, afterEach } from "vitest";
+
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
-const yahooHttpService = require("../yahooHttp.service");
-describe("YahooAPI Service", () => {
+describe.concurrent("YahooAPI Service", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("should call API to drop players", async () => {
@@ -40,7 +42,7 @@ describe("YahooAPI Service", () => {
       ],
     };
 
-    const spyHttpPostAxiosAuth = jest.spyOn(
+    const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
       "httpPostAxiosAuth"
     );
@@ -84,7 +86,7 @@ describe("YahooAPI Service", () => {
       ],
     };
 
-    const spyHttpPostAxiosAuth = jest.spyOn(
+    const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
       "httpPostAxiosAuth"
     );
@@ -144,7 +146,7 @@ describe("YahooAPI Service", () => {
       ],
     };
 
-    const spyHttpPostAxiosAuth = jest.spyOn(
+    const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
       "httpPostAxiosAuth"
     );

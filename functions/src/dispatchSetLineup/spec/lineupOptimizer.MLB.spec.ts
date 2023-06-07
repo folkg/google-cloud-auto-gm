@@ -1,19 +1,18 @@
 import { LineupOptimizer } from "../classes/LineupOptimizer";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam";
+import { vi, describe, test, it, expect, afterEach } from "vitest";
+import * as yahooStartingPlayerService from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 
 // mock firebase-admin
-jest.mock("firebase-admin", () => ({
-  initializeApp: jest.fn(),
-  firestore: jest.fn(),
+vi.mock("firebase-admin", () => ({
+  initializeApp: vi.fn(),
+  firestore: vi.fn(),
 }));
 
-// Use this to mock the global MLB_STARTING_PITCHERS array where needed
-const yahooStartingPlayerService = require("../../common/services/yahooAPI/yahooStartingPlayer.service");
-
-describe("Test LineupOptimizer Class MLB Daily", function () {
+describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
   afterEach(() => {
     // restore the spy created with spyOn
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   test("Already optimal roster", function () {
@@ -124,9 +123,10 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.optimizeStartingLineup();
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    jest
-      .spyOn(yahooStartingPlayerService, "getMLBStartingPitchers")
-      .mockReturnValue(["422.p.10597", "422.p.11398"]);
+    vi.spyOn(
+      yahooStartingPlayerService,
+      "getMLBStartingPitchers"
+    ).mockReturnValue(["422.p.10597", "422.p.11398"]);
     expect(yahooStartingPlayerService.getMLBStartingPitchers()).toEqual([
       "422.p.10597",
       "422.p.11398",
@@ -227,7 +227,7 @@ describe("Test LineupOptimizer Class MLB Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
-  xit("should move player to IL if they are only in a proposed trade", () => {
+  it.skip("should move player to IL if they are only in a proposed trade", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsTradeWIL.json");
     const lo = new LineupOptimizer(roster);
     const rosterModification = lo.optimizeStartingLineup();

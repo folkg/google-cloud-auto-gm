@@ -1,6 +1,7 @@
 import { ITeamAngular, yahooToFirestore } from "../../../interfaces/ITeam";
+import { describe, it, expect } from "vitest";
 
-describe("clientToFirestore", () => {
+describe.concurrent("clientToFirestore", () => {
   const mockTeam: ITeamAngular = {
     uid: "test_uid",
     game_name: "game name",
