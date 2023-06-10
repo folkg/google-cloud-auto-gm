@@ -297,7 +297,6 @@ export class LineupOptimizer {
       return undefined;
 
     for (const playerB of eligibleTargetPlayers) {
-      if (playerA.compareStartScore(playerB) === 0) continue;
       if (playerA.isEligibleAndHigherScoreThan(playerB)) {
         this.swapPlayers(playerA, playerB);
         return playerB;
@@ -344,9 +343,13 @@ export class LineupOptimizer {
     this.logInfo(
       `attempting to move playerB ${playerB.player_name} to unfilled position, and playerA ${playerA.player_name} to playerB's old position.`
     );
-    const unfilledPositionTargetList: string[] = playerA.isInactiveList()
-      ? this.team.unfilledInactivePositions
-      : this.team.unfilledStartingPositions;
+    let unfilledPositionTargetList: string[];
+    if (playerA.isInactiveList()) {
+      if (playerA.compareStartScore(playerB) === 0) return undefined;
+      unfilledPositionTargetList = this.team.unfilledInactivePositions;
+    } else {
+      unfilledPositionTargetList = this.team.unfilledStartingPositions;
+    }
     const playerBOriginalPosition = playerB.selected_position;
     const success = this.movePlayerToUnfilledPositionInTargetList(
       playerB,
