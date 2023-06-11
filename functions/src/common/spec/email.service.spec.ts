@@ -1,8 +1,8 @@
+import { describe, expect, it, vi } from "vitest";
 import {
   sendFeedbackEmail,
   sendUserEmail,
 } from "../services/email/email.service";
-import { vi, describe, it, expect, afterEach } from "vitest";
 
 vi.mock("firebase-admin", () => ({
   initializeApp: () => {},

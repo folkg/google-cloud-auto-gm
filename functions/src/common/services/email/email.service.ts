@@ -1,9 +1,10 @@
+import sgMail from "@sendgrid/mail";
+import dotenv from "dotenv";
 import { auth } from "firebase-admin";
 import { logger } from "firebase-functions";
-import "dotenv/config";
 
-const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+dotenv.config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 /**
  * Send an email to the AutoCoach gmail account from the client UI
