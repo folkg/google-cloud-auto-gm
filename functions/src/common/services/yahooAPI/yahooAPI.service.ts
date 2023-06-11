@@ -85,10 +85,8 @@ export async function getRostersByTeamID(
 
   const url =
     "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
-    "/leagues;league_keys=" +
-    leagueKeys +
-    ";out=settings/teams;out=transactions,games_played;transactions.types=waiver,pending_trade/roster;date=" +
-    date +
+    `/leagues;league_keys=${leagueKeys};out=settings` +
+    `/teams;out=transactions,games_played;transactions.types=waiver,pending_trade/roster;date=${date}` +
     "/players;out=percent_started,percent_owned,ranks,opponent,starting_status" +
     ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
     ";percent_started.cut_types=diamond" +
@@ -112,17 +110,21 @@ export async function getRostersByTeamID(
  * @async
  * @param {string} leagueKey - The league key
  * @param {string} uid - The Yahoo user ID
+ * @param {string} availabilityStatus - The availability status of the players. A = All Available, FA = Free Agents Only, W = Waivers Only
  * @return {Promise<any>}
  */
-export async function getFreeAgents(
+export async function getTopAvailablePlayers(
   leagueKey: string,
-  uid: string
+  uid: string,
+  availabilityStatus = "A" // A = All Available, FA = Free Agents Only, W = Waivers Only
 ): Promise<any> {
   // sort=AR_L30;sort_type=lastmonth
+  // sort=AR_L14;sort_type=biweekly
+  // sort=R_PO (percent owned)
   const url =
-    "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=" +
-    leagueKey +
-    "/players;status=A;sort=AR_L14;sort_type=biweekly" +
+    `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKey}` +
+    `/players;status=${availabilityStatus}` +
+    ";sort=R_PO" +
     ";out=ownership,percent_started,percent_owned,ranks,opponent,starting_status" +
     ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
     ";percent_started.cut_types=diamond" +

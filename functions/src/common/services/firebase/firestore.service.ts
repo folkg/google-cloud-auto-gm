@@ -74,8 +74,10 @@ export async function loadYahooAccessToken(
           "https://fantasyautocoach.com/"
         );
       }
-      logger.error(`Error refreshing access token for user: ${uid}`, error);
-      throw new Error(`Could not refresh access token for user: ${uid}`);
+      logger.error(`Could not refresh access token for user: ${uid}`, error);
+      throw new Error(
+        `Could not refresh access token for user: ${uid} : ${error.response.data.error} ${error.response.data.error_description}`
+      );
     }
     try {
       await db

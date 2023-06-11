@@ -17,7 +17,7 @@ import { ITeamOptimizer, ITeamFirestore } from "../../common/interfaces/ITeam";
 import { LineupChanges } from "../interfaces/LineupChanges";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import assert = require("assert/strict");
+import assert from "assert";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -251,7 +251,7 @@ function getPlayerTransactions(teams: ITeamOptimizer[]): PlayerTransaction[][] {
     if (isTransactionPaceBehindTimeline(team)) {
       if (team.allow_adding) {
         // TODO: This method needs to actually be implemented. I'm not sure if the lo will be responsible for this or not
-        lo.findAddPlayerTransactions();
+        // lo.findAddPlayerTransactions();
         playerTransactions = lo.playerTransactions;
       }
       // TODO: Can add add/dropping here as well

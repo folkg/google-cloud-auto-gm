@@ -161,7 +161,7 @@ function getPositionCounts(leaguesJSON: any, key: string) {
  * @param {*} emptyPositions - A map of positions and the number of players
  * @return {IPlayer[]} - An array of Player objects
  */
-function getPlayersFromRoster(playersJSON: any): IPlayer[] {
+export function getPlayersFromRoster(playersJSON: any): IPlayer[] {
   const result: IPlayer[] = [];
 
   // eslint-disable-next-line guard-for-in
@@ -169,15 +169,14 @@ function getPlayersFromRoster(playersJSON: any): IPlayer[] {
     if (key !== "count") {
       const player = playersJSON[key].player;
       const opponent = getChild(player, "opponent");
+      const selectedPosition = getChild(player, "selected_position");
 
       const playerObject: IPlayer = {
         player_key: getChild(player[0], "player_key"),
         player_name: getChild(player[0], "name").full,
         eligible_positions: getEligiblePositions(player),
-        selected_position: getChild(
-          getChild(player, "selected_position"),
-          "position"
-        ),
+        selected_position:
+          selectedPosition && getChild(selectedPosition, "position"),
         is_editable: getChild(player, "is_editable") === 1,
         is_playing: !opponent || opponent === "Bye" ? false : true,
         injury_status: getChild(player[0], "status_full") || "Healthy",

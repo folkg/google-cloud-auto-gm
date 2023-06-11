@@ -103,7 +103,8 @@ export class LineupOptimizer {
     // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
   }
 
-  public findAddPlayerTransactions(): void {
+  public findAddPlayerTransactions(addCandidates: Player[]): void {
+    if (addCandidates.length === 0) return;
     const numEmptyRosterSpots = this.team.numEmptyRosterSpots;
     // free up roster spots on a loop with this.openOneRosterSpot() until false is returned
     if (numEmptyRosterSpots === 0) return;
@@ -120,6 +121,13 @@ export class LineupOptimizer {
     // add top x number of players to this._playerTransactions
     // TODO: When to send email for confirmation, if we have that setting on?
     // TODO: Compare the remaining players for add/drop if all empty spots are filled?
+  }
+
+  public isRosterLegal(): boolean {
+    return (
+      this.team.illegalPlayers.length > 0 ||
+      this.checkForOverfilledRosterPositions()
+    );
   }
 
   private resolveHealthyPlayersOnIL(): void {
