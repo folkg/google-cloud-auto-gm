@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
   },
   "compileOnSave": true,
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

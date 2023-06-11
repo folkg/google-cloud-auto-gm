@@ -1,6 +1,5 @@
 import { auth } from "firebase-admin";
 import { logger } from "firebase-functions";
-import { AuthUserRecord } from "firebase-functions/lib/common/providers/identity";
 import "dotenv/config";
 
 const sgMail = require("@sendgrid/mail");
@@ -96,9 +95,7 @@ export async function sendUserEmail(
   }
 }
 
-export async function sendCustomVerificationEmail(
-  user: AuthUserRecord
-): Promise<boolean> {
+export async function sendCustomVerificationEmail(user: any): Promise<boolean> {
   const userEmailAddress = user?.email;
   if (!userEmailAddress) {
     throw new Error("Not a valid user");

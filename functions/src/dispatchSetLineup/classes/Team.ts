@@ -4,7 +4,7 @@ import { ITeamOptimizer } from "../../common/interfaces/ITeam";
 import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
 import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
 import { Player } from "./Player";
-import assert = require("assert/strict");
+import assert from "assert";
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
 export interface Team extends ITeamOptimizer {

@@ -6,7 +6,7 @@ import {
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
 import { GamesPlayed, InningsPitched } from "../../common/interfaces/ITeam";
 import { ownershipScoreFunction } from "./playerOwnershipScoreFunctions.service";
-import assert = require("assert/strict");
+import assert from "assert";
 
 const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001
 const INJURY_FACTOR = 1e-3; // 0.001

@@ -20,7 +20,7 @@ exports.addmocktaskstoqueue = addmocktaskstoqueue;
 import { onRequest } from "firebase-functions/v2/https";
 import { setUsersLineup } from "./dispatchSetLineup/services/setLineups.service";
 import { logger } from "firebase-functions";
-exports.testsetlineups = onRequest(async (req, res) => {
+exports.testsetlineups = onRequest(async (_req, res) => {
   // const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1"; // Graeme Folk
   // const teams = [
   //   // { team_key: "414.l.240994.t.12" },
