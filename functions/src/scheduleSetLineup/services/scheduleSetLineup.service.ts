@@ -1,17 +1,22 @@
+import { getApps, initializeApp } from "firebase-admin/app";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { TaskQueue, getFunctions } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
-import { getActiveTeamsForLeagues } from "../../common/services/firebase/firestore.service";
+import { getActiveTeamsForLeagues } from "../../common/services/firebase/firestore.service.js";
 import {
   getCurrentPacificHour,
   getFunctionUrl,
-} from "../../common/services/utilities.service";
+} from "../../common/services/utilities.service.js";
 import {
   enqueueUsersTeams,
   leaguesToSetLineupsFor,
   mapUsersToActiveTeams,
   setStartingPlayersForToday,
-} from "./scheduling.service";
+} from "./scheduling.service.js";
+
+if (getApps().length === 0) {
+  initializeApp();
+}
 
 export async function scheduleSetLineup() {
   // We want the first run of the function to be at 1:55 AM Pacific Time

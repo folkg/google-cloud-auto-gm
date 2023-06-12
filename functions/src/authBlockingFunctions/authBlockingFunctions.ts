@@ -1,8 +1,8 @@
 import { logger } from "firebase-functions";
 import * as functionsV1 from "firebase-functions/v1";
-import { db } from "../common/services/firebase/firestore.service";
-import { FirestoreUser } from "./interfaces/FirestoreUser";
-import { sendCustomVerificationEmail } from "../common/services/email/email.service";
+import { sendCustomVerificationEmail } from "../common/services/email/email.service.js";
+import { db } from "../common/services/firebase/firestore.service.js";
+import { FirestoreUser } from "./interfaces/FirestoreUser.js";
 
 export const beforeSignInV1 = functionsV1.auth
   .user()

@@ -1,13 +1,21 @@
-import "./firebase";
+import * as firebaseAdmin from "firebase-admin";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import {
-  getUsersTeams,
   getRostersByTeamID,
-  postRosterAddDropTransaction,
   getTopAvailablePlayers,
-} from "../yahooAPI.service";
-import { describe, it, expect } from "vitest";
+  getUsersTeams,
+  postRosterAddDropTransaction,
+} from "../yahooAPI.service.js";
 
 describe.skip("Yahoo API Live Integration Tests", () => {
+  beforeAll(async () => {
+    // Cannot quite get this to work. Revisit another time if we need to use integration tests.
+    // const firebaseServiceAccountKey = require("../../../../../../auto-gm-372620-dd1695cac1a6.json");
+    // firebaseAdmin.initializeApp({
+    //   credential: firebaseAdmin.credential.cert(firebaseServiceAccountKey),
+    // });
+  });
+  // const firebaseServiceAccountKey = require("../../../../../../auto-gm-372620-dd1695cac1a6.json");
   // Danger: This test will actually perform API calls to Yahoo! and will drop players if not mocked.
   it.skip("should actually make a move in Yahoo", async () => {
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
@@ -40,6 +48,7 @@ describe.skip("Yahoo API Live Integration Tests", () => {
   }, 10000);
 
   it("should getRostersByTeamID", async () => {
+    console.log("staring test...");
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2"; // Jeff Barnes
     const JSONresponse = await getRostersByTeamID(["422.l.90351.t.2 "], uid);
     console.log(JSON.stringify(JSONresponse));

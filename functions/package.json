@@ -15,6 +15,7 @@
   "engines": {
     "node": "20"
   },
+  "type": "module",
   "main": "lib/index.js",
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",

@@ -1,13 +1,20 @@
-import { fetchStartingPlayers } from "../yahooStartingPlayer.service";
-import * as firestoreService from "../../firebase/firestore.service";
-import * as yahooAPI from "../../yahooAPI/yahooAPI.service";
-import { vi, describe, test, expect, afterEach } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import * as firestoreService from "../../firebase/firestore.service.js";
+import * as yahooAPI from "../../yahooAPI/yahooAPI.service.js";
+import { fetchStartingPlayers } from "../yahooStartingPlayer.service.js";
 
 // mock firebase-admin
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 describe.concurrent("Test setStartingPlayers()", function () {
   const intradayTeamsObject = {

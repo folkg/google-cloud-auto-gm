@@ -4,7 +4,9 @@
     "lib": [
       "es2022"
     ],
-    "module": "commonjs",
+    "module": "ES2022",
+    "moduleResolution": "nodenext",
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,

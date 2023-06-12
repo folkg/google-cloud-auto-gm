@@ -1,6 +1,5 @@
-import { initializeApp } from "firebase-admin/app";
-initializeApp();
+import * as authBlock from "./authBlockingFunctions.js";
+import * as email from "./emailFunctions.js";
+import * as lineup from "./lineupFunctions.js";
 
-exports.authBlock = require("./authBlockingFunctions");
-exports.email = require("./emailFunctions");
-exports.lineup = require("./lineupFunctions");
+export { authBlock, email, lineup };

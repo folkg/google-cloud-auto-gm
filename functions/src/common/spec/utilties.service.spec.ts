@@ -1,9 +1,21 @@
+import { describe, expect, test, vi } from "vitest";
 import {
   getPacificEndOfDay,
   getPacificStartOfDay,
   getPacificTimeDateString,
-} from "../services/utilities.service";
-import { describe, test, expect } from "vitest";
+} from "../services/utilities.service.js";
+
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 describe.concurrent("Utilities test", function () {
   test("single digit month, day ", function () {

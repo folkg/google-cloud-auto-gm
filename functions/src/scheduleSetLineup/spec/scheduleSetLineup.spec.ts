@@ -1,14 +1,21 @@
-import { scheduleSetLineup } from "../services/scheduleSetLineup.service";
 import { logger } from "firebase-functions";
-import { vi, describe, it, expect, afterEach, beforeEach } from "vitest";
-import * as schedulingService from "../services/scheduling.service";
-import * as firestoreService from "../../common/services/firebase/firestore.service";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as firestoreService from "../../common/services/firebase/firestore.service.js";
+import { scheduleSetLineup } from "../services/scheduleSetLineup.service.js";
+import * as schedulingService from "../services/scheduling.service.js";
 
 // mock firebase-admin
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 // set up mocks
 const mockLeaguesToSetLineupsFor = vi.spyOn(

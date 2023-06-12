@@ -2,10 +2,10 @@ import axios, { AxiosError } from "axios";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
-import { db } from "../../common/services/firebase/firestore.service";
-import { getPacificTimeDateString } from "../../common/services/utilities.service";
-import { fetchStartingPlayers } from "../../common/services/yahooAPI/yahooStartingPlayer.service";
-import { GameStartTimes } from "../interfaces/gameStartTime";
+import { db } from "../../common/services/firebase/firestore.service.js";
+import { getPacificTimeDateString } from "../../common/services/utilities.service.js";
+import { fetchStartingPlayers } from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
+import { GameStartTimes } from "../interfaces/gameStartTime.js";
 
 /**
  * Determine the leagues that we will set lineups for at this time

@@ -1,18 +1,20 @@
 import { AxiosError } from "axios";
+import dotenv from "dotenv";
 import { logger } from "firebase-functions";
-import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges";
-import { PlayerTransaction } from "../../../dispatchSetLineup/interfaces/PlayerTransaction";
-import { Token, YahooRefreshRequestBody } from "../../interfaces/credential";
-import { updateFirestoreTimestamp } from "../firebase/firestore.service";
+import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges.js";
+import { PlayerTransaction } from "../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import { Token, YahooRefreshRequestBody } from "../../interfaces/credential.js";
+import { RevokedRefreshTokenError } from "../firebase/errors.js";
+import { updateFirestoreTimestamp } from "../firebase/firestore.service.js";
 import {
   httpGetAxios,
   httpPostAxiosAuth,
   httpPostAxiosUnauth,
   httpPutAxios,
-} from "./yahooHttp.service";
-import { RevokedRefreshTokenError } from "../firebase/errors";
-const js2xmlparser = require("js2xmlparser");
-require("dotenv").config();
+} from "./yahooHttp.service.js";
+
+import js2xmlparser from "js2xmlparser";
+dotenv.config();
 
 /**
  * Refresh the Yahoo access token for the given user

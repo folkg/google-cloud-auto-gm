@@ -2,17 +2,26 @@ import { describe, expect, it, vi } from "vitest";
 import {
   sendFeedbackEmail,
   sendUserEmail,
-} from "../services/email/email.service";
+} from "../services/email/email.service.js";
 
-vi.mock("firebase-admin", () => ({
-  initializeApp: () => {},
-  auth: () => ({
-    getUser: () => ({
-      email: "graemefolk@gmail.com",
-      displayName: "Graeme Folk",
+vi.mock("firebase-admin/auth", () => {
+  return {
+    getAuth: vi.fn(() => ({
+      getUser: vi.fn(() => ({
+        email: "graemefolk@gmail.com",
+        displayName: "Graeme Folk",
+      })),
+    })),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(() => {
+      console.log("initializeApp from the integration test!!!");
     }),
-  }),
-}));
+  };
+});
 
 describe.skip("Integration test EmailService", () => {
   it("should actually send email via SendGrid", async () => {

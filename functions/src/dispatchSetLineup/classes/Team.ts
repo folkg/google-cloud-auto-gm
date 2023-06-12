@@ -1,10 +1,10 @@
-import { getChild, getNow } from "../../common/services/utilities.service";
-import { INACTIVE_POSITION_LIST } from "../helpers/constants";
-import { ITeamOptimizer } from "../../common/interfaces/ITeam";
-import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service";
-import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service";
-import { Player } from "./Player";
 import assert from "assert";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import { getChild, getNow } from "../../common/services/utilities.service.js";
+import { INACTIVE_POSITION_LIST } from "../helpers/constants.js";
+import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service.js";
+import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service.js";
+import { Player } from "./Player.js";
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
 export interface Team extends ITeamOptimizer {

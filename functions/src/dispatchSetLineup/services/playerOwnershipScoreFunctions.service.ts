@@ -1,4 +1,4 @@
-import { IPlayer } from "../../common/interfaces/IPlayer";
+import { IPlayer } from "../../common/interfaces/IPlayer.js";
 
 /**
  * Add drop score function

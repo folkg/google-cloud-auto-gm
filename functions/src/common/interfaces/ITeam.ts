@@ -1,4 +1,4 @@
-import { IPlayer } from "./IPlayer";
+import { IPlayer } from "./IPlayer.js";
 
 interface CommonTeam {
   team_key: string;

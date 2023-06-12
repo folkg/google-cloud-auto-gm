@@ -1,23 +1,26 @@
+import assert from "assert";
 import { logger } from "firebase-functions";
-import { updateTeamFirestore } from "../../common/services/firebase/firestore.service";
+import {
+  ITeamFirestore,
+  ITeamOptimizer,
+} from "../../common/interfaces/ITeam.js";
+import { updateTeamFirestore } from "../../common/services/firebase/firestore.service.js";
 import {
   getPacificTimeDateString,
   is2DArrayEmpty,
-} from "../../common/services/utilities.service";
+} from "../../common/services/utilities.service.js";
 import {
   postRosterAddDropTransaction,
   putLineupChanges,
-} from "../../common/services/yahooAPI/yahooAPI.service";
+} from "../../common/services/yahooAPI/yahooAPI.service.js";
 import {
   initStartingGoalies,
   initStartingPitchers,
-} from "../../common/services/yahooAPI/yahooStartingPlayer.service";
-import { LineupOptimizer } from "../classes/LineupOptimizer";
-import { ITeamOptimizer, ITeamFirestore } from "../../common/interfaces/ITeam";
-import { LineupChanges } from "../interfaces/LineupChanges";
-import { PlayerTransaction } from "../interfaces/PlayerTransaction";
-import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service";
-import assert from "assert";
+} from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
+import { LineupOptimizer } from "../classes/LineupOptimizer.js";
+import { LineupChanges } from "../interfaces/LineupChanges.js";
+import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
+import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams

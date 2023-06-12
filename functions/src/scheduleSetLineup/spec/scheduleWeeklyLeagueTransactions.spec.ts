@@ -1,14 +1,21 @@
-import { logger } from "firebase-functions";
-import { scheduleWeeklyLeagueTransactions } from "../services/scheduleWeeklyLeagueTansactions.service";
-import * as firestoreService from "../../common/services/firebase/firestore.service";
-import { vi, describe, it, expect, afterEach } from "vitest";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as firestoreService from "../../common/services/firebase/firestore.service.js";
+import { scheduleWeeklyLeagueTransactions } from "../services/scheduleWeeklyLeagueTansactions.service.js";
 
 // mock firebase-admin
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 const mockQueue = {
   enqueue: vi.fn(() => Promise.resolve()),

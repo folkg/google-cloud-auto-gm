@@ -1,7 +1,19 @@
-import { ITeamAngular, yahooToFirestore } from "../../../interfaces/ITeam";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { ITeamAngular, yahooToFirestore } from "../../../interfaces/ITeam.js";
 
-describe.concurrent("clientToFirestore", () => {
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
+
+describe("clientToFirestore", () => {
   const mockTeam: ITeamAngular = {
     uid: "test_uid",
     game_name: "game name",

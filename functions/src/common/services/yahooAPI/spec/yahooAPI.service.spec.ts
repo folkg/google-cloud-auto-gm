@@ -1,13 +1,20 @@
-import { postRosterAddDropTransaction } from "../yahooAPI.service";
-import * as yahooHttpService from "../yahooHttp.service";
-const js2xmlparser = require("js2xmlparser");
+import js2xmlparser from "js2xmlparser";
+import { postRosterAddDropTransaction } from "../yahooAPI.service.js";
+import * as yahooHttpService from "../yahooHttp.service.js";
 
-import { vi, describe, it, expect, afterEach } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 describe.concurrent("YahooAPI Service", () => {
   afterEach(() => {
@@ -47,7 +54,7 @@ describe.concurrent("YahooAPI Service", () => {
       "httpPostAxiosAuth"
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.resolve();
+      return Promise.resolve() as any;
     });
 
     await postRosterAddDropTransaction(transaction, uid);
@@ -91,7 +98,7 @@ describe.concurrent("YahooAPI Service", () => {
       "httpPostAxiosAuth"
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.resolve();
+      return Promise.resolve() as any;
     });
 
     await postRosterAddDropTransaction(transaction, uid);
@@ -151,7 +158,7 @@ describe.concurrent("YahooAPI Service", () => {
       "httpPostAxiosAuth"
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.resolve();
+      return Promise.resolve() as any;
     });
 
     await postRosterAddDropTransaction(transaction, uid);

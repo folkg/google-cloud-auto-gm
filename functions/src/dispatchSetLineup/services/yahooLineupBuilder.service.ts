@@ -1,16 +1,16 @@
+import { IPlayer, PlayerRanks } from "../../common/interfaces/IPlayer.js";
+import {
+  GamesPlayed,
+  ITeamOptimizer,
+  InningsPitched,
+} from "../../common/interfaces/ITeam.js";
 import {
   getChild,
   getPacificEndOfDay,
   getPacificStartOfDay,
   parseStringToInt,
-} from "../../common/services/utilities.service";
-import {
-  GamesPlayed,
-  ITeamOptimizer,
-  InningsPitched,
-} from "../../common/interfaces/ITeam";
-import { IPlayer, PlayerRanks } from "../../common/interfaces/IPlayer";
-import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service";
+} from "../../common/services/utilities.service.js";
+import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service.js";
 
 /**
  * Get the roster objects for the given teams

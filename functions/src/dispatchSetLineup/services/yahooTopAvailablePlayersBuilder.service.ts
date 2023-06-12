@@ -1,8 +1,7 @@
-import { getChild } from "../../common/services/utilities.service";
-
-import { IPlayer } from "../../common/interfaces/IPlayer";
-import { getTopAvailablePlayers as getTopAvailablePlayers } from "../../common/services/yahooAPI/yahooAPI.service";
-import { getPlayersFromRoster } from "./yahooLineupBuilder.service";
+import { IPlayer } from "../../common/interfaces/IPlayer.js";
+import { getChild } from "../../common/services/utilities.service.js";
+import { getTopAvailablePlayers } from "../../common/services/yahooAPI/yahooAPI.service.js";
+import { getPlayersFromRoster } from "./yahooLineupBuilder.service.js";
 
 /**
  * Fetches the top available players from Yahoo API for a given league.

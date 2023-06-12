@@ -1,12 +1,19 @@
 import { describe, expect, test, vi } from "vitest";
-import * as yahooAPIService from "../../common/services/yahooAPI/yahooAPI.service";
-import { fetchTopAvailablePlayersFromYahoo } from "../services/yahooTopAvailablePlayersBuilder.service";
+import * as yahooAPIService from "../../common/services/yahooAPI/yahooAPI.service.js";
+import { fetchTopAvailablePlayersFromYahoo } from "../services/yahooTopAvailablePlayersBuilder.service.js";
 
 // mock firebase-admin
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 // To mock the result from yahooAPI getRostersByTeamID()
 describe("Test fetchRostersFromYahoo", function () {

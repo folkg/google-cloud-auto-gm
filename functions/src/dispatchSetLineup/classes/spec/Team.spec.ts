@@ -1,10 +1,17 @@
-import { Team } from "../Team";
-import { vi, describe, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { Team } from "../Team.js";
 
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 describe.concurrent("Test Team Class", () => {
   it("should remove IL eligible position from players in pending transactions", () => {
     const teamJSON = require("./MLBpendingTransactions.json");

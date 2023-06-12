@@ -1,6 +1,6 @@
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { sendFeedbackEmail } from "../common/services/email/email.service";
+import { sendFeedbackEmail } from "../common/services/email/email.service.js";
 
 export const sendfeedbackemail = onCall(async (request) => {
   const uid = request.auth?.uid;

@@ -4,9 +4,9 @@ import {
   getIntradayTeams,
   getStartingPlayersFromFirestore,
   storeStartingPlayersInFirestore,
-} from "../firebase/firestore.service";
-import { getChild } from "../utilities.service";
-import { getStartingPlayers } from "./yahooAPI.service";
+} from "../firebase/firestore.service.js";
+import { getChild } from "../utilities.service.js";
+import { getStartingPlayers } from "./yahooAPI.service.js";
 
 let NHL_STARTING_GOALIES: string[];
 export function getNHLStartingGoalies(): string[] {

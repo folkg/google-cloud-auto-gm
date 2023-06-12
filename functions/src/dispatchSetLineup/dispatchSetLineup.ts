@@ -1,7 +1,7 @@
 import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
-import { setUsersLineup } from "./services/setLineups.service";
-import { RevokedRefreshTokenError } from "../common/services/firebase/errors";
+import { RevokedRefreshTokenError } from "../common/services/firebase/errors.js";
+import { setUsersLineup } from "./services/setLineups.service.js";
 
 // could increase maxConcurrentDispatches if we get more users.
 export const taskQueueConfig = {

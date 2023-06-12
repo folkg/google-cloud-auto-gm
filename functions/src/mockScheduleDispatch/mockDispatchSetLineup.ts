@@ -1,7 +1,7 @@
 import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
-import { initStartingGoalies } from "../common/services/yahooAPI/yahooStartingPlayer.service";
-import { taskQueueConfig } from "../dispatchSetLineup/dispatchSetLineup";
+import { initStartingGoalies } from "../common/services/yahooAPI/yahooStartingPlayer.service.js";
+import { taskQueueConfig } from "../dispatchSetLineup/dispatchSetLineup.js";
 
 export const mockdispatchsetlineup = onTaskDispatched(
   taskQueueConfig,

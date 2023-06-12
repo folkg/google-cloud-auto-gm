@@ -1,11 +1,18 @@
-import { fetchTeamsYahoo } from "../fetchUsersTeams.service";
-import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
-import { vi, describe, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service.js";
+import { fetchTeamsYahoo } from "../fetchUsersTeams.service.js";
 
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 describe.concurrent("fetchUsersTeams", () => {
   it("should return a list of teams v2", async () => {

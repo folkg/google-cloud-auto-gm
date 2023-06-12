@@ -1,7 +1,11 @@
+import { getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { logger } from "firebase-functions";
-import { flagRefreshToken } from "./firestore.service";
+import { flagRefreshToken } from "./firestore.service.js";
 
+if (getApps().length === 0) {
+  initializeApp();
+}
 /**
  * Revoke the refresh token for a user
  *

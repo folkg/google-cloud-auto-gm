@@ -1,9 +1,9 @@
 import { logger } from "firebase-functions";
-import { ITeamOptimizer } from "../../common/interfaces/ITeam";
-import { LineupChanges } from "../interfaces/LineupChanges";
-import { PlayerTransaction } from "../interfaces/PlayerTransaction";
-import { Player } from "./Player";
-import { Team } from "./Team";
+import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import { LineupChanges } from "../interfaces/LineupChanges.js";
+import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
+import { Player } from "./Player.js";
+import { Team } from "./Team.js";
 
 export class LineupOptimizer {
   private team: Team;

@@ -1,5 +1,7 @@
-const { GoogleAuth } = require("google-auth-library");
-const spacetime = require("spacetime"); // jest does not like the es module import syntax
+import { GoogleAuth } from "google-auth-library";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import spacetime from "spacetime";
+// const spacetime = require("spacetime"); // problematic with TS ES module imports for some reason
 
 /**
  * The properties of the Player object are not consistent.

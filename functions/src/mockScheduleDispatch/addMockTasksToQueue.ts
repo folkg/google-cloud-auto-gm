@@ -1,7 +1,12 @@
+import { getApps, initializeApp } from "firebase-admin/app";
 import { getFunctions, TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { onRequest } from "firebase-functions/v2/https";
-import { getFunctionUrl } from "../common/services/utilities.service";
+import { getFunctionUrl } from "../common/services/utilities.service.js";
+
+if (getApps().length === 0) {
+  initializeApp();
+}
 
 export const addmocktaskstoqueue = onRequest(async (req, res) => {
   let queue: TaskQueue<Record<string, any>>;

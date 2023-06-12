@@ -1,19 +1,29 @@
-import { LineupChanges } from "../interfaces/LineupChanges";
-import { ITeamFirestore, ITeamOptimizer } from "../../common/interfaces/ITeam";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  ITeamFirestore,
+  ITeamOptimizer,
+} from "../../common/interfaces/ITeam.js";
+import * as firestoreService from "../../common/services/firebase/firestore.service.js";
+import * as yahooAPI from "../../common/services/yahooAPI/yahooAPI.service.js";
+import { LineupChanges } from "../interfaces/LineupChanges.js";
 import {
   performWeeklyLeagueTransactions,
   setUsersLineup,
-} from "../services/setLineups.service";
-import * as firestoreService from "../../common/services/firebase/firestore.service";
-import * as yahooAPI from "../../common/services/yahooAPI/yahooAPI.service";
-import * as LineupBuilderService from "../services/yahooLineupBuilder.service";
-import { vi, describe, afterEach, it, expect } from "vitest";
+} from "../services/setLineups.service.js";
+import * as LineupBuilderService from "../services/yahooLineupBuilder.service.js";
 
 // mock firebase-admin
-vi.mock("firebase-admin", () => ({
-  initializeApp: vi.fn(),
-  firestore: vi.fn(),
-}));
+vi.mock("firebase-admin/firestore", () => {
+  return {
+    getFirestore: vi.fn(),
+  };
+});
+vi.mock("firebase-admin/app", () => {
+  return {
+    getApps: vi.fn(() => ["null"]),
+    initializeApp: vi.fn(),
+  };
+});
 
 // mock initialize starting goalies
 vi.mock("../../common/services/yahooAPI/yahooStartingPlayer.service", () => ({

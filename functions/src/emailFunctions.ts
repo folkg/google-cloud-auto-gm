@@ -1,2 +1,3 @@
-import { sendfeedbackemail } from "./sendEmail/sendEmail";
-exports.sendfeedbackemail = sendfeedbackemail;
+import { sendfeedbackemail } from "./sendEmail/sendEmail.js";
+
+export { sendfeedbackemail };

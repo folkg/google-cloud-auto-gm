@@ -1,26 +1,26 @@
-import { fetchuserteams } from "./fetchUsersTeams/fetchUsersTeams";
-exports.fetchuserteams = fetchuserteams;
+import { fetchuserteams } from "./fetchUsersTeams/fetchUsersTeams.js";
+import { schedulesetlineup } from "./scheduleSetLineup/scheduleSetLineup.js";
+import { scheduleweeklyleaguetransactions } from "./scheduleSetLineup/scheduleWeeklyLeagueTansactions.js";
+import { dispatchsetlineup } from "./dispatchSetLineup/dispatchSetLineup.js";
+import { dispatchweeklyleaguetransactions } from "./dispatchSetLineup/dispatchWeeklyLeagueTansactions.js";
+import { addmocktaskstoqueue } from "./mockScheduleDispatch/addMockTasksToQueue.js";
+import { mockdispatchsetlineup } from "./mockScheduleDispatch/mockDispatchSetLineup.js";
 
-import { schedulesetlineup } from "./scheduleSetLineup/scheduleSetLineup";
-exports.schedulesetlineup = schedulesetlineup;
-import { scheduleweeklyleaguetransactions } from "./scheduleSetLineup/scheduleWeeklyLeagueTansactions";
-exports.scheduleweeklyleaguetransactions = scheduleweeklyleaguetransactions;
-
-import { dispatchsetlineup } from "./dispatchSetLineup/dispatchSetLineup";
-exports.dispatchsetlineup = dispatchsetlineup;
-import { dispatchweeklyleaguetransactions } from "./dispatchSetLineup/dispatchWeeklyLeagueTansactions";
-exports.dispatchweeklyleaguetransactions = dispatchweeklyleaguetransactions;
-
-import { mockdispatchsetlineup } from "./mockScheduleDispatch/mockDispatchSetLineup";
-exports.mockdispatchsetlineup = mockdispatchsetlineup;
-import { addmocktaskstoqueue } from "./mockScheduleDispatch/addMockTasksToQueue";
-exports.addmocktaskstoqueue = addmocktaskstoqueue;
+export {
+  fetchuserteams,
+  schedulesetlineup,
+  scheduleweeklyleaguetransactions,
+  dispatchsetlineup,
+  dispatchweeklyleaguetransactions,
+  addmocktaskstoqueue,
+  mockdispatchsetlineup,
+};
 
 // TODO: This is just for testing. Remove later.
-import { onRequest } from "firebase-functions/v2/https";
-import { setUsersLineup } from "./dispatchSetLineup/services/setLineups.service";
 import { logger } from "firebase-functions";
-exports.testsetlineups = onRequest(async (_req, res) => {
+import { onRequest } from "firebase-functions/v2/https";
+import { setUsersLineup } from "./dispatchSetLineup/services/setLineups.service.js";
+export const testsetlineups = onRequest(async (_req, res) => {
   // const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1"; // Graeme Folk
   // const teams = [
   //   // { team_key: "414.l.240994.t.12" },

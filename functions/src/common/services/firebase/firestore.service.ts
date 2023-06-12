@@ -1,28 +1,32 @@
-import { firestore } from "firebase-admin";
+import { AxiosError } from "axios";
+import { getApps, initializeApp } from "firebase-admin/app";
 import {
   DocumentData,
   DocumentSnapshot,
   QuerySnapshot,
+  getFirestore,
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import {
   ITeamAngular,
   ITeamFirestore,
   yahooToFirestore,
-} from "../../interfaces/ITeam";
-import { ReturnCredential, Token } from "../../interfaces/credential";
-import { sendUserEmail } from "../email/email.service";
+} from "../../interfaces/ITeam.js";
+import { ReturnCredential, Token } from "../../interfaces/credential.js";
+import { sendUserEmail } from "../email/email.service.js";
 import {
   getCurrentPacificNumDay,
   getPacificTimeDateString,
-} from "../utilities.service";
-import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service";
-import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service";
-import { revokeRefreshToken } from "./revokeRefreshToken.service";
-import { AxiosError } from "axios";
-import { RevokedRefreshTokenError } from "./errors";
+} from "../utilities.service.js";
+import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service.js";
+import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service.js";
+import { RevokedRefreshTokenError } from "./errors.js";
+import { revokeRefreshToken } from "./revokeRefreshToken.service.js";
 
-export const db = firestore();
+if (getApps().length === 0) {
+  initializeApp();
+}
+export const db = getFirestore();
 
 /**
  * Load the access token from DB, or refresh from Yahoo if expired

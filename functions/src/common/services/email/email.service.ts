@@ -1,10 +1,15 @@
 import sgMail from "@sendgrid/mail";
 import dotenv from "dotenv";
-import { auth } from "firebase-admin";
+import { getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { logger } from "firebase-functions";
 
 dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+
+if (getApps().length === 0) {
+  initializeApp();
+}
 
 /**
  * Send an email to the AutoCoach gmail account from the client UI
@@ -65,7 +70,7 @@ export async function sendUserEmail(
   buttonText = "",
   buttonUrl = ""
 ): Promise<boolean> {
-  const user = await auth().getUser(uid);
+  const user = await getAuth().getUser(uid);
   if (!user) {
     throw new Error("Not a valid user");
   }
@@ -101,7 +106,7 @@ export async function sendCustomVerificationEmail(user: any): Promise<boolean> {
   if (!userEmailAddress) {
     throw new Error("Not a valid user");
   }
-  const verificationLink = await auth().generateEmailVerificationLink(
+  const verificationLink = await getAuth().generateEmailVerificationLink(
     userEmailAddress
   );
 

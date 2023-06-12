@@ -1,11 +1,11 @@
-import { ITeamAngular } from "../../common/interfaces/ITeam";
+import { ITeamAngular } from "../../common/interfaces/ITeam.js";
 import {
   getChild,
   getPacificEndOfDay,
   getPacificStartOfDay,
   parseStringToInt,
-} from "../../common/services/utilities.service";
-import { getUsersTeams } from "../../common/services/yahooAPI/yahooAPI.service";
+} from "../../common/services/utilities.service.js";
+import { getUsersTeams } from "../../common/services/yahooAPI/yahooAPI.service.js";
 
 /**
  * Get the user's teams from the Yahoo API

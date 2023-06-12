@@ -1,9 +1,9 @@
+import { IPlayer } from "../../common/interfaces/IPlayer.js";
 import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,
   LONG_TERM_IL_POSITIONS_LIST,
-} from "../helpers/constants";
-import { IPlayer } from "../../common/interfaces/IPlayer";
+} from "../helpers/constants.js";
 
 export interface Player extends IPlayer {
   start_score: number;

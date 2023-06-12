@@ -1,11 +1,11 @@
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { ITeamAngular, ITeamFirestore } from "../common/interfaces/ITeam";
+import { ITeamAngular, ITeamFirestore } from "../common/interfaces/ITeam.js";
 import {
   fetchTeamsFirestore,
   syncTeamsInFirebase,
-} from "../common/services/firebase/firestore.service";
-import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service";
+} from "../common/services/firebase/firestore.service.js";
+import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service.js";
 
 export const fetchuserteams = onCall(
   async (request): Promise<ITeamAngular[]> => {
