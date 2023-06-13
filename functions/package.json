@@ -2,10 +2,11 @@
   "name": "functions",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
-    "build": "npm run lint && tsc -p tsconfig.build.json",
+    "build": "npm run lint && tsc",
     "build:watch": "tsc --watch",
-    "serve": "npm run build && firebase emulators:start --only functions",
-    "shell": "npm run build && firebase functions:shell",
+    "serve": "npm run build:watch & firebase emulators:start --only functions",
+    "shell": "npm run build:watch & firebase functions:shell",
+    "debug": "npm run build:watch & firebase functions:shell --inspect-functions",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
@@ -24,7 +25,7 @@
     "axios-retry": "^3.5.0",
     "dotenv": "^16.1.4",
     "firebase-admin": "^11.9.0",
-    "firebase-functions": "^4.4.0",
+    "firebase-functions": "^4.4.1",
     "js2xmlparser": "^5.0.0",
     "spacetime": "^7.4.4"
   },

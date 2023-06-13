@@ -14,7 +14,7 @@
         "firebase-debug.*.log"
       ],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" test-run",
+        "npm --prefix \"$RESOURCE_DIR\" run test-run",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
@@ -22,7 +22,7 @@
   "emulators": {
     "firestore": {
       "host": "localhost",
-      "port": "5000"
+      "port": 5000
     }
   }
 }

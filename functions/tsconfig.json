@@ -16,6 +16,9 @@
     "sourceMap": true,
     "strict": true,
   },
+  "exclude": [
+    "**/*.spec.ts"
+  ],
   "include": [
     "src"
   ]
