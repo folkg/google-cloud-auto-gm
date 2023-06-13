@@ -1,5 +1,4 @@
-import * as firebaseAdmin from "firebase-admin";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
   getRostersByTeamID,
   getTopAvailablePlayers,

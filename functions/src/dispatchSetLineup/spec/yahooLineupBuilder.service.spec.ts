@@ -154,6 +154,6 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     //   "/home/graeme/Software/auto-gm/google-cloud-auto-gm/functions/src/dispatchSetLineup/spec/testRosters/MLB/userRequest_2.json",
     //   JSON.stringify(result)
     // );
-    // expect(result).toEqual(expected);
+    expect(result).toBeDefined();
   });
 });

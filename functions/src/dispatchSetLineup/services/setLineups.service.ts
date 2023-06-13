@@ -21,6 +21,10 @@ import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service.js";
+import {
+  TopAvailablePlayers,
+  fetchTopAvailablePlayersFromYahoo,
+} from "./yahooTopAvailablePlayersBuilder.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -42,25 +46,41 @@ export async function setUsersLineup(
     return;
   }
 
-  const hasNHLTeam = firestoreTeams.some((team) => team.game_code === "nhl");
-  if (hasNHLTeam) {
-    await initStartingGoalies();
-  }
-  const hasMLBTeam = firestoreTeams.some((team) => team.game_code === "mlb");
-  if (hasMLBTeam) {
-    await initStartingPitchers();
-  }
+  // TODO: Add tests for the new addPlayerCandidate functionality
+  // I'm thinking we fetch players for one team, and then multiple teams at once and make sure the results are properly merged into arrays of 50 players for each team
+
+  // TODO: Do we want to initiate the promises here, or wait until we know usersTeams.length > 0?
+  // Pro: We can get the top available players while we wait for the usersTeamsPromise to resolve
+  // Con: We are initiating a bunch of promises that we may not need, using up API calls
+  const [
+    topAvailablePlayersPromise,
+    nflTopAvailablePlayersPromise,
+    restTopAvailablePlayersPromise,
+  ] = generateTopAvailablePlayerPromises(firestoreTeams, uid);
 
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
-
-  let usersTeams = await fetchRostersFromYahoo(teamKeys, uid);
+  let usersTeams: ITeamOptimizer[] = await fetchRostersFromYahoo(teamKeys, uid);
   if (usersTeams.length === 0) return;
+
+  await initializeGlobalStartingPlayers(firestoreTeams);
+
   await patchTeamChangesInFirestore(usersTeams, firestoreTeams);
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
-  usersTeams = await processTransactionsForSameDayChanges(usersTeams, uid);
+
+  const addCandidates: TopAvailablePlayers = await mergeTopAvailabePlayers(
+    topAvailablePlayersPromise,
+    nflTopAvailablePlayersPromise,
+    restTopAvailablePlayersPromise
+  );
+
+  usersTeams = await processTransactionsForSameDayChanges(
+    usersTeams,
+    uid,
+    addCandidates
+  );
   usersTeams = await processTodaysLineupChanges(usersTeams, uid);
-  await processTransactionsForNextDayChanges(usersTeams, uid);
+  await processTransactionsForNextDayChanges(usersTeams, uid, addCandidates);
 }
 
 export async function performWeeklyLeagueTransactions(
@@ -74,14 +94,33 @@ export async function performWeeklyLeagueTransactions(
     return;
   }
 
+  const [
+    topAvailablePlayersPromise,
+    nflTopAvailablePlayersPromise,
+    restTopAvailablePlayersPromise,
+  ] = generateTopAvailablePlayerPromises(firestoreTeams, uid);
+
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
   let usersTeams = await fetchRostersFromYahoo(
     teamKeys,
     uid,
     tomorrowsDateAsString()
   );
+  if (usersTeams.length === 0) return;
+
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
-  const transactions = getPlayerTransactions(usersTeams);
+
+  const topAvailablePlayerCandidates: TopAvailablePlayers =
+    await mergeTopAvailabePlayers(
+      topAvailablePlayersPromise,
+      nflTopAvailablePlayersPromise,
+      restTopAvailablePlayersPromise
+    );
+
+  const transactions = getPlayerTransactions(
+    usersTeams,
+    topAvailablePlayerCandidates
+  );
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
@@ -89,6 +128,102 @@ export async function performWeeklyLeagueTransactions(
       logger.error("Error in performTransactionsForWeeklyLeagues()");
       logger.error("User teams object: ", { usersTeams });
     }
+  }
+}
+
+function generateTopAvailablePlayerPromises(
+  firestoreTeams: ITeamFirestore[],
+  uid: string
+) {
+  const nflTeamKeysAddingPlayers = firestoreTeams
+    .filter((team) => team.allow_adding && team.game_code === "nfl")
+    .map((team) => team.team_key);
+  const otherTeamKeysAddingPlayers = firestoreTeams
+    .filter((team) => team.allow_adding && team.game_code !== "nfl")
+    .map((team) => team.team_key);
+  const allTeamKeysAddingPlayers = nflTeamKeysAddingPlayers.concat(
+    otherTeamKeysAddingPlayers
+  );
+
+  const topAvailablePlayersPromise: Promise<TopAvailablePlayers> =
+    fetchTopAvailablePlayersFromYahoo(
+      allTeamKeysAddingPlayers,
+      uid,
+      "A",
+      "sort=R_PO"
+    );
+
+  let nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>;
+  const hasNFLTeamThatAllowsAdding = firestoreTeams.some(
+    (team) => team.allow_adding && team.game_code === "nfl"
+  );
+  if (hasNFLTeamThatAllowsAdding) {
+    nflTopAvailablePlayersPromise = fetchTopAvailablePlayersFromYahoo(
+      nflTeamKeysAddingPlayers,
+      uid,
+      "A",
+      "sort=AR_L4W;sort_type=last4weeks"
+    );
+  } else {
+    nflTopAvailablePlayersPromise = Promise.resolve({});
+  }
+
+  let restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>;
+  const hasRestTeamsThatAllowAdding = firestoreTeams.some(
+    (team) => team.allow_adding && team.game_code !== "nfl"
+  );
+  if (hasRestTeamsThatAllowAdding) {
+    restTopAvailablePlayersPromise = fetchTopAvailablePlayersFromYahoo(
+      otherTeamKeysAddingPlayers,
+      uid,
+      "A",
+      "sort=AR_L14;sort_type=biweekly"
+    );
+  } else {
+    restTopAvailablePlayersPromise = Promise.resolve({});
+  }
+  return [
+    topAvailablePlayersPromise,
+    nflTopAvailablePlayersPromise,
+    restTopAvailablePlayersPromise,
+  ];
+}
+
+async function mergeTopAvailabePlayers(
+  topAvailablePlayersPromise: Promise<TopAvailablePlayers>,
+  nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>,
+  restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>
+): Promise<TopAvailablePlayers> {
+  const result: TopAvailablePlayers = {};
+
+  const resolvedPlayers = await Promise.all([
+    topAvailablePlayersPromise,
+    nflTopAvailablePlayersPromise,
+    restTopAvailablePlayersPromise,
+  ]);
+  resolvedPlayers.forEach((resolvedPromise: TopAvailablePlayers) => {
+    Object.keys(resolvedPromise).forEach((teamKey) => {
+      if (Array.isArray(resolvedPromise[teamKey])) {
+        result[teamKey].push(...resolvedPromise[teamKey]);
+      } else {
+        result[teamKey] = resolvedPromise[teamKey];
+      }
+    });
+  });
+
+  return result;
+}
+
+async function initializeGlobalStartingPlayers(
+  firestoreTeams: ITeamFirestore[]
+) {
+  const hasNHLTeam = firestoreTeams.some((team) => team.game_code === "nhl");
+  if (hasNHLTeam) {
+    await initStartingGoalies();
+  }
+  const hasMLBTeam = firestoreTeams.some((team) => team.game_code === "mlb");
+  if (hasMLBTeam) {
+    await initStartingPitchers();
   }
 }
 
@@ -187,12 +322,16 @@ async function processTodaysLineupChanges(
 
 async function processTransactionsForSameDayChanges(
   originalTeams: ITeamOptimizer[],
-  uid: string
+  uid: string,
+  topAvailablePlayerCandidates: TopAvailablePlayers
 ): Promise<ITeamOptimizer[]> {
   let result: ITeamOptimizer[] = originalTeams;
 
   const teams = getTeamsWithSameDayTransactions(originalTeams);
-  const transactions = getPlayerTransactions(teams);
+  const transactions = getPlayerTransactions(
+    teams,
+    topAvailablePlayerCandidates
+  );
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
@@ -209,12 +348,16 @@ async function processTransactionsForSameDayChanges(
 
 async function processTransactionsForNextDayChanges(
   originalTeams: ITeamOptimizer[],
-  uid: string
+  uid: string,
+  topAvailablePlayerCandidates: TopAvailablePlayers
 ): Promise<void> {
   // check if there are any transactions required for teams with next day changes
   // this pre-check is to save on Yahoo API calls
   const teams = getTeamsForNextDayTransactions(originalTeams);
-  const potentialTransactions = getPlayerTransactions(teams);
+  const potentialTransactions = getPlayerTransactions(
+    teams,
+    topAvailablePlayerCandidates
+  );
 
   if (is2DArrayEmpty(potentialTransactions)) {
     return;
@@ -228,7 +371,10 @@ async function processTransactionsForNextDayChanges(
     tomorrowsDateAsString()
   );
 
-  const transactions = getPlayerTransactions(tomorrowsTeams);
+  const transactions = getPlayerTransactions(
+    tomorrowsTeams,
+    topAvailablePlayerCandidates
+  );
   if (!is2DArrayEmpty(transactions)) {
     try {
       await postAllTransactions(transactions, uid);
@@ -239,7 +385,10 @@ async function processTransactionsForNextDayChanges(
   }
 }
 
-function getPlayerTransactions(teams: ITeamOptimizer[]): PlayerTransaction[][] {
+function getPlayerTransactions(
+  teams: ITeamOptimizer[],
+  topAvailablePlayerCandidates: TopAvailablePlayers
+): PlayerTransaction[][] {
   const result: PlayerTransaction[][] = [];
 
   for (const team of teams) {
@@ -253,6 +402,7 @@ function getPlayerTransactions(teams: ITeamOptimizer[]): PlayerTransaction[][] {
 
     if (isTransactionPaceBehindTimeline(team)) {
       if (team.allow_adding) {
+        console.log(topAvailablePlayerCandidates);
         // TODO: This method needs to actually be implemented. I'm not sure if the lo will be responsible for this or not
         // lo.findAddPlayerTransactions();
         playerTransactions = lo.playerTransactions;

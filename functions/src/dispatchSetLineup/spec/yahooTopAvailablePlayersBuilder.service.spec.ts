@@ -18,7 +18,7 @@ vi.mock("firebase-admin/app", () => {
 // To mock the result from yahooAPI getRostersByTeamID()
 describe("Test fetchRostersFromYahoo", function () {
   test("Test Players", async function () {
-    const leagueKey = "422.l.90351";
+    const teamKeys = ["422.l.90351.t.1"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/free-agents.json");
     const expected = require("./testYahooPlayersJSON/output/free-agents.json");
@@ -27,7 +27,7 @@ describe("Test fetchRostersFromYahoo", function () {
       yahooJSON
     );
 
-    const result = await fetchTopAvailablePlayersFromYahoo(leagueKey, uid);
+    const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);
 
     expect(result).toEqual(expected);
   });

@@ -18,19 +18,19 @@ import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
  *
  * @export
  * @async
- * @param {string[]} teams The team keys
+ * @param {string[]} teamKeys The team keys
  * @param {string} uid The firebase uid of the user
  * @param {string} [date=""] The date to get the roster for. If not provided, the default "" is today's date
  * @return {Promise<ITeamOptimizer[]>} The roster objects
  */
 export async function fetchRostersFromYahoo(
-  teams: string[],
+  teamKeys: string[],
   uid: string,
   date = ""
 ): Promise<ITeamOptimizer[]> {
   const result: ITeamOptimizer[] = [];
 
-  const yahooJSON = await getRostersByTeamID(teams, uid, date);
+  const yahooJSON = await getRostersByTeamID(teamKeys, uid, date);
   const gamesJSON = getChild(yahooJSON.fantasy_content.users[0].user, "games");
 
   // Loop through each "game" (nfl, nhl, nba, mlb)

@@ -64,6 +64,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     vi.spyOn(yahooAPI, "postRosterAddDropTransaction").mockReturnValue(
       Promise.resolve() as any
     );
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     await setUsersLineup(uid, teams as ITeamFirestore[]);
     expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
@@ -99,6 +102,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPostRosterAddDropTransaction = vi
       .spyOn(yahooAPI, "postRosterAddDropTransaction")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     await setUsersLineup(uid, teams as ITeamFirestore[]);
     expect(spyPutLineupChanges).toHaveBeenCalledWith(
@@ -142,6 +148,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPostRosterAddDropTransaction = vi
       .spyOn(yahooAPI, "postRosterAddDropTransaction")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     await setUsersLineup(uid, teams as ITeamFirestore[]);
     expect(spyPutLineupChanges).toHaveBeenCalledWith(
@@ -191,6 +200,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPostRosterAddDropTransaction = vi
       .spyOn(yahooAPI, "postRosterAddDropTransaction")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     await setUsersLineup(uid, teams as ITeamFirestore[]);
     expect(spyPutLineupChanges).toHaveBeenCalledWith(
@@ -263,6 +275,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
@@ -337,6 +352,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve());
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
@@ -406,6 +424,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve());
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
@@ -514,6 +535,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
@@ -582,6 +606,9 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
@@ -669,6 +696,9 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
     const spyPostRosterAddDropTransaction = vi
       .spyOn(yahooAPI, "postRosterAddDropTransaction")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     await performWeeklyLeagueTransactions(uid, teams);
@@ -697,6 +727,9 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
     const spyPostRosterAddDropTransaction = vi.spyOn(
       yahooAPI,
       "postRosterAddDropTransaction"
+    );
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
     );
 
     // Run test
@@ -730,6 +763,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     expect.assertions(4);
@@ -793,6 +829,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve());
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     expect.assertions(6);
@@ -857,6 +896,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const spyPostRosterAddDropTransaction = vi
       .spyOn(yahooAPI, "postRosterAddDropTransaction")
       .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // test
     expect.assertions(4);
@@ -926,6 +968,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     const spyPutLineupChanges = vi
       .spyOn(yahooAPI, "putLineupChanges")
       .mockReturnValue(Promise.resolve());
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
@@ -987,6 +1032,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
       .mockImplementation(() => {
         throw new Error("Error from putLineupChanges() test 5");
       });
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
 
     // Run test
     expect.assertions(5);

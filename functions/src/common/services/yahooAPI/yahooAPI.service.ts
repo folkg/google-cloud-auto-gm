@@ -64,7 +64,7 @@ export async function refreshYahooAccessToken(
  * This will be useful if we want to get for just individual teams
  *
  * @async
- * @param {string} teams - comma separated string of teamIDs, ie.
+ * @param {string} teamKeys - comma separated string of teamIDs, ie.
  * "414.l.240994.t.12, 414.l.358976.t.4, 419.l.14950.t.2,
  * 419.l.19947.t.6,419.l.28340.t.1,419.l.59985.t.12"
  * @param {string} uid - The firebase uid
@@ -72,16 +72,13 @@ export async function refreshYahooAccessToken(
  * @return {Promise<any>} The Yahoo JSON object containing the rosters
  */
 export async function getRostersByTeamID(
-  teams: string[],
+  teamKeys: string[],
   uid: string,
   date = ""
 ): Promise<any> {
   const leagueKeysArray: string[] = [];
-  teams.forEach((teamKey) => {
-    const leagueKey = teamKey.split(".t")[0];
-    if (!leagueKeysArray.includes(leagueKey)) {
-      leagueKeysArray.push(leagueKey);
-    }
+  teamKeys.forEach((teamKey) => {
+    leagueKeysArray.push(teamKey.split(".t")[0]);
   });
   const leagueKeys = leagueKeysArray.join(",");
 
@@ -99,10 +96,17 @@ export async function getRostersByTeamID(
     const { data } = await httpGetAxios(url, uid);
     return data;
   } catch (err: AxiosError | unknown) {
-    const errMessage = `Error in getRostersByTeamID. User: ${uid} Teams: ${teams}`;
+    const errMessage = `Error in getRostersByTeamID. User: ${uid} Teams: ${teamKeys}`;
     handleAxiosError(err, errMessage);
   }
 }
+
+export type AvailabilityStatus = "A" | "FA" | "W";
+export type PlayerSort =
+  | "sort=R_PO"
+  | "sort=AR_L30;sort_type=lastmonth"
+  | "sort=AR_L14;sort_type=biweekly"
+  | "sort=AR_L4W;sort_type=last4weeks";
 
 /**
  * Will fetch the top 25 free agents for the given league, based on rank over
@@ -110,23 +114,32 @@ export async function getRostersByTeamID(
  *
  * @export
  * @async
- * @param {string} leagueKey - The league key
+ * @param {string} teamKeys - The league key
  * @param {string} uid - The Yahoo user ID
- * @param {string} availabilityStatus - The availability status of the players. A = All Available, FA = Free Agents Only, W = Waivers Only
+ * @param {AvailabilityStatus} [availabilityStatus="A"] - The availability status
+ * @param {PlayerSort} [sort="sort=R_PO"] - The sort order
  * @return {Promise<any>}
  */
 export async function getTopAvailablePlayers(
-  leagueKey: string,
+  teamKeys: string[],
   uid: string,
-  availabilityStatus = "A" // A = All Available, FA = Free Agents Only, W = Waivers Only
+  availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
+  sort: PlayerSort = "sort=R_PO"
 ): Promise<any> {
+  const leagueKeysArray: string[] = [];
+  teamKeys.forEach((teamKey) => {
+    leagueKeysArray.push(teamKey.split(".t")[0]);
+  });
+
+  const leagueKeys = leagueKeysArray.join(",");
   // sort=AR_L30;sort_type=lastmonth
   // sort=AR_L14;sort_type=biweekly
+  // sort=AR_L4W;sort_type=last4weeks (NFL)
   // sort=R_PO (percent owned)
   const url =
-    `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKey}` +
+    `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKeys}` +
     `/players;status=${availabilityStatus}` +
-    ";sort=R_PO" +
+    `;${sort}` +
     ";out=ownership,percent_started,percent_owned,ranks,opponent,starting_status" +
     ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
     ";percent_started.cut_types=diamond" +
@@ -137,7 +150,7 @@ export async function getTopAvailablePlayers(
     const { data } = await httpGetAxios(url, uid);
     return data;
   } catch (err: AxiosError | unknown) {
-    const errMessage = `Error in getFreeAgents. User: ${uid} League: ${leagueKey}`;
+    const errMessage = `Error in getTopAvailablePlayers. User: ${uid} League: ${teamKeys}`;
     handleAxiosError(err, errMessage);
   }
 }
