@@ -33,6 +33,10 @@ export async function fetchTopAvailablePlayersFromYahoo(
   availabilityStatus: AvailabilityStatus = "A",
   sort: PlayerSort = "sort=R_PO"
 ): Promise<TopAvailablePlayers> {
+  if (teamKeys.length === 0) {
+    return {};
+  }
+
   const result: TopAvailablePlayers = {};
 
   // create a map of leagueKeys to teamKeys
