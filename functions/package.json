@@ -8,6 +8,7 @@
     "shell": "npm run build:watch & firebase functions:shell",
     "debug": "npm run build:watch & firebase functions:shell --inspect-functions",
     "start": "npm run shell",
+    "pp": "npm run test-run && npm run build",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test": "vitest",
