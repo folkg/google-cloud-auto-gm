@@ -113,7 +113,8 @@ export class LineupOptimizer {
     // Don't allow adding injured players to roster (too complicated with rules about whether leagues can add directly to IL)
     // check if there are any positions that have no players at all, prioritize those positions. Determine how many open roster spots and how many positions to consider.
 
-    // Fetch players from API
+    // Sort (by ownership_score) players from the API call and remove duplicate entries (by player_key)
+    // arr.sort().filter((x, i, a) => !i || x != a[i-1])
 
     // do we want to look at position scores/needs at all to factor score? Or just add the best available player?
     // sort players by score

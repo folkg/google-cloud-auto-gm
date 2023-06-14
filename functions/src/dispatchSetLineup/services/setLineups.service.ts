@@ -47,6 +47,7 @@ export async function setUsersLineup(
   }
 
   // TODO: Add tests for the new addPlayerCandidate functionality
+  // Create new spec for setLineups.service.spec.ts
   // I'm thinking we fetch players for one team, and then multiple teams at once and make sure the results are properly merged into arrays of 50 players for each team
 
   // TODO: Do we want to initiate the promises here, or wait until we know usersTeams.length > 0?
@@ -189,7 +190,7 @@ function generateTopAvailablePlayerPromises(
   ];
 }
 
-async function mergeTopAvailabePlayers(
+export async function mergeTopAvailabePlayers(
   topAvailablePlayersPromise: Promise<TopAvailablePlayers>,
   nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>,
   restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>
@@ -203,7 +204,7 @@ async function mergeTopAvailabePlayers(
   ]);
   resolvedPlayers.forEach((resolvedPromise: TopAvailablePlayers) => {
     Object.keys(resolvedPromise).forEach((teamKey) => {
-      if (Array.isArray(resolvedPromise[teamKey])) {
+      if (Array.isArray(result[teamKey])) {
         result[teamKey].push(...resolvedPromise[teamKey]);
       } else {
         result[teamKey] = resolvedPromise[teamKey];

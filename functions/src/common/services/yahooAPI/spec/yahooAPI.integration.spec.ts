@@ -74,7 +74,7 @@ describe.skip("Yahoo API Live Integration Tests", () => {
 
   it("should get All available players", async () => {
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2"; // Jeff Barnes
-    const JSONresponse = await getTopAvailablePlayers("422.l.90351", uid);
+    const JSONresponse = await getTopAvailablePlayers(["422.l.90351.t.2"], uid);
     // const fs = require("fs");
     // fs.writeFileSync("./all-players.json", JSON.stringify(JSONresponse));
     expect(JSONresponse).toBeDefined();
@@ -82,7 +82,11 @@ describe.skip("Yahoo API Live Integration Tests", () => {
 
   it("should get free agents only", async () => {
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2"; // Jeff Barnes
-    const JSONresponse = await getTopAvailablePlayers("422.l.90351", uid, "FA");
+    const JSONresponse = await getTopAvailablePlayers(
+      ["422.l.90351.t.2"],
+      uid,
+      "FA"
+    );
     // const fs = require("fs");
     // fs.writeFileSync("./free-agents.json", JSON.stringify(JSONresponse));
     expect(JSONresponse).toBeDefined();
