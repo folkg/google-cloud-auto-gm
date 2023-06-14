@@ -6,13 +6,15 @@
     "build:watch": "tsc --watch",
     "serve": "npm run build:watch & firebase emulators:start --only functions",
     "shell": "npm run build:watch & firebase functions:shell",
-    "debug": "npm run build:watch & firebase functions:shell --inspect-functions",
     "start": "npm run shell",
-    "pp": "npm run test-run && npm run build",
     "deploy": "firebase deploy --only functions",
+    "deploy:lineup": "firebase deploy --only functions:lineup",
+    "deploy:authBlock": "firebase deploy --only functions:authBlock",
+    "deploy:email": "firebase deploy --only functions:email",
+    "pp": "npm run test:once && npm run build",
     "logs": "firebase functions:log",
     "test": "vitest",
-    "test-run": "vitest run",
+    "test:once": "vitest run",
     "coverage": "vitest --coverage"
   },
   "engines": {

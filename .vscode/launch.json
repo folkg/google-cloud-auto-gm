@@ -10,6 +10,9 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
+            "outFiles": [
+                "${workspaceFolder}/functions/lib/**/*.js"
+            ],
             "preLaunchTask": "start firebase emulator",
             "postDebugTask": "stop firebase emulator"
         }
