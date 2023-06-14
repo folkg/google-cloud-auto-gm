@@ -3,15 +3,24 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+
   "functions": [
     {
       "source": "functions",
       "codebase": "default",
       "ignore": [
         "node_modules",
+        "src",
+        "coverage",
+        "**/*.js.map",
         ".git",
+        ".gitignore",
+        "tsconfig.json",
+        "vite.config.ts",
         "firebase-debug.log",
-        "firebase-debug.*.log"
+        "firestore-debug.log",
+        ".eslintrc.cjs",
+        "ui-debug.log"
       ],
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run test:once",
