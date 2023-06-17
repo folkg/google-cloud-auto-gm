@@ -1,5 +1,6 @@
 import assert from "assert";
 import { logger } from "firebase-functions";
+import { IPlayer } from "../../common/interfaces/IPlayer.js";
 import {
   ITeamFirestore,
   ITeamOptimizer,
@@ -53,6 +54,8 @@ export async function setUsersLineup(
   // TODO: Do we want to initiate the promises here, or wait until we know usersTeams.length > 0?
   // Pro: We can get the top available players while we wait for the usersTeamsPromise to resolve
   // Con: We are initiating a bunch of promises that we may not need, using up API calls
+
+  // TODO: Check pace before fetching add candidates? Could check each team inside the following function
   const [
     topAvailablePlayersPromise,
     nflTopAvailablePlayersPromise,
@@ -65,7 +68,7 @@ export async function setUsersLineup(
 
   await initializeGlobalStartingPlayers(firestoreTeams);
 
-  await patchTeamChangesInFirestore(usersTeams, firestoreTeams);
+  patchTeamChangesInFirestore(usersTeams, firestoreTeams); // don't await
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
 
@@ -132,19 +135,23 @@ export async function performWeeklyLeagueTransactions(
   }
 }
 
-function generateTopAvailablePlayerPromises(
+export function generateTopAvailablePlayerPromises(
   firestoreTeams: ITeamFirestore[],
   uid: string
 ) {
-  const nflTeamKeysAddingPlayers = firestoreTeams
+  const nflTeamKeysAddingPlayers: string[] = firestoreTeams
     .filter((team) => team.allow_adding && team.game_code === "nfl")
     .map((team) => team.team_key);
-  const otherTeamKeysAddingPlayers = firestoreTeams
+  const restTeamKeysAddingPlayers: string[] = firestoreTeams
     .filter((team) => team.allow_adding && team.game_code !== "nfl")
     .map((team) => team.team_key);
-  const allTeamKeysAddingPlayers = nflTeamKeysAddingPlayers.concat(
-    otherTeamKeysAddingPlayers
+  const allTeamKeysAddingPlayers: string[] = nflTeamKeysAddingPlayers.concat(
+    restTeamKeysAddingPlayers
   );
+
+  if (allTeamKeysAddingPlayers.length === 0) {
+    return [Promise.resolve({}), Promise.resolve({}), Promise.resolve({})];
+  }
 
   const topAvailablePlayersPromise: Promise<TopAvailablePlayers> =
     fetchTopAvailablePlayersFromYahoo(
@@ -155,10 +162,7 @@ function generateTopAvailablePlayerPromises(
     );
 
   let nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>;
-  const hasNFLTeamThatAllowsAdding = firestoreTeams.some(
-    (team) => team.allow_adding && team.game_code === "nfl"
-  );
-  if (hasNFLTeamThatAllowsAdding) {
+  if (nflTeamKeysAddingPlayers.length > 0) {
     nflTopAvailablePlayersPromise = fetchTopAvailablePlayersFromYahoo(
       nflTeamKeysAddingPlayers,
       uid,
@@ -170,12 +174,9 @@ function generateTopAvailablePlayerPromises(
   }
 
   let restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>;
-  const hasRestTeamsThatAllowAdding = firestoreTeams.some(
-    (team) => team.allow_adding && team.game_code !== "nfl"
-  );
-  if (hasRestTeamsThatAllowAdding) {
+  if (restTeamKeysAddingPlayers.length > 0) {
     restTopAvailablePlayersPromise = fetchTopAvailablePlayersFromYahoo(
-      otherTeamKeysAddingPlayers,
+      restTeamKeysAddingPlayers,
       uid,
       "A",
       "sort=AR_L14;sort_type=biweekly"
@@ -183,6 +184,7 @@ function generateTopAvailablePlayerPromises(
   } else {
     restTopAvailablePlayersPromise = Promise.resolve({});
   }
+
   return [
     topAvailablePlayersPromise,
     nflTopAvailablePlayersPromise,
@@ -388,7 +390,7 @@ async function processTransactionsForNextDayChanges(
 
 function getPlayerTransactions(
   teams: ITeamOptimizer[],
-  topAvailablePlayerCandidates: TopAvailablePlayers
+  allAddCandidates: TopAvailablePlayers
 ): PlayerTransaction[][] {
   const result: PlayerTransaction[][] = [];
 
@@ -397,18 +399,21 @@ function getPlayerTransactions(
     const lo = new LineupOptimizer(team);
 
     if (team.allow_dropping) {
-      lo.findDropPlayerTransactions();
+      lo.generateDropPlayerTransactions();
       playerTransactions = lo.playerTransactions;
     }
 
+    // TODO: Check pace before fetching add candidates instead of here?
     if (isTransactionPaceBehindTimeline(team)) {
-      if (team.allow_adding) {
-        console.log(topAvailablePlayerCandidates);
-        // TODO: This method needs to actually be implemented. I'm not sure if the lo will be responsible for this or not
-        // lo.findAddPlayerTransactions();
-        playerTransactions = lo.playerTransactions;
+      const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
+      if (addCandidates) {
+        if (team.allow_adding) {
+          // TODO: This method needs to actually be implemented. I'm not sure if the lo will be responsible for this or not
+          lo.generateAddPlayerTransactions(addCandidates);
+          playerTransactions = lo.playerTransactions;
+        }
+        // TODO: Can add add/dropping here as well
       }
-      // TODO: Can add add/dropping here as well
     }
 
     if (playerTransactions.length > 0) {

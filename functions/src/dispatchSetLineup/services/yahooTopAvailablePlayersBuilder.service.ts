@@ -8,7 +8,7 @@ import {
 import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
 
 /**
- * A map of teamKeys to PlayersObject
+ * A map of teamKeys to IPlayer Interface Objects
  *
  * @typedef {TopAvailablePlayers}
  */

@@ -1,6 +1,10 @@
-import { vi, describe, test, expect } from "vitest";
-import { TopAvailablePlayers } from "../services/yahooTopAvailablePlayersBuilder.service";
-import { mergeTopAvailabePlayers } from "../services/setLineups.service";
+import { vi, describe, it, test, expect } from "vitest";
+import {
+  generateTopAvailablePlayerPromises,
+  mergeTopAvailabePlayers,
+} from "../services/setLineups.service";
+import { ITeamFirestore } from "../../common/interfaces/ITeam";
+import * as yahooTopAvailablePlayersBuilder from "../services/yahooTopAvailablePlayersBuilder.service";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -16,10 +20,10 @@ vi.mock("firebase-admin/app", () => {
 
 describe("test mergeTopAvailabePlayers function", () => {
   test("four MLB teams", async () => {
-    const topAvailablePlayersPromise: Promise<TopAvailablePlayers> = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
-    const nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers> = require("./topAvailablePlayers/promises/nflTopAvailablePlayersPromise1.json");
-    const restTopAvailablePlayersPromise: Promise<TopAvailablePlayers> = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
-    const expectedOutput: TopAvailablePlayers = require("./topAvailablePlayers/output/output1.json");
+    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
+    const nflTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/nflTopAvailablePlayersPromise1.json");
+    const restTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
+    const expectedOutput = require("./topAvailablePlayers/output/output1.json");
 
     const result = await mergeTopAvailabePlayers(
       topAvailablePlayersPromise,
@@ -27,9 +31,109 @@ describe("test mergeTopAvailabePlayers function", () => {
       restTopAvailablePlayersPromise
     );
 
-    expect(result[0]).toEqual(expectedOutput[0]);
-    expect(result[1]).toEqual(expectedOutput[1]);
-    expect(result[2]).toEqual(expectedOutput[2]);
-    expect(result[3]).toEqual(expectedOutput[3]);
+    expect(result).toEqual(expectedOutput);
+
+    Object.keys(result).forEach((team) => {
+      expect(result[team].length).toEqual(50);
+    });
+  });
+
+  test("no teams adding players", async () => {
+    const result = await mergeTopAvailabePlayers(
+      Promise.resolve({}),
+      Promise.resolve({}),
+      Promise.resolve({})
+    );
+
+    expect(result).toEqual({});
+  });
+});
+
+describe("generateTopAvailablePlayerPromises", () => {
+  test("no teams adding players", () => {
+    const teams: ITeamFirestore[] = [
+      { allow_adding: false, game_code: "mlb" },
+      { allow_adding: false, game_code: "nfl" },
+      { allow_adding: false, game_code: "nhl" },
+    ] as ITeamFirestore[];
+    const expectedOutput = [
+      Promise.resolve({}),
+      Promise.resolve({}),
+      Promise.resolve({}),
+    ];
+    const result = generateTopAvailablePlayerPromises(teams, "testuid");
+    expect(result).toEqual(expectedOutput);
+  });
+
+  it("should call the API three times", () => {
+    const teams: ITeamFirestore[] = [
+      { allow_adding: true, game_code: "mlb" },
+      { allow_adding: true, game_code: "nfl" },
+    ] as ITeamFirestore[];
+    const expectedOutput = [
+      Promise.resolve({}),
+      Promise.resolve({}),
+      Promise.resolve({}),
+    ];
+
+    const fetchSpy = vi
+      .spyOn(
+        yahooTopAvailablePlayersBuilder,
+        "fetchTopAvailablePlayersFromYahoo"
+      )
+      .mockResolvedValue({});
+
+    const result = generateTopAvailablePlayerPromises(teams, "testuid");
+
+    expect(result).toEqual(expectedOutput);
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it("should call the API two times (no NFL call)", () => {
+    const teams: ITeamFirestore[] = [
+      { allow_adding: true, game_code: "mlb" },
+      { allow_adding: true, game_code: "nhl" },
+    ] as ITeamFirestore[];
+    const expectedOutput = [
+      Promise.resolve({}),
+      Promise.resolve({}),
+      Promise.resolve({}),
+    ];
+
+    const fetchSpy = vi
+      .spyOn(
+        yahooTopAvailablePlayersBuilder,
+        "fetchTopAvailablePlayersFromYahoo"
+      )
+      .mockResolvedValue({});
+
+    const result = generateTopAvailablePlayerPromises(teams, "testuid");
+
+    expect(result).toEqual(expectedOutput);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("should call the API two times (no rest call)", () => {
+    const teams: ITeamFirestore[] = [
+      { allow_adding: true, game_code: "nfl" },
+      { allow_adding: true, game_code: "nfl" },
+    ] as ITeamFirestore[];
+    const expectedOutput = [
+      Promise.resolve({}),
+      Promise.resolve({}),
+      Promise.resolve({}),
+    ];
+
+    const fetchSpy = vi
+      .spyOn(
+        yahooTopAvailablePlayersBuilder,
+        "fetchTopAvailablePlayersFromYahoo"
+      )
+      .mockResolvedValue({});
+
+    const result = generateTopAvailablePlayerPromises(teams, "testuid");
+
+    expect(result).toEqual(expectedOutput);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 });

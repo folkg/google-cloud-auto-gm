@@ -1,4 +1,6 @@
+import assert from "assert";
 import { logger } from "firebase-functions";
+import { IPlayer } from "../../common/interfaces/IPlayer.js";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
@@ -94,7 +96,7 @@ export class LineupOptimizer {
     return this._playerTransactions.slice();
   }
 
-  public findDropPlayerTransactions(): void {
+  public generateDropPlayerTransactions(): void {
     // find drops by attempting to move healthy players off IL unsuccessfully
     this.resolveHealthyPlayersOnIL();
     // Separate functions for add players and add/drop players
@@ -103,8 +105,12 @@ export class LineupOptimizer {
     // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
   }
 
-  public findAddPlayerTransactions(addCandidates: Player[]): void {
-    if (addCandidates.length === 0) return;
+  public generateAddPlayerTransactions(addCandidates: IPlayer[]): void {
+    assert(
+      addCandidates.length > 0,
+      "addCandidates must have at least one player"
+    );
+
     const numEmptyRosterSpots = this.team.numEmptyRosterSpots;
     // free up roster spots on a loop with this.openOneRosterSpot() until false is returned
     if (numEmptyRosterSpots === 0) return;
@@ -113,11 +119,20 @@ export class LineupOptimizer {
     // Don't allow adding injured players to roster (too complicated with rules about whether leagues can add directly to IL)
     // check if there are any positions that have no players at all, prioritize those positions. Determine how many open roster spots and how many positions to consider.
 
-    // Sort (by ownership_score) players from the API call and remove duplicate entries (by player_key)
-    // arr.sort().filter((x, i, a) => !i || x != a[i-1])
-
     // do we want to look at position scores/needs at all to factor score? Or just add the best available player?
     // sort players by score
+
+    // TODO: he ownership score needs to be added to these players. Currently it is done in the Team constructor.
+    // Can we refactor this to be done in the player constructor instead since we need it in multiple places?
+
+    // Object.keys(result).forEach((teamKey) => {
+    //   result[teamKey] = result[teamKey]
+    //     .map((player) => new Player(player))
+    //     .sort((a: Player, b: Player) => a.ownership_score - b.ownership_score)
+    //     .filter(
+    //       (player, i, all) => !i || player.player_key != all[i - 1].player_key
+    //     );
+    // });
 
     // add top x number of players to this._playerTransactions
     // TODO: When to send email for confirmation, if we have that setting on?
@@ -643,7 +658,7 @@ export class LineupOptimizer {
     }
     return true;
   }
-  private checkForIllegallyMovedPlayers(): any {
+  private checkForIllegallyMovedPlayers(): boolean {
     const illegallyMovedPlayers = Object.keys(this.deltaPlayerPositions).filter(
       (movedPlayerKey) =>
         this.team.illegalPlayers.some(
@@ -660,7 +675,7 @@ export class LineupOptimizer {
     }
     return true;
   }
-  private checkForSuboptimalLineup(): any {
+  private checkForSuboptimalLineup(): boolean {
     const suboptimalBNPlayers = this.team.reservePlayers
       .filter((reservePlayer) =>
         this.team.startingPlayers.some((startingPlayer) =>
