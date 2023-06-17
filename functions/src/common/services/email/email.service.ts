@@ -1,7 +1,7 @@
 import sgMail from "@sendgrid/mail";
 import dotenv from "dotenv";
 import { getApps, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+import { UserRecord, getAuth } from "firebase-admin/auth";
 import { logger } from "firebase-functions";
 
 dotenv.config();
@@ -101,14 +101,22 @@ export async function sendUserEmail(
   }
 }
 
-export async function sendCustomVerificationEmail(user: any): Promise<boolean> {
+export async function sendCustomVerificationEmail(
+  user: UserRecord
+): Promise<boolean> {
   const userEmailAddress = user?.email;
   if (!userEmailAddress) {
     throw new Error("Not a valid user");
   }
-  const verificationLink = await getAuth().generateEmailVerificationLink(
-    userEmailAddress
-  );
+
+  let verificationLink: string;
+  try {
+    verificationLink = await getAuth().generateEmailVerificationLink(
+      userEmailAddress
+    );
+  } catch (error) {
+    throw new Error(`Failed to generate email verification link ${error}`);
+  }
 
   const templateData = {
     displayName: user?.displayName,
@@ -124,9 +132,9 @@ export async function sendCustomVerificationEmail(user: any): Promise<boolean> {
 
   try {
     await sgMail.send(msg);
-    return true;
   } catch (error) {
-    logger.error("Welcome email failed to send for new user", error);
-    return false;
+    logger.error("Welcome email failed to send for new user", user, error);
+    throw new Error(`Failed to send welcome email: ${error}`);
   }
+  return true;
 }

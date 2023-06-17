@@ -12,7 +12,6 @@
         "node_modules",
         "src",
         "coverage",
-        "**/*.js.map",
         ".git",
         ".gitignore",
         "tsconfig.json",

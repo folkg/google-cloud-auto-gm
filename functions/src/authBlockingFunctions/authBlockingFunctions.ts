@@ -39,10 +39,9 @@ export const beforeCreateV1 = functionsV1.auth.user().beforeCreate((user) => {
   return {};
 });
 
-export const onCreateV1 = functionsV1.auth.user().onCreate((user) => {
+export const onCreateV1 = functionsV1.auth.user().onCreate(async (user) => {
   if (user) {
-    sendCustomVerificationEmail(user);
-    return true;
+    return await sendCustomVerificationEmail(user);
   }
   return false;
 });

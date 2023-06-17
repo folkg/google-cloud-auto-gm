@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  sendCustomVerificationEmail,
   sendFeedbackEmail,
   sendUserEmail,
 } from "../services/email/email.service.js";
+import { UserRecord } from "firebase-admin/auth";
 
 vi.mock("firebase-admin/auth", () => {
   return {
@@ -11,6 +13,7 @@ vi.mock("firebase-admin/auth", () => {
         email: "graemefolk@gmail.com",
         displayName: "Graeme Folk",
       })),
+      generateEmailVerificationLink: vi.fn(() => "https://www.google.com"),
     })),
   };
 });
@@ -49,6 +52,19 @@ describe.skip("Integration test EmailService", () => {
       "Sign In",
       "https://fantasyautocoach.com/"
     );
+    expect(result).toBeTruthy();
+  });
+
+  it("should send a welcome email via SendGrid", async () => {
+    const user: UserRecord = {
+      uid: "test-uid",
+      email: "graemefolk@gmail.com",
+      emailVerified: true,
+      disabled: false,
+      displayName: "Test User",
+    } as UserRecord;
+
+    const result = await sendCustomVerificationEmail(user);
     expect(result).toBeTruthy();
   });
 });
