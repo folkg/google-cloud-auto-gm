@@ -22,7 +22,8 @@ export async function scheduleWeeklyLeagueTransactions() {
     return;
   }
 
-  const activeUsers: Map<string, any[]> = mapUsersToActiveTeams(teamsSnapshot);
+  const activeUsers: Map<string, DocumentData> =
+    mapUsersToActiveTeams(teamsSnapshot);
   if (activeUsers.size === 0) {
     logger.log("No users to set lineups for");
     return;

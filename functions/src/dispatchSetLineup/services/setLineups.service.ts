@@ -406,7 +406,7 @@ function getPlayerTransactions(
     // TODO: Check pace before fetching add candidates instead of here?
     if (isTransactionPaceBehindTimeline(team)) {
       const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
-      if (addCandidates) {
+      if (addCandidates?.length > 0) {
         if (team.allow_adding) {
           // TODO: This method needs to actually be implemented. I'm not sure if the lo will be responsible for this or not
           lo.generateAddPlayerTransactions(addCandidates);

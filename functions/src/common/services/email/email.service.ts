@@ -5,7 +5,7 @@ import { UserRecord, getAuth } from "firebase-admin/auth";
 import { logger } from "firebase-functions";
 
 dotenv.config();
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
 
 if (getApps().length === 0) {
   initializeApp();

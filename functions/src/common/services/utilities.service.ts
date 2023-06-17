@@ -20,7 +20,7 @@ export function parseStringToInt(value: string, defaultValue = -1): number {
   return parseInt(value) || defaultValue;
 }
 
-let auth: any;
+let auth: GoogleAuth<any>;
 /**
  * Get the URL of a given v2 cloud function.
  *

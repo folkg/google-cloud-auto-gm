@@ -226,7 +226,7 @@ export function mapUsersToActiveTeams(
     return new Map();
   }
 
-  const result: Map<string, any[]> = new Map();
+  const result: Map<string, DocumentData> = new Map();
   teamsSnapshot?.docs?.forEach((doc) => {
     const team = doc.data();
     const uid = team.uid;
@@ -248,7 +248,7 @@ export function mapUsersToActiveTeams(
 }
 
 export function enqueueUsersTeams(
-  activeUsers: Map<string, any[]>,
+  activeUsers: Map<string, DocumentData>,
   queue: TaskQueue<Record<string, any>>,
   targetFunctionUri: string
 ) {
