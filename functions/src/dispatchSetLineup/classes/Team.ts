@@ -2,44 +2,44 @@ import assert from "assert";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { getChild, getNow } from "../../common/services/utilities.service.js";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants.js";
-import { ownershipScoreFunction } from "../services/playerOwnershipScoreFunctions.service.js";
+import { ownershipScoreFunctionFactory } from "../services/playerOwnershipScoreFunctions.service.js";
 import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service.js";
 import { Player } from "./Player.js";
+import { PlayerCollection } from "./PlayerCollection.js";
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
 export interface Team extends ITeamOptimizer {
   players: Player[];
 }
-export class Team implements Team {
+export class Team extends PlayerCollection implements Team {
   private _editablePlayers: Player[];
   private _pendingAddDropDifferential = 0;
 
   constructor(team: ITeamOptimizer) {
-    const teamCopy = structuredClone(team) as Team;
-    teamCopy.players = teamCopy.players.map((player) => new Player(player));
+    super(team.players);
+
+    const teamCopy: Team = structuredClone(team) as Team;
+    teamCopy.players = this.players;
     Object.assign(this, teamCopy);
 
     this._editablePlayers = this.players.filter((player) => player.is_editable);
 
     const numPlayersInLeague = this.num_teams * this.numStandardRosterSpots;
+    this.ownershipScoreFunction =
+      ownershipScoreFunctionFactory(numPlayersInLeague);
+    this.assignOwnershipScores();
 
     const playerStartScoreFunction = playerStartScoreFunctionFactory({
       gameCode: this.game_code,
       weeklyDeadline: this.weekly_deadline,
-      numPlayersInLeague,
+      ownershipScoreFunction: this.ownershipScoreFunction,
       seasonTimeProgress:
         (getNow() - this.start_date) / (this.end_date - this.start_date),
       gamesPlayed: this.games_played,
       inningsPitched: this.innings_pitched,
     });
-
     this.players.forEach((player) => {
       player.start_score = playerStartScoreFunction(player);
-      player.ownership_score = ownershipScoreFunction(
-        player,
-        numPlayersInLeague
-      );
-      player.eligible_positions.push("BN"); // not included by default in Yahoo
     });
 
     if (this.games_played) {
@@ -151,7 +151,7 @@ export class Team implements Team {
    * @return {ITeamOptimizer}
    */
   public toITeamObject(): ITeamOptimizer {
-    const { _editablePlayers, ...team } = this;
+    const { _editablePlayers, _ownershipScoreFunction, ...team } = this;
     return structuredClone(team) as ITeamOptimizer;
   }
 

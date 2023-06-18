@@ -6,7 +6,6 @@ import {
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
 import { Player } from "../classes/Player.js";
 import { HEALTHY_STATUS_LIST } from "../helpers/constants.js";
-import { ownershipScoreFunction } from "./playerOwnershipScoreFunctions.service.js";
 
 const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001
 const INJURY_FACTOR = 1e-3; // 0.001
@@ -18,7 +17,7 @@ type FactoryArgs = {
   gameCode: string;
   weeklyDeadline: string;
   seasonTimeProgress: number;
-  numPlayersInLeague: number;
+  ownershipScoreFunction: (player: Player) => number;
   gamesPlayed?: GamesPlayed[];
   inningsPitched?: InningsPitched;
 };
@@ -36,7 +35,7 @@ export function playerStartScoreFunctionFactory(args: FactoryArgs) {
   if (gamesPlayed) {
     return scoreFunctionMaxGamesPlayed(
       args.seasonTimeProgress,
-      args.numPlayersInLeague,
+      args.ownershipScoreFunction,
       gamesPlayed,
       args.inningsPitched
     );
@@ -58,14 +57,14 @@ export function playerStartScoreFunctionFactory(args: FactoryArgs) {
  *
  * @export
  * @param {number} seasonTimeProgress - The season time progress as a decimal between 0 and 1
- * @param {number} numPlayersInLeague - The number of players in the league
+ * @param {()} ownershipScoreFunction - The ownershipScoreFunction to be used for the player
  * @param {GamesPlayed[]} gamesPlayed - The maximum games played object for the Team
  * @param {?InningsPitched} [inningsPitched] - The maximum innings pitched object for the Team
  * @return {()} - A function that takes a player and returns a score.
  */
 export function scoreFunctionMaxGamesPlayed(
   seasonTimeProgress: number,
-  numPlayersInLeague: number,
+  ownershipScoreFunction: (player: Player) => number,
   gamesPlayed: GamesPlayed[],
   inningsPitched?: InningsPitched
 ): (player: Player) => number {
@@ -81,7 +80,7 @@ export function scoreFunctionMaxGamesPlayed(
     const paceKeeper = getPaceKeeper(player);
     const currentPace = paceKeeper.projected / paceKeeper.max ?? 1;
 
-    let score = ownershipScoreFunction(player, numPlayersInLeague);
+    let score = ownershipScoreFunction(player);
     score = applyInjuryScoreFactors(score, player);
     if (!player.isInactiveListEligible()) {
       if (currentPace > churnThreshold) {
