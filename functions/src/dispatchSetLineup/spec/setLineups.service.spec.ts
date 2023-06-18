@@ -18,9 +18,9 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe("test mergeTopAvailabePlayers function", () => {
+describe.concurrent("test mergeTopAvailabePlayers function", () => {
   test("four MLB teams", async () => {
-    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
+    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/topAvailablePlayersPromise1.json");
     const nflTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/nflTopAvailablePlayersPromise1.json");
     const restTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
     const expectedOutput = require("./topAvailablePlayers/output/output1.json");
@@ -49,7 +49,7 @@ describe("test mergeTopAvailabePlayers function", () => {
   });
 });
 
-describe("generateTopAvailablePlayerPromises", () => {
+describe.concurrent("generateTopAvailablePlayerPromises", () => {
   test("no teams adding players", () => {
     const teams: ITeamFirestore[] = [
       { allow_adding: false, game_code: "mlb" },

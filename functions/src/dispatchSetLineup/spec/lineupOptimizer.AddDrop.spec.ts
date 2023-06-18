@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
+import { PlayerCollection } from "../classes/PlayerCollection.js";
 
 // mock firebase-admin
 vi.mock("firebase-admin/firestore", () => {
@@ -16,7 +17,7 @@ vi.mock("firebase-admin/app", () => {
 });
 
 describe.concurrent(
-  "Unit Test LineupOptimizer Simple Add Drop Players",
+  "Unit Test LineupOptimizer Simple Drop Players",
   function () {
     test("No drops allowed Daily", function () {
       const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
@@ -169,3 +170,16 @@ describe.concurrent(
     });
   }
 );
+
+describe.concurrent("Add players", () => {
+  test("set addCandidates with MLB players", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+
+    const loAddCandidates: PlayerCollection | undefined = lo.addCandidates;
+    // expect(loAddCandidates?.players.length).toBeGreaterThanOrEqual(25);
+    // expect(loAddCandidates?.players.length).toBeLessThanOrEqual(50);
+    expect(loAddCandidates?.players.length).toEqual(48);
+  });
+});

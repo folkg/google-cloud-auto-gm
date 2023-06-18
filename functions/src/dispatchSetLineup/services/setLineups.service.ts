@@ -395,27 +395,26 @@ function getPlayerTransactions(
   const result: PlayerTransaction[][] = [];
 
   for (const team of teams) {
-    let playerTransactions: PlayerTransaction[] = [];
     const lo = new LineupOptimizer(team);
 
     if (team.allow_dropping) {
       lo.generateDropPlayerTransactions();
-      playerTransactions = lo.playerTransactions;
     }
 
-    // TODO: Check pace before fetching add candidates instead of here?
-    if (isTransactionPaceBehindTimeline(team)) {
-      const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
-      if (addCandidates?.length > 0) {
-        if (team.allow_adding) {
-          // TODO: This method needs to actually be implemented. I'm not sure if the lo will be responsible for this or not
-          lo.generateAddPlayerTransactions(addCandidates);
-          playerTransactions = lo.playerTransactions;
-        }
+    const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
+    if (addCandidates?.length > 0 && isTransactionPaceBehindTimeline(team)) {
+      lo.addCandidates = addCandidates;
+
+      if (team.allow_adding) {
+        lo.generateAddPlayerTransactions();
+      }
+      if (team.allow_add_drops) {
         // TODO: Can add add/dropping here as well
+        // lo.generateAddDropPlayerTransactions();
       }
     }
 
+    const playerTransactions: PlayerTransaction[] = lo.playerTransactions;
     if (playerTransactions.length > 0) {
       result.push(playerTransactions);
     }

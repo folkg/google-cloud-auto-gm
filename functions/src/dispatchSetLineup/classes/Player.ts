@@ -24,6 +24,8 @@ export class Player implements Player {
     const playerCopy = structuredClone(player);
     Object.assign(this, playerCopy);
 
+    this.start_score = 0;
+    this.ownership_score = 0;
     this.eligible_positions.push("BN"); // not included by default in Yahoo
   }
 
@@ -133,5 +135,9 @@ export class Player implements Player {
     this.eligible_positions = this.eligible_positions.filter(
       (position) => !INACTIVE_POSITION_LIST.includes(position)
     );
+  }
+
+  makeInelligibleToDrop(): void {
+    this.is_undroppable = true;
   }
 }

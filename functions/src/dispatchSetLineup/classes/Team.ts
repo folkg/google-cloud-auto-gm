@@ -46,18 +46,6 @@ export class Team extends PlayerCollection implements Team {
       this.artificiallyReduceRosterSpots();
     }
     this.processPendingTransactions();
-    // console.log(
-    //   this._allPlayers
-    //     .sort((a, b) => b.ownership_score - a.ownership_score)
-    //     .map(
-    //       (player) =>
-    //         player.player_name +
-    //         " " +
-    //         player.ownership_score +
-    //         " " +
-    //         player.percent_owned
-    //     )
-    // );
   }
 
   private artificiallyReduceRosterSpots() {
@@ -107,7 +95,7 @@ export class Team extends PlayerCollection implements Team {
       for (const key in playersObject) {
         if (key !== "count") {
           const playerInTransaction = playersObject[key].player;
-          this.makeTransactionPlayerILInelligible(playerInTransaction);
+          this.makeTransactionPlayerInelligible(playerInTransaction);
           // only count for officially "pending" transactions, not "proposed" trades
           if (isPendingTransaction) {
             this.changePendingAddDrops(playerInTransaction);
@@ -128,16 +116,17 @@ export class Team extends PlayerCollection implements Team {
     this._pendingAddDropDifferential += isAddingPlayer ? 1 : -1;
   }
 
-  private makeTransactionPlayerILInelligible(playerInTransaction: any) {
+  private makeTransactionPlayerInelligible(playerInTransaction: any) {
     const matchingTeamPlayer = this.players.find(
       (player) =>
         player.player_key === getChild(playerInTransaction[0], "player_key")
     );
 
-    // Don't make a player ineligible if they are already on the IL
-    if (matchingTeamPlayer?.isInactiveList()) return;
+    matchingTeamPlayer?.makeInelligibleToDrop();
 
-    matchingTeamPlayer?.makeInelliglbeForIL();
+    if (!matchingTeamPlayer?.isInactiveList()) {
+      matchingTeamPlayer?.makeInelliglbeForIL();
+    }
   }
 
   public get pendingAddDropDifferential() {
@@ -153,28 +142,6 @@ export class Team extends PlayerCollection implements Team {
   public toITeamObject(): ITeamOptimizer {
     const { _editablePlayers, _ownershipScoreFunction, ...team } = this;
     return structuredClone(team) as ITeamOptimizer;
-  }
-
-  /**
-   * Sorts players in place by score, lowest to highest
-   *
-   * @static
-   * @param {Player[]} players - array of players to sort
-   * @return {Player[]} - sorted array of players
-   */
-  static sortAscendingByScore(players: Player[]): Player[] {
-    return players.sort((a, b) => a.start_score - b.start_score);
-  }
-
-  /**
-   * Sorts players in place by score, highest to lowest
-   *
-   * @static
-   * @param {Player[]} players - array of players to sort
-   * @return {Player[]} - sorted array of players
-   */
-  static sortDescendingByScore(players: Player[]): Player[] {
-    return players.sort((a, b) => b.start_score - a.start_score);
   }
 
   public get sameDayTransactions(): boolean {

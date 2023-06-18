@@ -6,12 +6,14 @@ import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { Player } from "./Player.js";
 import { Team } from "./Team.js";
+import { PlayerCollection } from "./PlayerCollection.js";
 
 export class LineupOptimizer {
   private team: Team;
   private originalPlayerPositions: { [key: string]: string };
   private deltaPlayerPositions: { [key: string]: string } = {};
   private _playerTransactions: PlayerTransaction[] = [];
+  private _addCandidates: PlayerCollection | undefined;
 
   public verbose = false;
   private logInfo(...args: any[]) {
@@ -84,7 +86,7 @@ export class LineupOptimizer {
     for (const position of overfilledPositions) {
       // this.team.unfilledPositionCounter is recalculated on each call based on changes within loop
       while (this.team.unfilledPositionCounter?.[position] < 0) {
-        const worstPlayerAtPosition = Team.sortAscendingByScore(
+        const worstPlayerAtPosition = Team.sortAscendingByStartScore(
           this.team.getPlayersAt(position)
         )[0];
         this.movePlayerToPosition(worstPlayerAtPosition, "BN");
@@ -96,6 +98,21 @@ export class LineupOptimizer {
     return this._playerTransactions.slice();
   }
 
+  public set addCandidates(addCandidates: IPlayer[]) {
+    assert(
+      addCandidates.length > 0,
+      "addCandidates must have at least one player"
+    );
+    this._addCandidates = new PlayerCollection(addCandidates);
+    this._addCandidates.ownershipScoreFunction =
+      this.team.ownershipScoreFunction;
+    this._addCandidates.sortDescByOwnershipScoreAndRemoveDuplicates();
+  }
+
+  public get addCandidates(): PlayerCollection | undefined {
+    return this._addCandidates;
+  }
+
   public generateDropPlayerTransactions(): void {
     // find drops by attempting to move healthy players off IL unsuccessfully
     this.resolveHealthyPlayersOnIL();
@@ -105,11 +122,8 @@ export class LineupOptimizer {
     // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
   }
 
-  public generateAddPlayerTransactions(addCandidates: IPlayer[]): void {
-    assert(
-      addCandidates.length > 0,
-      "addCandidates must have at least one player"
-    );
+  public generateAddPlayerTransactions(): void {
+    if (!this.isRosterLegal()) return;
 
     const numEmptyRosterSpots = this.team.numEmptyRosterSpots;
     // free up roster spots on a loop with this.openOneRosterSpot() until false is returned
@@ -122,24 +136,12 @@ export class LineupOptimizer {
     // do we want to look at position scores/needs at all to factor score? Or just add the best available player?
     // sort players by score
 
-    // TODO: he ownership score needs to be added to these players. Currently it is done in the Team constructor.
-    // Can we refactor this to be done in the player constructor instead since we need it in multiple places?
-
-    // Object.keys(result).forEach((teamKey) => {
-    //   result[teamKey] = result[teamKey]
-    //     .map((player) => new Player(player))
-    //     .sort((a: Player, b: Player) => a.ownership_score - b.ownership_score)
-    //     .filter(
-    //       (player, i, all) => !i || player.player_key != all[i - 1].player_key
-    //     );
-    // });
-
     // add top x number of players to this._playerTransactions
     // TODO: When to send email for confirmation, if we have that setting on?
     // TODO: Compare the remaining players for add/drop if all empty spots are filled?
   }
 
-  public isRosterLegal(): boolean {
+  private isRosterLegal(): boolean {
     return (
       this.team.illegalPlayers.length > 0 ||
       this.checkForOverfilledRosterPositions()
@@ -150,7 +152,7 @@ export class LineupOptimizer {
     const healthyPlayersOnIL = this.team.healthyOnIL;
     if (healthyPlayersOnIL.length === 0) return;
 
-    Team.sortDescendingByScore(healthyPlayersOnIL);
+    Team.sortDescendingByStartScore(healthyPlayersOnIL);
     for (const player of healthyPlayersOnIL) {
       const success = this.resolveIllegalPlayer(player);
       if (!success) {
@@ -163,7 +165,7 @@ export class LineupOptimizer {
     const illegalPlayers = this.team.illegalPlayers;
     if (illegalPlayers.length === 0) return;
 
-    Team.sortDescendingByScore(illegalPlayers);
+    Team.sortDescendingByStartScore(illegalPlayers);
     this.logInfo(
       `Resolving illegal players: ${illegalPlayers
         .map((p) => p.player_name)
@@ -205,7 +207,7 @@ export class LineupOptimizer {
 
   private attemptIllegalPlayerSwaps(playerA: Player): boolean {
     const allEditablePlayers = this.team.editablePlayers;
-    Team.sortAscendingByScore(allEditablePlayers);
+    Team.sortAscendingByStartScore(allEditablePlayers);
 
     if (allEditablePlayers.length === 0) return false;
 
@@ -277,7 +279,7 @@ export class LineupOptimizer {
 
   private optimizeReserveToStaringPlayers(): void {
     const reservePlayers = this.team.reservePlayers;
-    Team.sortAscendingByScore(reservePlayers);
+    Team.sortAscendingByStartScore(reservePlayers);
     this.logInfo(
       `reserve players: ${reservePlayers.map((p) => p.player_name)}`
     );
@@ -342,7 +344,7 @@ export class LineupOptimizer {
 
   private getEliglibleStartingPlayers(playerA: Player): Player[] | undefined {
     const startingPlayersList = this.team.startingPlayers;
-    Team.sortAscendingByScore(startingPlayersList);
+    Team.sortAscendingByStartScore(startingPlayersList);
 
     if (playerA.hasLowerStartScoreThanAll(startingPlayersList)) {
       this.logInfo(
@@ -431,7 +433,7 @@ export class LineupOptimizer {
         (player) => playerToOpenSpotFor.compareStartScore(player) > 0
       );
     }
-    Team.sortAscendingByScore(inactivePlayersOnRoster);
+    Team.sortAscendingByStartScore(inactivePlayersOnRoster);
 
     for (const inactivePlayer of inactivePlayersOnRoster) {
       const eligiblePosition = inactivePlayer.findEligiblePositionIn(
