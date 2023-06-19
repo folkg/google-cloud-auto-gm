@@ -182,4 +182,28 @@ describe.concurrent("Add players", () => {
     // expect(loAddCandidates?.players.length).toBeLessThanOrEqual(50);
     expect(loAddCandidates?.players.length).toEqual(48);
   });
+
+  test("should free 0 roster spots before adding players", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const numEmptyRosterSpots =
+      lo.getCurrentTeamStateObject().numEmptyRosterSpots;
+
+    expect(numEmptyRosterSpots).toEqual(0);
+  });
+
+  test("should free 3 roster spots (injured players to IL) before adding players", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const numEmptyRosterSpots =
+      lo.getCurrentTeamStateObject().numEmptyRosterSpots;
+
+    expect(numEmptyRosterSpots).toEqual(3);
+  });
+
+  // TODO: Test the currentPaceForGamesPlayed not good.
 });

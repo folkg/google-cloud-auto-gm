@@ -53,7 +53,7 @@ export class PlayerCollection {
       (a: Player, b: Player) => b.ownership_score - a.ownership_score
     );
     this.players = this.players.filter(
-      (player, i, all) => i === 0 || player.player_key !== all[i - 1].player_key
+      (player, i, all) => player.player_key !== all[i - 1]?.player_key
     );
   }
 }

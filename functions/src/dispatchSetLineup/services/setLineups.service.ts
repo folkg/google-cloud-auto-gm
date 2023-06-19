@@ -402,6 +402,7 @@ function getPlayerTransactions(
     }
 
     const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
+    // TODO: Might want to move the transactionPaceBehindTimeline function inside LO or Team since we will be adding more on each loop.
     if (addCandidates?.length > 0 && isTransactionPaceBehindTimeline(team)) {
       lo.addCandidates = addCandidates;
 

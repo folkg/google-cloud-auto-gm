@@ -5,8 +5,8 @@ import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { Player } from "./Player.js";
-import { Team } from "./Team.js";
 import { PlayerCollection } from "./PlayerCollection.js";
+import { Team } from "./Team.js";
 
 export class LineupOptimizer {
   private team: Team;
@@ -29,6 +29,10 @@ export class LineupOptimizer {
 
   public getCurrentTeamState(): ITeamOptimizer {
     return this.team.toITeamObject();
+  }
+
+  public getCurrentTeamStateObject(): Team {
+    return new Team(this.getCurrentTeamState());
   }
 
   public optimizeStartingLineup(): LineupChanges {
@@ -123,21 +127,32 @@ export class LineupOptimizer {
   }
 
   public generateAddPlayerTransactions(): void {
-    if (!this.isRosterLegal()) return;
+    if (!this._addCandidates || !this.isRosterLegal()) return;
 
-    const numEmptyRosterSpots = this.team.numEmptyRosterSpots;
-    // free up roster spots on a loop with this.openOneRosterSpot() until false is returned
-    if (numEmptyRosterSpots === 0) return;
-    // Build the API call:
-    // check if adding from waivers are allowerd (has to be on contrinous waivers). Use "FA" only if waivers not allowed.
-    // Don't allow adding injured players to roster (too complicated with rules about whether leagues can add directly to IL)
-    // check if there are any positions that have no players at all, prioritize those positions. Determine how many open roster spots and how many positions to consider.
+    // free up as many roster spots as possible
+    while (this.openOneRosterSpot());
 
-    // do we want to look at position scores/needs at all to factor score? Or just add the best available player?
-    // sort players by score
+    if (this.team.numEmptyRosterSpots === 0) return;
 
-    // add top x number of players to this._playerTransactions
+    const addCandidates: Player[] = this._addCandidates?.players.filter(
+      (player) => !player.isLTIR
+    );
+
+    // TODO: Write tests for addCandidates! make sure we are filtering the correct people out for various different scenarios (each step of the way, both positive and negative)
+
+    // while (this.team.numEmptyRosterSpots > 0) {
+    let currentCandidates = this.filterForUnfilledPositions(addCandidates);
+    currentCandidates = this.addBonusForCriticalPositions(currentCandidates);
+    // TODO: Create transaction
+    // TODO: Make sure numEmptyRosterSpots takes into accounts current transactions
+    // This include ones we make (this._playerTransactions), as well as ones already pending
+    // }
+
+    // check if adding from waivers are allowerd (has to be on contrinous waivers).
+    // TODO: We are not currently storing this information. We would need to check the .ownership property, but build it first.
+
     // TODO: When to send email for confirmation, if we have that setting on?
+    // TODO: Send the email with debugging information - such as player added name, ownership score. Who moved to IR. Any unfilled or critical positions on team.
     // TODO: Compare the remaining players for add/drop if all empty spots are filled?
   }
 
@@ -146,6 +161,39 @@ export class LineupOptimizer {
       this.team.illegalPlayers.length > 0 ||
       this.checkForOverfilledRosterPositions()
     );
+  }
+
+  private filterForUnfilledPositions(addCandidates: Player[]): Player[] {
+    const unfilledPositions: string[] = this.team.unfilledAllPositions;
+
+    if (unfilledPositions.length === 0) {
+      return addCandidates;
+    }
+
+    // TODO: Test if unfilledPositions is empty, and not empty
+    return addCandidates.filter((player) =>
+      player.isEligibleForAnyPositionIn(unfilledPositions)
+    );
+  }
+
+  private addBonusForCriticalPositions(addCandidates: Player[]): Player[] {
+    const criticalPositions: string[] = this.team.criticalPositions;
+
+    if (criticalPositions.length === 0) {
+      return addCandidates;
+    }
+
+    // TODO: Test: if criticalPositionsis empty, and not empty
+
+    return addCandidates.map((player) => {
+      if (player.isEligibleForAnyPositionIn(criticalPositions)) {
+        const playerCopy = structuredClone(player);
+        playerCopy.ownership_score += 5;
+        return playerCopy;
+      } else {
+        return player;
+      }
+    });
   }
 
   private resolveHealthyPlayersOnIL(): void {

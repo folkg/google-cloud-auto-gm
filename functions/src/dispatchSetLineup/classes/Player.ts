@@ -121,6 +121,12 @@ export class Player implements Player {
     );
   }
 
+  isEligibleForAnyPositionIn(positionsList: string[]): boolean {
+    return this.eligible_positions.some((position) =>
+      positionsList.includes(position)
+    );
+  }
+
   hasLowerStartScoreThanAll(playersList: Player[]): boolean {
     return playersList.every((player) => this.compareStartScore(player) <= 0);
   }
