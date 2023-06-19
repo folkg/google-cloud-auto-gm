@@ -4,5 +4,6 @@ export interface PlayerTransaction {
   players: {
     playerKey: string;
     transactionType: string;
+    isInactiveList: boolean;
   }[];
 }

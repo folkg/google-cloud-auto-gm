@@ -230,6 +230,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         {
           playerKey: "419.p.7528",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -240,6 +241,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         {
           playerKey: "419.p.7903",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -329,6 +331,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         {
           playerKey: "419.p.7155",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -373,6 +376,87 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
   });
 
+  it("should drop two players from IL since they were the worst, no other changes", async () => {
+    const uid = "testUID";
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
+
+    // Set up mock data
+    const initialRosters: ITeamOptimizer[] = [
+      require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScoreIL.json"),
+      require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
+    ];
+    const updatedRosters: ITeamOptimizer[] = [
+      require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScoreIL.json"),
+      require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
+    ];
+    const tomorrowRosters: ITeamOptimizer[] = [
+      require("./testRosters/NHL/DailyDrops/RefetchedRosters/dropPlayerWithLowestScoreAndOptimization.json"),
+    ];
+
+    const transaction1 = {
+      players: [
+        {
+          playerKey: "419.p.63772",
+          transactionType: "drop",
+          isInactiveList: true,
+        },
+      ],
+      sameDayTransactions: true,
+      teamKey: "419.l.19947.t.6",
+    };
+    const transaction2 = {
+      players: [
+        {
+          playerKey: "419.p.6377",
+          transactionType: "drop",
+          isInactiveList: true,
+        },
+      ],
+      sameDayTransactions: true,
+      teamKey: "419.l.19947.t.6",
+    };
+
+    // Set up spies and mocks
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(updatedRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(tomorrowRosters);
+    });
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(3);
+
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(1);
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(3);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction1,
+      uid
+    );
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction2,
+      uid
+    );
+  });
+
   it("should have one lineup change, then one refetch, then one drop (again)", async () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }];
@@ -401,6 +485,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         {
           playerKey: "418.p.6047",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -489,6 +574,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         {
           playerKey: "419.p.7528",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -499,6 +585,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         {
           playerKey: "419.p.7903",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -509,6 +596,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         {
           playerKey: "419.p.7155",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -668,6 +756,7 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
         {
           playerKey: "418.p.6047",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: false,
@@ -678,6 +767,7 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
         {
           playerKey: "418.p.6047",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: false,
@@ -795,6 +885,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
         {
           playerKey: "419.p.7528",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -805,6 +896,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
         {
           playerKey: "419.p.7903",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
@@ -931,6 +1023,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
         {
           playerKey: "419.p.7528",
           transactionType: "drop",
+          isInactiveList: false,
         },
       ],
       sameDayTransactions: true,
