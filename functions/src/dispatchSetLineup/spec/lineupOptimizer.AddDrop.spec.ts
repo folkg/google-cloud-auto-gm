@@ -172,15 +172,15 @@ describe.concurrent(
 );
 
 describe.concurrent("Add players", () => {
-  test("set addCandidates with MLB players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+  test("set addCandidates with MLB players (with one candidate already pending waivers)", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsAddCandidates.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
 
     const loAddCandidates: PlayerCollection | undefined = lo.addCandidates;
     // expect(loAddCandidates?.players.length).toBeGreaterThanOrEqual(25);
     // expect(loAddCandidates?.players.length).toBeLessThanOrEqual(50);
-    expect(loAddCandidates?.players.length).toEqual(48);
+    expect(loAddCandidates?.players.length).toEqual(47);
   });
 
   test("should free 0 roster spots before adding players", () => {

@@ -463,6 +463,10 @@ async function postAllTransactions(
     }
   }
 
+  // TODO: Send notification email after every successful set of transactions
+  // TODO: When to send email for confirmation, if we have that setting on?
+  // TODO: Send the email with debugging information - such as player added name, ownership score. Who moved to IR. Any unfilled or critical positions on team.
+
   // TODO: This is the code to use if we want to use Promise.allSettled in parallel
   // const allTransactionsPromises = playerTransactions
   //   .flat()

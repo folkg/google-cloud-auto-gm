@@ -31,6 +31,11 @@ export class PlayerCollection {
     return players.sort((a, b) => b.start_score - a.start_score);
   }
 
+  // alias for players
+  public get allPlayers(): Player[] {
+    return this.players;
+  }
+
   public get ownershipScoreFunction() {
     return this._ownershipScoreFunction;
   }
@@ -54,6 +59,12 @@ export class PlayerCollection {
     );
     this.players = this.players.filter(
       (player, i, all) => player.player_key !== all[i - 1]?.player_key
+    );
+  }
+
+  public removePlayer(playerToRemove: Player) {
+    this.players = this.players.filter(
+      (player) => player.player_key !== playerToRemove.player_key
     );
   }
 }

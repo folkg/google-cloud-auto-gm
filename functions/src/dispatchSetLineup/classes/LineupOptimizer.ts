@@ -7,12 +7,13 @@ import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { Player } from "./Player.js";
 import { PlayerCollection } from "./PlayerCollection.js";
 import { Team } from "./Team.js";
+import { PlayerTransactions } from "./PlayerTransactions.js";
 
 export class LineupOptimizer {
   private team: Team;
   private originalPlayerPositions: { [key: string]: string };
-  private deltaPlayerPositions: { [key: string]: string } = {};
-  private _playerTransactions: PlayerTransaction[] = [];
+  private deltaPlayerPositions: { [key: string]: string };
+  private _playerTransactions: PlayerTransactions;
   private _addCandidates: PlayerCollection | undefined;
 
   public verbose = false;
@@ -22,9 +23,11 @@ export class LineupOptimizer {
 
   constructor(team: ITeamOptimizer) {
     this.team = new Team(team);
+    this._playerTransactions = new PlayerTransactions();
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.team.editablePlayers
     );
+    this.deltaPlayerPositions = {};
   }
 
   public getCurrentTeamState(): ITeamOptimizer {
@@ -99,7 +102,7 @@ export class LineupOptimizer {
   }
 
   public get playerTransactions(): PlayerTransaction[] {
-    return this._playerTransactions.slice();
+    return this._playerTransactions.transactions;
   }
 
   public set addCandidates(addCandidates: IPlayer[]) {
@@ -107,7 +110,13 @@ export class LineupOptimizer {
       addCandidates.length > 0,
       "addCandidates must have at least one player"
     );
-    this._addCandidates = new PlayerCollection(addCandidates);
+
+    const pendingAddKeys: string[] = this.team.pendingAddPlayerKeys;
+    const filteredCandidates = addCandidates.filter(
+      (player) => !pendingAddKeys.includes(player.player_key)
+    );
+
+    this._addCandidates = new PlayerCollection(filteredCandidates);
     this._addCandidates.ownershipScoreFunction =
       this.team.ownershipScoreFunction;
     this._addCandidates.sortDescByOwnershipScoreAndRemoveDuplicates();
@@ -120,10 +129,6 @@ export class LineupOptimizer {
   public generateDropPlayerTransactions(): void {
     // find drops by attempting to move healthy players off IL unsuccessfully
     this.resolveHealthyPlayersOnIL();
-    // Separate functions for add players and add/drop players
-    // TODO: Call this.openOneRosterSpot() with no args in loop until false is returned
-    // Any players added by the above will be available for the next round of swaps
-    // TODO: Call this.optimizeReserveToStaringPlayers() again? How does optimizer use the free roster spots? We don't want to add new players to the starting lineup if we can avoid it and they will be needed by the optimizer
   }
 
   public generateAddPlayerTransactions(): void {
@@ -132,28 +137,68 @@ export class LineupOptimizer {
     // free up as many roster spots as possible
     while (this.openOneRosterSpot());
 
-    if (this.team.numEmptyRosterSpots === 0) return;
-
-    const addCandidates: Player[] = this._addCandidates?.players.filter(
-      (player) => !player.isLTIR
-    );
+    const numEmptySpots = this.team.numEmptyRosterSpots;
+    if (numEmptySpots === 0) return;
 
     // TODO: Write tests for addCandidates! make sure we are filtering the correct people out for various different scenarios (each step of the way, both positive and negative)
 
-    // while (this.team.numEmptyRosterSpots > 0) {
-    let currentCandidates = this.filterForUnfilledPositions(addCandidates);
+    // this._playerTransactions.netRosterSpotChanges is recalulated at the top of each loop
+    while (numEmptySpots - this._playerTransactions.netRosterSpotChanges > 0) {
+      const success = this.createPlayerTransaction();
+      if (!success) {
+        break;
+      }
+    }
+
+    // TODO: send emails from function postAllTransactions() in setLineups.service
+  }
+
+  private createPlayerTransaction(): boolean {
+    assert(this._addCandidates, "addCandidates must be set");
+
+    let currentCandidates: Player[] = this._addCandidates?.allPlayers.filter(
+      (player) => !player.isLTIR
+    );
+    currentCandidates = this.filterForUnfilledPositions(currentCandidates);
     currentCandidates = this.addBonusForCriticalPositions(currentCandidates);
-    // TODO: Create transaction
-    // TODO: Make sure numEmptyRosterSpots takes into accounts current transactions
-    // This include ones we make (this._playerTransactions), as well as ones already pending
-    // }
 
-    // check if adding from waivers are allowerd (has to be on contrinous waivers).
-    // TODO: We are not currently storing this information. We would need to check the .ownership property, but build it first.
+    const playerToAdd: Player = currentCandidates[0];
+    if (!playerToAdd) {
+      return false;
+    }
 
-    // TODO: When to send email for confirmation, if we have that setting on?
-    // TODO: Send the email with debugging information - such as player added name, ownership score. Who moved to IR. Any unfilled or critical positions on team.
-    // TODO: Compare the remaining players for add/drop if all empty spots are filled?
+    const pt: PlayerTransaction = {
+      teamKey: this.team.team_key,
+      sameDayTransactions: this.team.sameDayTransactions,
+      players: [
+        {
+          playerKey: playerToAdd.player_key,
+          transactionType: "add",
+          isInactiveList: playerToAdd.isInactiveList(),
+        },
+      ],
+    };
+    this._playerTransactions.addTransaction(pt);
+
+    this._addCandidates.removePlayer(playerToAdd);
+
+    this.logInfo(
+      `Added a new transaction from generateAddPlayerTransactions: ${JSON.stringify(
+        pt
+      )}`
+    );
+
+    return true;
+  }
+
+  public generateAddDropPlayerTransactions(): void {
+    // TODO: Complete this function
+    // Loop while currentCandidates.length > 0
+    // 0. Filter team for players that have not already been dropped, and are not already in a pending transaction
+    // 1. Filter add candidates for all players that have ownership score > lowest team ownership score
+    // 2. Take top player from add candidates, bottom player from roster
+    // 3. Create transaction
+    // 4. this._addCandidates.removePlayer
   }
 
   private isRosterLegal(): boolean {
@@ -524,10 +569,11 @@ export class LineupOptimizer {
         {
           playerKey: playerToDrop.player_key,
           transactionType: "drop",
+          isInactiveList: playerToDrop.isInactiveList(),
         },
       ],
     };
-    this._playerTransactions.push(pt);
+    this._playerTransactions.addTransaction(pt);
     this.logInfo(
       `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
     );
@@ -539,7 +585,9 @@ export class LineupOptimizer {
         (player) =>
           !player.is_undroppable &&
           !this.isTooLateToDrop(player) &&
-          !this.getAlreadyDroppedPlayers().includes(player.player_key) &&
+          !this._playerTransactions.droppedPlayerKeys.includes(
+            player.player_key
+          ) &&
           !player.eligible_positions.some((position) =>
             this.team.criticalPositions.includes(position)
           )
@@ -555,13 +603,6 @@ export class LineupOptimizer {
 
   private isTooLateToDrop(player: Player) {
     return this.team.sameDayTransactions && !player.is_editable;
-  }
-
-  private getAlreadyDroppedPlayers() {
-    return this._playerTransactions
-      .flatMap((transaction) => transaction.players)
-      .filter((player) => player.transactionType === "drop")
-      .map((player) => player.playerKey);
   }
 
   private movePlayerToUnfilledPositionInTargetList(
