@@ -14,6 +14,8 @@ export interface Team extends ITeamOptimizer {
 export class Team extends PlayerCollection implements Team {
   private _editablePlayers: Player[];
   private _pendingAddDropDifferential = 0;
+  private _pendingAddPlayerKeys: Set<string> = new Set();
+  private _pendingDropPlayerKeys: Set<string> = new Set();
 
   constructor(team: ITeamOptimizer) {
     super(team.players);
@@ -24,10 +26,9 @@ export class Team extends PlayerCollection implements Team {
 
     this._editablePlayers = this.players.filter((player) => player.is_editable);
 
-    const numPlayersInLeague = this.num_teams * this.numStandardRosterSpots;
-    this.ownershipScoreFunction =
-      ownershipScoreFunctionFactory(numPlayersInLeague);
-    this.assignOwnershipScores();
+    this.ownershipScoreFunction = ownershipScoreFunctionFactory(
+      this.num_teams * this.numStandardRosterSpots
+    );
 
     const playerStartScoreFunction = playerStartScoreFunctionFactory({
       gameCode: this.game_code,
@@ -45,6 +46,7 @@ export class Team extends PlayerCollection implements Team {
     if (this.games_played) {
       this.artificiallyReduceRosterSpots();
     }
+
     this.processPendingTransactions();
   }
 
@@ -96,24 +98,10 @@ export class Team extends PlayerCollection implements Team {
         if (key !== "count") {
           const playerInTransaction = playersObject[key].player;
           this.makeTransactionPlayerInelligible(playerInTransaction);
-          // only count for officially "pending" transactions, not "proposed" trades
-          if (isPendingTransaction) {
-            this.changePendingAddDrops(playerInTransaction);
-          }
+          this.changePendingAddDrops(isPendingTransaction, playerInTransaction);
         }
       }
     });
-  }
-
-  private changePendingAddDrops(playerInTransaction: any) {
-    // sometimes transaction_data is an array of size 1, sometimes just the object. Why, Yahoo?
-    let transactionData = getChild(playerInTransaction, "transaction_data");
-    if (Array.isArray(transactionData)) {
-      transactionData = transactionData[0];
-    }
-    const isAddingPlayer =
-      transactionData.destination_team_key === this.team_key;
-    this._pendingAddDropDifferential += isAddingPlayer ? 1 : -1;
   }
 
   private makeTransactionPlayerInelligible(playerInTransaction: any) {
@@ -129,8 +117,40 @@ export class Team extends PlayerCollection implements Team {
     }
   }
 
-  public get pendingAddDropDifferential() {
+  private changePendingAddDrops(
+    isPendingTransaction: boolean,
+    playerInTransaction: any
+  ) {
+    const playerKey = getChild(playerInTransaction[0], "player_key");
+    // sometimes transaction_data is an array of size 1, sometimes just the object. Why, Yahoo?
+    let transactionData = getChild(playerInTransaction, "transaction_data");
+    if (Array.isArray(transactionData)) {
+      transactionData = transactionData[0];
+    }
+
+    const isAddingPlayer =
+      transactionData.destination_team_key === this.team_key;
+
+    // only adjust pendingAddDropDifferential count for officially "pending" transactions, not "proposed" trades
+    if (isAddingPlayer) {
+      this._pendingAddPlayerKeys.add(playerKey);
+      this._pendingAddDropDifferential += isPendingTransaction ? 1 : 0;
+    } else {
+      this._pendingDropPlayerKeys.add(playerKey);
+      this._pendingAddDropDifferential -= isPendingTransaction ? 1 : 0;
+    }
+  }
+
+  public get pendingAddDropDifferential(): number {
     return this._pendingAddDropDifferential;
+  }
+
+  public get pendingAddPlayerKeys(): string[] {
+    return Array.from(this._pendingAddPlayerKeys);
+  }
+
+  public get pendingDropPlayerKeys(): string[] {
+    return Array.from(this._pendingDropPlayerKeys);
   }
 
   /**
@@ -149,11 +169,6 @@ export class Team extends PlayerCollection implements Team {
       (this.weekly_deadline === "" || this.weekly_deadline === "intraday") &&
       this.edit_key === this.coverage_period
     );
-  }
-
-  // alias for players
-  public get allPlayers(): Player[] {
-    return this.players;
   }
 
   public get editablePlayers(): Player[] {
@@ -272,17 +287,6 @@ export class Team extends PlayerCollection implements Team {
         !INACTIVE_POSITION_LIST.includes(position) &&
         playersAtPosition.length <= this.roster_positions[position]
       );
-    });
-  }
-
-  public get positionalScores() {
-    return Object.keys(this.roster_positions).map((position) => {
-      const positionScore = this.players.reduce((acc, player) => {
-        if (player.eligible_positions.includes(position))
-          acc += player.ownership_score;
-        return acc;
-      }, 0);
-      return { position: positionScore };
     });
   }
 

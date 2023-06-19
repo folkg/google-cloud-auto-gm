@@ -66,6 +66,18 @@ describe.concurrent("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(0);
+    expect(team.pendingAddPlayerKeys).toEqual([
+      "422.p.9193",
+      "422.p.9691",
+      "422.p.11057",
+      "422.p.11381",
+      "422.p.10898",
+    ]);
+    expect(team.pendingDropPlayerKeys).toEqual([
+      "422.p.8616",
+      "422.p.12120",
+      "422.p.11121",
+    ]);
   });
 
   it("should have an add/drop differential of -1", () => {
@@ -73,6 +85,17 @@ describe.concurrent("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(-1);
+    expect(team.pendingAddPlayerKeys).toEqual([
+      "422.p.9691",
+      "422.p.11057",
+      "422.p.11381",
+      "422.p.10898",
+    ]);
+    expect(team.pendingDropPlayerKeys).toEqual([
+      "422.p.8616",
+      "422.p.12120",
+      "422.p.11121",
+    ]);
   });
 
   it("should affect add/drop differential if a player is in a 'pending' (not 'proposed') trade", () => {
@@ -80,6 +103,17 @@ describe.concurrent("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(-2);
+    expect(team.pendingAddPlayerKeys).toEqual([
+      "422.p.9691",
+      "422.p.11057",
+      "422.p.11381",
+      "422.p.10898",
+    ]);
+    expect(team.pendingDropPlayerKeys).toEqual([
+      "422.p.8616",
+      "422.p.12120",
+      "422.p.11121",
+    ]);
   });
 
   it("should have an add/drop differential of 2", () => {
@@ -87,5 +121,14 @@ describe.concurrent("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     expect(team.pendingAddDropDifferential).toEqual(2);
+    expect(team.pendingAddPlayerKeys).toEqual([
+      "422.p.9193",
+      "422.p.11121",
+      "422.p.9691",
+      "422.p.11057",
+      "422.p.11381",
+      "422.p.10898",
+    ]);
+    expect(team.pendingDropPlayerKeys).toEqual(["422.p.12120", "422.p.11121"]);
   });
 });
