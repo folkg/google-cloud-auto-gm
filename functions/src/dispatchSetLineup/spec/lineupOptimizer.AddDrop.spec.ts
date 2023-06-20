@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, it, test, vi } from "vitest";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { PlayerCollection } from "../classes/PlayerCollection.js";
@@ -183,7 +183,7 @@ describe.concurrent("Add players", () => {
     expect(loAddCandidates?.players.length).toEqual(47);
   });
 
-  test("should free 0 roster spots before adding players", () => {
+  it("should free 0 roster spots before adding players", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
@@ -194,7 +194,7 @@ describe.concurrent("Add players", () => {
     expect(numEmptyRosterSpots).toEqual(0);
   });
 
-  test("should free 3 roster spots (injured players to IL) before adding players", () => {
+  it("should free 3 roster spots (injured players to IL) before adding players", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
@@ -205,5 +205,62 @@ describe.concurrent("Add players", () => {
     expect(numEmptyRosterSpots).toEqual(3);
   });
 
-  // TODO: Test the currentPaceForGamesPlayed not good.
+  it("should add top 3 players", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const transactions = lo.playerTransactions;
+
+    expect(transactions).toEqual([
+      {
+        players: [
+          {
+            isInactiveList: false,
+            playerKey: "422.p.10234",
+            transactionType: "add",
+          },
+        ],
+        reason:
+          "Moved Jordan Montgomery to the inactive list to make room for Dansby Swanson",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+      {
+        players: [
+          {
+            isInactiveList: false,
+            playerKey: "422.p.10666",
+            transactionType: "add",
+          },
+        ],
+        reason:
+          "Moved Brandon Nimmo to the inactive list to make room for Anthony Santander",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+      {
+        players: [
+          {
+            isInactiveList: false,
+            playerKey: "422.p.12024",
+            transactionType: "add",
+          },
+        ],
+        reason:
+          "Moved Bryan Reynolds to the inactive list to make room for Jordan Walker",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+    ]);
+  });
+
+  // Should not add top player because they are LTIR
+  // Should not add top player because they are already in a current pending claim
+  // Should add 2 worse players for unfilled positions x and y
+  // Should add worse player for unfilled position, and then top player
+  // Should add worse, boosted player because they have critical position eligibility
+  // Should add no one because we have an illegal lineup
+  // Should not add top player because they are on waivers, and waiver setting is off
+  // Should add no one because the currentPaceForGamesPlayed not good
 });

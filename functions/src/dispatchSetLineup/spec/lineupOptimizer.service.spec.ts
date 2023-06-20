@@ -233,6 +233,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -244,6 +246,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Barrett Hayton to make room for Kevin Fiala2 coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -334,6 +338,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Samuel Girard to make room for Kirill Kaprizov coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.28340.t.1",
     };
@@ -401,6 +407,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: true,
         },
       ],
+      reason:
+        "Dropping Kevin Fiala2 to make room for Kevin Fiala coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -412,6 +420,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: true,
         },
       ],
+      reason:
+        "Dropping Kevin Fiala to make room for Kevin Fiala2 coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -488,6 +498,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Mitchell Robinson to make room for Zion Williamson coming back from injury.",
       sameDayTransactions: true,
       teamKey: "418.l.201581.t.1",
     };
@@ -577,6 +589,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -588,6 +602,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Barrett Hayton to make room for Kevin Fiala2 coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -599,6 +615,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Samuel Girard to make room for Kirill Kaprizov coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.28340.t.1",
     };
@@ -759,6 +777,8 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Mitchell Robinson to make room for Zion Williamson coming back from injury.",
       sameDayTransactions: false,
       teamKey: "418.l.201581.t.1",
     };
@@ -770,6 +790,8 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Mitchell Robinson to make room for Zion Williamson coming back from injury.",
       sameDayTransactions: false,
       teamKey: "418.l.201581.t.1",
     };
@@ -888,6 +910,8 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -899,6 +923,8 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Barrett Hayton to make room for Kevin Fiala2 coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -1026,6 +1052,8 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
           isInactiveList: false,
         },
       ],
+      reason:
+        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
