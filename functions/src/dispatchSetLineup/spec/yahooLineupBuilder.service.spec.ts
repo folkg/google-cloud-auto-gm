@@ -22,7 +22,7 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     vi.restoreAllMocks();
   });
 
-  test("Elite League roster", async function () {
+  test.only("Elite League roster", async function () {
     const teams = ["419.l.28340.t.1"];
     const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1";
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/419.l.28340.t.1.json");

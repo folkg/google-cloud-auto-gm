@@ -37,8 +37,12 @@ export default function getPlayersFromRoster(playersJSON: any): IPlayer[] {
           : "N/A",
         ranks: getPlayerRanks(player),
         is_undroppable: getChild(player[0], "is_undroppable") === "1",
-        // ownership: getChild(player[0], "ownership"),
       };
+
+      const ownership = getChild(player, "ownership");
+      if (ownership) {
+        playerObject.ownership = ownership;
+      }
 
       result.push(playerObject);
     }

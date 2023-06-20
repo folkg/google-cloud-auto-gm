@@ -25,6 +25,8 @@ export interface PlayerRanks {
 }
 
 export interface PlayerOwnership {
-  type: string;
-  waiver_date?: string;
+  type: PlayerOwnershipType;
+  waiver_date?: string; // "2023-06-21"
 }
+
+type PlayerOwnershipType = "waivers" | "freeagents";
