@@ -65,15 +65,9 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("./MLBpendingTransactionsWIR+.json");
     const team = new Team(teamJSON[0]);
 
-    expect(team.pendingAddDropDifferential).toEqual(0);
-    expect(team.pendingAddPlayerKeys).toEqual([
-      "422.p.9193",
-      "422.p.9691",
-      "422.p.11057",
-      "422.p.11381",
-      "422.p.10898",
-    ]);
-    expect(team.pendingDropPlayerKeys).toEqual([
+    expect(team.allPendingAddDropDifferential).toEqual(0);
+    expect(team.pendingAddPlayerKeys).toEqual(["422.p.9193"]);
+    expect(team.pendingLockedPlayerKeys).toEqual([
       "422.p.8616",
       "422.p.12120",
       "422.p.11121",
@@ -84,14 +78,9 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("./MLBpendingTransactionsWDifferential-1.json");
     const team = new Team(teamJSON[0]);
 
-    expect(team.pendingAddDropDifferential).toEqual(-1);
-    expect(team.pendingAddPlayerKeys).toEqual([
-      "422.p.9691",
-      "422.p.11057",
-      "422.p.11381",
-      "422.p.10898",
-    ]);
-    expect(team.pendingDropPlayerKeys).toEqual([
+    expect(team.allPendingAddDropDifferential).toEqual(-1);
+    expect(team.pendingAddPlayerKeys).toEqual([]);
+    expect(team.pendingLockedPlayerKeys).toEqual([
       "422.p.8616",
       "422.p.12120",
       "422.p.11121",
@@ -102,14 +91,9 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("./MLBpendingTransactionsWDifferential-2.json");
     const team = new Team(teamJSON[0]);
 
-    expect(team.pendingAddDropDifferential).toEqual(-2);
-    expect(team.pendingAddPlayerKeys).toEqual([
-      "422.p.9691",
-      "422.p.11057",
-      "422.p.11381",
-      "422.p.10898",
-    ]);
-    expect(team.pendingDropPlayerKeys).toEqual([
+    expect(team.allPendingAddDropDifferential).toEqual(-2);
+    expect(team.pendingAddPlayerKeys).toEqual(["422.p.9691"]);
+    expect(team.pendingLockedPlayerKeys).toEqual([
       "422.p.8616",
       "422.p.12120",
       "422.p.11121",
@@ -120,15 +104,15 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("./MLBpendingTransactionsWDifferential2.json");
     const team = new Team(teamJSON[0]);
 
-    expect(team.pendingAddDropDifferential).toEqual(2);
+    expect(team.allPendingAddDropDifferential).toEqual(2);
     expect(team.pendingAddPlayerKeys).toEqual([
       "422.p.9193",
       "422.p.11121",
       "422.p.9691",
-      "422.p.11057",
-      "422.p.11381",
-      "422.p.10898",
     ]);
-    expect(team.pendingDropPlayerKeys).toEqual(["422.p.12120", "422.p.11121"]);
+    expect(team.pendingLockedPlayerKeys).toEqual([
+      "422.p.12120",
+      "422.p.11121",
+    ]);
   });
 });

@@ -31,6 +31,17 @@ export class PlayerCollection {
     return players.sort((a, b) => b.start_score - a.start_score);
   }
 
+  /**
+   * Sorts players in place by score, highest to lowest
+   *
+   * @static
+   * @param {Player[]} players - array of players to sort
+   * @return {Player[]} - sorted array of players
+   */
+  static sortDescendingByOwnershipScore(players: Player[]): Player[] {
+    return players.sort((a, b) => b.ownership_score - a.ownership_score);
+  }
+
   // alias for players
   public get allPlayers(): Player[] {
     return this.players;

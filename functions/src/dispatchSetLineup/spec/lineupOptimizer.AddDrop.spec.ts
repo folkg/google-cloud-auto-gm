@@ -189,30 +189,30 @@ describe.concurrent("Add players", () => {
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
     const numEmptyRosterSpots =
-      lo.getCurrentTeamStateObject().numEmptyRosterSpots;
+      lo.getCurrentTeamStateObject().currentEmptyRosterSpots;
 
     expect(numEmptyRosterSpots).toEqual(0);
   });
 
   it("should free 3 roster spots (injured players to IL) before adding players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free3spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
     const numEmptyRosterSpots =
-      lo.getCurrentTeamStateObject().numEmptyRosterSpots;
+      lo.getCurrentTeamStateObject().currentEmptyRosterSpots;
 
     expect(numEmptyRosterSpots).toEqual(3);
   });
 
   it("should add top 3 players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free3spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
-    const transactions = lo.playerTransactions;
+    const playerTransactions = lo.playerTransactions;
 
-    expect(transactions).toEqual([
+    expect(playerTransactions).toEqual([
       {
         players: [
           {
@@ -222,7 +222,7 @@ describe.concurrent("Add players", () => {
           },
         ],
         reason:
-          "Moved Jordan Montgomery to the inactive list to make room for Dansby Swanson",
+          "Moved Jordan Montgomery to the inactive list to make room to add Dansby Swanson",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },
@@ -235,7 +235,7 @@ describe.concurrent("Add players", () => {
           },
         ],
         reason:
-          "Moved Brandon Nimmo to the inactive list to make room for Anthony Santander",
+          "Moved Brandon Nimmo to the inactive list to make room to add Anthony Santander",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },
@@ -248,19 +248,130 @@ describe.concurrent("Add players", () => {
           },
         ],
         reason:
-          "Moved Bryan Reynolds to the inactive list to make room for Jordan Walker",
+          "Moved Bryan Reynolds to the inactive list to make room to add Jordan Walker",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },
     ]);
   });
 
-  // Should not add top player because they are LTIR
-  // Should not add top player because they are already in a current pending claim
-  // Should add 2 worse players for unfilled positions x and y
-  // Should add worse player for unfilled position, and then top player
+  it("should not add top player (422.p.10234) because they are LTIR", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates2.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10666");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.12024");
+  });
+
+  it("should not add top player (422.p.10234) because they are already in a current pending claim", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10666");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.12024");
+  });
+
+  it("should only add one player, since pending waiver claim will fill extra spot", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans2.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(1);
+  });
+
+  it("should add top 1B and top C because they are empty roster positions", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    // TODO: Need to update unfilled positions based on pending transactions
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10620");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10233");
+  });
+
+  // Test C unfilled but no candidates. Should add BPA
+  it("should add top 1B, then top player, since 1B and C are empty, but no C available", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10620");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10234");
+  });
+
   // Should add worse, boosted player because they have critical position eligibility
+  it("should add worse, boosted player (422.p.12024, 3B) because they have critical position (1B, 3B, RP) eligibility", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates4.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.12024");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10666");
+  });
+
+  it("should add best player (422.p.10666) because 3B is not a critical position, so no one has enough boost", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots2.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates4.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10666");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.12024");
+  });
+
   // Should add no one because we have an illegal lineup
+  it("should add no one because we have an illegal lineup (healthy on IR)", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/illegalLineup1.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(0);
+  });
+
+  it("should add no one because we have an illegal lineup (too many at C)", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/illegalLineup2.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(0);
+  });
+
+  it("should add no one because we have no add candidates", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const lo = new LineupOptimizer(roster);
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(0);
+  });
+
   // Should not add top player because they are on waivers, and waiver setting is off
-  // Should add no one because the currentPaceForGamesPlayed not good
+  // Should add no one because the currentPaceForGamesPlayed not good to start with
+  // Should add only one player because the currentPaceForGamesPlayed not good after first add
 });

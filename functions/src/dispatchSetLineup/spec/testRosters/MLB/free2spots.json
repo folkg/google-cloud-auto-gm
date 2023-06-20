@@ -219,7 +219,7 @@
     {
       "player_key": "422.p.10577",
       "player_name": "Bryan Reynolds",
-      "eligible_positions": ["OF", "Util", "BN", "IL"],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "OF",
       "is_editable": true,
       "is_playing": true,

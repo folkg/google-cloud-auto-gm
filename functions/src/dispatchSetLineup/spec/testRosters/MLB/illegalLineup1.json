@@ -528,7 +528,7 @@
     "SP": 2,
     "RP": 2,
     "P": 4,
-    "BN": 6,
+    "BN": 5,
     "IL": 4
   },
   "scoring_type": null,
@@ -540,46 +540,7 @@
   "end_date": 1696229999999,
   "faab_balance": 98,
   "waiver_rule": "continuous",
-  "transactions": [
-    [
-      {
-        "transaction_key": "422.l.139314.w.c.12_9193_8616",
-        "type": "waiver",
-        "status": "pending",
-        "waiver_player_key": "422.p.10234",
-        "waiver_team_key": "422.l.139314.t.12",
-        "waiver_team_name": "KershawCrew20",
-        "waiver_date": "2023-04-17",
-        "waiver_roster_reflect_key": "2023-04-17",
-        "waiver_priority": 1,
-        "waiver_priority_options": { "0": { "option": 1 }, "count": 1 },
-        "faab_bid": "0"
-      },
-      {
-        "players": {
-          "0": {
-            "player": [
-              [
-                { "player_key": "422.p.10234" },
-                { "player_id": "10234" },
-                { "display_position": "P,SP,RP" }
-              ],
-              {
-                "transaction_data": {
-                  "type": "add",
-                  "source_type": "waivers",
-                  "destination_type": "team",
-                  "destination_team_key": "422.l.119198.t.3",
-                  "destination_team_name": "KershawCrew20"
-                }
-              }
-            ]
-          },
-          "count": 1
-        }
-      }
-    ]
-  ],
+  "transactions": [],
   "max_games_played": -1,
   "max_innings_pitched": -1
 }

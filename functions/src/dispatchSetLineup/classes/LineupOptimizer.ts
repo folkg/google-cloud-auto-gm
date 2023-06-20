@@ -134,10 +134,8 @@ export class LineupOptimizer {
   public generateAddPlayerTransactions(): void {
     if (!this._addCandidates || !this.isRosterLegal()) return;
 
-    let numEmptySpots = this.team.numEmptyRosterSpots;
-
     const transactionReasons: string[] = [];
-    for (let i = numEmptySpots; i > 0; i--) {
+    for (let i = this.team.pendingEmptyRosterSpots; i > 0; i--) {
       transactionReasons.push("Filling an already-empty spot on the roster.");
     }
 
@@ -145,19 +143,16 @@ export class LineupOptimizer {
     let playerMovedToIL: Player | null;
     while ((playerMovedToIL = this.openOneRosterSpot()) !== null) {
       transactionReasons.push(
-        `Moved ${playerMovedToIL.player_name} to the inactive list to make room for`
+        `Moved ${playerMovedToIL.player_name} to the inactive list to make room to`
       );
     }
 
-    numEmptySpots = this.team.numEmptyRosterSpots;
-    if (numEmptySpots === 0) return;
+    if (this.team.pendingEmptyRosterSpots === 0) return;
 
-    // TODO: Write tests for addCandidates! make sure we are filtering the correct people out for various different scenarios (each step of the way, both positive and negative)
-
-    // this._playerTransactions.netRosterSpotChanges is recalulated at the top of each loop
-    while (numEmptySpots - this._playerTransactions.netRosterSpotChanges > 0) {
+    // this.team.pendingEmptyRosterSpots is recalulated at the top of each loop
+    while (this.team.pendingEmptyRosterSpots > 0) {
       const reason = transactionReasons.shift();
-      const success = this.createPlayerTransaction(reason);
+      const success = this.createAddPlayerTransaction(reason);
       if (!success) {
         break;
       }
@@ -166,24 +161,38 @@ export class LineupOptimizer {
     // TODO: send emails from function postAllTransactions() in setLineups.service
   }
 
-  private createPlayerTransaction(reason: string | undefined): boolean {
+  private createAddPlayerTransaction(reason: string | undefined): boolean {
     assert(this._addCandidates, "addCandidates must be set");
 
     let currentCandidates: Player[] = this._addCandidates?.allPlayers.filter(
       (player) => !player.isLTIR()
     );
-    currentCandidates = this.filterForUnfilledPositions(currentCandidates);
+    currentCandidates = this.filterForEmptyPositions(currentCandidates);
     currentCandidates = this.addBonusForCriticalPositions(currentCandidates);
+    currentCandidates =
+      PlayerCollection.sortDescendingByOwnershipScore(currentCandidates);
+
+    // currentCandidates.map((p) =>
+    //   console.log(`${p.player_name} ${p.ownership_score}`)
+    // );
 
     const playerToAdd: Player = currentCandidates[0];
     if (!playerToAdd) {
       return false;
     }
 
+    reason += reason ? " add" : "Add";
+    const emptyPositions: string[] = this.team.emptyPositions;
+    if (emptyPositions.length > 0) {
+      reason = `There are empty ${emptyPositions.join(
+        ", "
+      )} positions on the roster. ${reason}`;
+    }
+
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
-      reason: `${reason} ${playerToAdd.player_name}` ?? "",
+      reason: `${reason} ${playerToAdd.player_name}`,
       players: [
         {
           playerKey: playerToAdd.player_key,
@@ -193,6 +202,8 @@ export class LineupOptimizer {
       ],
     };
     this._playerTransactions.addTransaction(pt);
+
+    this.team.addPendingAdd(playerToAdd);
 
     this._addCandidates.removePlayer(playerToAdd);
 
@@ -222,15 +233,10 @@ export class LineupOptimizer {
     );
   }
 
-  private filterForUnfilledPositions(addCandidates: Player[]): Player[] {
-    const unfilledPositions: string[] = this.team.unfilledAllPositions;
-
-    if (unfilledPositions.length === 0) {
-      return addCandidates;
-    }
-
+  private filterForEmptyPositions(addCandidates: Player[]): Player[] {
+    const emptyPositions: string[] = this.team.emptyPositions;
     const filtered = addCandidates.filter((player) =>
-      player.isEligibleForAnyPositionIn(unfilledPositions)
+      player.isEligibleForAnyPositionIn(emptyPositions)
     );
 
     return filtered.length === 0 ? addCandidates : filtered;
@@ -262,7 +268,7 @@ export class LineupOptimizer {
     for (const player of healthyPlayersOnIL) {
       const success = this.resolveIllegalPlayer(player);
       if (!success) {
-        this.dropPlayerFromRoster(player);
+        this.createDropPlayerTransaction(player);
       }
     }
   }
@@ -350,7 +356,7 @@ export class LineupOptimizer {
       `attempting to move playerB ${playerB.player_name} to unfilled position`
     );
     const illegalPlayerACannotMoveToOpenRosterSpot =
-      playerA.isInactiveList() && this.team.numEmptyRosterSpots <= 0;
+      playerA.isInactiveList() && this.team.currentEmptyRosterSpots <= 0;
 
     const unfilledPositionTargetList = illegalPlayerACannotMoveToOpenRosterSpot
       ? this.team.unfilledInactivePositions
@@ -568,7 +574,7 @@ export class LineupOptimizer {
    *
    * @param {Player} playerToOpenSpotFor
    */
-  private dropPlayerFromRoster(playerToOpenSpotFor: Player): void {
+  private createDropPlayerTransaction(playerToOpenSpotFor: Player): void {
     const playerToDrop = this.getPlayerToDrop(playerToOpenSpotFor);
     this.logInfo(`playerToDrop: ${playerToDrop.player_name}`);
 
@@ -588,24 +594,17 @@ export class LineupOptimizer {
       ],
     };
     this._playerTransactions.addTransaction(pt);
+
+    this.team.addPendingDrop(playerToDrop);
+
     this.logInfo(
       `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
     );
   }
 
   private getPlayerToDrop(playerToOpenSpotFor: Player) {
-    return this.team.allPlayers
-      .filter(
-        (player) =>
-          !player.is_undroppable &&
-          !this.isTooLateToDrop(player) &&
-          !this._playerTransactions.droppedPlayerKeys.includes(
-            player.player_key
-          ) &&
-          !player.eligible_positions.some((position) =>
-            this.team.criticalPositions.includes(position)
-          )
-      )
+    return this.team.droppablePlayers
+      .filter((player) => !this.isTooLateToDrop(player))
       .reduce(
         (prevPlayer, currPlayer) =>
           prevPlayer.ownership_score < currPlayer.ownership_score
@@ -635,10 +634,10 @@ export class LineupOptimizer {
   }
 
   private moveILPlayerToUnfilledALPosition(player: Player): boolean {
-    this.logInfo(`numEmptyRosterSpots ${this.team.numEmptyRosterSpots}`);
+    this.logInfo(`numEmptyRosterSpots ${this.team.currentEmptyRosterSpots}`);
     if (!player.isInactiveList()) return false;
 
-    if (this.team.numEmptyRosterSpots <= 0) {
+    if (this.team.currentEmptyRosterSpots <= 0) {
       const success = this.openOneRosterSpot(player);
       if (!success) return false;
     }

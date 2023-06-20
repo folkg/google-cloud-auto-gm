@@ -11,6 +11,7 @@ describe.concurrent("PlayerTransactions", () => {
     playerTransaction = {
       teamKey: "test",
       sameDayTransactions: true,
+      reason: "test",
       players: [
         {
           playerKey: "1",
@@ -43,51 +44,5 @@ describe.concurrent("PlayerTransactions", () => {
 
   it("should get dropped player keys", () => {
     expect(playerTransactions.droppedPlayerKeys).toEqual(["2", "4"]);
-  });
-
-  it("should get net roster spot changes", () => {
-    expect(playerTransactions.netRosterSpotChanges).toEqual(1);
-  });
-
-  it("should get net roster spot changes, again..", () => {
-    const playerTransactions = new PlayerTransactions();
-    const playerTransaction = {
-      teamKey: "test",
-      sameDayTransactions: true,
-      players: [
-        {
-          playerKey: "1",
-          transactionType: "add",
-          isInactiveList: false,
-        },
-        {
-          playerKey: "2",
-          transactionType: "drop",
-          isInactiveList: false,
-        },
-        {
-          playerKey: "3",
-          transactionType: "add",
-          isInactiveList: true,
-        },
-        {
-          playerKey: "4",
-          transactionType: "drop",
-          isInactiveList: true,
-        },
-        {
-          playerKey: "5",
-          transactionType: "add",
-          isInactiveList: false,
-        },
-        {
-          playerKey: "6",
-          transactionType: "drop",
-          isInactiveList: true,
-        },
-      ],
-    };
-    playerTransactions.addTransaction(playerTransaction);
-    expect(playerTransactions.netRosterSpotChanges).toEqual(2);
   });
 });

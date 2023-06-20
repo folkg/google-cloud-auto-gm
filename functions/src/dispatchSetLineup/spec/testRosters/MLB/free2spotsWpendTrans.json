@@ -196,27 +196,6 @@
       "is_undroppable": true
     },
     {
-      "player_key": "422.p.10166",
-      "player_name": "Willson Contreras",
-      "eligible_positions": ["C", "Util", "BN"],
-      "selected_position": "C",
-      "is_editable": true,
-      "is_playing": true,
-      "injury_status": "Healthy",
-      "percent_started": 72,
-      "percent_owned": 88,
-      "is_starting": "N/A",
-      "ranks": {
-        "last30Days": 382,
-        "last14Days": 382,
-        "next7Days": 149,
-        "restOfSeason": 297,
-        "last4Weeks": -1,
-        "projectedWeek": -1,
-        "next4Weeks": -1
-      }
-    },
-    {
       "player_key": "422.p.10577",
       "player_name": "Bryan Reynolds",
       "eligible_positions": ["OF", "Util", "BN"],
@@ -240,7 +219,7 @@
     {
       "player_key": "422.p.9876",
       "player_name": "Brandon Nimmo",
-      "eligible_positions": ["OF", "Util", "BN"],
+      "eligible_positions": ["OF", "Util", "BN", "IL"],
       "selected_position": "Util",
       "is_editable": true,
       "is_playing": true,
@@ -471,29 +450,8 @@
     {
       "player_key": "422.p.10660",
       "player_name": "Jordan Montgomery",
-      "eligible_positions": ["SP", "P", "BN"],
+      "eligible_positions": ["SP", "P", "BN", "IL"],
       "selected_position": "BN",
-      "is_editable": true,
-      "is_playing": true,
-      "injury_status": "Healthy",
-      "percent_started": 36,
-      "percent_owned": 65,
-      "is_starting": "N/A",
-      "ranks": {
-        "last30Days": 406,
-        "last14Days": 406,
-        "next7Days": 288,
-        "restOfSeason": 262,
-        "last4Weeks": -1,
-        "projectedWeek": -1,
-        "next4Weeks": -1
-      }
-    },
-    {
-      "player_key": "422.p.106602",
-      "player_name": "Jordan Montgomery2",
-      "eligible_positions": ["SP", "P", "BN"],
-      "selected_position": "IL",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "Healthy",
@@ -528,7 +486,7 @@
     "SP": 2,
     "RP": 2,
     "P": 4,
-    "BN": 6,
+    "BN": 5,
     "IL": 4
   },
   "scoring_type": null,
@@ -543,16 +501,9 @@
   "transactions": [
     [
       {
-        "transaction_key": "422.l.139314.w.c.12_9193_8616",
+        "transaction_key": "test_key",
         "type": "waiver",
         "status": "pending",
-        "waiver_player_key": "422.p.10234",
-        "waiver_team_key": "422.l.139314.t.12",
-        "waiver_team_name": "KershawCrew20",
-        "waiver_date": "2023-04-17",
-        "waiver_roster_reflect_key": "2023-04-17",
-        "waiver_priority": 1,
-        "waiver_priority_options": { "0": { "option": 1 }, "count": 1 },
         "faab_bid": "0"
       },
       {
@@ -568,9 +519,7 @@
                 "transaction_data": {
                   "type": "add",
                   "source_type": "waivers",
-                  "destination_type": "team",
-                  "destination_team_key": "422.l.119198.t.3",
-                  "destination_team_name": "KershawCrew20"
+                  "destination_team_key": "422.l.119198.t.3"
                 }
               }
             ]

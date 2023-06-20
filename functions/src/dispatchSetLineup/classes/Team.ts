@@ -13,9 +13,10 @@ export interface Team extends ITeamOptimizer {
 }
 export class Team extends PlayerCollection implements Team {
   private _editablePlayers: Player[];
-  private _pendingAddDropDifferential = 0;
-  private _pendingAddPlayerKeys: Set<string> = new Set();
-  private _pendingDropPlayerKeys: Set<string> = new Set();
+  private _submittedAddDropDifferential = 0;
+  private _pendingAddPlayers: Map<string, string[]> = new Map();
+  private _pendingDropPlayers: Map<string, string[]> = new Map();
+  private _lockedPlayers: Set<string> = new Set();
 
   constructor(team: ITeamOptimizer) {
     super(team.players);
@@ -110,8 +111,6 @@ export class Team extends PlayerCollection implements Team {
         player.player_key === getChild(playerInTransaction[0], "player_key")
     );
 
-    matchingTeamPlayer?.makeInelligibleToDrop();
-
     if (!matchingTeamPlayer?.isInactiveList()) {
       matchingTeamPlayer?.makeInelliglbeForIL();
     }
@@ -122,6 +121,10 @@ export class Team extends PlayerCollection implements Team {
     playerInTransaction: any
   ) {
     const playerKey = getChild(playerInTransaction[0], "player_key");
+    const eligiblePositions = getChild(
+      playerInTransaction[0],
+      "display_position"
+    ).split(",");
     // sometimes transaction_data is an array of size 1, sometimes just the object. Why, Yahoo?
     let transactionData = getChild(playerInTransaction, "transaction_data");
     if (Array.isArray(transactionData)) {
@@ -133,24 +136,42 @@ export class Team extends PlayerCollection implements Team {
 
     // only adjust pendingAddDropDifferential count for officially "pending" transactions, not "proposed" trades
     if (isAddingPlayer) {
-      this._pendingAddPlayerKeys.add(playerKey);
-      this._pendingAddDropDifferential += isPendingTransaction ? 1 : 0;
+      if (isPendingTransaction) {
+        this._submittedAddDropDifferential += 1;
+        this._pendingAddPlayers.set(playerKey, eligiblePositions);
+      }
     } else {
-      this._pendingDropPlayerKeys.add(playerKey);
-      this._pendingAddDropDifferential -= isPendingTransaction ? 1 : 0;
+      if (isPendingTransaction) {
+        this._submittedAddDropDifferential -= 1;
+        this._pendingDropPlayers.set(playerKey, eligiblePositions);
+      }
+      this._lockedPlayers.add(playerKey);
     }
   }
 
-  public get pendingAddDropDifferential(): number {
-    return this._pendingAddDropDifferential;
+  public get allPendingAddDropDifferential(): number {
+    return this._pendingAddPlayers.size - this._pendingDropPlayers.size;
+  }
+
+  public addPendingAdd(player: Player): void {
+    const { player_key: playerKey, eligible_positions: eligiblePositions } =
+      player;
+    this._pendingAddPlayers.set(playerKey, eligiblePositions);
   }
 
   public get pendingAddPlayerKeys(): string[] {
-    return Array.from(this._pendingAddPlayerKeys);
+    return Array.from(this._pendingAddPlayers.keys());
   }
 
-  public get pendingDropPlayerKeys(): string[] {
-    return Array.from(this._pendingDropPlayerKeys);
+  public addPendingDrop(player: Player): void {
+    const { player_key: playerKey, eligible_positions: eligiblePositions } =
+      player;
+    this._lockedPlayers.add(playerKey);
+    this._pendingDropPlayers.set(playerKey, eligiblePositions);
+  }
+
+  public get pendingLockedPlayerKeys(): string[] {
+    return Array.from(this._lockedPlayers);
   }
 
   /**
@@ -173,6 +194,17 @@ export class Team extends PlayerCollection implements Team {
 
   public get editablePlayers(): Player[] {
     return this._editablePlayers;
+  }
+
+  public get droppablePlayers(): Player[] {
+    return this.players.filter(
+      (player) =>
+        !player.is_undroppable &&
+        !this._lockedPlayers.has(player.player_key) &&
+        !player.eligible_positions.some((position) =>
+          this.criticalPositions.includes(position)
+        )
+    );
   }
 
   public get illegalPlayers(): Player[] {
@@ -261,13 +293,21 @@ export class Team extends PlayerCollection implements Team {
     );
   }
 
-  public get numEmptyRosterSpots(): number {
+  public get currentEmptyRosterSpots(): number {
+    return this.emptyRosterSpotCounter() - this._submittedAddDropDifferential;
+  }
+
+  public get pendingEmptyRosterSpots(): number {
+    return this.emptyRosterSpotCounter() - this.allPendingAddDropDifferential;
+  }
+
+  private emptyRosterSpotCounter(): number {
     const unfilledPositions = this.unfilledPositionCounter;
     return Object.keys(unfilledPositions).reduce((acc, position) => {
       if (!INACTIVE_POSITION_LIST.includes(position))
         acc += unfilledPositions[position];
       return acc;
-    }, -this.pendingAddDropDifferential);
+    }, 0);
   }
 
   public get numStandardRosterSpots(): number {
@@ -279,15 +319,41 @@ export class Team extends PlayerCollection implements Team {
   }
 
   public get criticalPositions(): string[] {
-    return Object.keys(this.roster_positions).filter((position) => {
-      const playersAtPosition = this.players.filter((player) =>
-        player.eligible_positions.includes(position)
+    return this.getPositionsHelper((a, b) => a <= b);
+  }
+
+  public get emptyPositions(): string[] {
+    return this.getPositionsHelper((a, b) => a < b);
+  }
+
+  private getPositionsHelper(
+    compareFn: (a: number, b: number) => boolean
+  ): string[] {
+    const result: string[] = [];
+
+    // get all eligible positions for all players on roster, plus/minus pending adds/drops
+    const countablePositions: string[][] = this.players
+      .filter((player) => !this._pendingDropPlayers.has(player.player_key))
+      .map((player) => {
+        const { eligible_positions: eligiblePositions } = player;
+        return eligiblePositions;
+      })
+      .concat(Array.from(this._pendingAddPlayers.values()));
+
+    Object.keys(this.roster_positions).forEach((position) => {
+      const playersAtPosition = countablePositions.filter((eligiblePositions) =>
+        eligiblePositions.includes(position)
       );
-      return (
-        !INACTIVE_POSITION_LIST.includes(position) &&
-        playersAtPosition.length <= this.roster_positions[position]
-      );
+      if (!INACTIVE_POSITION_LIST.includes(position)) {
+        if (
+          compareFn(playersAtPosition.length, this.roster_positions[position])
+        ) {
+          result.push(position);
+        }
+      }
     });
+
+    return result;
   }
 
   public getPlayersAt(position: string): Player[] {

@@ -122,8 +122,8 @@ export class Player implements Player {
   }
 
   isEligibleForAnyPositionIn(positionsList: string[]): boolean {
-    return this.eligible_positions.some((position) =>
-      positionsList.includes(position)
+    return positionsList.some((position) =>
+      this.eligible_positions.includes(position)
     );
   }
 
@@ -141,9 +141,5 @@ export class Player implements Player {
     this.eligible_positions = this.eligible_positions.filter(
       (position) => !INACTIVE_POSITION_LIST.includes(position)
     );
-  }
-
-  makeInelligibleToDrop(): void {
-    this.is_undroppable = true;
   }
 }
