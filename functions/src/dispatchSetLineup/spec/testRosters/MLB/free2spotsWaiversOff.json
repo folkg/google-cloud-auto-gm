@@ -1,7 +1,7 @@
 {
   "allow_adding": false,
   "allow_dropping": true,
-  "allow_waiver_adds": true,
+  "allow_waiver_adds": false,
   "team_key": "422.l.119198.t.3",
   "players": [
     {

@@ -2,7 +2,10 @@ import { AxiosError } from "axios";
 import dotenv from "dotenv";
 import { logger } from "firebase-functions";
 import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges.js";
-import { PlayerTransaction } from "../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import {
+  PlayerTransaction,
+  TransactionType,
+} from "../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
 import { Token, YahooRefreshRequestBody } from "../../interfaces/credential.js";
 import { RevokedRefreshTokenError } from "../firebase/errors.js";
 import { updateFirestoreTimestamp } from "../firebase/firestore.service.js";
@@ -301,7 +304,7 @@ export async function postRosterAddDropTransaction(
     );
     return false;
   }
-  const XMLPlayers = players.map((player) => ({
+  const XMLPlayers: TransactionPlayer[] = players.map((player) => ({
     player_key: player.playerKey,
     transaction_data: {
       type: player.transactionType,
@@ -312,20 +315,30 @@ export async function postRosterAddDropTransaction(
   }));
   XMLPlayers.sort((a, b) =>
     a.transaction_data.type > b.transaction_data.type ? 1 : -1
-  ); // sorts add before drop
+  ); // sorts "add' before "drop" alphabetically, as required by Yahoo
 
-  const transactionType =
+  const transactionType: TransactionType =
     XMLPlayers.length === 1 ? XMLPlayers[0].transaction_data.type : "add/drop";
 
-  const isWaiverClaim = false; // TODO: Implement waiver claim logic later
-  const data = {
+  const data: TransactionBody = {
     transaction: {
       type: transactionType,
-      ...(XMLPlayers.length === 1 && { player: XMLPlayers[0] }),
-      ...(XMLPlayers.length === 2 && { players: { player: XMLPlayers } }),
-      ...(isWaiverClaim ? { faab_bid: 0 } : {}),
     },
   };
+
+  const isWaiverClaim =
+    players.filter(
+      (player) => player.transactionType === "add" && player.isFromWaivers
+    ).length === 1;
+  if (isWaiverClaim) {
+    data.transaction.faab_bid = 0;
+  }
+
+  if (XMLPlayers.length === 1) {
+    data.transaction.player = XMLPlayers[0];
+  } else {
+    data.transaction.players = { player: XMLPlayers };
+  }
 
   const XML_NAMESPACE = "fantasy_content";
   const xmlBody = js2xmlparser.parse(XML_NAMESPACE, data);
@@ -336,13 +349,35 @@ export async function postRosterAddDropTransaction(
     logger.log(
       `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}.`
     );
-    logger.log(`Transaction data: ${data}`);
+    logger.log("Transaction data:", data);
     return true;
   } catch (error) {
     const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;
     handleAxiosError(error, errMessage);
   }
 }
+
+type TransactionBody = {
+  transaction: Transaction;
+};
+
+type Transaction = {
+  type: TransactionType;
+  faab_bid?: number;
+  player?: TransactionPlayer;
+  players?: { player: TransactionPlayer[] };
+};
+
+type TransactionPlayer = {
+  player_key: string;
+  transaction_data: TransactionData;
+};
+
+type TransactionData = {
+  type: TransactionType;
+  destination_team_key?: string;
+  source_team_key?: string;
+};
 
 // TODO: Handle from Yahoo data.error.description = 'Invalid cookie, please log in again.' status = 401
 // It seems we don't need to revoke the token. What do we need to do? Axios retry? Refetch access token?

@@ -219,6 +219,7 @@ describe.concurrent("Add players", () => {
             isInactiveList: false,
             playerKey: "422.p.10234",
             transactionType: "add",
+            isFromWaivers: false,
           },
         ],
         reason:
@@ -232,6 +233,7 @@ describe.concurrent("Add players", () => {
             isInactiveList: false,
             playerKey: "422.p.10666",
             transactionType: "add",
+            isFromWaivers: false,
           },
         ],
         reason:
@@ -245,6 +247,7 @@ describe.concurrent("Add players", () => {
             isInactiveList: false,
             playerKey: "422.p.12024",
             transactionType: "add",
+            isFromWaivers: false,
           },
         ],
         reason:
@@ -289,18 +292,47 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions.length).toEqual(1);
   });
 
-  it("should add top 1B and top C because they are empty roster positions", () => {
+  it("should add top 1B and top C (from waivers) because they are empty roster positions", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    // TODO: Need to update unfilled positions based on pending transactions
+    // expect(playerTransactions.length).toEqual(2);
+    // expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10620");
+    // expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10233");
 
-    expect(playerTransactions.length).toEqual(2);
-    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10620");
-    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10233");
+    expect(playerTransactions).toEqual([
+      {
+        players: [
+          {
+            isFromWaivers: true,
+            isInactiveList: false,
+            playerKey: "422.p.10620",
+            transactionType: "add",
+          },
+        ],
+        reason:
+          "There are empty C, 1B positions on the roster. Filling an already-empty spot on the roster with Rowdy Tellez",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+      {
+        players: [
+          {
+            isFromWaivers: true,
+            isInactiveList: false,
+            playerKey: "422.p.10233",
+            transactionType: "add",
+          },
+        ],
+        reason:
+          "There are empty C positions on the roster. Filling an already-empty spot on the roster with Amed Rosario",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+    ]);
   });
 
   // Test C unfilled but no candidates. Should add BPA
@@ -372,6 +404,30 @@ describe.concurrent("Add players", () => {
   });
 
   // Should not add top player because they are on waivers, and waiver setting is off
+  it("Should not add top player because they are on waivers, and user's waiver setting is off", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWaiversOff.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.9573");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.9331");
+  });
+
+  it("Should add top player because they are on waivers, and user's waiver setting is on", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10234");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10666");
+  });
+
   // Should add no one because the currentPaceForGamesPlayed not good to start with
   // Should add only one player because the currentPaceForGamesPlayed not good after first add
 });

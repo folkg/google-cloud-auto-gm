@@ -136,14 +136,16 @@ export class LineupOptimizer {
 
     const transactionReasons: string[] = [];
     for (let i = this.team.pendingEmptyRosterSpots; i > 0; i--) {
-      transactionReasons.push("Filling an already-empty spot on the roster.");
+      transactionReasons.push(
+        "Filling an already-empty spot on the roster with"
+      );
     }
 
     // free up as many roster spots as possible
     let playerMovedToIL: Player | null;
     while ((playerMovedToIL = this.openOneRosterSpot()) !== null) {
       transactionReasons.push(
-        `Moved ${playerMovedToIL.player_name} to the inactive list to make room to`
+        `Moved ${playerMovedToIL.player_name} to the inactive list to make room to add`
       );
     }
 
@@ -167,6 +169,11 @@ export class LineupOptimizer {
     let currentCandidates: Player[] = this._addCandidates?.allPlayers.filter(
       (player) => !player.isLTIR()
     );
+    if (this.team.allow_waiver_adds === false) {
+      currentCandidates = currentCandidates.filter(
+        (player) => player.ownership?.type !== "waivers"
+      );
+    }
     currentCandidates = this.filterForEmptyPositions(currentCandidates);
     currentCandidates = this.addBonusForCriticalPositions(currentCandidates);
     currentCandidates =
@@ -181,7 +188,7 @@ export class LineupOptimizer {
       return false;
     }
 
-    reason += reason ? " add" : "Add";
+    reason = reason ?? "";
     const emptyPositions: string[] = this.team.emptyPositions;
     if (emptyPositions.length > 0) {
       reason = `There are empty ${emptyPositions.join(
@@ -198,13 +205,13 @@ export class LineupOptimizer {
           playerKey: playerToAdd.player_key,
           transactionType: "add",
           isInactiveList: false,
+          isFromWaivers: playerToAdd.ownership?.type === "waivers",
         },
       ],
     };
     this._playerTransactions.addTransaction(pt);
 
     this.team.addPendingAdd(playerToAdd);
-
     this._addCandidates.removePlayer(playerToAdd);
 
     this.logInfo(

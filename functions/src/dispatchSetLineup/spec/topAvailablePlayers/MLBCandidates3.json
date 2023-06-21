@@ -19,7 +19,11 @@
       "projectedWeek": -1,
       "restOfSeason": 63
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -41,7 +45,11 @@
       "projectedWeek": -1,
       "restOfSeason": 146
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["1B", "Util", "IL"],
@@ -129,7 +137,11 @@
       "projectedWeek": -1,
       "restOfSeason": 98
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -195,7 +207,11 @@
       "projectedWeek": -1,
       "restOfSeason": 114
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["1B", "Util"],
@@ -217,7 +233,11 @@
       "projectedWeek": -1,
       "restOfSeason": 171
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -393,7 +413,11 @@
       "projectedWeek": -1,
       "restOfSeason": 2551
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["C", "SS", "OF", "Util"],
@@ -415,7 +439,11 @@
       "projectedWeek": -1,
       "restOfSeason": 198
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["2B", "3B", "SS", "OF", "Util"],
@@ -635,7 +663,11 @@
       "projectedWeek": -1,
       "restOfSeason": 733
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -657,7 +689,11 @@
       "projectedWeek": -1,
       "restOfSeason": 715
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -679,7 +715,11 @@
       "projectedWeek": -1,
       "restOfSeason": 206
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -701,7 +741,11 @@
       "projectedWeek": -1,
       "restOfSeason": 1122
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -723,7 +767,11 @@
       "projectedWeek": -1,
       "restOfSeason": 225
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["1B", "OF", "Util"],
@@ -745,7 +793,11 @@
       "projectedWeek": -1,
       "restOfSeason": 1450
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -767,7 +819,11 @@
       "projectedWeek": -1,
       "restOfSeason": 1337
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["SS", "Util"],
@@ -789,7 +845,11 @@
       "projectedWeek": -1,
       "restOfSeason": 946
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -811,7 +871,11 @@
       "projectedWeek": -1,
       "restOfSeason": 208
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["SP", "RP", "P"],
@@ -833,7 +897,11 @@
       "projectedWeek": -1,
       "restOfSeason": 1117
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -855,7 +923,11 @@
       "projectedWeek": -1,
       "restOfSeason": 340
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util", "IL"],
@@ -877,7 +949,11 @@
       "projectedWeek": -1,
       "restOfSeason": 319
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -899,7 +975,11 @@
       "projectedWeek": -1,
       "restOfSeason": 1038
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -921,7 +1001,11 @@
       "projectedWeek": -1,
       "restOfSeason": 1105
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["1B", "OF", "Util"],
@@ -943,7 +1027,11 @@
       "projectedWeek": -1,
       "restOfSeason": 194
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -965,7 +1053,11 @@
       "projectedWeek": -1,
       "restOfSeason": 1154
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -987,7 +1079,11 @@
       "projectedWeek": -1,
       "restOfSeason": 461
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -1009,7 +1105,11 @@
       "projectedWeek": -1,
       "restOfSeason": 378
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -1031,7 +1131,11 @@
       "projectedWeek": -1,
       "restOfSeason": 918
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -1053,7 +1157,11 @@
       "projectedWeek": -1,
       "restOfSeason": 734
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -1075,7 +1183,11 @@
       "projectedWeek": -1,
       "restOfSeason": 999
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -1097,6 +1209,10 @@
       "projectedWeek": -1,
       "restOfSeason": 260
     },
-    "selected_position": null
+    "selected_position": null,
+    "ownership": {
+      "type": "waivers",
+      "waiver_date": "2023-06-21"
+    }
   }
 ]
