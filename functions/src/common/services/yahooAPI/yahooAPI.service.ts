@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
 import dotenv from "dotenv";
 import { logger } from "firebase-functions";
 import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges.js";
@@ -57,8 +57,8 @@ export async function refreshYahooAccessToken(
     };
 
     return token;
-  } catch (error: AxiosError | unknown) {
-    handleAxiosError(error, null);
+  } catch (err: unknown) {
+    handleAxiosError(err, null);
   }
 }
 
@@ -98,7 +98,7 @@ export async function getRostersByTeamID(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (err: AxiosError | unknown) {
+  } catch (err: unknown) {
     const errMessage = `Error in getRostersByTeamID. User: ${uid} Teams: ${teamKeys}`;
     handleAxiosError(err, errMessage);
   }
@@ -152,7 +152,7 @@ export async function getTopAvailablePlayers(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (err: AxiosError | unknown) {
+  } catch (err: unknown) {
     const errMessage = `Error in getTopAvailablePlayers. User: ${uid} League: ${teamKeys}`;
     handleAxiosError(err, errMessage);
   }
@@ -173,7 +173,7 @@ export async function getUsersTeams(uid: string): Promise<any> {
       uid
     );
     return data;
-  } catch (err: AxiosError | unknown) {
+  } catch (err: unknown) {
     const errMessage = `Error in getUserStandings. User: ${uid}`;
     handleAxiosError(err, errMessage);
   }
@@ -211,7 +211,7 @@ export async function getStartingPlayers(
       httpGetAxios(`${urlBase}25?format=json`, uid),
     ]);
     return [result1.data, result2.data];
-  } catch (err: AxiosError | unknown) {
+  } catch (err: unknown) {
     const errMessage = `Error in getStartingPlayers. User: ${uid} League: ${leagueKey} Position: ${positions}`;
     handleAxiosError(err, errMessage);
   }
@@ -351,9 +351,9 @@ export async function postRosterAddDropTransaction(
     );
     logger.log("Transaction data:", data);
     return true;
-  } catch (error) {
+  } catch (err: unknown) {
     const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;
-    handleAxiosError(error, errMessage);
+    handleAxiosError(err, errMessage);
   }
 }
 
@@ -389,23 +389,21 @@ type TransactionData = {
  * @param {AxiosError} err - The axios error
  * @param {string} message - The message to throw
  */
-function handleAxiosError(
-  err: AxiosError | any,
-  message: string | null
-): never {
+function handleAxiosError(err: unknown, message: string | null): never {
   const errMessage = message ? `${message}. ` : "";
   if (err instanceof RevokedRefreshTokenError) {
     throw err;
-  } else if (err.response) {
+  } else if (isAxiosError(err) && err.response) {
     logger.error(errMessage, err, err.response.data);
     const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
     enrichedError.response = err.response;
     throw enrichedError;
-  } else if (err.request) {
+  } else if (isAxiosError(err) && err.request) {
     logger.error(errMessage, err.request);
     throw new Error(`${errMessage}${err.request}`);
   } else {
-    logger.error(errMessage, err.message);
-    throw new Error(`${errMessage}${err.message}`);
+    const error = err as Error;
+    logger.error(errMessage, error.message);
+    throw new Error(`${errMessage}${error.message}`);
   }
 }

@@ -66,7 +66,7 @@ export async function sendFeedbackEmail(
 export async function sendUserEmail(
   uid: string,
   subject: string,
-  body: any[],
+  body: unknown[],
   buttonText = "",
   buttonUrl = ""
 ): Promise<boolean> {

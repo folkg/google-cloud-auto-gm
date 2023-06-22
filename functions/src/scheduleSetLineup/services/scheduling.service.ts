@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { isAxiosError } from "axios";
 import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
@@ -109,9 +109,9 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes> {
         ...gameStartTimes,
         ...(await getGameTimesYahoo(league, todayDate)),
       };
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       logger.error("Error fetching games from Yahoo API", error);
-      if (error.response) {
+      if (isAxiosError(error) && error.response) {
         logger.error(error.response.data);
         logger.error(error.response.status);
         logger.error(error.response.headers);
@@ -123,9 +123,9 @@ async function getTodaysGames(todayDate: string): Promise<GameStartTimes> {
           ...gameStartTimes,
           ...(await getGameTimesSportsnet(league, todayDate)),
         };
-      } catch (error: AxiosError | any) {
+      } catch (error: unknown) {
         logger.error("Error fetching games from Sportsnet API", error);
-        if (error.response) {
+        if (isAxiosError(error) && error.response) {
           logger.error(error.response.data);
           logger.error(error.response.status);
           logger.error(error.response.headers);

@@ -1,3 +1,4 @@
+import assert from "assert";
 import { IPlayer } from "../../common/interfaces/IPlayer.js";
 import { Player } from "./Player.js";
 
@@ -57,11 +58,16 @@ export class PlayerCollection {
   }
 
   protected assignOwnershipScores() {
-    if (this._ownershipScoreFunction) {
-      this.players.forEach((player) => {
-        player.ownership_score = this._ownershipScoreFunction!(player);
-      });
-    }
+    assert(
+      this._ownershipScoreFunction,
+      "ownershipScoreFunction should always be defined before calling assignOwnershipScores"
+    );
+
+    const ownershipScoreFunction = this._ownershipScoreFunction;
+
+    this.players.forEach((player) => {
+      player.ownership_score = ownershipScoreFunction(player);
+    });
   }
 
   public sortDescByOwnershipScoreAndRemoveDuplicates() {
