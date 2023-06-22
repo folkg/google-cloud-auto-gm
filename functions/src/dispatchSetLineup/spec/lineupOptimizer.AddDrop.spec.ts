@@ -469,4 +469,22 @@ describe.concurrent("Add players", () => {
 
     expect(playerTransactions.length).toEqual(1);
   });
+
+  // These have important implications on the full stack flow. Run drop and add on all of these scenarios:
+  // TODO: One healthy player on IL with one free spot. Should add/drop no one.
+  // TODO: One healthy player on IL with no free spot, but IL on roster. Should add/drop no one.
+  // TODO: One healthy player on IL, no free spot, no IL on roster. Should drop one player.
+  // TODO: One healthy player on IL, one free spot, two IL on roster. Should add one player.
+  // Since dropping is only moving healthy from IL to BN, and adding is only moving BN to IL, only one of them should ever happen.
+  // Add/Dropping can occur after either of them.
+
+  // This means:
+  // 0. if next day changes, fetch tomorrow's lineup
+  // 1. generateDropPlayerTransactions(). - Make any dropped players disappear from lineup. Make is_editable = false and selected_position = null?
+  // This selected_position = null may require modifying some other functions. It should also not count as a lineupChange.
+  // 2. generateAddPlayerTransactions().
+  // 3. if (lo.lineupChanges) then put lineup changes
+  // 4. generateAddDropPlayerTransactions(). Should not drop IL for Healthy, so no lineup changes should be required.
+  // 5. if (lo.playerTransactions) post player transactions
+  // 6. if same day changes, refetch
 });

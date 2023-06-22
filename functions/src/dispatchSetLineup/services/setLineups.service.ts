@@ -293,7 +293,8 @@ async function processTodaysLineupChanges(
   const allLineupChanges: LineupChanges[] = [];
   for (const team of teams) {
     const lo = new LineupOptimizer(team);
-    const lineupChanges = lo.optimizeStartingLineup();
+    lo.optimizeStartingLineup();
+    const lineupChanges = lo.lineupChanges;
     result.push(lo.getCurrentTeamState());
     // will log any errors, we could remove this later once we're confident in the optimizer
     const isOptimalLineup = lo.isSuccessfullyOptimized();
@@ -331,6 +332,14 @@ async function processTransactionsForSameDayChanges(
   let result: ITeamOptimizer[] = originalTeams;
 
   const teams = getTeamsWithSameDayTransactions(originalTeams);
+  // 1. getDropPlayerTransactions. Should modify the teams object as well. Maybe rename this function to not be "get", but "create".
+  // 2. postDropPlayerTransactions - officially drops players from teams
+  // 2a - do I need to? Or just pretend they're dropped for now? Does the add or add/drop depend on the drop being successful?
+  // 3. getAddPlayerTransactions - moves players from lineup to IL and generates add player transactions
+  // 4. putAddPlayerLineupChanges - officially moves players from lineup to BN
+  // 4a. This is required. It will put the lineup changes moving players from lineup to IL, will there be others involving the dropped players, and are they desired or not desired? I think there are no roster moves made. IL players to BN will not be done until the roster spot is freed. But will that freed roster spot then be filled by add player? It's complicated. Or will that extra spot be used to move player?
+  // 5. postAddPlayerTransactions - officially adds players to teams
+  // 6. refetchAndPatchTeams - refetches teams from Yahoo and patches the teams object with the new players
   const transactions = getPlayerTransactions(
     teams,
     topAvailablePlayerCandidates

@@ -21,7 +21,8 @@ describe.concurrent(
     test("Already optimal", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/optimal.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
@@ -31,7 +32,8 @@ describe.concurrent(
     test("Swap one IL w/ BN, and one swap DTD w/ Healthy", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/1.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
@@ -46,7 +48,8 @@ describe.concurrent(
     it("Should optimize the roster", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/2.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       // console.log(JSON.stringify(lo.getCurrentTeamState(), null, 2));
       expect(isSuccessfullyOptimized).toEqual(true);
@@ -63,7 +66,8 @@ describe.concurrent(
     test("Two high ranked BN players to Roster", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/3.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
@@ -78,7 +82,8 @@ describe.concurrent(
     test("Two identically ranked BN players stay on BN", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/4.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
@@ -88,7 +93,8 @@ describe.concurrent(
     it("should move a higher rated pitcher from BN to Roster", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/13.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
       expect(isSuccessfullyOptimized).toEqual(true);
@@ -107,7 +113,8 @@ describe.concurrent(
     test("Two identically ranked BN players move to Roster (C, 1B, based on is_playing)", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/5.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
@@ -122,7 +129,8 @@ describe.concurrent(
     it("Should only swap BN to 1B (is_playing=false)", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/6.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
@@ -135,7 +143,8 @@ describe.concurrent(
     it("Should not move any players in 3-way. Util player has no game today, but it should not use churning score, only 1B and C.", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/7.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
       expect(isSuccessfullyOptimized).toEqual(true);
@@ -146,7 +155,8 @@ describe.concurrent(
     it("Should do a 3-way-swap between positions (C, 1B) below 0.9 threshold to fill not playing spot", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/8.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
       expect(isSuccessfullyOptimized).toEqual(true);
@@ -161,7 +171,8 @@ describe.concurrent(
     it("Should move a pitcher from BN to Roster", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/11.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
       expect(isSuccessfullyOptimized).toEqual(true);
@@ -175,7 +186,8 @@ describe.concurrent(
     it("Should NOT move a pitcher from BN to Roster", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/12.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
       expect(isSuccessfullyOptimized).toEqual(true);
@@ -191,7 +203,8 @@ describe.concurrent(
     it("Should reduce players at 2B and SS and move the two worst players to BN", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/9.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
       expect(isSuccessfullyOptimized).toEqual(true);
@@ -208,7 +221,8 @@ describe.concurrent(
     it("should bench the worst pitcher (P)", function () {
       const roster: ITeamOptimizer = require("./testRosters/MLB/weekly/10.json");
       const lo = new LineupOptimizer(roster);
-      const rosterModification = lo.optimizeStartingLineup();
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
       expect(isSuccessfullyOptimized).toEqual(true);

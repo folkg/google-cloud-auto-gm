@@ -19,7 +19,8 @@ describe.concurrent("Test LineupOptimizer Class NFL", function () {
   it.todo("Optimal Lineup", async function () {
     const roster: ITeamOptimizer = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = lo.optimizeStartingLineup();
+    lo.optimizeStartingLineup();
+    const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 

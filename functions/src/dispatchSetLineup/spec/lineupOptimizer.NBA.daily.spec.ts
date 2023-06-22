@@ -20,7 +20,8 @@ describe.concurrent("Test LineupOptimizer Class NBA Daily", function () {
   it("One healthy on IL, one IL on IL, one injured on roster", async function () {
     const roster: ITeamOptimizer = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");
     const lo = new LineupOptimizer(roster);
-    const rosterModification = lo.optimizeStartingLineup();
+    lo.optimizeStartingLineup();
+    const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 

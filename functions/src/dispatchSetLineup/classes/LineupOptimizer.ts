@@ -38,10 +38,10 @@ export class LineupOptimizer {
     return new Team(this.getCurrentTeamState());
   }
 
-  public optimizeStartingLineup(): LineupChanges {
+  public optimizeStartingLineup(): void {
     if (this.team.editablePlayers.length === 0) {
       this.logInfo(`no players to optimize for team ${this.team.team_key}`);
-      return this.formatLineupChange();
+      return;
     }
 
     this.resolveOverfilledPositions();
@@ -52,11 +52,9 @@ export class LineupOptimizer {
       this.originalPlayerPositions,
       this.createPlayerPositionDictionary(this.team.editablePlayers)
     );
-
-    return this.formatLineupChange();
   }
 
-  private formatLineupChange(): LineupChanges {
+  public get lineupChanges(): LineupChanges {
     return {
       teamKey: this.team.team_key,
       coverageType: this.team.coverage_type,
