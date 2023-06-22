@@ -359,8 +359,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
       require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
     const updatedRosters: ITeamOptimizer[] = [
-      require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScoreIL.json"),
       require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
+      require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
     const tomorrowRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/DailyDrops/RefetchedRosters/dropPlayerWithLowestScoreAndOptimization.json"),
@@ -520,8 +520,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
       require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
     const updatedRosters: ITeamOptimizer[] = [
-      require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
       require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
+      require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
     const tomorrowRosters: ITeamOptimizer[] = [
       require("./testRosters/NHL/DailyDrops/RefetchedRosters/dropPlayerWithLowestScoreAndOptimization.json"),

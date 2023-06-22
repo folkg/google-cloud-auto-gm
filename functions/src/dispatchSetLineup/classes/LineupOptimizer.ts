@@ -102,8 +102,11 @@ export class LineupOptimizer {
     }
   }
 
-  public get playerTransactions(): PlayerTransaction[] {
-    return this._playerTransactions.transactions;
+  public get playerTransactions(): PlayerTransaction[] | null {
+    if (this._playerTransactions.transactions.length > 0) {
+      return this._playerTransactions.transactions;
+    }
+    return null;
   }
 
   public set addCandidates(addCandidates: IPlayer[]) {
