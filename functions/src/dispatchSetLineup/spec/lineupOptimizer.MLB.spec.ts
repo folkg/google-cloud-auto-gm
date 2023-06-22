@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, test, vi } from "vitest";
+import { describe, expect, it, test, vi } from "vitest";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import * as yahooStartingPlayerService from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
@@ -17,11 +17,6 @@ vi.mock("firebase-admin/app", () => {
 });
 
 describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
-  afterEach(() => {
-    // restore the spy created with spyOn
-    vi.restoreAllMocks();
-  });
-
   test("Already optimal roster", function () {
     const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
@@ -146,6 +141,8 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
       "422.p.11251": "P",
       "422.p.10660": "P",
     });
+
+    vi.restoreAllMocks();
   });
 
   it("should move non-starting SP to BN in favour of unconfirmed RP NOT using Pitchers Array", function () {

@@ -32,13 +32,8 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     expect(result).toEqual(expected);
   });
 
-  test("With waivers", async function () {
-    const teamKeys = [
-      "422.l.115494.t.4",
-      "422.l.16955.t.10",
-      "422.l.58716.t.20",
-      "422.l.67019.t.4",
-    ];
+  test("With waivers and freeagents", async function () {
+    const teamKeys = ["422.l.115494.t.4", "422.l.16955.t.10"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/yahooJSONWaivers.json");
     const expected = require("./testYahooPlayersJSON/output/outputWaivers.json");
@@ -50,5 +45,6 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);
 
     expect(result).toEqual(expected);
+    // expect(result).toMatchSnapshot();
   });
 });

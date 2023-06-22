@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   ITeamFirestore,
   ITeamOptimizer,
@@ -37,11 +37,6 @@ const spyUpdateTeamFirestore = vi
   .mockImplementation(() => Promise.resolve());
 
 describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
-  afterEach(() => {
-    // restore the spy created with spyOn
-    vi.restoreAllMocks();
-  });
-
   // Notes:
   // fetchRostersFromYahoo() should throw an error and cause the function to eit.skip.
   // putLineupChanges() should throw an error and cause the function to eit.skip.
@@ -753,11 +748,6 @@ function mapFirestoreTeams(team: any): ITeamFirestore {
 }
 
 describe("Full stack performTransactionsForWeeklyLeagues()", () => {
-  afterEach(() => {
-    // restore the spy created with spyOn
-    vi.restoreAllMocks();
-  });
-
   it("should call performTransactionsForWeeklyLeagues() for each transaction", async () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }, { team_key: "test2" }].map(
@@ -852,11 +842,6 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
 });
 
 describe("Test Errors thrown in LineupBuilderService by API service", () => {
-  afterEach(() => {
-    // restore the spy created with spyOn
-    vi.restoreAllMocks();
-  });
-
   it("should throw an error from the first fetchRostersFromYahoo() API call", async () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }];
