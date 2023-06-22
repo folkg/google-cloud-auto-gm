@@ -2,6 +2,7 @@ import { describe, expect, it, test, vi } from "vitest";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { PlayerCollection } from "../classes/PlayerCollection.js";
+import spacetime from "spacetime";
 
 // mock firebase-admin
 vi.mock("firebase-admin/firestore", () => {
@@ -428,8 +429,44 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10666");
   });
 
-  // Should add no one because pace for season is bad, but pace for week is good to start
-  // Should add no one because pace for season is good, but pace for week is bad to start
-  // Should add no one because pace for season is bad, but pace for week is good after first add
-  // Should add no one because pace for season is good, but pace for week is bad  after first add
+  it("Should add two players because there are no max transactions limits", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace1.json"); // 1/50 season, 1/5 weekly
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(2);
+    expect(playerTransactions[0].players[0].playerKey).toEqual("422.p.10234");
+    expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10666");
+  });
+
+  it("Should add no one because pace for season is bad before we begin", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(0);
+  });
+
+  it("Should add only one player because pace for season is good, but pace for week is bad after first add", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace4.json"); // 2/50 season, 2/5 weekly
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions.length).toEqual(1);
+  });
 });

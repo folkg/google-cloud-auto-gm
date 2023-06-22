@@ -369,7 +369,7 @@ export class Team extends PlayerCollection implements Team {
     );
   }
 
-  public isCurrentTransactionPaceOK(): boolean {
+  public get isCurrentTransactionPaceOK(): boolean {
     const {
       start_date: startDate,
       end_date: endDate,

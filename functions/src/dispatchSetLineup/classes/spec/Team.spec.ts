@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, test, vi } from "vitest";
 import { Team } from "../Team.js";
+import spacetime from "spacetime";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -114,5 +115,35 @@ describe.concurrent("Test Team Class", () => {
       "422.p.12120",
       "422.p.11121",
     ]);
+  });
+
+  test("transaction pace is good for both season and week", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const teamJSON = require("../../spec/testRosters/MLB/free2spotsPace1.json"); // 1/50 season, 1/5 weekly
+    const team = new Team(teamJSON);
+
+    expect(team.isCurrentTransactionPaceOK).toEqual(true);
+  });
+
+  test("transaction pace is good for season, bad for week", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const teamJSON = require("../../spec/testRosters/MLB/free2spotsPace2.json"); // 3/50 season, 3/5 weekly
+    const team = new Team(teamJSON);
+
+    expect(team.isCurrentTransactionPaceOK).toEqual(false);
+  });
+
+  test("transaction pace is bad for season, good for week", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const teamJSON = require("../../spec/testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
+    const team = new Team(teamJSON);
+
+    expect(team.isCurrentTransactionPaceOK).toEqual(false);
   });
 });
