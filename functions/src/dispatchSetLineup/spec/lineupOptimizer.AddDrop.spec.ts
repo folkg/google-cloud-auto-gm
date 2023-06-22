@@ -428,6 +428,8 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions[1].players[0].playerKey).toEqual("422.p.10666");
   });
 
-  // Should add no one because the currentPaceForGamesPlayed not good to start with
-  // Should add only one player because the currentPaceForGamesPlayed not good after first add
+  // Should add no one because pace for season is bad, but pace for week is good to start
+  // Should add no one because pace for season is good, but pace for week is bad to start
+  // Should add no one because pace for season is bad, but pace for week is good after first add
+  // Should add no one because pace for season is good, but pace for week is bad  after first add
 });

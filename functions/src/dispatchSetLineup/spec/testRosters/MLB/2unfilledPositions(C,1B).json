@@ -471,7 +471,7 @@
   "scoring_type": null,
   "current_weekly_adds": 2,
   "current_season_adds": 2,
-  "max_weekly_adds": 6,
+  "max_weekly_adds": -1,
   "max_season_adds": -1,
   "start_date": 1680159600000,
   "end_date": 1696229999999,

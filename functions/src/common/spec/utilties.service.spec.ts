@@ -3,7 +3,10 @@ import {
   getPacificEndOfDay,
   getPacificStartOfDay,
   getPacificTimeDateString,
+  getProgressBetween,
+  getWeeklyProgressPacific,
 } from "../services/utilities.service.js";
+import spacetime from "spacetime";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -47,5 +50,38 @@ describe.concurrent("Utilities test", function () {
     const date = new Date(2020, 0, 3, 1, 1, 1).toISOString();
     const result = getPacificEndOfDay(date);
     expect(result).toEqual(1578095999999);
+  });
+
+  test("getWeeklyProgressPacific", function () {
+    // mock spacetime.now() to return a specific date
+    const mockSpacetime = spacetime("June 15, 2023", "Canada/Pacific");
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+    const expected = 3 / 7;
+
+    const result = getWeeklyProgressPacific();
+
+    expect(result).toBeCloseTo(expected, 2);
+  });
+
+  test("getProgressBetween", function () {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific");
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+    const startDate = spacetime("June 21, 2023", "Canada/Pacific").epoch;
+    const endDate = spacetime("June 23, 2023", "Canada/Pacific").epoch;
+
+    const result = getProgressBetween(startDate, endDate);
+
+    expect(result).toEqual(0.5);
+  });
+
+  test("getProgressBetween again", function () {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific");
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+    const startDate = spacetime("June 21, 2023", "Canada/Pacific").epoch;
+    const endDate = spacetime("June 25, 2023", "Canada/Pacific").epoch;
+
+    const result = getProgressBetween(startDate, endDate);
+
+    expect(result).toEqual(0.25);
   });
 });

@@ -132,7 +132,12 @@ export class LineupOptimizer {
   }
 
   public generateAddPlayerTransactions(): void {
-    if (!this._addCandidates || !this.isRosterLegal()) return;
+    if (
+      !this._addCandidates ||
+      !this.isRosterLegal() ||
+      !this.team.isCurrentTransactionPaceOK()
+    )
+      return;
 
     const transactionReasons: string[] = [];
     for (let i = this.team.pendingEmptyRosterSpots; i > 0; i--) {
@@ -151,8 +156,11 @@ export class LineupOptimizer {
 
     if (this.team.pendingEmptyRosterSpots === 0) return;
 
-    // this.team.pendingEmptyRosterSpots is recalulated at the top of each loop
-    while (this.team.pendingEmptyRosterSpots > 0) {
+    // both of these conditions are recalulated at the top of each loop
+    while (
+      this.team.pendingEmptyRosterSpots > 0 &&
+      this.team.isCurrentTransactionPaceOK()
+    ) {
       const reason = transactionReasons.shift();
       const success = this.createAddPlayerTransaction(reason);
       if (!success) {

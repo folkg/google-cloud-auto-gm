@@ -399,11 +399,12 @@ function getPlayerTransactions(
 
     if (team.allow_dropping) {
       lo.generateDropPlayerTransactions();
+      // TODO: Need to put drop transactions to Yahoo before optimizing
+      // Roster movement from adding will need to be posted first, then we can put the add transactions. Then we can optimize the lineup and post again.
     }
 
     const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
-    // TODO: Might want to move the transactionPaceBehindTimeline function inside LO or Team since we will be adding more on each loop.
-    if (addCandidates?.length > 0 && isTransactionPaceBehindTimeline(team)) {
+    if (addCandidates?.length > 0) {
       lo.addCandidates = addCandidates;
 
       if (team.allow_adding) {
@@ -415,6 +416,7 @@ function getPlayerTransactions(
       }
     }
 
+    // TODO: This needs to be rearranged.
     const playerTransactions: PlayerTransaction[] = lo.playerTransactions;
     if (playerTransactions.length > 0) {
       result.push(playerTransactions);
@@ -512,93 +514,4 @@ function tomorrowsDateAsString(): string {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   return getPacificTimeDateString(tomorrow);
-}
-
-/**
- * Returns true if the team is behind the pace of the season timeline
- * This is used to determine if the team should be allowed to add players
- * 
- * The final transaction of the week or season will not be allowed
- * The tolerance is used to allow for some leeway in the timeline
- * 
- *
- * @param {ITeamOptimizer} {
-  start_date,
-  end_date,
-  current_weekly_adds,
-  max_weekly_adds,
-  current_season_adds,
-  max_season_adds,
-} - the destructured team object
- * @return {boolean} - true if the team is behind the timeline
- */
-function isTransactionPaceBehindTimeline({
-  start_date: startDate,
-  end_date: endDate,
-  current_weekly_adds: currrentWeeklyAdds,
-  max_weekly_adds: maxWeeklyAdds,
-  current_season_adds: currentSeasonAdds,
-  max_season_adds: maxSeasonAdds,
-}: ITeamOptimizer): boolean {
-  const TOLERANCE = 0.1;
-
-  // TODO: Alternatively, current_weekly_adds <= weekProgress * max_weekly_adds + TOLERANCE * (max_weekly_adds - current_weekly_adds)
-
-  if (maxWeeklyAdds > 0) {
-    const weekProgress = getWeeklyProgressPST();
-    if (
-      areTransactionsPastTolerance(
-        currrentWeeklyAdds,
-        maxWeeklyAdds,
-        weekProgress
-      )
-    ) {
-      return false;
-    }
-  }
-
-  if (maxSeasonAdds > 0) {
-    const seasonTimeProgress = (Date.now() - startDate) / (endDate - startDate);
-    if (
-      areTransactionsPastTolerance(
-        currentSeasonAdds,
-        maxSeasonAdds,
-        seasonTimeProgress
-      )
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-
-  function areTransactionsPastTolerance(
-    currentAdds: number,
-    maxAdds: number,
-    progress: number
-  ) {
-    // TODO: Is this double counting?
-    // the greater the number of remaining adds, the more tolerance we allow
-    const toleranceValue = TOLERANCE * (maxAdds - currentAdds);
-
-    if (currentAdds <= progress * maxAdds + toleranceValue) return true;
-
-    if (currentAdds >= maxAdds - 1) return true;
-
-    return false;
-  }
-}
-
-function getWeeklyProgressPST() {
-  // TODO: Update with spacetime
-  const nowString = new Date().toLocaleString("en-US", {
-    timeZone: "America/Los_Angeles",
-  });
-  const now = new Date(nowString);
-  // Adjust the day number to make Monday 0 and Sunday 6
-  const day = (now.getDay() + 6) % 7;
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-  const totalMinutes = day * 24 * 60 + hour * 60 + minute;
-  return totalMinutes / (7 * 24 * 60);
 }

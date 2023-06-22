@@ -1,6 +1,11 @@
 import assert from "assert";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
-import { getChild, getNow } from "../../common/services/utilities.service.js";
+import {
+  getChild,
+  getNow,
+  getProgressBetween,
+  getWeeklyProgressPacific,
+} from "../../common/services/utilities.service.js";
 import { INACTIVE_POSITION_LIST } from "../helpers/constants.js";
 import { ownershipScoreFunctionFactory } from "../services/playerOwnershipScoreFunctions.service.js";
 import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service.js";
@@ -17,6 +22,7 @@ export class Team extends PlayerCollection implements Team {
   private _pendingAddPlayers: Map<string, string[]> = new Map();
   private _pendingDropPlayers: Map<string, string[]> = new Map();
   private _lockedPlayers: Set<string> = new Set();
+  private _numNewAdds = 0;
 
   constructor(team: ITeamOptimizer) {
     super(team.players);
@@ -157,6 +163,7 @@ export class Team extends PlayerCollection implements Team {
     const { player_key: playerKey, eligible_positions: eligiblePositions } =
       player;
     this._pendingAddPlayers.set(playerKey, eligiblePositions);
+    this._numNewAdds += 1;
   }
 
   public get pendingAddPlayerKeys(): string[] {
@@ -360,5 +367,55 @@ export class Team extends PlayerCollection implements Team {
     return this._editablePlayers.filter(
       (player) => player.selected_position === position
     );
+  }
+
+  public isCurrentTransactionPaceOK(): boolean {
+    const {
+      start_date: startDate,
+      end_date: endDate,
+      current_weekly_adds: currrentWeeklyAdds,
+      max_weekly_adds: maxWeeklyAdds,
+      current_season_adds: currentSeasonAdds,
+      max_season_adds: maxSeasonAdds,
+      _numNewAdds: newAdds,
+    } = this;
+
+    let weeklyPaceExceeded = false;
+    let seasonPaceExceeded = false;
+
+    if (maxWeeklyAdds > 0) {
+      weeklyPaceExceeded = isToleranceExceeded(
+        currrentWeeklyAdds + newAdds,
+        maxWeeklyAdds,
+        getWeeklyProgressPacific()
+      );
+    }
+
+    if (maxSeasonAdds > 0) {
+      seasonPaceExceeded = isToleranceExceeded(
+        currentSeasonAdds + newAdds,
+        maxSeasonAdds,
+        getProgressBetween(startDate, endDate)
+      );
+    }
+
+    return weeklyPaceExceeded === false && seasonPaceExceeded === false;
+
+    function isToleranceExceeded(
+      currentAdds: number,
+      maxAdds: number,
+      progress: number
+    ) {
+      const TOLERANCE = 0.1;
+
+      // the fewer the number of remaining adds, the less tolerance we allow
+      const dynamicTolerance = TOLERANCE * (maxAdds - currentAdds);
+
+      const isPastTolerance =
+        currentAdds >= progress * maxAdds + dynamicTolerance;
+      const oneTransactionLeft = currentAdds >= maxAdds - 1;
+
+      return isPastTolerance || oneTransactionLeft;
+    }
   }
 }

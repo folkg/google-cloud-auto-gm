@@ -118,6 +118,28 @@ export function getNow(): number {
 }
 
 /**
+ * return the current progress through the week as a number between 0 and 1
+ *
+ * @export
+ * @return {number} - The current progress through the week as a number between 0 and 1
+ */
+export function getWeeklyProgressPacific(): number {
+  return spacetime.now("Canada/Pacific").progress().week;
+}
+
+/**
+ * return the current progress between two dates as a number between 0 and 1
+ *
+ * @export
+ * @param {number} startDate - The start date in epoch format
+ * @param {number} endDate - The end date in epoch format
+ * @return {number} - The current progress between two dates as a number between 0 and 1
+ */
+export function getProgressBetween(startDate: number, endDate: number): number {
+  return (getNow() - startDate) / (endDate - startDate);
+}
+
+/**
  * Takes an array and a predicate function and returns an array of two arrays.
  * The first array contains all the elements that satisfy the predicate.
  * The second array contains all the elements that do not satisfy the predicate.
