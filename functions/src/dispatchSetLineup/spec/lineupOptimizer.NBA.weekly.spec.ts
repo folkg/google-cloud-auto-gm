@@ -24,7 +24,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
 
   // *** Test Optimization of Lineup using healthy players ***
@@ -36,7 +36,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5295": "PF",
     });
   });
@@ -50,9 +50,9 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["SG", "G", "SF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6021"]
+      rosterModification?.newPlayerPositions["418.p.6021"]
     );
-    expect(rosterModification.newPlayerPositions["418.p.3930"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["418.p.3930"]).toEqual("BN");
   });
 
   // different 1 swap involving 2 players
@@ -64,9 +64,9 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["SF", "PF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5295"]
+      rosterModification?.newPlayerPositions["418.p.5295"]
     );
-    expect(rosterModification.newPlayerPositions["418.p.4725"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["418.p.4725"]).toEqual("BN");
   });
 
   // two swaps required
@@ -78,13 +78,13 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["SF", "PF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5295"]
+      rosterModification?.newPlayerPositions["418.p.5295"]
     );
-    expect(rosterModification.newPlayerPositions["418.p.4725"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["418.p.4725"]).toEqual("BN");
     expect(["SG", "G", "SF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6021"]
+      rosterModification?.newPlayerPositions["418.p.6021"]
     );
-    expect(rosterModification.newPlayerPositions["418.p.3930"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["418.p.3930"]).toEqual("BN");
   });
 
   // 1 swap required, 1 player to move into 1 empty roster spot
@@ -95,21 +95,22 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5295": "PF",
       "418.p.4725": "BN",
       "418.p.6021": "G",
     });
     expect(["SF", "PF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5295"]
+      rosterModification?.newPlayerPositions["418.p.5295"]
     );
-    expect(rosterModification.newPlayerPositions["418.p.4725"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["418.p.4725"]).toEqual("BN");
     expect(["SG", "G", "SF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6021"]
+      rosterModification?.newPlayerPositions["418.p.6021"]
     );
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      3
-    );
+    expect(
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
+    ).toEqual(3);
   });
   // all players on bench
   test("all players on bench", function () {
@@ -120,34 +121,34 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["PG", "SG", "G", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6404"]
+      rosterModification?.newPlayerPositions["418.p.6404"]
     );
     expect(["PG", "SG", "G", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5826"]
+      rosterModification?.newPlayerPositions["418.p.5826"]
     );
     expect(["SG", "G", "SF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6021"]
+      rosterModification?.newPlayerPositions["418.p.6021"]
     );
     expect(["SF", "PF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6025"]
+      rosterModification?.newPlayerPositions["418.p.6025"]
     );
     expect(["SF", "PF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5295"]
+      rosterModification?.newPlayerPositions["418.p.5295"]
     );
     expect(["PF", "F", "C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6018"]
+      rosterModification?.newPlayerPositions["418.p.6018"]
     );
     expect(["C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5352"]
+      rosterModification?.newPlayerPositions["418.p.5352"]
     );
     expect(["C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5471"]
+      rosterModification?.newPlayerPositions["418.p.5471"]
     );
     expect(["SF", "PF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.4901"]
+      rosterModification?.newPlayerPositions["418.p.4901"]
     );
     expect(["C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6047"]
+      rosterModification?.newPlayerPositions["418.p.6047"]
     );
   });
   // lineup with worst players on roster, best players on bench
@@ -159,15 +160,15 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["PG", "SG", "G", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6404"]
+      rosterModification?.newPlayerPositions["418.p.6404"]
     );
     expect(["PG", "SG", "G", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.5826"]
+      rosterModification?.newPlayerPositions["418.p.5826"]
     );
     expect(["SG", "G", "SF", "F", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6021"]
+      rosterModification?.newPlayerPositions["418.p.6021"]
     );
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "418.p.4725": "BN",
       "418.p.3930": "BN",
       "418.p.6035": "BN",
@@ -184,7 +185,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     // higher score player can stay on IL, doesn't need to be moved to bench if not ons tarting roster anyway
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
   // high score IL player on IL, low score IL player on roster, no spare IL slot
   test("high score IL player on IL, low score IL player on roster, no spare IL slot", function () {
@@ -195,9 +196,9 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["PF", "F", "C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6163"]
+      rosterModification?.newPlayerPositions["418.p.6163"]
     );
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "418.p.6018": "IL",
     });
   });
@@ -210,9 +211,9 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["418.p.6035"]).toEqual("IL+");
+    expect(rosterModification?.newPlayerPositions["418.p.6035"]).toEqual("IL+");
     expect(["PF", "F", "C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6163"]
+      rosterModification?.newPlayerPositions["418.p.6163"]
     );
   });
   // high score IL+ player on IL+, low score IL player on bench, no spare IL+ slot (expect direct swap)
@@ -223,9 +224,9 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["418.p.6035"]).toEqual("IL");
+    expect(rosterModification?.newPlayerPositions["418.p.6035"]).toEqual("IL");
     expect(["PF", "F", "C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6163"]
+      rosterModification?.newPlayerPositions["418.p.6163"]
     );
   });
   // high score IL+ player on IL+, low score IL player on bench, one spare IL slot
@@ -236,7 +237,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6035": "IL+",
       "418.p.6163": "BN",
     });
@@ -251,7 +252,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6035": "IL+",
       "418.p.6163": "BN",
     });
@@ -264,7 +265,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.3930": "IL+",
       "418.p.6163": "BN",
     });
@@ -278,7 +279,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5433": "BN",
       "418.p.6163": "BN",
     });
@@ -291,7 +292,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5433": "BN",
       "418.p.6163": "F",
       "418.p.6018": "BN",
@@ -307,7 +308,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6035": "IL",
       "418.p.6163": "BN",
     });
@@ -321,9 +322,9 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["418.p.6035"]).toEqual("IL");
+    expect(rosterModification?.newPlayerPositions["418.p.6035"]).toEqual("IL");
     expect(["PF", "F", "C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6163"]
+      rosterModification?.newPlayerPositions["418.p.6163"]
     );
   });
 
@@ -335,7 +336,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6035": "IL+",
       "418.p.6163": "BN",
     });
@@ -349,7 +350,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
 
   // healthy player on IL+, IL player on BN, 1 empty IL slot (expect healthy player moved to BN, IL player to IL)
@@ -360,9 +361,9 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["418.p.6163"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["418.p.6163"]).toEqual("BN");
     expect(["IL", "IL+"]).toContain(
-      rosterModification.newPlayerPositions["418.p.6035"]
+      rosterModification?.newPlayerPositions["418.p.6035"]
     );
   });
   // healthy player on IL+, IL player on BN, no empty IL slot (expect swap)
@@ -373,7 +374,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6035": "IL+",
       "418.p.6163": "BN",
     });
@@ -386,7 +387,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
   // IL+ player on IL, open IL+ slot (expect IL+ player to IL+)
   test("IL+ player on IL, open IL+ slot", function () {
@@ -396,7 +397,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6163": "IL+",
     });
   });
@@ -408,7 +409,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6163": "BN",
       "418.p.6035": "IL",
     });
@@ -422,7 +423,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6163": "BN",
     });
   });
@@ -434,7 +435,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6163": "BN",
       "418.p.6035": "IL",
     });
@@ -448,7 +449,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5433": "BN",
       "418.p.6035": "IL",
       "418.p.6163": "BN",
@@ -463,7 +464,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5433": "BN",
       "418.p.6163": "BN",
       "418.p.6035": "IL",
@@ -478,7 +479,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "418.p.5433": "BN",
       "418.p.6035": "IL",
       "418.p.6025": "IL",
@@ -495,7 +496,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6163": "BN",
       "418.p.3930": "IL+",
     });
@@ -508,7 +509,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.6163": "BN",
       "418.p.3930": "IL+",
       "418.p.5433": "BN",
@@ -523,7 +524,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5433": "BN",
       "418.p.6163": "IL",
       "418.p.4725": "IL+",
@@ -537,7 +538,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5433": "BN",
       "418.p.6163": "IL",
       "418.p.3930": "IL+",
@@ -552,7 +553,7 @@ describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "418.p.5433": "BN",
       "418.p.3930": "IL",
       "418.p.6163": "NA",

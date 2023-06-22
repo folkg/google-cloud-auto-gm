@@ -26,14 +26,14 @@ describe.concurrent("Test LineupOptimizer Class NBA Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
 
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
 
-    expect(rosterModification.newPlayerPositions["418.p.5482"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["418.p.5482"]).toBeDefined();
     expect(["IL", "IL+", "BN"]).not.toContain(
-      rosterModification.newPlayerPositions["418.p.5482"]
+      rosterModification?.newPlayerPositions["418.p.5482"]
     );
-    expect(rosterModification.newPlayerPositions["418.p.5864"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["418.p.5864"]).toEqual("IL");
+    expect(rosterModification?.newPlayerPositions["418.p.5864"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["418.p.5864"]).toEqual("IL");
   });
 });

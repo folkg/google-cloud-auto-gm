@@ -26,7 +26,7 @@ describe.concurrent(
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({});
+      expect(rosterModification).toEqual(null);
     });
 
     test("Swap one IL w/ BN, and one swap DTD w/ Healthy", function () {
@@ -37,7 +37,7 @@ describe.concurrent(
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.11643": "BN",
         "422.p.9585": "IL",
         "422.p.11118": "BN",
@@ -56,7 +56,7 @@ describe.concurrent(
 
       // TODO: Maybe change algo so IL players on BN do not get the added 1000 point boost
       // This should allow three way swaps
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.9414": "IL",
         "422.p.9585": "BN",
         "422.p.11643": "OF",
@@ -71,7 +71,7 @@ describe.concurrent(
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.9096": "C",
         "422.p.11853": "BN",
         "422.p.11279": "Util",
@@ -87,7 +87,7 @@ describe.concurrent(
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({});
+      expect(rosterModification).toEqual(null);
     });
 
     it("should move a higher rated pitcher from BN to Roster", function () {
@@ -99,7 +99,7 @@ describe.concurrent(
 
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.9585": "P",
         "422.p.10660": "BN",
       });
@@ -118,7 +118,7 @@ describe.concurrent(
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.9096": "C",
         "422.p.11853": "BN",
         "422.p.11279": "1B",
@@ -134,7 +134,7 @@ describe.concurrent(
       const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.10621": "BN",
         "422.p.11279": "1B",
       });
@@ -149,7 +149,7 @@ describe.concurrent(
 
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({});
+      expect(rosterModification).toEqual(null);
     });
 
     it("Should do a 3-way-swap between positions (C, 1B) below 0.9 threshold to fill not playing spot", function () {
@@ -161,7 +161,7 @@ describe.concurrent(
 
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.10621": "BN",
         "422.p.9096": "Util",
         "422.p.9540": "1B",
@@ -177,7 +177,7 @@ describe.concurrent(
 
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.9585": "P",
         "422.p.8918": "BN",
       });
@@ -192,7 +192,7 @@ describe.concurrent(
 
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({});
+      expect(rosterModification).toEqual(null);
     });
   }
 );
@@ -209,7 +209,7 @@ describe.concurrent(
 
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.11731": "Util",
         "422.p.9540": "BN",
 
@@ -227,7 +227,7 @@ describe.concurrent(
 
       expect(isSuccessfullyOptimized).toEqual(true);
 
-      expect(rosterModification.newPlayerPositions).toEqual({
+      expect(rosterModification?.newPlayerPositions).toEqual({
         "422.p.10660": "BN",
       });
     });

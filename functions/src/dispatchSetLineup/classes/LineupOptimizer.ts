@@ -54,13 +54,16 @@ export class LineupOptimizer {
     );
   }
 
-  public get lineupChanges(): LineupChanges {
-    return {
-      teamKey: this.team.team_key,
-      coverageType: this.team.coverage_type,
-      coveragePeriod: this.team.coverage_period,
-      newPlayerPositions: this.deltaPlayerPositions,
-    };
+  public get lineupChanges(): LineupChanges | null {
+    if (Object.keys(this.deltaPlayerPositions).length > 0) {
+      return {
+        teamKey: this.team.team_key,
+        coverageType: this.team.coverage_type,
+        coveragePeriod: this.team.coverage_period,
+        newPlayerPositions: this.deltaPlayerPositions,
+      };
+    }
+    return null;
   }
 
   private createPlayerPositionDictionary(players: Player[]) {

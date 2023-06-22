@@ -25,7 +25,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
 
   test("expect sample2 to move active BN players to Roster", function () {
@@ -35,7 +35,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "422.p.11232": "OF",
     });
   });
@@ -47,9 +47,9 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["OF", "Util"]).toContain(
-      rosterModification.newPlayerPositions["422.p.10439"]
+      rosterModification?.newPlayerPositions["422.p.10439"]
     );
-    expect(rosterModification.newPlayerPositions["422.p.9616"]).toEqual("IL");
+    expect(rosterModification?.newPlayerPositions["422.p.9616"]).toEqual("IL");
   });
   test("sample 1 should pass the isSuccessfullyOptimized test", function () {
     const roster: ITeamOptimizer = require("./testRosters/MLB/sample1.json");
@@ -58,7 +58,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.10577": "OF",
 
       "422.p.9557": "BN",
@@ -80,16 +80,16 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["422.p.10660"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["422.p.11251"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["422.p.10660"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["422.p.11251"]).toBeDefined();
     expect(
-      rosterModification.newPlayerPositions["422.p.9557"]
+      rosterModification?.newPlayerPositions["422.p.9557"]
     ).not.toBeDefined();
     expect(
-      rosterModification.newPlayerPositions["422.p.12339"]
+      rosterModification?.newPlayerPositions["422.p.12339"]
     ).not.toBeDefined();
     expect(
-      rosterModification.newPlayerPositions["422.p.9096"]
+      rosterModification?.newPlayerPositions["422.p.9096"]
     ).not.toBeDefined();
   });
   it("should move 2 starting pitchers to lineup, swap one non-starter to BN, leave other bad batters on BN", function () {
@@ -99,17 +99,17 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["422.p.10660"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["422.p.11251"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions["422.p.10660"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["422.p.11251"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "422.p.9096": "C",
       "422.p.10166": "BN",
     });
     expect(
-      rosterModification.newPlayerPositions["422.p.9557"]
+      rosterModification?.newPlayerPositions["422.p.9557"]
     ).not.toBeDefined();
     expect(
-      rosterModification.newPlayerPositions["422.p.12339"]
+      rosterModification?.newPlayerPositions["422.p.12339"]
     ).not.toBeDefined();
   });
   it("should move unconfirmed good batters to roster in favour of bad confirmed batters", function () {
@@ -119,7 +119,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.11265": "OF",
       "422.p.9858": "BN",
       "422.p.11855": "C",
@@ -143,7 +143,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     ]);
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.10970": "BN",
       "422.p.11750": "BN",
       "422.p.11251": "P",
@@ -161,7 +161,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.10970": "BN",
       "422.p.11750": "BN",
       "422.p.11251": "P",
@@ -176,7 +176,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.10504": "BN",
       "422.p.10566": "Util",
       "422.p.11391": "MI",
@@ -189,7 +189,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toBeDefined();
+    expect(rosterModification?.newPlayerPositions).toBeDefined();
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -200,7 +200,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     // TODO: Add output object as we expect it to be
-    expect(rosterModification.newPlayerPositions).toBeDefined();
+    expect(rosterModification?.newPlayerPositions).toBeDefined();
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -211,7 +211,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "422.p.9616": "IL",
       "422.p.11826": "BN",
       "422.p.9823": "P",
@@ -226,11 +226,11 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions["422.p.8180"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["422.p.8180"]).not.toEqual(
       "BN"
     );
     expect(
-      rosterModification.newPlayerPositions["422.p.10597"]
+      rosterModification?.newPlayerPositions["422.p.10597"]
     ).not.toBeDefined();
     expect(isSuccessfullyOptimized).toEqual(true);
   });
@@ -242,7 +242,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -253,7 +253,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.10660": "IL",
       "422.p.106602": "BN",
     });
@@ -267,7 +267,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -278,7 +278,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
@@ -289,7 +289,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.106602": "BN",
     });
     expect(isSuccessfullyOptimized).toEqual(true);
@@ -302,7 +302,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.106602": "BN",
     });
     expect(isSuccessfullyOptimized).toEqual(true);
@@ -315,7 +315,7 @@ describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "422.p.11891": "Util",
       "422.p.8996": "BN",
     });

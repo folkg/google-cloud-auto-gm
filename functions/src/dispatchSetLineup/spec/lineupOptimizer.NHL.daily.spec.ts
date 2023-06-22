@@ -26,9 +26,9 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
   });
 
@@ -39,10 +39,10 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.3737": "C",
     });
-    expect(Object.values(rosterModification.newPlayerPositions)).not.toContain(
+    expect(Object.values(rosterModification?.newPlayerPositions)).not.toContain(
       "BN"
     );
   });
@@ -54,12 +54,12 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6726": "BN",
       "419.p.3737": "C",
     });
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
   });
 
@@ -71,12 +71,12 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6726": "BN",
       "419.p.7528": "C",
     });
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
   });
 
@@ -88,17 +88,17 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.5992"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.5992"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.5992"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.5992"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "419.p.6726": "BN",
       "419.p.6385": "BN",
     });
@@ -112,14 +112,14 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "419.p.6726": "BN",
       "419.p.6877": "LW",
     });
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).not.toEqual(
       "BN"
     );
   });
@@ -131,39 +131,39 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(Object.values(rosterModification.newPlayerPositions)).not.toContain(
+    expect(Object.values(rosterModification?.newPlayerPositions)).not.toContain(
       "BN"
     );
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
     expect(
-      Object.values(rosterModification.newPlayerPositions).filter(
+      Object.values(rosterModification?.newPlayerPositions).filter(
         (v) => v === "C"
       ).length
     ).toEqual(2);
     expect(
-      Object.values(rosterModification.newPlayerPositions).filter(
+      Object.values(rosterModification?.newPlayerPositions).filter(
         (v) => v === "LW"
       ).length
     ).toEqual(2);
     expect(
-      Object.values(rosterModification.newPlayerPositions).filter(
+      Object.values(rosterModification?.newPlayerPositions).filter(
         (v) => v === "RW"
       ).length
     ).toEqual(2);
     expect(
-      Object.values(rosterModification.newPlayerPositions).filter(
+      Object.values(rosterModification?.newPlayerPositions).filter(
         (v) => v === "D"
       ).length
     ).toEqual(4);
     expect(
-      Object.values(rosterModification.newPlayerPositions).filter(
+      Object.values(rosterModification?.newPlayerPositions).filter(
         (v) => v === "Util"
       ).length
     ).toEqual(3);
     expect(
-      Object.values(rosterModification.newPlayerPositions).filter(
+      Object.values(rosterModification?.newPlayerPositions).filter(
         (v) => v === "G"
       ).length
     ).toEqual(2);
@@ -177,55 +177,55 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
-    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.7528"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.7528"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.7528"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.7528"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.6877"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.6877"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.6877"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.6877"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.5441"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.5441"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.5441"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.5441"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.5391"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.5391"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.5391"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.5391"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.6060"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.6060"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.6060"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.6060"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.4930"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.4930"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.4930"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.4930"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.7910"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.7910"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.7910"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.7910"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.5992"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.5992"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.5992"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.5992"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.6184"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.6184"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.6184"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.6184"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.4687"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.4687"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.4687"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.4687"]).not.toEqual(
       "BN"
     );
-    expect(rosterModification.newPlayerPositions["419.p.5020"]).toBeDefined();
-    expect(rosterModification.newPlayerPositions["419.p.5020"]).not.toEqual(
+    expect(rosterModification?.newPlayerPositions["419.p.5020"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.5020"]).not.toEqual(
       "BN"
     );
   });
@@ -240,33 +240,33 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
 
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
 
-    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.7593"]).toEqual("BN");
 
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).toBeDefined();
     expect(["IR", "IR+", "BN"]).not.toContain(
-      rosterModification.newPlayerPositions["419.p.3737"]
+      rosterModification?.newPlayerPositions["419.p.3737"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.6726"]).toEqual("BN");
 
-    expect(rosterModification.newPlayerPositions["419.p.5992"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.5992"]).toBeDefined();
     expect(["IR", "IR+", "BN"]).not.toContain(
-      rosterModification.newPlayerPositions["419.p.5992"]
+      rosterModification?.newPlayerPositions["419.p.5992"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.5376"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.5376"]).toBeDefined();
     expect(["IR", "IR+", "BN"]).not.toContain(
-      rosterModification.newPlayerPositions["419.p.5376"]
+      rosterModification?.newPlayerPositions["419.p.5376"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.4699"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.4699"]).toBeDefined();
     expect(["IR", "IR+", "BN"]).not.toContain(
-      rosterModification.newPlayerPositions["419.p.4699"]
+      rosterModification?.newPlayerPositions["419.p.4699"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.5441"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6060"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.7528"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.5441"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.6060"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.7528"]).toEqual("BN");
   });
 
   test("Starting Goalies on Bench using NHL_STARTING_GOALIES array", function () {
@@ -288,11 +288,11 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
-    expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.5161"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.7593"]).toEqual("G");
 
     // reset the mock configuration
     vi.restoreAllMocks();
@@ -316,11 +316,11 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
-    expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.5161"]).toEqual("G");
 
     // reset the mock configuration
     vi.restoreAllMocks();
@@ -340,11 +340,11 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
-    expect(rosterModification.newPlayerPositions["419.p.5161"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.7163"]).toEqual("G");
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.5161"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.7163"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.7593"]).toEqual("G");
   });
 
   // *** Test Illegal players that should be resolved ***
@@ -356,9 +356,9 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6726"]
+      rosterModification?.newPlayerPositions["419.p.6726"]
     );
   });
 
@@ -371,10 +371,10 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     );
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6726"]
+      rosterModification?.newPlayerPositions["419.p.6726"]
     );
   });
 
@@ -386,8 +386,8 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    // expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions).toEqual({
+    // expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "BN",
     });
   });
@@ -400,12 +400,13 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toBeDefined();
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toBeDefined();
     expect(["IR", "IR+", "BN"]).not.toContain(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     );
     expect(
-      Object.keys(rosterModification.newPlayerPositions).length
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
     ).toBeGreaterThan(1);
   });
 
@@ -417,8 +418,8 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR+");
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.6726"]).toEqual("IR+");
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
   });
 
   test("Healthy player on IR, and IR+ on Bench with no open IR+ slot", function () {
@@ -429,10 +430,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({});
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      0
-    );
+    expect(rosterModification).toEqual(null);
   });
 
   test("Healthy player on IR+, and IR on Bench with open IR slot", function () {
@@ -443,8 +441,8 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.6726"]).toEqual("IR");
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
   });
 
   test("Healthy player on IR+, and IR on Bench with no open IR slot", function () {
@@ -455,11 +453,11 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "419.p.6726": "IR+",
     });
     expect(["C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     );
   });
 
@@ -471,7 +469,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "IR+",
     });
   });
@@ -484,7 +482,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
 
   test("IR+ player on IR, no open IR+ slot, IR player on BN", function () {
@@ -495,11 +493,12 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.6726"]).toEqual("IR");
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      2
-    );
+    expect(rosterModification?.newPlayerPositions["419.p.6726"]).toEqual("IR");
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
+    ).toEqual(2);
   });
 
   test("NA player on IR, no NA slots on roster", function () {
@@ -510,7 +509,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
 
   test("NA player on IR, no NA slots on roster, empty roster position", function () {
@@ -521,10 +520,11 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      1
-    );
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
+    ).toEqual(1);
   });
 
   test("NA player on IR, open NA slot on roster", function () {
@@ -535,10 +535,11 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("NA");
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      1
-    );
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("NA");
+    expect(
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
+    ).toEqual(1);
   });
 
   test("NA player on IR, no open NA slot on roster, IR player on Goalie", function () {
@@ -550,10 +551,10 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.7163"]
+      rosterModification?.newPlayerPositions["419.p.7163"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("G");
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.7593"]).toEqual("G");
   });
 
   test("Two healthy players on IR, one empty roster spot", function () {
@@ -564,7 +565,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.7593": "BN",
     });
   });
@@ -578,15 +579,16 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["C", "Util", "BN"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.7593"]).toEqual("BN");
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6385"]
+      rosterModification?.newPlayerPositions["419.p.6385"]
     );
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      3
-    );
+    expect(
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
+    ).toEqual(3);
   });
 
   test("Two healthy players on IR, two IR on bench, Healthy G on IR has score of 0", function () {
@@ -597,16 +599,17 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      4
-    );
-    expect(rosterModification.newPlayerPositions["419.p.7593"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
+    ).toEqual(4);
+    expect(rosterModification?.newPlayerPositions["419.p.7593"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6385"]
+      rosterModification?.newPlayerPositions["419.p.6385"]
     );
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6726"]
+      rosterModification?.newPlayerPositions["419.p.6726"]
     );
   });
 
@@ -620,7 +623,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.7593": "BN",
       "419.p.6385": "IR",
     });
@@ -634,7 +637,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.7593": "BN",
       "419.p.6385": "IR+",
     });
@@ -648,7 +651,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.7593": "BN",
       "419.p.6370": "BN",
       "419.p.6385": "IR+",
@@ -664,7 +667,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "BN",
       "419.p.6385": "IR+",
       "419.p.63702": "IR",
@@ -679,7 +682,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "419.p.6370": "BN",
       "419.p.5441": "IR+",
       "419.p.63702": "IR",
@@ -695,7 +698,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "419.p.6370": "BN",
       "419.p.5980": "NA",
       "419.p.63702": "IR",
@@ -710,7 +713,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "IR+",
       "419.p.63703": "NA",
       "419.p.63702": "IR",
@@ -725,14 +728,15 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toMatchObject({
+    expect(rosterModification?.newPlayerPositions).toMatchObject({
       "419.p.6370": "IR+",
       "419.p.63703": "NA",
       "419.p.63702": "IR",
     });
-    expect(Object.keys(rosterModification.newPlayerPositions).length).toEqual(
-      7
-    );
+    expect(
+      rosterModification?.newPlayerPositions &&
+        Object.keys(rosterModification?.newPlayerPositions).length
+    ).toEqual(7);
   });
   // One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+ (expect healthy to remain on IR)
   test("One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+", function () {
@@ -743,7 +747,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "IR+",
       "419.p.63703": "NA",
       "419.p.63702": "IR",
@@ -758,7 +762,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "IR+",
       "419.p.63703": "NA",
       "419.p.63702": "IR",
@@ -777,12 +781,12 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
 
     expect(["C", "Util", "BN"]).toContain(
-      rosterModification.newPlayerPositions["419.p.37372"]
+      rosterModification?.newPlayerPositions["419.p.37372"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.5376"]).toEqual("IR+");
+    expect(rosterModification?.newPlayerPositions["419.p.5376"]).toEqual("IR+");
     expect([
-      rosterModification.newPlayerPositions["419.p.6370"],
-      rosterModification.newPlayerPositions["419.p.63702"],
+      rosterModification?.newPlayerPositions["419.p.6370"],
+      rosterModification?.newPlayerPositions["419.p.63702"],
     ]).toContain("IR");
   });
 
@@ -796,12 +800,12 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
 
     expect(["C", "Util", "BN"]).toContain(
-      rosterModification.newPlayerPositions["419.p.37372"]
+      rosterModification?.newPlayerPositions["419.p.37372"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.5376"]).toEqual("IR+");
+    expect(rosterModification?.newPlayerPositions["419.p.5376"]).toEqual("IR+");
     expect([
-      rosterModification.newPlayerPositions["419.p.6370"],
-      rosterModification.newPlayerPositions["419.p.63702"],
+      rosterModification?.newPlayerPositions["419.p.6370"],
+      rosterModification?.newPlayerPositions["419.p.63702"],
     ]).toContain("IR");
   });
 
@@ -813,7 +817,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "BN",
       "419.p.6385": "IR",
       "419.p.63702": "IR+",
@@ -829,7 +833,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.3737": "C",
       "419.p.5441": "LW",
     });
@@ -843,7 +847,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.3737": "C",
       "419.p.5376": "BN",
       "419.p.5441": "LW",
@@ -859,9 +863,9 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
 
     expect(isSuccessfullyOptimized).toEqual(true);
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.5376"]
+      rosterModification?.newPlayerPositions["419.p.5376"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.6370"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.6370"]).toEqual("BN");
   });
 
   // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is open spot
@@ -873,7 +877,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.5391": "LW",
       "419.p.6726": "RW",
     });
@@ -890,7 +894,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.5391": "LW",
       "419.p.6726": "RW",
       "419.p.5376": "Util",
@@ -907,7 +911,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.5391": "LW",
       "419.p.6726": "RW",
       "419.p.5441": "BN",
@@ -922,7 +926,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification.newPlayerPositions).toEqual({
+    expect(rosterModification?.newPlayerPositions).toEqual({
       "419.p.6370": "BN",
       "419.p.63702": "BN",
     });
@@ -938,20 +942,20 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
 
     expect(["IR", "IR+"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6726"]
+      rosterModification?.newPlayerPositions["419.p.6726"]
     );
     expect(["BN", "LW", "Util"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6877"]
+      rosterModification?.newPlayerPositions["419.p.6877"]
     );
 
     expect(["C", "Util"]).toContain(
-      rosterModification.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"]
     );
     expect(["D", "Util"]).toContain(
-      rosterModification.newPlayerPositions["419.p.4930"]
+      rosterModification?.newPlayerPositions["419.p.4930"]
     );
-    expect(rosterModification.newPlayerPositions["419.p.3737"]).toEqual("BN");
-    expect(rosterModification.newPlayerPositions["419.p.5980"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.3737"]).toEqual("BN");
+    expect(rosterModification?.newPlayerPositions["419.p.5980"]).toEqual("BN");
   });
 
   test("better player on IR+, worse IR+ player on bench, and even worse player on IR+", function () {
@@ -963,7 +967,7 @@ describe.concurrent("Test LineupOptimizer Class NHL Daily", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 
-    expect(rosterModification.newPlayerPositions["419.p.6005"]).toEqual("D");
-    expect(rosterModification.newPlayerPositions["419.p.7124"]).toEqual("IR+");
+    expect(rosterModification?.newPlayerPositions["419.p.6005"]).toEqual("D");
+    expect(rosterModification?.newPlayerPositions["419.p.7124"]).toEqual("IR+");
   });
 });

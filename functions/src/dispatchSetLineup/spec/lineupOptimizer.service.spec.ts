@@ -80,14 +80,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
       require("./testRosters/NHL/Daily/optimalRoster.json"),
     ];
 
-    const expectedRosterModifications: LineupChanges[] = [
-      {
-        coveragePeriod: "2023-02-28",
-        coverageType: "date",
-        newPlayerPositions: {},
-        teamKey: "419.l.28340.t.1",
-      },
-    ];
     const spyFetchRostersFromYahoo = vi
       .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
       .mockReturnValue(Promise.resolve(rosters));
@@ -102,10 +94,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
 
     await setUsersLineup(uid, teams as ITeamFirestore[]);
-    expect(spyPutLineupChanges).toHaveBeenCalledWith(
-      expectedRosterModifications,
-      uid
-    );
+    expect(spyPutLineupChanges).not.toHaveBeenCalled();
     expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
     expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
   });
@@ -120,20 +109,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
       require("./testRosters/NHL/IntradayDrops/noDropsRequired.json"),
     ];
 
-    const expectedRosterModifications: LineupChanges[] = [
-      {
-        coveragePeriod: "2023-03-17",
-        coverageType: "date",
-        newPlayerPositions: {},
-        teamKey: "419.l.28340.t.1",
-      },
-      {
-        coveragePeriod: "2023-03-17",
-        coverageType: "date",
-        newPlayerPositions: {},
-        teamKey: "419.l.19947.t.6",
-      },
-    ];
     const spyFetchRostersFromYahoo = vi
       .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
       .mockReturnValue(Promise.resolve(rosters));
@@ -148,10 +123,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
 
     await setUsersLineup(uid, teams as ITeamFirestore[]);
-    expect(spyPutLineupChanges).toHaveBeenCalledWith(
-      expectedRosterModifications,
-      uid
-    );
+    expect(spyPutLineupChanges).not.toHaveBeenCalled();
     expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
     expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
   });
@@ -676,12 +648,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     ];
 
     const expectedLineupChanges: LineupChanges[] = [
-      {
-        coveragePeriod: "2023-03-17",
-        coverageType: "date",
-        newPlayerPositions: {},
-        teamKey: "419.l.19947.t.6",
-      },
       {
         coveragePeriod: "2023-03-17",
         coverageType: "date",

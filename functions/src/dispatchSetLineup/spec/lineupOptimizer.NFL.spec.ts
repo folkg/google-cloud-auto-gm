@@ -24,7 +24,7 @@ describe.concurrent("Test LineupOptimizer Class NFL", function () {
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
 
-    expect(rosterModification.newPlayerPositions).toEqual({});
+    expect(rosterModification).toEqual(null);
   });
 
   // *** Test Optimization of Lineup using healthy players ***

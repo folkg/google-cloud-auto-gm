@@ -397,6 +397,59 @@ async function processTransactionsForNextDayChanges(
   }
 }
 
+async function getPlayerTransactions2(
+  teams: ITeamOptimizer[],
+  allAddCandidates: TopAvailablePlayers
+) {
+  const result: PlayerTransaction[][] = [];
+  const allLineupChanges: LineupChanges[] = [];
+
+  for (const team of teams) {
+    const lo = new LineupOptimizer(team);
+
+    if (team.allow_dropping) {
+      lo.generateDropPlayerTransactions();
+    }
+
+    const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
+    if (addCandidates?.length > 0) {
+      lo.addCandidates = addCandidates;
+
+      if (team.allow_adding) {
+        lo.generateAddPlayerTransactions();
+        const lineupChanges = lo.lineupChanges;
+        if (lineupChanges) {
+          allLineupChanges.push(lineupChanges);
+        }
+      }
+      if (team.allow_add_drops) {
+        // TODO: Can add add/dropping here as well
+        // lo.generateAddDropPlayerTransactions();
+      }
+    }
+
+    if (allLineupChanges.length > 0) {
+      // if there is a failure calling the Yahoo API, an error will be thrown, and we will let it propagate up
+      try {
+        await putLineupChanges(allLineupChanges, uid);
+      } catch (error) {
+        logger.error(error);
+        logger.error("Lineup changes object: ", { allLineupChanges });
+        logger.error("Original teams object: ", { teams });
+        throw error;
+      }
+    }
+
+    // TODO: This needs to be rearranged.
+    const playerTransactions: PlayerTransaction[] = lo.playerTransactions;
+    if (playerTransactions.length > 0) {
+      result.push(playerTransactions);
+    }
+  }
+
+  return result;
+}
+
 function getPlayerTransactions(
   teams: ITeamOptimizer[],
   allAddCandidates: TopAvailablePlayers
