@@ -206,6 +206,7 @@ export class Team extends PlayerCollection implements Team {
   public get droppablePlayers(): Player[] {
     return this.players.filter(
       (player) =>
+        !player.isInactiveList() &&
         !player.is_undroppable &&
         !this._lockedPlayers.has(player.player_key) &&
         !player.eligible_positions.some((position) =>
@@ -265,7 +266,9 @@ export class Team extends PlayerCollection implements Team {
   public get unfilledPositionCounter(): { [key: string]: number } {
     const result = { ...this.roster_positions };
     this.players.forEach((player) => {
-      result[player.selected_position]--;
+      if (result[player.selected_position] !== undefined) {
+        result[player.selected_position]--;
+      }
     });
     return result;
   }

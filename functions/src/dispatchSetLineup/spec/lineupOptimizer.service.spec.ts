@@ -349,17 +349,12 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
   });
 
-  it("should drop two players from IL since they were the worst, no other changes", async () => {
+  it("Drop one player to make room for healthy on IR (daily)", async () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }, { team_key: "test2" }];
 
     // Set up mock data
     const initialRosters: ITeamOptimizer[] = [
-      require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScoreIL.json"),
-      require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
-    ];
-    const updatedRosters: ITeamOptimizer[] = [
-      require("./testRosters/NHL/IntradayDrops/RefetchedRosters/dropTwoPlayersWithLowestScore.json"),
       require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
     const tomorrowRosters: ITeamOptimizer[] = [
@@ -369,28 +364,15 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const transaction1 = {
       players: [
         {
-          playerKey: "419.p.63772",
+          isInactiveList: false,
+          playerKey: "419.p.7155",
           transactionType: "drop",
-          isInactiveList: true,
         },
       ],
       reason:
-        "Dropping Kevin Fiala2 to make room for Kevin Fiala coming back from injury.",
+        "Dropping Samuel Girard to make room for Kirill Kaprizov coming back from injury.",
       sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
-    };
-    const transaction2 = {
-      players: [
-        {
-          playerKey: "419.p.6377",
-          transactionType: "drop",
-          isInactiveList: true,
-        },
-      ],
-      reason:
-        "Dropping Kevin Fiala to make room for Kevin Fiala2 coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
+      teamKey: "419.l.28340.t.1",
     };
 
     // Set up spies and mocks
@@ -400,9 +382,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
     spyFetchRostersFromYahoo.mockImplementationOnce(() => {
       return Promise.resolve(initialRosters);
-    });
-    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
-      return Promise.resolve(updatedRosters);
     });
     spyFetchRostersFromYahoo.mockImplementationOnce(() => {
       return Promise.resolve(tomorrowRosters);
@@ -419,19 +398,57 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
-    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(3);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
 
     expect(spyPutLineupChanges).toHaveBeenCalledTimes(1);
 
-    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(3);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
       transaction1,
       uid
     );
-    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction2,
-      uid
+  });
+
+  it("should drop none, since the worst player is the healthy player on IL", async () => {
+    const uid = "testUID";
+    const teams = [{ team_key: "test1" }, { team_key: "test2" }];
+
+    // Set up mock data
+    const initialRosters: ITeamOptimizer[] = [
+      require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization2.json"),
+    ];
+    const tomorrowRosters: ITeamOptimizer[] = [
+      require("./testRosters/NHL/DailyDrops/RefetchedRosters/dropPlayerWithLowestScoreAndOptimization.json"),
+    ];
+
+    // Set up spies and mocks
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
     );
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(tomorrowRosters);
+    });
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
+
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(1);
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(0);
   });
 
   it("should have one lineup change, then one refetch, then one drop (again)", async () => {
@@ -782,7 +799,7 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
     );
   });
 
-  it("should eit.skip early with an empty teams array", async () => {
+  it("should exit early with an empty teams array", async () => {
     const uid = "testUID";
     const teams: any[] = [];
 

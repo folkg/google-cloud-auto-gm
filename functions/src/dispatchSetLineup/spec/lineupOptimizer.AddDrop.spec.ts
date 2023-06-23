@@ -518,14 +518,6 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions?.length).toEqual(1);
   });
 
-  // These have important implications on the full stack flow. Run drop and add on all of these scenarios:
-  // TODO: One healthy player on IL with one free spot. Should add/drop no one.
-  // TODO: One healthy player on IL with no free spot, but IL on roster. Should add/drop no one.
-  // TODO: One healthy player on IL, no free spot, no IL on roster. Should drop one player.
-  // TODO: One healthy player on IL, one free spot, two IL on roster. Should add one player.
-  // Since dropping is only moving healthy from IL to BN, and adding is only moving BN to IL, only one of them should ever happen.
-  // Add/Dropping can occur after either of them.
-
   // This means:
   // 0. if next day changes, fetch tomorrow's lineup
   // 1. generateDropPlayerTransactions(). - Make any dropped players disappear from lineup. Make is_editable = false and selected_position = null?
@@ -535,4 +527,110 @@ describe.concurrent("Add players", () => {
   // 4. generateAddDropPlayerTransactions(). Should not drop IL for Healthy, so no lineup changes should be required.
   // 5. if (lo.playerTransactions) post player transactions
   // 6. if same day changes, refetch
+});
+
+describe.concurrent("Combination Drops or Adds", () => {
+  it("should add / drop no one because lineup is optimal", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    expect(playerTransactions).toEqual(null);
+    expect(lineupChanges).toEqual(null);
+  });
+
+  it("should add / drop no one because we can move IL player to free spot on bench", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/moveILtoBN.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    expect(playerTransactions).toEqual(null);
+    expect(lineupChanges).toEqual(null);
+
+    const lo2 = new LineupOptimizer(roster);
+    lo2.optimizeStartingLineup();
+    const rosterModifications = lo2.lineupChanges;
+
+    expect(rosterModifications?.newPlayerPositions["422.p.10660"]).toEqual(
+      "BN"
+    );
+  });
+  it("should add / drop no one because we can swap IL player with injured on roster", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILtoBN.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    expect(playerTransactions).toEqual(null);
+    expect(lineupChanges).toEqual(null);
+
+    const lo2 = new LineupOptimizer(roster);
+    lo2.optimizeStartingLineup();
+    const rosterModifications = lo2.lineupChanges;
+
+    expect(rosterModifications?.newPlayerPositions["422.p.10660"]).toEqual(
+      "BN"
+    );
+    expect(rosterModifications?.newPlayerPositions["422.p.106602"]).toEqual(
+      "IL"
+    );
+  });
+
+  // TODO: Finish these two tests
+  it("should drop one player because we have healthy player on IL and no free spots", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/DropWorstPlayer.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    expect(playerTransactions?.[0].players[0].playerKey).toEqual(
+      "422.p.106602"
+    );
+    expect(lineupChanges).toEqual(null);
+
+    const roster2: ITeamOptimizer = require("./testRosters/MLB/DropWorstPlayer-refetched.json");
+    const lo2 = new LineupOptimizer(roster2);
+    lo2.optimizeStartingLineup();
+    const rosterModifications = lo2.lineupChanges;
+
+    expect(rosterModifications?.newPlayerPositions["422.p.10660"]).toEqual(
+      "BN"
+    );
+  });
+
+  it("should add one player because we have one healthy on IL, and two injured on roster", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/AddBestPlayer.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    // expect that the drop function would swap the IL with a healthy
+    expect(lineupChanges?.newPlayerPositions["422.p.10660"]).toEqual("IL");
+    expect(lineupChanges?.newPlayerPositions["422.p.106602"]).toEqual("BN");
+
+    // expect that the add function would move an IL+ to the IL+
+    expect(lineupChanges?.newPlayerPositions["422.p.11014"]).toEqual("IL+");
+
+    expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10234");
+  });
+
+  // TODO: Add some more integration tests where the add and drop are both included. Or are they already all included? I think they are...
+  // TODO: Add the code for the add/drop functionality, specific tests for add/drop functionality, and then add the integration tests.
 });

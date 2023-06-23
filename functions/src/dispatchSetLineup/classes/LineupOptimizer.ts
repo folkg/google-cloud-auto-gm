@@ -48,10 +48,37 @@ export class LineupOptimizer {
     this.resolveAllIllegalPlayers();
     this.optimizeReserveToStaringPlayers();
 
-    this.deltaPlayerPositions = this.diffPlayerPositionDictionary(
+    this.generateDeltaPlayerPositions();
+  }
+
+  private generateDeltaPlayerPositions() {
+    this.deltaPlayerPositions = diffPlayerPositionDictionary(
       this.originalPlayerPositions,
       this.createPlayerPositionDictionary(this.team.editablePlayers)
     );
+
+    function diffPlayerPositionDictionary(
+      originalPlayerPositions: { [key: string]: string },
+      finalPlayerPositions: { [key: string]: string }
+    ) {
+      const result: { [key: string]: string } = {};
+      Object.keys(originalPlayerPositions).forEach((playerKey) => {
+        if (
+          originalPlayerPositions[playerKey] !== finalPlayerPositions[playerKey]
+        ) {
+          result[playerKey] = finalPlayerPositions[playerKey];
+        }
+      });
+      return result;
+    }
+  }
+
+  private createPlayerPositionDictionary(players: Player[]) {
+    const result: { [key: string]: string } = {};
+    players.forEach((player) => {
+      result[player.player_key] = player.selected_position;
+    });
+    return result;
   }
 
   public get lineupChanges(): LineupChanges | null {
@@ -64,29 +91,6 @@ export class LineupOptimizer {
       };
     }
     return null;
-  }
-
-  private createPlayerPositionDictionary(players: Player[]) {
-    const result: { [key: string]: string } = {};
-    players.forEach((player) => {
-      result[player.player_key] = player.selected_position;
-    });
-    return result;
-  }
-
-  private diffPlayerPositionDictionary(
-    originalPlayerPositions: { [key: string]: string },
-    finalPlayerPositions: { [key: string]: string }
-  ) {
-    const result: { [key: string]: string } = {};
-    Object.keys(originalPlayerPositions).forEach((playerKey) => {
-      if (
-        originalPlayerPositions[playerKey] !== finalPlayerPositions[playerKey]
-      ) {
-        result[playerKey] = finalPlayerPositions[playerKey];
-      }
-    });
-    return result;
   }
 
   private resolveOverfilledPositions(): void {
@@ -133,6 +137,8 @@ export class LineupOptimizer {
   public generateDropPlayerTransactions(): void {
     // find drops by attempting to move healthy players off IL unsuccessfully
     this.resolveHealthyPlayersOnIL();
+
+    // we don't need to generateDeltaPlayerPositions() on drop transactions since the transactions need to be posted before optimizing
   }
 
   public generateAddPlayerTransactions(): void {
@@ -173,6 +179,7 @@ export class LineupOptimizer {
       }
     }
 
+    this.generateDeltaPlayerPositions();
     // TODO: send emails from function postAllTransactions() in setLineups.service
   }
 
@@ -289,6 +296,7 @@ export class LineupOptimizer {
       const success = this.resolveIllegalPlayer(player);
       if (!success) {
         this.createDropPlayerTransaction(player);
+        this.resolveIllegalPlayer(player); // now that a player has been dropped, resolve our player again.
       }
     }
   }
@@ -376,7 +384,7 @@ export class LineupOptimizer {
       `attempting to move playerB ${playerB.player_name} to unfilled position`
     );
     const illegalPlayerACannotMoveToOpenRosterSpot =
-      playerA.isInactiveList() && this.team.currentEmptyRosterSpots <= 0;
+      playerA.isInactiveList() && this.team.pendingEmptyRosterSpots <= 0;
 
     const unfilledPositionTargetList = illegalPlayerACannotMoveToOpenRosterSpot
       ? this.team.unfilledInactivePositions
@@ -616,6 +624,8 @@ export class LineupOptimizer {
     this._playerTransactions.addTransaction(pt);
 
     this.team.addPendingDrop(playerToDrop);
+    // playerToDrop.selected_position = "BN";
+    // playerToDrop.is_editable = false;
 
     this.logInfo(
       `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
@@ -654,10 +664,11 @@ export class LineupOptimizer {
   }
 
   private moveILPlayerToUnfilledALPosition(player: Player): boolean {
-    this.logInfo(`numEmptyRosterSpots ${this.team.currentEmptyRosterSpots}`);
+    this.logInfo(`numEmptyRosterSpots ${this.team.pendingEmptyRosterSpots}`);
+
     if (!player.isInactiveList()) return false;
 
-    if (this.team.currentEmptyRosterSpots <= 0) {
+    if (this.team.pendingEmptyRosterSpots <= 0) {
       const success = this.openOneRosterSpot(player);
       if (!success) return false;
     }
