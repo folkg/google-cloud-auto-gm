@@ -134,7 +134,6 @@ export async function performWeeklyLeagueTransactions(
       nflTopAvailablePlayersPromise,
       restTopAvailablePlayersPromise
     );
-
   await processPlayerTransactions(
     usersTeams,
     topAvailablePlayerCandidates,
@@ -346,6 +345,7 @@ async function createPlayersTransactions(
     }
 
     const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
+
     if (addCandidates?.length > 0) {
       lo.addCandidates = addCandidates;
 
@@ -514,6 +514,7 @@ export async function mergeTopAvailabePlayers(
     nflTopAvailablePlayersPromise,
     restTopAvailablePlayersPromise,
   ]);
+
   resolvedPlayers.forEach((resolvedPromise: TopAvailablePlayers) => {
     Object.keys(resolvedPromise).forEach((teamKey) => {
       if (Array.isArray(result[teamKey])) {

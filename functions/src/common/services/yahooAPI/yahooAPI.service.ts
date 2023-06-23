@@ -349,7 +349,7 @@ export async function postRosterAddDropTransaction(
     logger.log(
       `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}.`
     );
-    logger.log("Transaction data:", data);
+    logger.log("Transaction data:", { data });
     return true;
   } catch (err: unknown) {
     const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;

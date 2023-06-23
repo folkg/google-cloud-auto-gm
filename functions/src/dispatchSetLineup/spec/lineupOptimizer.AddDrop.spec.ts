@@ -631,6 +631,9 @@ describe.concurrent("Combination Drops or Adds", () => {
     expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10234");
   });
 
-  // TODO: Add some more integration tests where the add and drop are both included. Or are they already all included? I think they are...
+  // TODO: Add an integration test where we are adding players. Currently it is only for dropping. Could mimic the final two tests above.
   // TODO: Add the code for the add/drop functionality, specific tests for add/drop functionality, and then add the integration tests.
+  // TODO: Integration test for the yahoo API call.
+  // TODO: Test spin with testsetlineups. Go team by team, hope for no errors.s
+  // TODO: Send it live!
 });

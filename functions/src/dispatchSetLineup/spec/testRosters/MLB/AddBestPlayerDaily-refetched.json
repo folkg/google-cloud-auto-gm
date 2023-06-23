@@ -513,9 +513,9 @@
     }
   ],
   "coverage_type": "date",
-  "coverage_period": "2023-04-07",
-  "weekly_deadline": "intraday",
-  "edit_key": "2023-04-07",
+  "coverage_period": "2023-04-08",
+  "weekly_deadline": "",
+  "edit_key": "2023-04-08",
   "game_code": "mlb",
   "num_teams": 12,
   "roster_positions": {

@@ -11,6 +11,7 @@ import {
   setUsersLineup,
 } from "../services/setLineups.service.js";
 import * as LineupBuilderService from "../services/yahooLineupBuilder.service.js";
+import * as TopAvailablePlayersService from "../services/yahooTopAvailablePlayersBuilder.service.js";
 
 // mock firebase-admin
 vi.mock("firebase-admin/firestore", () => {
@@ -25,10 +26,12 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-// mock initialize starting goalies
+// mock initialize starting goalies/pitchers
 vi.mock("../../common/services/yahooAPI/yahooStartingPlayer.service", () => ({
   initStartingGoalies: vi.fn(() => Promise.resolve()),
+  initStartingPitchers: vi.fn(() => Promise.resolve()),
   getNHLStartingGoalies: vi.fn().mockReturnValue([]),
+  getMLBStartingPitchers: vi.fn().mockReturnValue([]),
 }));
 
 // mock Firestore services
@@ -706,31 +709,305 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).not.toHaveBeenCalled();
   });
-  // TODO: Add tests for the following
-  // - Drop players with same day transactions, with lineup optimization (NFL)
-  // - Drop players with next day transactions, with lineup optimization (MLB)
+
+  it("should add one player and then move them to the active roster (Intraday)", async () => {
+    const uid = "testUID";
+    const teams = [
+      { team_key: "422.l.115494.t.4", allow_adding: true, game_code: "MLB" },
+    ];
+    const transaction1 = {
+      players: [
+        {
+          isInactiveList: false,
+          isFromWaivers: false,
+          playerKey: "422.p.10234",
+          transactionType: "add",
+        },
+      ],
+      reason:
+        "Moved Freddy Peralta to the inactive list to make room to add Dansby Swanson",
+      sameDayTransactions: true,
+      teamKey: "422.l.115494.t.4",
+    };
+    const addPlayerLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-04-07",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.10660": "IL",
+          "422.p.106602": "BN",
+          "422.p.11014": "IL+",
+        },
+        teamKey: "422.l.115494.t.4",
+      },
+    ];
+    const optimizationLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-04-07",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.10234": "Util",
+          "422.p.11251": "P",
+          "422.p.9876": "BN",
+        },
+        teamKey: "422.l.115494.t.4",
+      },
+    ];
+
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+
+    const initialRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/AddBestPlayer.json"),
+    ];
+    const updatedRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/AddBestPlayer-refetched.json"),
+    ];
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(updatedRosters);
+    });
+
+    const spyFetchTopAvailablePlayers = vi.spyOn(
+      TopAvailablePlayersService,
+      "fetchTopAvailablePlayersFromYahoo"
+    );
+    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/topAvailablePlayersPromise1.json");
+    const restTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(topAvailablePlayersPromise);
+    });
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(restTopAvailablePlayersPromise);
+    });
+
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchTopAvailablePlayers).toHaveBeenCalledTimes(2);
+
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction1,
+      uid
+    );
+
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(2);
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      addPlayerLineupChanges,
+      uid
+    );
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      optimizationLineupChanges,
+      uid
+    );
+  });
+
+  it("should add one player and then move them to the active roster (Next Day)", async () => {
+    const uid = "testUID";
+    const teams = [
+      { team_key: "422.l.115494.t.4", allow_adding: true, game_code: "MLB" },
+    ];
+    const transaction1 = {
+      players: [
+        {
+          isInactiveList: false,
+          isFromWaivers: false,
+          playerKey: "422.p.10234",
+          transactionType: "add",
+        },
+      ],
+      reason:
+        "Moved Freddy Peralta to the inactive list to make room to add Dansby Swanson",
+      sameDayTransactions: true,
+      teamKey: "422.l.115494.t.4",
+    };
+    const optimizationLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-04-08",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.10660": "IL",
+          "422.p.106602": "BN",
+          "422.p.11014": "IL+",
+        },
+        teamKey: "422.l.115494.t.4",
+      },
+    ];
+    const addPlayerLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-04-08",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.10660": "IL",
+          "422.p.106602": "BN",
+          "422.p.11014": "IL+",
+        },
+        teamKey: "422.l.115494.t.4",
+      },
+    ];
+
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+
+    const initialRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/AddBestPlayerDaily.json"),
+    ];
+    const tomorrowRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/AddBestPlayerDaily-refetched.json"),
+    ];
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(tomorrowRosters);
+    });
+
+    const spyFetchTopAvailablePlayers = vi.spyOn(
+      TopAvailablePlayersService,
+      "fetchTopAvailablePlayersFromYahoo"
+    );
+    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/topAvailablePlayersPromise1.json");
+    const restTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(topAvailablePlayersPromise);
+    });
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(restTopAvailablePlayersPromise);
+    });
+
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchTopAvailablePlayers).toHaveBeenCalledTimes(2);
+
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+      transaction1,
+      uid
+    );
+
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(2);
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      optimizationLineupChanges,
+      uid
+    );
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      addPlayerLineupChanges,
+      uid
+    );
+  });
+
+  // TODO: Add no one because adding is set to false
+  it("should not add anyone (but still optimize) since user setting does not allow for adds", async () => {
+    const uid = "testUID";
+    const teams = [
+      { team_key: "422.l.115494.t.4", allow_adding: false, game_code: "MLB" },
+    ];
+
+    const optimizationLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-04-07",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.10660": "IL",
+          "422.p.106602": "BN",
+          "422.p.11014": "BN",
+          "422.p.11251": "P",
+        },
+        teamKey: "422.l.115494.t.4",
+      },
+    ];
+
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+
+    const initialRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/AddBestPlayer.json"),
+    ];
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+
+    const spyFetchTopAvailablePlayers = vi.spyOn(
+      TopAvailablePlayersService,
+      "fetchTopAvailablePlayersFromYahoo"
+    );
+
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(1);
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      optimizationLineupChanges,
+      uid
+    );
+
+    expect(spyFetchTopAvailablePlayers).toHaveBeenCalledTimes(0);
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(0);
+  });
 });
 
-function mapFirestoreTeams(team: any): ITeamFirestore {
-  return {
-    uid: "testUID",
-    team_key: team.team_key,
-    game_code: "testGameCode",
-    start_date: 1,
-    end_date: Number.MAX_SAFE_INTEGER,
-    weekly_deadline: "testWeeklyDeadline",
-    is_subscribed: false,
-    is_setting_lineups: false,
-    last_updated: Date.now(),
-    allow_transactions: false,
-    allow_dropping: false,
-    allow_adding: false,
-    allow_add_drops: false,
-    allow_waiver_adds: false,
-  };
-}
-
 describe("Full stack performTransactionsForWeeklyLeagues()", () => {
+  function mapFirestoreTeams(team: any): ITeamFirestore {
+    return {
+      uid: "testUID",
+      team_key: team.team_key,
+      game_code: "testGameCode",
+      start_date: 1,
+      end_date: Number.MAX_SAFE_INTEGER,
+      weekly_deadline: "testWeeklyDeadline",
+      is_subscribed: false,
+      is_setting_lineups: false,
+      last_updated: Date.now(),
+      allow_transactions: false,
+      allow_dropping: false,
+      allow_adding: false,
+      allow_add_drops: false,
+      allow_waiver_adds: false,
+    };
+  }
   it("should call performTransactionsForWeeklyLeagues() for each transaction", async () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }, { team_key: "test2" }].map(

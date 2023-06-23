@@ -452,7 +452,7 @@
       "player_key": "422.p.11014",
       "player_name": "Freddy Peralta",
       "eligible_positions": ["SP", "P", "BN", "IL+"],
-      "selected_position": "P",
+      "selected_position": "IL+",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "IL+",
@@ -473,7 +473,7 @@
       "player_key": "422.p.10660",
       "player_name": "Jordan Montgomery",
       "eligible_positions": ["SP", "P", "BN", "IL", "IL+"],
-      "selected_position": "BN",
+      "selected_position": "IL",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "IL",
@@ -494,7 +494,7 @@
       "player_key": "422.p.106602",
       "player_name": "Jordan Montgomery2",
       "eligible_positions": ["SP", "P", "BN"],
-      "selected_position": "IL",
+      "selected_position": "BN",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "Healthy",
@@ -510,6 +510,28 @@
         "projectedWeek": -1,
         "next4Weeks": -1
       }
+    },
+    {
+      "eligible_positions": ["SS", "Util"],
+      "injury_status": "Healthy",
+      "is_editable": true,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "percent_owned": 75,
+      "percent_started": 100,
+      "player_key": "422.p.10234",
+      "player_name": "Dansby Swanson",
+      "ranks": {
+        "last14Days": 700,
+        "last30Days": 538,
+        "last4Weeks": -1,
+        "next4Weeks": -1,
+        "next7Days": 44,
+        "projectedWeek": -1,
+        "restOfSeason": 63
+      },
+      "selected_position": "BN"
     }
   ],
   "coverage_type": "date",
