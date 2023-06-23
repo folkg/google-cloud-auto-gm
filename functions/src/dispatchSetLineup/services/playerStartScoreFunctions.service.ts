@@ -78,16 +78,16 @@ export function scoreFunctionMaxGamesPlayed(
     );
 
     const paceKeeper = getPaceKeeper(player);
-    const currentPace = paceKeeper.projected / paceKeeper.max ?? 1;
+    const currentPace = paceKeeper ? paceKeeper.projected / paceKeeper.max : 1; // in case there is an issue with the yahoo data
 
     let score = ownershipScoreFunction(player);
     score = applyInjuryScoreFactors(score, player);
-    if (!player.isInactiveListEligible()) {
-      if (currentPace > churnThreshold) {
+    if (currentPace > churnThreshold) {
+      if (!player.isInactiveListEligible()) {
         score += getScoreBoost(player, currentPace);
-      } else {
-        score *= getScorePenaltyFactor(player);
       }
+    } else {
+      score *= getScorePenaltyFactor(player);
     }
 
     return score;
