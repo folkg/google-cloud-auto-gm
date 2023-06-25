@@ -23,6 +23,7 @@ import {
   TopAvailablePlayers,
   fetchTopAvailablePlayersFromYahoo,
 } from "./yahooTopAvailablePlayersBuilder.service.js";
+import { sendUserEmail } from "../../common/services/email/email.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -311,6 +312,9 @@ async function processPlayerTransactions(
       await putLineupChanges(lineupChanges, uid);
     } catch (error) {
       logger.error("Error in processTransactionsForSameDayChanges()", error);
+      logger.error("Available Add Candidates object: ", {
+        topAvailablePlayerCandidates,
+      });
       logger.error("Lineup changes object: ", { lineupChanges });
       logger.error("Original teams object: ", { teams });
       throw error;
@@ -323,6 +327,9 @@ async function processPlayerTransactions(
       await postAllTransactions(transactions, uid);
     } catch (error) {
       logger.error("Error in processTransactionsForSameDayChanges()", error);
+      logger.error("Available Add Candidates object: ", {
+        topAvailablePlayerCandidates,
+      });
       logger.error("Transactions object: ", { transactions });
       logger.error("Original teams object: ", { teams });
       // continue the function even if posting transactions fails, we can still proceed to optimize lineup
@@ -387,15 +394,23 @@ async function postAllTransactions(
 
   const results = await Promise.allSettled(allTransactionsPromises);
 
+  const transactionsPosted: PlayerTransaction[] = [];
   let error = false;
   results.forEach((result) => {
-    if (result.status === "rejected") {
+    if (result.status === "fulfilled") {
+      const transaction = result.value;
+      transaction && transactionsPosted.push(transaction);
+    } else if (result.status === "rejected") {
       error = true;
       logger.error(
         `Error in postAllTransactions() for User: ${uid}: ${result.reason}`
       );
     }
   });
+
+  if (transactionsPosted.length > 0) {
+    sendSuccessfulTransactionEmail(transactionsPosted, uid);
+  }
   if (error) {
     throw new Error("Error in postAllTransactions()");
   }
@@ -413,10 +428,23 @@ async function postAllTransactions(
   //     throw err;
   //   }
   // }
+}
 
-  // TODO: Send notification email after every successful set of transactions
-  // TODO: When to send email for confirmation, if we have that setting on?
-  // TODO: Send the email with debugging information - such as player added name, ownership score. Who moved to IR. Any unfilled or critical positions on team.
+function sendSuccessfulTransactionEmail(
+  transactionsPosted: PlayerTransaction[],
+  uid: string
+) {
+  const body = ["The following transactions were processed:"].concat(
+    transactionsPosted.map(
+      (t) =>
+        `${t.teamKey}: ${t.reason} ${
+          t.players.some((p) => p.isFromWaivers)
+            ? "(Waiver claim created)"
+            : "(Transaction successfully completed"
+        }`
+    )
+  );
+  sendUserEmail(uid, "Transactions were Processed!", body);
 }
 
 function getTeamsWithSameDayTransactions(

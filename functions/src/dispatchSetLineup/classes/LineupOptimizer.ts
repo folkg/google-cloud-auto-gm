@@ -207,7 +207,6 @@ export class LineupOptimizer {
     }
 
     this.generateDeltaPlayerPositions();
-    // TODO: send emails from function postAllTransactions() in setLineups.service
   }
 
   private createAddPlayerTransaction(reason = ""): boolean {
@@ -274,6 +273,7 @@ export class LineupOptimizer {
       );
     baseDropCandidates = baseDropCandidates.filter(
       (dropCandidate) =>
+        !this.isTooLateToDrop(dropCandidate) &&
         bestAddCandidate.compareOwnershipScore(dropCandidate) > SCORE_THRESHOLD
     );
 
@@ -318,7 +318,6 @@ export class LineupOptimizer {
     }
 
     this.generateDeltaPlayerPositions();
-    // TODO: send emails from function postAllTransactions() in setLineups.service
   }
 
   private createSwapPlayerTransaction(
@@ -329,7 +328,6 @@ export class LineupOptimizer {
     assert(this._addCandidates, "addCandidates must be set");
 
     const addCandidates = this.preprocessAddCandidates(baseAddCandidates);
-    // TODO: Why did we not get only C? Or did we and they suck too much?
     const playerToAdd: Player | undefined = addCandidates?.[0]; // best add candidate
     if (!playerToAdd) {
       return null;
@@ -575,7 +573,6 @@ export class LineupOptimizer {
       playerB,
       this.team.editablePlayers
     );
-    // TODO: Need to add playerB back to stack if their new position is BN
     if (playerC) {
       this.logInfo("three-way swap found!");
       if (playerA.isInactiveList() && playerB.isActiveRoster()) {
@@ -819,7 +816,6 @@ export class LineupOptimizer {
       );
   }
 
-  // TODO: Is this necessary? Or is it inherent?
   private isTooLateToDrop(player: Player) {
     return this.team.sameDayTransactions && !player.is_editable;
   }

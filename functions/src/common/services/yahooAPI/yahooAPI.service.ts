@@ -285,24 +285,22 @@ async function putRosterChangePromise(
  *
  * @export
  * @async
- * @param {PlayerTransaction} transaction The roster transactions.
- * Shall contain the teamKey and the players to add/drop for a single transaction. This means that
- * the players array shall contain only 1 or 2 players.
+ * @param {PlayerTransaction} transaction The transaction object to post
  * @param {string} uid The Yahoo uid of the user
- * @return {Promise<void>}
+ * @return {Promise<PlayerTransaction | null>} The transaction object that was successfully posted
  */
 export async function postRosterAddDropTransaction(
   transaction: PlayerTransaction,
   uid: string
-): Promise<boolean> {
+): Promise<PlayerTransaction | null> {
   const { teamKey, players } = transaction;
 
   const validPlayerCount = [1, 2].includes(players.length);
   if (!validPlayerCount) {
     logger.warn(
-      `Invalid number of players to move: ${players.length} for team: ${teamKey} for user: ${uid}. Must be 1 or 2.`
+      `Transaction was not processed. Invalid number of players to move: ${players.length} for team: ${teamKey} for user: ${uid}. Must be 1 or 2.`
     );
-    return false;
+    return null;
   }
   const XMLPlayers: TransactionPlayer[] = players.map((player) => ({
     player_key: player.playerKey,
@@ -350,7 +348,7 @@ export async function postRosterAddDropTransaction(
       `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}.`
     );
     logger.log("Transaction data:", { data });
-    return true;
+    return transaction;
   } catch (err: unknown) {
     const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;
     handleAxiosError(err, errMessage);
