@@ -204,14 +204,15 @@ export class Team extends PlayerCollection implements Team {
   }
 
   public get droppablePlayers(): Player[] {
+    return this.droppablePlayersInclIL.filter(
+      (player) => !player.isInactiveList()
+    );
+  }
+
+  public get droppablePlayersInclIL(): Player[] {
     return this.players.filter(
       (player) =>
-        !player.isInactiveList() &&
-        !player.is_undroppable &&
-        !this._lockedPlayers.has(player.player_key) &&
-        !player.eligible_positions.some((position) =>
-          this.criticalPositions.includes(position)
-        )
+        !player.is_undroppable && !this._lockedPlayers.has(player.player_key)
     );
   }
 
@@ -307,7 +308,7 @@ export class Team extends PlayerCollection implements Team {
     return this.emptyRosterSpotCounter() - this._submittedAddDropDifferential;
   }
 
-  public get pendingEmptyRosterSpots(): number {
+  public getPendingEmptyRosterSpots(): number {
     return this.emptyRosterSpotCounter() - this.allPendingAddDropDifferential;
   }
 
@@ -328,11 +329,36 @@ export class Team extends PlayerCollection implements Team {
     }, 0);
   }
 
+  /**
+   * positions that currently are underfilled, or exactly filled
+   *
+   * @public
+   * @readonly
+   * @type {string[]}
+   */
   public get criticalPositions(): string[] {
     return this.getPositionsHelper((a, b) => a <= b);
   }
 
-  public get emptyPositions(): string[] {
+  /**
+   * positions that would be critical if one player was dropped
+   *
+   * @public
+   * @readonly
+   * @type {string[]}
+   */
+  public get almostCriticalPositions(): string[] {
+    return this.getPositionsHelper((a, b) => a <= b + 1);
+  }
+
+  /**
+   * positions that have at least one empty spot that no current roster player can fill
+   *
+   * @public
+   * @readonly
+   * @type {string[]}
+   */
+  public get underfilledPositions(): string[] {
     return this.getPositionsHelper((a, b) => a < b);
   }
 
@@ -372,7 +398,7 @@ export class Team extends PlayerCollection implements Team {
     );
   }
 
-  public get isCurrentTransactionPaceOK(): boolean {
+  public isCurrentTransactionPaceOK(): boolean {
     const {
       start_date: startDate,
       end_date: endDate,

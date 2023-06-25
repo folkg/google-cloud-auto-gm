@@ -24,9 +24,11 @@ export class Player implements Player {
     const playerCopy = structuredClone(player);
     Object.assign(this, playerCopy);
 
-    this.start_score = 0;
-    this.ownership_score = 0;
-    this.eligible_positions.push("BN"); // not included by default in Yahoo
+    this.start_score = this.start_score ?? 0;
+    this.ownership_score = this.ownership_score ?? 0;
+    if (!this.eligible_positions.includes("BN")) {
+      this.eligible_positions.push("BN"); // not included by default in Yahoo
+    }
   }
 
   compareStartScore(playerB: Player): number {

@@ -1,0 +1,296 @@
+{
+  "transactions": [
+    [
+      {
+        "teamKey": "422.l.115494.t.4",
+        "sameDayTransactions": true,
+        "reason": "Adding better Andrew Vaughn and dropping worse Seth Brown",
+        "players": [
+          {
+            "playerKey": "422.p.11866",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.11643",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.115494.t.4",
+        "sameDayTransactions": true,
+        "reason": "Adding better Anthony Santander and dropping worse Ben Lively",
+        "players": [
+          {
+            "playerKey": "422.p.10666",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.9881",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.115494.t.4",
+        "sameDayTransactions": true,
+        "reason": "Adding better Carlos Correa and dropping worse Alejandro Kirk",
+        "players": [
+          {
+            "playerKey": "422.p.9573",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.11853",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.115494.t.4",
+        "sameDayTransactions": true,
+        "reason": "Adding better Ian Happ and dropping worse DJ LeMahieu",
+        "players": [
+          {
+            "playerKey": "422.p.10440",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.8949",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.115494.t.4",
+        "sameDayTransactions": true,
+        "reason": "Adding better Drew Smyly and dropping worse Michael Conforto",
+        "players": [
+          {
+            "playerKey": "422.p.9140",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.9875",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.115494.t.4",
+        "sameDayTransactions": true,
+        "reason": "Adding better Andrew Chafin and dropping worse Ha-Seong Kim",
+        "players": [
+          {
+            "playerKey": "422.p.9782",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.12116",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.115494.t.4",
+        "sameDayTransactions": true,
+        "reason": "Adding better Brendan Donovan and dropping worse José Abreu",
+        "players": [
+          {
+            "playerKey": "422.p.12351",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.9540",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better Josh Hader and dropping worse Carlos Carrasco",
+        "players": [
+          {
+            "playerKey": "422.p.10131",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.8185",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better Carlos Estévez and dropping worse Jared Walsh",
+        "players": [
+          {
+            "playerKey": "422.p.10274",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.11585",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better David Robertson and dropping worse Edward Olivares",
+        "players": [
+          {
+            "playerKey": "422.p.8287",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.11232",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better Will Smith and dropping worse Christian Bethancourt",
+        "players": [
+          {
+            "playerKey": "422.p.9193",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.9530",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better A.J. Puk and dropping worse Alex Kirilloff",
+        "players": [
+          {
+            "playerKey": "422.p.10548",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.10532",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better Craig Kimbrel and dropping worse Joey Wiemer",
+        "players": [
+          {
+            "playerKey": "422.p.8622",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.12589",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better Jason Adam and dropping worse TJ Friedl",
+        "players": [
+          {
+            "playerKey": "422.p.11009",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.11290",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better José Alvarado and dropping worse Geraldo Perdomo",
+        "players": [
+          {
+            "playerKey": "422.p.10692",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.11417",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      },
+      {
+        "teamKey": "422.l.58716.t.20",
+        "sameDayTransactions": true,
+        "reason": "Adding better Alex Lange and dropping worse Royce Lewis",
+        "players": [
+          {
+            "playerKey": "422.p.10860",
+            "transactionType": "add",
+            "isInactiveList": false,
+            "isFromWaivers": false
+          },
+          {
+            "playerKey": "422.p.10916",
+            "transactionType": "drop",
+            "isInactiveList": false
+          }
+        ]
+      }
+    ]
+  ]
+}

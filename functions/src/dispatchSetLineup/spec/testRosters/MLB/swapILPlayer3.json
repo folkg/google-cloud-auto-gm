@@ -7,12 +7,54 @@
       "player_key": "422.p.9096",
       "player_name": "Travis d'Arnaud",
       "eligible_positions": ["C", "Util", "BN"],
-      "selected_position": "BN",
+      "selected_position": "IL",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "Healthy",
       "percent_started": 21,
       "percent_owned": 24,
+      "is_starting": "N/A",
+      "ranks": {
+        "last30Days": 201,
+        "last14Days": 201,
+        "next7Days": 1003,
+        "restOfSeason": 562,
+        "last4Weeks": -1,
+        "projectedWeek": -1,
+        "next4Weeks": -1
+      }
+    },
+    {
+      "player_key": "422.p.90962",
+      "player_name": "Travis d'Arnaud2",
+      "eligible_positions": ["OF", "Util", "BN", "IL+"],
+      "selected_position": "BN",
+      "is_editable": true,
+      "is_playing": true,
+      "injury_status": "Healthy",
+      "percent_started": 21,
+      "percent_owned": 100,
+      "is_starting": "N/A",
+      "ranks": {
+        "last30Days": 201,
+        "last14Days": 201,
+        "next7Days": 1003,
+        "restOfSeason": 562,
+        "last4Weeks": -1,
+        "projectedWeek": -1,
+        "next4Weeks": -1
+      }
+    },
+    {
+      "player_key": "422.p.90963",
+      "player_name": "Travis d'Arnaud3",
+      "eligible_positions": ["OF", "Util", "BN", "IL+", "IL"],
+      "selected_position": "IL+",
+      "is_editable": true,
+      "is_playing": true,
+      "injury_status": "Healthy",
+      "percent_started": 21,
+      "percent_owned": 100,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 201,
@@ -508,7 +550,8 @@
     "RP": 2,
     "P": 4,
     "BN": 5,
-    "IL": 4
+    "IL": 4,
+    "IL+": 1
   },
   "scoring_type": null,
   "current_weekly_adds": 0,

@@ -25,7 +25,7 @@ export interface PlayerRanks {
 }
 
 export interface PlayerOwnership {
-  type: PlayerOwnershipType;
+  ownership_type: PlayerOwnershipType;
   waiver_date?: string; // "2023-06-21"
 }
 

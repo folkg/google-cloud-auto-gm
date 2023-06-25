@@ -728,6 +728,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         "Moved Freddy Peralta to the inactive list to make room to add Dansby Swanson",
       sameDayTransactions: true,
       teamKey: "422.l.115494.t.4",
+      isFaabRequired: true,
     };
     const addPlayerLineupChanges: LineupChanges[] = [
       {
@@ -818,6 +819,182 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
   });
 
+  it("should add one player by moving other to IL, then swap 3 others, and then optimize the active roster (Intraday)", async () => {
+    const uid = "testUID";
+    const teams = [
+      {
+        team_key: "422.l.119198.t.3",
+        allow_dropping: true,
+        allow_adding: true,
+        allow_add_drops: true,
+        allow_waiver_adds: true,
+        game_code: "MLB",
+      },
+    ];
+    const transactions = [
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10234",
+            transactionType: "add",
+          },
+        ],
+        reason:
+          "Moved Alex Cobb to the inactive list to make room to add Dansby Swanson",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10666",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.8918",
+            transactionType: "drop",
+          },
+        ],
+        reason: "Adding better Anthony Santander and dropping worse Alex Cobb",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.12024",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.12339",
+            transactionType: "drop",
+          },
+        ],
+        reason: "Adding better Jordan Walker and dropping worse James Outman",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.9573",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.9557",
+            transactionType: "drop",
+          },
+        ],
+        reason: "Adding better Carlos Correa and dropping worse Javier Báez",
+        sameDayTransactions: true,
+        teamKey: "422.l.119198.t.3",
+      },
+    ];
+
+    const addPlayerLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-04-07",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.11014": "IL",
+          "422.p.8918": "P",
+        },
+        teamKey: "422.l.119198.t.3",
+      },
+    ];
+    const optimizationLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-04-07",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.10234": "Util",
+          "422.p.11251": "P",
+          "422.p.9876": "BN",
+        },
+        teamKey: "422.l.119198.t.3",
+      },
+    ];
+
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+
+    const initialRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/free1spotILswap.json"),
+    ];
+    const updatedRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/free1spotILswap-refetched.json"),
+    ];
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(updatedRosters);
+    });
+
+    const spyFetchTopAvailablePlayers = vi.spyOn(
+      TopAvailablePlayersService,
+      "fetchTopAvailablePlayersFromYahoo"
+    );
+    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
+    const restTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise2.json");
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(topAvailablePlayersPromise);
+    });
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(restTopAvailablePlayersPromise);
+    });
+
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchTopAvailablePlayers).toHaveBeenCalledTimes(2);
+
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(4);
+    for (const transaction of transactions) {
+      expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+        transaction,
+        uid
+      );
+    }
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(2);
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      addPlayerLineupChanges,
+      uid
+    );
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      optimizationLineupChanges,
+      uid
+    );
+  });
+
   it("should add one player and then move them to the active roster (Next Day)", async () => {
     const uid = "testUID";
     const teams = [
@@ -836,6 +1013,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         "Moved Freddy Peralta to the inactive list to make room to add Dansby Swanson",
       sameDayTransactions: true,
       teamKey: "422.l.115494.t.4",
+      isFaabRequired: true,
     };
     const optimizationLineupChanges: LineupChanges[] = [
       {
@@ -926,7 +1104,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
   });
 
-  // TODO: Add no one because adding is set to false
   it("should not add anyone (but still optimize) since user setting does not allow for adds", async () => {
     const uid = "testUID";
     const teams = [

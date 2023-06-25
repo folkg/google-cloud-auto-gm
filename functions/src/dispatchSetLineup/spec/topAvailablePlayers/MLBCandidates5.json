@@ -6,7 +6,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 75,
+    "percent_owned": 5,
     "percent_started": 49,
     "player_key": "422.p.10234",
     "player_name": "Dansby Swanson",
@@ -19,11 +19,7 @@
       "projectedWeek": -1,
       "restOfSeason": 63
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -32,7 +28,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 55,
+    "percent_owned": 5,
     "percent_started": 43,
     "player_key": "422.p.10666",
     "player_name": "Anthony Santander",
@@ -45,11 +41,7 @@
       "projectedWeek": -1,
       "restOfSeason": 146
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["1B", "Util", "IL"],
@@ -58,7 +50,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 46,
+    "percent_owned": 5,
     "percent_started": 7,
     "player_key": "422.p.10429",
     "player_name": "Ryan Mountcastle",
@@ -80,7 +72,7 @@
     "is_playing": true,
     "is_starting": 1,
     "is_undroppable": false,
-    "percent_owned": 35,
+    "percent_owned": 5,
     "percent_started": 26,
     "player_key": "422.p.9573",
     "player_name": "Carlos Correa",
@@ -102,7 +94,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 20,
+    "percent_owned": 5,
     "percent_started": 11,
     "player_key": "422.p.10440",
     "player_name": "Ian Happ",
@@ -124,7 +116,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 47,
+    "percent_owned": 5,
     "percent_started": 39,
     "player_key": "422.p.12024",
     "player_name": "Jordan Walker",
@@ -137,11 +129,7 @@
       "projectedWeek": -1,
       "restOfSeason": 98
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -150,7 +138,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 18,
+    "percent_owned": 5,
     "percent_started": 16,
     "player_key": "422.p.10496",
     "player_name": "Taylor Ward",
@@ -172,7 +160,7 @@
     "is_playing": true,
     "is_starting": 1,
     "is_undroppable": false,
-    "percent_owned": 29,
+    "percent_owned": 5,
     "percent_started": 20,
     "player_key": "422.p.9140",
     "player_name": "Drew Smyly",
@@ -194,7 +182,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 26,
+    "percent_owned": 5,
     "percent_started": null,
     "player_key": "422.p.11789",
     "player_name": "Drew Rasmussen",
@@ -207,11 +195,7 @@
       "projectedWeek": -1,
       "restOfSeason": 114
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["1B", "Util"],
@@ -220,7 +204,7 @@
     "is_playing": true,
     "is_starting": 1,
     "is_undroppable": false,
-    "percent_owned": 30,
+    "percent_owned": 5,
     "percent_started": 8,
     "player_key": "422.p.10620",
     "player_name": "Rowdy Tellez",
@@ -233,11 +217,7 @@
       "projectedWeek": -1,
       "restOfSeason": 171
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -246,7 +226,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 35,
+    "percent_owned": 5,
     "percent_started": 17,
     "player_key": "422.p.9331",
     "player_name": "James Paxton",
@@ -268,7 +248,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 22,
+    "percent_owned": 5,
     "percent_started": 9,
     "player_key": "422.p.8864",
     "player_name": "Kyle Gibson",
@@ -290,7 +270,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 21,
+    "percent_owned": 5,
     "percent_started": 12,
     "player_key": "422.p.10451",
     "player_name": "Dane Dunning",
@@ -312,7 +292,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 16,
+    "percent_owned": 5,
     "percent_started": null,
     "player_key": "422.p.11750",
     "player_name": "Nick Lodolo",
@@ -334,7 +314,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 22,
+    "percent_owned": 5,
     "percent_started": 16,
     "player_key": "422.p.10592",
     "player_name": "Jack Flaherty",
@@ -356,7 +336,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 18,
+    "percent_owned": 5,
     "percent_started": 6,
     "player_key": "422.p.10940",
     "player_name": "MacKenzie Gore",
@@ -378,7 +358,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 17,
+    "percent_owned": 5,
     "percent_started": 8,
     "player_key": "422.p.8652",
     "player_name": "Martín Pérez",
@@ -400,7 +380,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 10,
+    "percent_owned": 5,
     "percent_started": null,
     "player_key": "422.p.9701",
     "player_name": "Jacob deGrom",
@@ -413,20 +393,16 @@
       "projectedWeek": -1,
       "restOfSeason": 2551
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
-    "eligible_positions": ["C", "SS", "OF", "Util"],
+    "eligible_positions": ["SS", "OF", "Util"],
     "injury_status": "Healthy",
     "is_editable": false,
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 30,
+    "percent_owned": 5,
     "percent_started": 4,
     "player_key": "422.p.10233",
     "player_name": "Amed Rosario",
@@ -439,11 +415,7 @@
       "projectedWeek": -1,
       "restOfSeason": 198
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["2B", "3B", "SS", "OF", "Util"],
@@ -452,7 +424,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 13,
+    "percent_owned": 5,
     "percent_started": 6,
     "player_key": "422.p.11743",
     "player_name": "Christopher Morel",
@@ -474,7 +446,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 14,
+    "percent_owned": 5,
     "percent_started": 14,
     "player_key": "422.p.11208",
     "player_name": "Bryan Abreu",
@@ -496,7 +468,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 10,
+    "percent_owned": 5,
     "percent_started": null,
     "player_key": "422.p.10591",
     "player_name": "Harrison Bader",
@@ -518,7 +490,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 8,
+    "percent_owned": 5,
     "percent_started": 3,
     "player_key": "422.p.12339",
     "player_name": "James Outman",
@@ -540,7 +512,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 10,
+    "percent_owned": 5,
     "percent_started": 5,
     "player_key": "422.p.11263",
     "player_name": "Yusei Kikuchi",
@@ -562,7 +534,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 7,
+    "percent_owned": 5,
     "percent_started": 3,
     "player_key": "422.p.7977",
     "player_name": "Andrew McCutchen",
@@ -584,7 +556,7 @@
     "is_playing": true,
     "is_starting": 1,
     "is_undroppable": false,
-    "percent_owned": 1,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.9784",
     "player_name": "Michael A. Taylor",
@@ -628,7 +600,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 35,
+    "percent_owned": 5,
     "percent_started": 17,
     "player_key": "422.p.9331",
     "player_name": "James Paxton",
@@ -663,11 +635,7 @@
       "projectedWeek": -1,
       "restOfSeason": 733
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -676,7 +644,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 1,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.10960",
     "player_name": "Nate Pearson",
@@ -689,11 +657,7 @@
       "projectedWeek": -1,
       "restOfSeason": 715
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -702,7 +666,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 18,
+    "percent_owned": 5,
     "percent_started": 16,
     "player_key": "422.p.10496",
     "player_name": "Taylor Ward",
@@ -715,11 +679,7 @@
       "projectedWeek": -1,
       "restOfSeason": 206
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -741,11 +701,7 @@
       "projectedWeek": -1,
       "restOfSeason": 1122
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -767,11 +723,7 @@
       "projectedWeek": -1,
       "restOfSeason": 225
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["1B", "OF", "Util"],
@@ -780,7 +732,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 1,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.10485",
     "player_name": "Ryan O'Hearn",
@@ -793,11 +745,7 @@
       "projectedWeek": -1,
       "restOfSeason": 1450
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -819,11 +767,7 @@
       "projectedWeek": -1,
       "restOfSeason": 1337
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["SS", "Util"],
@@ -832,7 +776,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 2,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.60214",
     "player_name": "Zach Neto",
@@ -845,11 +789,7 @@
       "projectedWeek": -1,
       "restOfSeason": 946
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -858,7 +798,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 6,
+    "percent_owned": 5,
     "percent_started": 6,
     "player_key": "422.p.11236",
     "player_name": "Erik Swanson",
@@ -871,11 +811,7 @@
       "projectedWeek": -1,
       "restOfSeason": 208
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["SP", "RP", "P"],
@@ -884,7 +820,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 1,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.10325",
     "player_name": "Brock Stewart",
@@ -897,11 +833,7 @@
       "projectedWeek": -1,
       "restOfSeason": 1117
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -910,7 +842,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 4,
+    "percent_owned": 5,
     "percent_started": 3,
     "player_key": "422.p.9414",
     "player_name": "Joc Pederson",
@@ -923,11 +855,7 @@
       "projectedWeek": -1,
       "restOfSeason": 340
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util", "IL"],
@@ -936,7 +864,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 9,
+    "percent_owned": 5,
     "percent_started": null,
     "player_key": "422.p.11568",
     "player_name": "Jake Fraley",
@@ -949,11 +877,7 @@
       "projectedWeek": -1,
       "restOfSeason": 319
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -962,7 +886,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 2,
+    "percent_owned": 5,
     "percent_started": 2,
     "player_key": "422.p.10264",
     "player_name": "Chris Devenski",
@@ -975,11 +899,7 @@
       "projectedWeek": -1,
       "restOfSeason": 1038
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -988,7 +908,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 13,
+    "percent_owned": 5,
     "percent_started": 4,
     "player_key": "422.p.8846",
     "player_name": "Julio Teheran",
@@ -1001,11 +921,7 @@
       "projectedWeek": -1,
       "restOfSeason": 1105
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["1B", "OF", "Util"],
@@ -1014,7 +930,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 1,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.9898",
     "player_name": "Mark Canha",
@@ -1027,11 +943,7 @@
       "projectedWeek": -1,
       "restOfSeason": 194
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -1040,7 +952,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 2,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.12703",
     "player_name": "Will Brennan",
@@ -1053,11 +965,7 @@
       "projectedWeek": -1,
       "restOfSeason": 1154
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -1066,7 +974,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 2,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.9758",
     "player_name": "Kyle Hendricks",
@@ -1079,11 +987,7 @@
       "projectedWeek": -1,
       "restOfSeason": 461
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -1105,11 +1009,7 @@
       "projectedWeek": -1,
       "restOfSeason": 378
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -1118,7 +1018,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 4,
+    "percent_owned": 5,
     "percent_started": 2,
     "player_key": "422.p.7578",
     "player_name": "Rich Hill",
@@ -1131,11 +1031,7 @@
       "projectedWeek": -1,
       "restOfSeason": 918
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["RP", "P"],
@@ -1157,11 +1053,7 @@
       "projectedWeek": -1,
       "restOfSeason": 734
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["SP", "P"],
@@ -1183,11 +1075,7 @@
       "projectedWeek": -1,
       "restOfSeason": 999
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   },
   {
     "eligible_positions": ["OF", "Util"],
@@ -1196,7 +1084,7 @@
     "is_playing": true,
     "is_starting": "N/A",
     "is_undroppable": false,
-    "percent_owned": 1,
+    "percent_owned": 5,
     "percent_started": 1,
     "player_key": "422.p.9842",
     "player_name": "Tommy Pham",
@@ -1209,10 +1097,6 @@
       "projectedWeek": -1,
       "restOfSeason": 260
     },
-    "selected_position": null,
-    "ownership": {
-      "ownership_type": "waivers",
-      "waiver_date": "2023-06-21"
-    }
+    "selected_position": null
   }
 ]

@@ -330,7 +330,7 @@ export async function postRosterAddDropTransaction(
     players.filter(
       (player) => player.transactionType === "add" && player.isFromWaivers
     ).length === 1;
-  if (isWaiverClaim) {
+  if (isWaiverClaim && transaction.isFaabRequired) {
     data.transaction.faab_bid = 0;
   }
 

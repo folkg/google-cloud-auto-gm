@@ -1,5 +1,5 @@
 {
-  "allow_adding": false,
+  "allow_adding": true,
   "allow_dropping": true,
   "team_key": "422.l.119198.t.3",
   "players": [
@@ -429,10 +429,10 @@
     {
       "player_key": "422.p.8918",
       "player_name": "Alex Cobb",
-      "eligible_positions": ["SP", "P", "BN"],
-      "selected_position": "P",
+      "eligible_positions": ["SP", "P", "BN", "IL"],
+      "selected_position": "BN",
       "is_editable": true,
-      "is_playing": true,
+      "is_playing": false,
       "injury_status": "Healthy",
       "percent_started": 20,
       "percent_owned": 25,
@@ -450,7 +450,7 @@
     {
       "player_key": "422.p.11014",
       "player_name": "Freddy Peralta",
-      "eligible_positions": ["SP", "P", "BN"],
+      "eligible_positions": ["SP", "P", "BN", "IL"],
       "selected_position": "P",
       "is_editable": true,
       "is_playing": true,
@@ -472,7 +472,7 @@
       "player_key": "422.p.10660",
       "player_name": "Jordan Montgomery",
       "eligible_positions": ["SP", "P", "BN"],
-      "selected_position": "BN",
+      "selected_position": "P",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "Healthy",
@@ -508,10 +508,10 @@
     "RP": 2,
     "P": 4,
     "BN": 5,
-    "IL": 4
+    "IL": 1
   },
   "scoring_type": null,
-  "current_weekly_adds": 0,
+  "current_weekly_adds": 2,
   "current_season_adds": 2,
   "max_weekly_adds": -1,
   "max_season_adds": -1,

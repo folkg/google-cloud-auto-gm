@@ -43,6 +43,7 @@ export class LineupOptimizer {
       this.logInfo(`no players to optimize for team ${this.team.team_key}`);
       return;
     }
+    this.logInfo("optimizing starting lineup for team", this.team.team_key);
 
     this.resolveOverfilledPositions();
     this.resolveAllIllegalPlayers();
@@ -127,6 +128,17 @@ export class LineupOptimizer {
     this._addCandidates = new PlayerCollection(filteredCandidates);
     this._addCandidates.ownershipScoreFunction =
       this.team.ownershipScoreFunction;
+
+    this._addCandidates.filterPlayers(
+      (player) =>
+        !pendingAddKeys.includes(player.player_key) && !player.isLTIR()
+    );
+    if (this.team.allow_waiver_adds === false) {
+      this._addCandidates.filterPlayers(
+        (player) => player.ownership?.ownership_type !== "waivers"
+      );
+    }
+
     this._addCandidates.sortDescByOwnershipScoreAndRemoveDuplicates();
   }
 
@@ -136,45 +148,60 @@ export class LineupOptimizer {
 
   public generateDropPlayerTransactions(): void {
     // find drops by attempting to move healthy players off IL unsuccessfully
-    this.resolveHealthyPlayersOnIL();
+    this.logInfo("generateDropPlayerTransactions for team", this.team.team_key);
+    const healthyPlayersOnIL = this.team.healthyOnIL;
+    if (healthyPlayersOnIL.length === 0) return;
+
+    Team.sortDescendingByStartScore(healthyPlayersOnIL);
+    for (const player of healthyPlayersOnIL) {
+      const success = this.resolveIllegalPlayer(player);
+      if (!success) {
+        this.createDropPlayerTransaction(player);
+        this.resolveIllegalPlayer(player); // now that a player has been dropped, resolve our player again.
+      }
+    }
 
     // we don't need to generateDeltaPlayerPositions() on drop transactions since the transactions need to be posted before optimizing
   }
 
-  public generateAddPlayerTransactions(): void {
+  private isAddingAllowed(): boolean {
     if (
       !this._addCandidates ||
       !this.isRosterLegal() ||
-      !this.team.isCurrentTransactionPaceOK
+      !this.team.isCurrentTransactionPaceOK()
     ) {
+      return false;
+    }
+    return true;
+  }
+
+  public generateAddPlayerTransactions(): void {
+    this.logInfo("generateAddPlayerTransactions for team", this.team.team_key);
+    if (!this.isAddingAllowed()) {
       return;
     }
 
-    const transactionReasons: string[] = [];
-    for (let i = this.team.pendingEmptyRosterSpots; i > 0; i--) {
-      transactionReasons.push(
-        "Filling an already-empty spot on the roster with"
-      );
+    const reasons: string[] = [];
+    for (let i = this.team.getPendingEmptyRosterSpots(); i > 0; i--) {
+      reasons.push("Filling an already-empty spot on the roster with");
     }
 
     // free up as many roster spots as possible
     let playerMovedToIL: Player | null;
     while ((playerMovedToIL = this.openOneRosterSpot()) !== null) {
-      transactionReasons.push(
+      reasons.push(
         `Moved ${playerMovedToIL.player_name} to the inactive list to make room to add`
       );
     }
 
-    if (this.team.pendingEmptyRosterSpots === 0) return;
+    if (this.team.getPendingEmptyRosterSpots() === 0) return;
 
-    // both of these conditions are recalulated at the top of each loop
     while (
-      this.team.pendingEmptyRosterSpots > 0 &&
-      this.team.isCurrentTransactionPaceOK
+      this.team.getPendingEmptyRosterSpots() > 0 &&
+      this.team.isCurrentTransactionPaceOK()
     ) {
-      const reason = transactionReasons.shift();
-      const success = this.createAddPlayerTransaction(reason);
-      if (!success) {
+      const result = this.createAddPlayerTransaction(reasons.shift());
+      if (!result) {
         break;
       }
     }
@@ -183,35 +210,21 @@ export class LineupOptimizer {
     // TODO: send emails from function postAllTransactions() in setLineups.service
   }
 
-  private createAddPlayerTransaction(reason: string | undefined): boolean {
+  private createAddPlayerTransaction(reason = ""): boolean {
     assert(this._addCandidates, "addCandidates must be set");
 
-    let currentCandidates: Player[] = this._addCandidates?.allPlayers.filter(
-      (player) => !player.isLTIR()
+    const currentCandidates = this.preprocessAddCandidates(
+      this._addCandidates.allPlayers
     );
-    if (this.team.allow_waiver_adds === false) {
-      currentCandidates = currentCandidates.filter(
-        (player) => player.ownership?.type !== "waivers"
-      );
-    }
-    currentCandidates = this.filterForEmptyPositions(currentCandidates);
-    currentCandidates = this.addBonusForCriticalPositions(currentCandidates);
-    currentCandidates =
-      PlayerCollection.sortDescendingByOwnershipScore(currentCandidates);
-
-    // currentCandidates.map((p) =>
-    //   console.log(`${p.player_name} ${p.ownership_score}`)
-    // );
 
     const playerToAdd: Player = currentCandidates[0];
     if (!playerToAdd) {
       return false;
     }
 
-    reason = reason ?? "";
-    const emptyPositions: string[] = this.team.emptyPositions;
-    if (emptyPositions.length > 0) {
-      reason = `There are empty ${emptyPositions.join(
+    const underfilledPositions: string[] = this.team.underfilledPositions;
+    if (underfilledPositions.length > 0) {
+      reason = `There are empty ${underfilledPositions.join(
         ", "
       )} positions on the roster. ${reason}`;
     }
@@ -220,12 +233,13 @@ export class LineupOptimizer {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
       reason: `${reason} ${playerToAdd.player_name}`,
+      isFaabRequired: this.team.faab_balance !== -1,
       players: [
         {
           playerKey: playerToAdd.player_key,
           transactionType: "add",
           isInactiveList: false,
-          isFromWaivers: playerToAdd.ownership?.type === "waivers",
+          isFromWaivers: playerToAdd.ownership?.ownership_type === "waivers",
         },
       ],
     };
@@ -243,27 +257,195 @@ export class LineupOptimizer {
     return true;
   }
 
-  public generateAddDropPlayerTransactions(): void {
-    // TODO: Complete this function
-    // Loop while currentCandidates.length > 0
-    // 0. Filter team for players that have not already been dropped, and are not already in a pending transaction
-    // 1. Filter add candidates for all players that have ownership score > lowest team ownership score
-    // 2. Take top player from add candidates, bottom player from roster
-    // 3. Create transaction
-    // 4. this._addCandidates.removePlayer
-  }
+  public generateSwapPlayerTransactions(): void {
+    this.logInfo("generateSwapPlayerTransactions for team", this.team.team_key);
+    if (!this.isAddingAllowed()) {
+      return;
+    }
+    assert(this._addCandidates, "addCandidates must be set");
 
-  private isRosterLegal(): boolean {
-    return (
-      this.team.illegalPlayers.length > 0 ||
-      this.checkForOverfilledRosterPositions()
+    // the number of points the score of an add candidate must be above a potential drop candidate
+    const SCORE_THRESHOLD = 3;
+
+    const bestAddCandidate: Player = this._addCandidates.allPlayers[0];
+    let baseDropCandidates: Player[] =
+      PlayerCollection.sortAscendingByOwnershipScore(
+        this.team.droppablePlayersInclIL
+      );
+    baseDropCandidates = baseDropCandidates.filter(
+      (dropCandidate) =>
+        bestAddCandidate.compareOwnershipScore(dropCandidate) > SCORE_THRESHOLD
     );
+
+    this.logInfo("Base drop candidates:");
+    baseDropCandidates.forEach((player) =>
+      this.logInfo(
+        `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`
+      )
+    );
+    const worstDropCandidate: Player | undefined = baseDropCandidates?.[0];
+    if (!worstDropCandidate) {
+      return;
+    }
+    let baseAddCandidates: Player[] = this._addCandidates.allPlayers.filter(
+      (addCandidate) =>
+        addCandidate.compareOwnershipScore(worstDropCandidate) > SCORE_THRESHOLD
+    );
+
+    this.logInfo("Base add candidates:");
+    baseAddCandidates.forEach((player) =>
+      this.logInfo(
+        `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`
+      )
+    );
+
+    if (baseAddCandidates.length === 0 || baseDropCandidates.length === 0) {
+      return;
+    }
+
+    while (this.team.isCurrentTransactionPaceOK()) {
+      const result = this.createSwapPlayerTransaction(
+        baseAddCandidates,
+        baseDropCandidates,
+        SCORE_THRESHOLD
+      );
+      if (!result) {
+        break;
+      } else {
+        baseAddCandidates = result[0];
+        baseDropCandidates = result[1];
+      }
+    }
+
+    this.generateDeltaPlayerPositions();
+    // TODO: send emails from function postAllTransactions() in setLineups.service
   }
 
-  private filterForEmptyPositions(addCandidates: Player[]): Player[] {
-    const emptyPositions: string[] = this.team.emptyPositions;
+  private createSwapPlayerTransaction(
+    baseAddCandidates: Player[],
+    baseDropCandidates: Player[],
+    SCORE_THRESHOLD: number
+  ): [Player[], Player[]] | null {
+    assert(this._addCandidates, "addCandidates must be set");
+
+    const addCandidates = this.preprocessAddCandidates(baseAddCandidates);
+    // TODO: Why did we not get only C? Or did we and they suck too much?
+    const playerToAdd: Player | undefined = addCandidates?.[0]; // best add candidate
+    if (!playerToAdd) {
+      return null;
+    }
+
+    const teamCriticalPositions: string[] = this.team.almostCriticalPositions;
+    const addPlayerCriticalPositions: string[] =
+      playerToAdd.eligible_positions.filter((pos) =>
+        teamCriticalPositions.includes(pos)
+      );
+    let areCriticalPositionsReplaced: boolean;
+
+    this.logInfo(`Current add candidate ${playerToAdd.player_name}`);
+    this.logInfo("addPlayerCriticalPositions", addPlayerCriticalPositions);
+
+    this.logInfo("baseDropCandidates", baseDropCandidates.length);
+    const dropCandidates: Player[] = baseDropCandidates.filter(
+      (dropCandidate) =>
+        playerToAdd.compareOwnershipScore(dropCandidate) > SCORE_THRESHOLD
+    );
+    let playerToDrop: Player | undefined;
+    do {
+      playerToDrop = dropCandidates.shift();
+      if (!playerToDrop) {
+        return null;
+      }
+
+      const dropPlayerCriticalPositions: string[] =
+        playerToDrop.eligible_positions.filter((pos) =>
+          teamCriticalPositions.includes(pos)
+        );
+      this.logInfo(`Current drop candidate ${playerToDrop.player_name}`);
+      this.logInfo("dropPlayerCriticalPositions", dropPlayerCriticalPositions);
+
+      areCriticalPositionsReplaced = dropPlayerCriticalPositions.every((pos) =>
+        addPlayerCriticalPositions.includes(pos)
+      );
+
+      if (playerToDrop.isInactiveList()) {
+        this.logInfo("attempting to resolve IL player");
+        // attempts to swap with a player on the active roster, removing them from the inactive list
+        this.moveILPlayerToUnfilledALPosition(playerToDrop) ||
+          this.attemptIllegalPlayerSwaps(playerToDrop);
+      }
+
+      this.logInfo(
+        "areCriticalPositionsReplaced",
+        areCriticalPositionsReplaced
+      );
+      this.logInfo(
+        "playerToDrop.isInactiveList()",
+        playerToDrop.isInactiveList()
+      );
+    } while (!areCriticalPositionsReplaced || playerToDrop.isInactiveList());
+
+    this.logInfo("Swap:", playerToAdd.player_name, playerToDrop.player_name);
+
+    const underfilledPositions: string[] = this.team.underfilledPositions;
+    let reason = `Adding better ${playerToAdd.player_name} and dropping worse ${playerToDrop.player_name}`;
+    if (underfilledPositions.length > 0) {
+      reason = `There are empty ${underfilledPositions.join(
+        ", "
+      )} positions on the roster. ${reason}`;
+    }
+
+    const pt: PlayerTransaction = {
+      teamKey: this.team.team_key,
+      sameDayTransactions: this.team.sameDayTransactions,
+      reason: reason,
+      isFaabRequired: this.team.faab_balance !== -1,
+      players: [
+        {
+          playerKey: playerToAdd.player_key,
+          transactionType: "add",
+          isInactiveList: false,
+          isFromWaivers: playerToAdd.ownership?.ownership_type === "waivers",
+        },
+        {
+          playerKey: playerToDrop.player_key,
+          transactionType: "drop",
+          isInactiveList: false,
+        },
+      ],
+    };
+    this._playerTransactions.addTransaction(pt);
+
+    this.logInfo(
+      `Added a new transaction from generateSwapPlayerTransactions: ${JSON.stringify(
+        pt
+      )}`
+    );
+
+    this.team.addPendingAdd(playerToAdd);
+    this.team.addPendingDrop(playerToDrop);
+
+    this._addCandidates.removePlayer(playerToAdd);
+
+    const resultAddCandidates = baseAddCandidates.filter(
+      (player) => player.player_key !== playerToAdd.player_key
+    );
+    const resultDropCandidates = baseDropCandidates.filter(
+      (player) => player.player_key !== playerToDrop?.player_key
+    );
+    return [resultAddCandidates, resultDropCandidates];
+  }
+
+  private preprocessAddCandidates(addCandidates: Player[]): Player[] {
+    let result = this.filterForUnderfilledPositions(addCandidates);
+    result = this.addBonusForCriticalPositions(result);
+    return PlayerCollection.sortDescendingByOwnershipScore(result);
+  }
+
+  private filterForUnderfilledPositions(addCandidates: Player[]): Player[] {
+    const underfilledPositions: string[] = this.team.underfilledPositions;
     const filtered = addCandidates.filter((player) =>
-      player.isEligibleForAnyPositionIn(emptyPositions)
+      player.isEligibleForAnyPositionIn(underfilledPositions)
     );
 
     return filtered.length === 0 ? addCandidates : filtered;
@@ -278,27 +460,14 @@ export class LineupOptimizer {
 
     return addCandidates.map((player) => {
       if (player.isEligibleForAnyPositionIn(criticalPositions)) {
-        const playerCopy = structuredClone(player);
+        // const playerCopy = structuredClone(player);
+        const playerCopy = new Player(player);
         playerCopy.ownership_score += 5;
         return playerCopy;
       } else {
         return player;
       }
     });
-  }
-
-  private resolveHealthyPlayersOnIL(): void {
-    const healthyPlayersOnIL = this.team.healthyOnIL;
-    if (healthyPlayersOnIL.length === 0) return;
-
-    Team.sortDescendingByStartScore(healthyPlayersOnIL);
-    for (const player of healthyPlayersOnIL) {
-      const success = this.resolveIllegalPlayer(player);
-      if (!success) {
-        this.createDropPlayerTransaction(player);
-        this.resolveIllegalPlayer(player); // now that a player has been dropped, resolve our player again.
-      }
-    }
   }
 
   private resolveAllIllegalPlayers(): void {
@@ -346,7 +515,9 @@ export class LineupOptimizer {
   }
 
   private attemptIllegalPlayerSwaps(playerA: Player): boolean {
-    const allEditablePlayers = this.team.editablePlayers;
+    const allEditablePlayers = this.team.editablePlayers.filter(
+      (player) => !this.team.pendingLockedPlayerKeys.includes(player.player_key)
+    );
     Team.sortAscendingByStartScore(allEditablePlayers);
 
     if (allEditablePlayers.length === 0) return false;
@@ -384,7 +555,7 @@ export class LineupOptimizer {
       `attempting to move playerB ${playerB.player_name} to unfilled position`
     );
     const illegalPlayerACannotMoveToOpenRosterSpot =
-      playerA.isInactiveList() && this.team.pendingEmptyRosterSpots <= 0;
+      playerA.isInactiveList() && this.team.getPendingEmptyRosterSpots() <= 0;
 
     const unfilledPositionTargetList = illegalPlayerACannotMoveToOpenRosterSpot
       ? this.team.unfilledInactivePositions
@@ -624,8 +795,6 @@ export class LineupOptimizer {
     this._playerTransactions.addTransaction(pt);
 
     this.team.addPendingDrop(playerToDrop);
-    // playerToDrop.selected_position = "BN";
-    // playerToDrop.is_editable = false;
 
     this.logInfo(
       `Added a new transaction from dropPlayerToWaivers: ${JSON.stringify(pt)}`
@@ -634,16 +803,23 @@ export class LineupOptimizer {
 
   private getPlayerToDrop(playerToOpenSpotFor: Player) {
     return this.team.droppablePlayers
-      .filter((player) => !this.isTooLateToDrop(player))
+      .filter(
+        (player) =>
+          !this.isTooLateToDrop(player) &&
+          !player.eligible_positions.some((position) =>
+            this.team.almostCriticalPositions.includes(position)
+          )
+      )
       .reduce(
         (prevPlayer, currPlayer) =>
-          prevPlayer.ownership_score < currPlayer.ownership_score
+          prevPlayer.compareOwnershipScore(currPlayer) < 0
             ? prevPlayer
             : currPlayer,
         playerToOpenSpotFor
       );
   }
 
+  // TODO: Is this necessary? Or is it inherent?
   private isTooLateToDrop(player: Player) {
     return this.team.sameDayTransactions && !player.is_editable;
   }
@@ -664,11 +840,13 @@ export class LineupOptimizer {
   }
 
   private moveILPlayerToUnfilledALPosition(player: Player): boolean {
-    this.logInfo(`numEmptyRosterSpots ${this.team.pendingEmptyRosterSpots}`);
+    this.logInfo(
+      `numEmptyRosterSpots ${this.team.getPendingEmptyRosterSpots()}`
+    );
 
     if (!player.isInactiveList()) return false;
 
-    if (this.team.pendingEmptyRosterSpots <= 0) {
+    if (this.team.getPendingEmptyRosterSpots() <= 0) {
       const success = this.openOneRosterSpot(player);
       if (!success) return false;
     }
@@ -722,7 +900,7 @@ export class LineupOptimizer {
     playerB: Player,
     playersArray: Player[]
   ) {
-    return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.at(0);
+    return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.[0];
   }
 
   private findPlayerCforOptimization(
@@ -792,6 +970,13 @@ export class LineupOptimizer {
       return false;
     }
     return true;
+  }
+
+  private isRosterLegal(): boolean {
+    return (
+      this.team.illegalPlayers.length > 0 ||
+      this.checkForOverfilledRosterPositions()
+    );
   }
   private checkForIllegallyMovedPlayers(): boolean {
     const illegallyMovedPlayers = Object.keys(this.deltaPlayerPositions).filter(

@@ -124,7 +124,7 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("../../spec/testRosters/MLB/free2spotsPace1.json"); // 1/50 season, 1/5 weekly
     const team = new Team(teamJSON);
 
-    expect(team.isCurrentTransactionPaceOK).toEqual(true);
+    expect(team.isCurrentTransactionPaceOK()).toEqual(true);
   });
 
   test("transaction pace is good for season, bad for week", () => {
@@ -134,7 +134,7 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("../../spec/testRosters/MLB/free2spotsPace2.json"); // 3/50 season, 3/5 weekly
     const team = new Team(teamJSON);
 
-    expect(team.isCurrentTransactionPaceOK).toEqual(false);
+    expect(team.isCurrentTransactionPaceOK()).toEqual(false);
   });
 
   test("transaction pace is bad for season, good for week", () => {
@@ -144,6 +144,6 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("../../spec/testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
     const team = new Team(teamJSON);
 
-    expect(team.isCurrentTransactionPaceOK).toEqual(false);
+    expect(team.isCurrentTransactionPaceOK()).toEqual(false);
   });
 });

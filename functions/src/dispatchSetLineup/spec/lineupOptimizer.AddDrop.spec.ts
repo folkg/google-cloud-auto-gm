@@ -229,7 +229,7 @@ describe.concurrent("Add players", () => {
     const loAddCandidates: PlayerCollection | undefined = lo.addCandidates;
     // expect(loAddCandidates?.players.length).toBeGreaterThanOrEqual(25);
     // expect(loAddCandidates?.players.length).toBeLessThanOrEqual(50);
-    expect(loAddCandidates?.players.length).toEqual(47);
+    expect(loAddCandidates?.players.length).toEqual(41);
   });
 
   it("should free 0 roster spots before adding players", () => {
@@ -263,6 +263,7 @@ describe.concurrent("Add players", () => {
 
     expect(playerTransactions).toEqual([
       {
+        isFaabRequired: true,
         players: [
           {
             isInactiveList: false,
@@ -277,6 +278,7 @@ describe.concurrent("Add players", () => {
         teamKey: "422.l.119198.t.3",
       },
       {
+        isFaabRequired: true,
         players: [
           {
             isInactiveList: false,
@@ -291,6 +293,7 @@ describe.concurrent("Add players", () => {
         teamKey: "422.l.119198.t.3",
       },
       {
+        isFaabRequired: true,
         players: [
           {
             isInactiveList: false,
@@ -341,6 +344,27 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions?.length).toEqual(1);
   });
 
+  it("should not use faab when picking up two waiver players due to league settings", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/noFaab.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
+    lo.generateAddPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    // expect(playerTransactions?.length).toEqual(2);
+    // expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10620");
+    // expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10233");
+
+    expect(playerTransactions).toMatchObject([
+      {
+        isFaabRequired: false,
+      },
+      {
+        isFaabRequired: false,
+      },
+    ]);
+  });
+
   it("should add top 1B and top C (from waivers) because they are empty roster positions", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
     const lo = new LineupOptimizer(roster);
@@ -354,6 +378,7 @@ describe.concurrent("Add players", () => {
 
     expect(playerTransactions).toEqual([
       {
+        isFaabRequired: true,
         players: [
           {
             isFromWaivers: true,
@@ -368,6 +393,7 @@ describe.concurrent("Add players", () => {
         teamKey: "422.l.119198.t.3",
       },
       {
+        isFaabRequired: true,
         players: [
           {
             isFromWaivers: true,
@@ -384,7 +410,6 @@ describe.concurrent("Add players", () => {
     ]);
   });
 
-  // Test C unfilled but no candidates. Should add BPA
   it("should add top 1B, then top player, since 1B and C are empty, but no C available", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
     const lo = new LineupOptimizer(roster);
@@ -397,7 +422,6 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10234");
   });
 
-  // Should add worse, boosted player because they have critical position eligibility
   it("should add worse, boosted player (422.p.12024, 3B) because they have critical position (1B, 3B, RP) eligibility", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
     const lo = new LineupOptimizer(roster);
@@ -422,7 +446,6 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.12024");
   });
 
-  // Should add no one because we have an illegal lineup
   it("should add no one because we have an illegal lineup (healthy on IR)", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/illegalLineup1.json");
     const lo = new LineupOptimizer(roster);
@@ -452,7 +475,6 @@ describe.concurrent("Add players", () => {
     expect(playerTransactions).toEqual(null);
   });
 
-  // Should not add top player because they are on waivers, and waiver setting is off
   it("Should not add top player because they are on waivers, and user's waiver setting is off", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWaiversOff.json");
     const lo = new LineupOptimizer(roster);
@@ -529,6 +551,352 @@ describe.concurrent("Add players", () => {
   // 6. if same day changes, refetch
 });
 
+describe.concurrent("Swap players", () => {
+  const swapsFromOptimalLineup = [
+    {
+      isFaabRequired: true,
+      players: [
+        {
+          isFromWaivers: false,
+          isInactiveList: false,
+          playerKey: "422.p.10234",
+          transactionType: "add",
+        },
+        {
+          isInactiveList: false,
+          playerKey: "422.p.8918",
+          transactionType: "drop",
+        },
+      ],
+      reason: "Adding better Dansby Swanson and dropping worse Alex Cobb",
+      sameDayTransactions: true,
+      teamKey: "422.l.119198.t.3",
+    },
+    {
+      isFaabRequired: true,
+      players: [
+        {
+          isFromWaivers: false,
+          isInactiveList: false,
+          playerKey: "422.p.10666",
+          transactionType: "add",
+        },
+        {
+          isInactiveList: false,
+          playerKey: "422.p.12339",
+          transactionType: "drop",
+        },
+      ],
+      reason: "Adding better Anthony Santander and dropping worse James Outman",
+      sameDayTransactions: true,
+      teamKey: "422.l.119198.t.3",
+    },
+    {
+      isFaabRequired: true,
+      players: [
+        {
+          isFromWaivers: false,
+          isInactiveList: false,
+          playerKey: "422.p.12024",
+          transactionType: "add",
+        },
+        {
+          isInactiveList: false,
+          playerKey: "422.p.9557",
+          transactionType: "drop",
+        },
+      ],
+      reason: "Adding better Jordan Walker and dropping worse Javier Báez",
+      sameDayTransactions: true,
+      teamKey: "422.l.119198.t.3",
+    },
+  ];
+
+  it("should swap worst player for best player 3 different times (respecting almostCriticalPositions)", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json"); // almostCriticalPositions = [ 'C', '1B', '2B', '3B', 'SS', 'RP' ]
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+  });
+
+  it("should make no swaps because all addCandidates are worse than current players", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates5.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toEqual(null);
+  });
+
+  it("should prioritize top 1B and top C (from waivers) because they are empty roster positions (instead of BPA) (still drop worst player)", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toMatchInlineSnapshot(`
+      [
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": true,
+              "isInactiveList": false,
+              "playerKey": "422.p.10620",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.9096",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "There are empty C, 1B positions on the roster. Adding better Rowdy Tellez and dropping worse Travis d'Arnaud",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": true,
+              "isInactiveList": false,
+              "playerKey": "422.p.10233",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.8918",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "There are empty C positions on the roster. Adding better Amed Rosario and dropping worse Alex Cobb",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": true,
+              "isInactiveList": false,
+              "playerKey": "422.p.10234",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.12339",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Dansby Swanson and dropping worse James Outman",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": true,
+              "isInactiveList": false,
+              "playerKey": "422.p.10666",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.9557",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Anthony Santander and dropping worse Javier Báez",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": true,
+              "isInactiveList": false,
+              "playerKey": "422.p.12024",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.11251",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Jordan Walker and dropping worse Merrill Kelly",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+      ]
+    `);
+  });
+
+  it("should not add top player (422.p.10234) because they are already in a current pending claim", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toMatchInlineSnapshot(`
+      [
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.10666",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.8918",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Anthony Santander and dropping worse Alex Cobb",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.12024",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.12339",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Jordan Walker and dropping worse James Outman",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.9573",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.9557",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Carlos Correa and dropping worse Javier Báez",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+      ]
+    `);
+  });
+
+  it("should move the worst IL player to empty BN spot, and then drop them for the best add candidate", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILPlayer.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    expect(lineupChanges).toEqual({
+      coveragePeriod: "2023-04-07",
+      coverageType: "date",
+      newPlayerPositions: {
+        "422.p.9096": "BN",
+      },
+      teamKey: "422.l.119198.t.3",
+    });
+    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+  });
+
+  it("should swap the worst IL player to BN, and then drop them for the best add candidate", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILPlayer2.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    expect(lineupChanges).toEqual({
+      coveragePeriod: "2023-04-07",
+      coverageType: "date",
+      newPlayerPositions: {
+        "422.p.9096": "BN",
+        "422.p.90962": "IL",
+      },
+      teamKey: "422.l.119198.t.3",
+    });
+    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+  });
+
+  it("should move the worst IL player to BN, BN to IL+ in 3-way, and then drop them for the best add candidate", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILPlayer3.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+    const lineupChanges = lo.lineupChanges;
+
+    expect(lineupChanges).toEqual({
+      coveragePeriod: "2023-04-07",
+      coverageType: "date",
+      newPlayerPositions: {
+        "422.p.9096": "BN",
+        "422.p.90962": "IL+",
+        "422.p.90963": "IL",
+      },
+      teamKey: "422.l.119198.t.3",
+    });
+    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+  });
+
+  it("Should add no one because pace for season is bad before we begin", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toEqual(null);
+  });
+
+  it("Should add only one player because pace for season is good, but pace for week is bad after first add", () => {
+    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
+    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
+
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace4.json"); // 2/50 season, 2/5 weekly
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions?.length).toEqual(1);
+  });
+});
+
 describe.concurrent("Combination Drops or Adds", () => {
   it("should add / drop no one because lineup is optimal", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
@@ -587,7 +955,6 @@ describe.concurrent("Combination Drops or Adds", () => {
     );
   });
 
-  // TODO: Finish these two tests
   it("should drop one player because we have healthy player on IL and no free spots", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/DropWorstPlayer.json");
     const lo = new LineupOptimizer(roster);
@@ -631,9 +998,278 @@ describe.concurrent("Combination Drops or Adds", () => {
     expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10234");
   });
 
-  // TODO: Add an integration test where we are adding players. Currently it is only for dropping. Could mimic the final two tests above.
-  // TODO: Add the code for the add/drop functionality, specific tests for add/drop functionality, and then add the integration tests.
-  // TODO: Integration test for the yahoo API call.
-  // TODO: Test spin with testsetlineups. Go team by team, hope for no errors.s
-  // TODO: Send it live!
+  it("should drop worst player for healthy on IL, then swap next-worst players for best players", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/dropWorst.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    lo.generateSwapPlayerTransactions();
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toMatchInlineSnapshot(`
+      [
+        {
+          "players": [
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.8918",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Dropping Alex Cobb to make room for Jordan Montgomery2 coming back from injury.",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.10234",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.12339",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Dansby Swanson and dropping worse James Outman",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.10666",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.9557",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Anthony Santander and dropping worse Javier Báez",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.12024",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.11251",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Jordan Walker and dropping worse Merrill Kelly",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+      ]
+    `);
+  });
+
+  it("should move a player to IL for a new add, then swap worst player for the next-best player three times", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free1spot.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    lo.generateSwapPlayerTransactions();
+    const lineupChanges = lo.lineupChanges;
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toMatchInlineSnapshot(`
+      [
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.10234",
+              "transactionType": "add",
+            },
+          ],
+          "reason": "Moved Jordan Montgomery to the inactive list to make room to add Dansby Swanson",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.10666",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.8918",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Anthony Santander and dropping worse Alex Cobb",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.12024",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.12339",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Jordan Walker and dropping worse James Outman",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.9573",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.9557",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Carlos Correa and dropping worse Javier Báez",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+      ]
+    `);
+    expect(lineupChanges).toEqual({
+      coveragePeriod: "2023-04-07",
+      coverageType: "date",
+      newPlayerPositions: {
+        "422.p.10660": "IL",
+      },
+      teamKey: "422.l.119198.t.3",
+    });
+  });
+
+  it("should move the worst player (Alex Cobb) to IL for a new add, then move them back to P and swap that worst player for the next-best player", () => {
+    const roster: ITeamOptimizer = require("./testRosters/MLB/free1spotILswap.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    lo.generateSwapPlayerTransactions();
+    const lineupChanges = lo.lineupChanges;
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toMatchInlineSnapshot(`
+      [
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.10234",
+              "transactionType": "add",
+            },
+          ],
+          "reason": "Moved Alex Cobb to the inactive list to make room to add Dansby Swanson",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.10666",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.8918",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Anthony Santander and dropping worse Alex Cobb",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.12024",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.12339",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Jordan Walker and dropping worse James Outman",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+        {
+          "isFaabRequired": true,
+          "players": [
+            {
+              "isFromWaivers": false,
+              "isInactiveList": false,
+              "playerKey": "422.p.9573",
+              "transactionType": "add",
+            },
+            {
+              "isInactiveList": false,
+              "playerKey": "422.p.9557",
+              "transactionType": "drop",
+            },
+          ],
+          "reason": "Adding better Carlos Correa and dropping worse Javier Báez",
+          "sameDayTransactions": true,
+          "teamKey": "422.l.119198.t.3",
+        },
+      ]
+    `);
+    expect(lineupChanges).toEqual({
+      coveragePeriod: "2023-04-07",
+      coverageType: "date",
+      newPlayerPositions: {
+        "422.p.11014": "IL",
+        "422.p.8918": "P",
+      },
+      teamKey: "422.l.119198.t.3",
+    });
+  });
 });

@@ -153,6 +153,9 @@ function enrichTeamsWithFirestoreSettings(
     return {
       allow_adding: firestoreTeam?.allow_adding ?? false,
       allow_dropping: firestoreTeam?.allow_dropping ?? false,
+      allow_add_drops: firestoreTeam?.allow_add_drops ?? false,
+      allow_waiver_adds: firestoreTeam?.allow_waiver_adds ?? false,
+      allow_transactions: firestoreTeam?.allow_transactions ?? false,
       ...yahooTeam,
     };
   });
@@ -352,9 +355,8 @@ async function createPlayersTransactions(
       if (team.allow_adding) {
         lo.generateAddPlayerTransactions();
       }
-      // TODO: Can the add/drop run to find add/drops before we post the other ones? I think so...
       if (team.allow_add_drops) {
-        // lo.generateAddDropPlayerTransactions();
+        lo.generateSwapPlayerTransactions();
       }
     }
 

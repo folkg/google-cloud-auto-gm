@@ -471,7 +471,7 @@
     {
       "player_key": "422.p.10660",
       "player_name": "Jordan Montgomery",
-      "eligible_positions": ["SP", "P", "BN"],
+      "eligible_positions": ["SP", "P", "BN", "IL"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": true,
@@ -511,7 +511,7 @@
     "IL": 4
   },
   "scoring_type": null,
-  "current_weekly_adds": 0,
+  "current_weekly_adds": 2,
   "current_season_adds": 2,
   "max_weekly_adds": -1,
   "max_season_adds": -1,

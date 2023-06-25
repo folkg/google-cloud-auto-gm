@@ -6,7 +6,7 @@
     {
       "player_key": "422.p.9096",
       "player_name": "Travis d'Arnaud",
-      "eligible_positions": ["C", "Util", "BN"],
+      "eligible_positions": ["Util", "BN"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": true,
@@ -19,27 +19,6 @@
         "last14Days": 201,
         "next7Days": 1003,
         "restOfSeason": 562,
-        "last4Weeks": -1,
-        "projectedWeek": -1,
-        "next4Weeks": -1
-      }
-    },
-    {
-      "player_key": "422.p.9883",
-      "player_name": "Josh Bell",
-      "eligible_positions": ["1B", "Util", "BN"],
-      "selected_position": "1B",
-      "is_editable": true,
-      "is_playing": true,
-      "injury_status": "Healthy",
-      "percent_started": 19,
-      "percent_owned": 37,
-      "is_starting": "N/A",
-      "ranks": {
-        "last30Days": 748,
-        "last14Days": 748,
-        "next7Days": 882,
-        "restOfSeason": 176,
         "last4Weeks": -1,
         "projectedWeek": -1,
         "next4Weeks": -1
@@ -194,27 +173,6 @@
         "next4Weeks": -1
       },
       "is_undroppable": true
-    },
-    {
-      "player_key": "422.p.10166",
-      "player_name": "Willson Contreras",
-      "eligible_positions": ["C", "Util", "BN"],
-      "selected_position": "C",
-      "is_editable": true,
-      "is_playing": true,
-      "injury_status": "Healthy",
-      "percent_started": 72,
-      "percent_owned": 88,
-      "is_starting": "N/A",
-      "ranks": {
-        "last30Days": 382,
-        "last14Days": 382,
-        "next7Days": 149,
-        "restOfSeason": 297,
-        "last4Weeks": -1,
-        "projectedWeek": -1,
-        "next4Weeks": -1
-      }
     },
     {
       "player_key": "422.p.10577",
@@ -511,13 +469,13 @@
     "IL": 4
   },
   "scoring_type": null,
-  "current_weekly_adds": 0,
+  "current_weekly_adds": 2,
   "current_season_adds": 2,
   "max_weekly_adds": -1,
   "max_season_adds": -1,
   "start_date": 1680159600000,
   "end_date": 1696229999999,
-  "faab_balance": 98,
+  "faab_balance": -1,
   "waiver_rule": "continuous",
   "transactions": [],
   "max_games_played": -1,

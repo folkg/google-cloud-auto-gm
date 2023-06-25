@@ -134,6 +134,7 @@ describe.concurrent("YahooAPI Service", () => {
       sameDayTransactions: true,
       teamKey: "418.l.201581.t.1",
       reason: "",
+      isFaabRequired: true,
       players: [
         {
           playerKey: "418.p.6047",
