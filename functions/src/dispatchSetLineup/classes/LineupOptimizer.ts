@@ -16,7 +16,7 @@ export class LineupOptimizer {
   private _playerTransactions: PlayerTransactions;
   private _addCandidates: PlayerCollection | undefined;
 
-  public verbose = true;
+  public verbose = false;
   private logInfo(...args: any[]) {
     if (this.verbose) logger.info(...args);
   }
@@ -513,14 +513,14 @@ export class LineupOptimizer {
   }
 
   private attemptIllegalPlayerSwaps(playerA: Player): boolean {
-    const allEditablePlayers = this.team.editablePlayers.filter(
+    const eligibleSwapPlayers = this.team.editablePlayers.filter(
       (player) => !this.team.pendingLockedPlayerKeys.includes(player.player_key)
     );
-    Team.sortAscendingByStartScore(allEditablePlayers);
+    Team.sortAscendingByStartScore(eligibleSwapPlayers);
 
-    if (allEditablePlayers.length === 0) return false;
+    if (eligibleSwapPlayers.length === 0) return false;
 
-    for (const playerB of allEditablePlayers) {
+    for (const playerB of eligibleSwapPlayers) {
       if (playerA === playerB) continue;
       this.logInfo(
         `comparing ${playerA.player_name} to ${playerB.player_name}`
@@ -530,7 +530,11 @@ export class LineupOptimizer {
         this.swapPlayers(playerA, playerB);
         return true;
       } else {
-        const success = this.threeWaySwapIllegalPlayer(playerA, playerB);
+        const success = this.threeWaySwapIllegalPlayer(
+          playerA,
+          playerB,
+          eligibleSwapPlayers
+        );
         if (success) return true;
 
         this.threeWayMoveIllegalToUnfilledPosition(playerA, playerB);
@@ -567,12 +571,16 @@ export class LineupOptimizer {
       this.movePlayerToPosition(playerA, potentialPlayerAPosition);
     }
   }
-  private threeWaySwapIllegalPlayer(playerA: Player, playerB: Player): boolean {
+  private threeWaySwapIllegalPlayer(
+    playerA: Player,
+    playerB: Player,
+    eligiblePlayerCs: Player[]
+  ): boolean {
     this.logInfo("attempting to find a three way swap");
     const playerC = this.findPlayerCforIllegalPlayerA(
       playerA,
       playerB,
-      this.team.editablePlayers
+      eligiblePlayerCs
     );
     if (playerC) {
       this.logInfo("three-way swap found!");
@@ -860,13 +868,13 @@ export class LineupOptimizer {
    * @private
    * @param {Player} playerA - player to be swapped out
    * @param {Player} playerB - player to be swapped in
-   * @param {Player[]} playersArray - array of players to search for playerC
+   * @param {Player[]} eligiblePlayerCs - array of players to search for playerC
    * @return {(Player[] | undefined)} playerC or undefined if not found
    */
   private getPotentialPlayerCList(
     playerA: Player,
     playerB: Player,
-    playersArray: Player[]
+    eligiblePlayerCs: Player[]
   ): Player[] | undefined {
     this.logInfo(
       `Finding playerC for playerA: ${playerA.player_name} ${playerA.player_key} ${playerA.selected_position} ${playerA.start_score}, playerB: ${playerB.player_name} ${playerB.player_key} ${playerB.selected_position} ${playerB.start_score}`
@@ -881,7 +889,7 @@ export class LineupOptimizer {
         ? "BN"
         : playerB.selected_position;
 
-    return playersArray.filter(
+    return eligiblePlayerCs.filter(
       (playerC: Player) =>
         playerB !== playerC &&
         playerA !== playerC &&
@@ -895,17 +903,25 @@ export class LineupOptimizer {
   private findPlayerCforIllegalPlayerA(
     playerA: Player,
     playerB: Player,
-    playersArray: Player[]
+    eligiblePlayerCs: Player[]
   ) {
-    return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.[0];
+    return this.getPotentialPlayerCList(
+      playerA,
+      playerB,
+      eligiblePlayerCs
+    )?.[0];
   }
 
   private findPlayerCforOptimization(
     playerA: Player,
     playerB: Player,
-    playersArray: Player[]
+    eligiblePlayerCs: Player[]
   ): Player | undefined {
-    return this.getPotentialPlayerCList(playerA, playerB, playersArray)?.find(
+    return this.getPotentialPlayerCList(
+      playerA,
+      playerB,
+      eligiblePlayerCs
+    )?.find(
       (playerC: Player) =>
         playerA.compareStartScore(playerC) > 0 &&
         (playerC.isReservePlayer()

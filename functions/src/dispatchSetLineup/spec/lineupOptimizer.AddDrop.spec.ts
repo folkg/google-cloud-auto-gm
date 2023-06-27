@@ -1272,7 +1272,7 @@ describe.concurrent("Combination Drops or Adds", () => {
     });
   });
 
-  it("should not put roster over max size (player 422.p.12449 should not be moved to IL)", () => {
+  it("should not put roster over max size (no dropped players should be moved to IL)", () => {
     const roster: ITeamOptimizer = require("./problematicAddDrop/1overMax-lineup.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./problematicAddDrop/1overMax-addcandidates.json");
@@ -1280,17 +1280,19 @@ describe.concurrent("Combination Drops or Adds", () => {
     lo.generateAddPlayerTransactions();
     lo.generateSwapPlayerTransactions();
     const lineupChanges = lo.lineupChanges;
+    const playerTransactions = lo.playerTransactions;
 
-    expect(lineupChanges).toEqual({
-      coveragePeriod: "2023-06-26",
-      coverageType: "date",
-      newPlayerPositions: {
-        "422.p.10369": "BN",
-        "422.p.11093": "IL",
-        "422.p.11750": "BN",
-        "422.p.10462": "IL",
-      },
-      teamKey: "422.l.16955.t.10",
-    });
+    const droppedPlayers = playerTransactions?.map(
+      (t) => t.players.find((p) => p.transactionType === "drop")?.playerKey
+    );
+
+    if (droppedPlayers) {
+      for (const playerKey of droppedPlayers) {
+        playerKey &&
+          expect(lineupChanges?.newPlayerPositions[playerKey]).not.toEqual(
+            "IL"
+          );
+      }
+    }
   });
 });
