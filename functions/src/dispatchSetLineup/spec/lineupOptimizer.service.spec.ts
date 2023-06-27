@@ -998,7 +998,15 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
   it("should add one player and then move them to the active roster (Next Day)", async () => {
     const uid = "testUID";
     const teams = [
-      { team_key: "422.l.115494.t.4", allow_adding: true, game_code: "MLB" },
+      {
+        team_key: "422.l.115494.t.4",
+        allow_adding: true,
+        allow_dropping: true,
+        allow_transactions: true,
+        allow_add_drops: true,
+        allow_waiver_adds: true,
+        game_code: "MLB",
+      },
     ];
     const transaction1 = {
       players: [

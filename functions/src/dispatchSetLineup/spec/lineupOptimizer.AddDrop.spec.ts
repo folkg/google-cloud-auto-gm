@@ -1272,4 +1272,17 @@ describe.concurrent("Combination Drops or Adds", () => {
       teamKey: "422.l.119198.t.3",
     });
   });
+  it.todo("should not put roster over max size", () => {
+    const roster: ITeamOptimizer = require("./problematicAddDrop/1overMax-lineup.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./problematicAddDrop/1overMax-addcandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    lo.generateSwapPlayerTransactions();
+    const lineupChanges = lo.lineupChanges;
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toMatchInlineSnapshot();
+    expect(lineupChanges).toMatchInlineSnapshot();
+  });
 });
