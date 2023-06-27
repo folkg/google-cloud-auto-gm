@@ -480,10 +480,16 @@ export function generateTopAvailablePlayerPromises(
   uid: string
 ) {
   const nflTeamKeysAddingPlayers: string[] = firestoreTeams
-    .filter((team) => team.allow_adding && team.game_code === "nfl")
+    .filter(
+      (team) =>
+        (team.allow_adding || team.allow_add_drops) && team.game_code === "nfl"
+    )
     .map((team) => team.team_key);
   const restTeamKeysAddingPlayers: string[] = firestoreTeams
-    .filter((team) => team.allow_adding && team.game_code !== "nfl")
+    .filter(
+      (team) =>
+        (team.allow_adding || team.allow_add_drops) && team.game_code !== "nfl"
+    )
     .map((team) => team.team_key);
   const allTeamKeysAddingPlayers: string[] = nflTeamKeysAddingPlayers.concat(
     restTeamKeysAddingPlayers

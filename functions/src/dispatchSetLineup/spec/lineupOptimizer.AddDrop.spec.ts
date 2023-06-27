@@ -1177,7 +1177,7 @@ describe.concurrent("Combination Drops or Adds", () => {
     });
   });
 
-  it("should move the worst player (Alex Cobb) to IL for a new add, then move them back to P and swap that worst player for the next-best player", () => {
+  it("should move the worst player (Alex Cobb) to IL for a new add, then move them back to BN and swap that worst player for the next-best player", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/free1spotILswap.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
@@ -1267,12 +1267,12 @@ describe.concurrent("Combination Drops or Adds", () => {
       coverageType: "date",
       newPlayerPositions: {
         "422.p.11014": "IL",
-        "422.p.8918": "P",
       },
       teamKey: "422.l.119198.t.3",
     });
   });
-  it.todo("should not put roster over max size", () => {
+
+  it("should not put roster over max size (player 422.p.12449 should not be moved to IL)", () => {
     const roster: ITeamOptimizer = require("./problematicAddDrop/1overMax-lineup.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./problematicAddDrop/1overMax-addcandidates.json");
@@ -1280,9 +1280,17 @@ describe.concurrent("Combination Drops or Adds", () => {
     lo.generateAddPlayerTransactions();
     lo.generateSwapPlayerTransactions();
     const lineupChanges = lo.lineupChanges;
-    const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchInlineSnapshot();
-    expect(lineupChanges).toMatchInlineSnapshot();
+    expect(lineupChanges).toEqual({
+      coveragePeriod: "2023-06-26",
+      coverageType: "date",
+      newPlayerPositions: {
+        "422.p.10369": "BN",
+        "422.p.11093": "IL",
+        "422.p.11750": "BN",
+        "422.p.10462": "IL",
+      },
+      teamKey: "422.l.16955.t.10",
+    });
   });
 });

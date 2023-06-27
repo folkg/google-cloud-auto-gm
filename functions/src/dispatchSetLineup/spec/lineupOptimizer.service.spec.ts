@@ -912,7 +912,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         coverageType: "date",
         newPlayerPositions: {
           "422.p.11014": "IL",
-          "422.p.8918": "P",
         },
         teamKey: "422.l.119198.t.3",
       },

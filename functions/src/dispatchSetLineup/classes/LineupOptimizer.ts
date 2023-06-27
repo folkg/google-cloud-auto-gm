@@ -16,7 +16,7 @@ export class LineupOptimizer {
   private _playerTransactions: PlayerTransactions;
   private _addCandidates: PlayerCollection | undefined;
 
-  public verbose = false;
+  public verbose = true;
   private logInfo(...args: any[]) {
     if (this.verbose) logger.info(...args);
   }
@@ -521,6 +521,7 @@ export class LineupOptimizer {
     if (allEditablePlayers.length === 0) return false;
 
     for (const playerB of allEditablePlayers) {
+      if (playerA === playerB) continue;
       this.logInfo(
         `comparing ${playerA.player_name} to ${playerB.player_name}`
       );
