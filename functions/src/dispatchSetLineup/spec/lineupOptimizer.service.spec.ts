@@ -858,12 +858,12 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           },
           {
             isInactiveList: false,
-            playerKey: "422.p.8918",
+            playerKey: "422.p.12339",
             transactionType: "drop",
           },
         ],
         reason:
-          "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Alex Cobb (SP, P, BN, IL) [27.88].",
+          "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },
@@ -878,12 +878,12 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           },
           {
             isInactiveList: false,
-            playerKey: "422.p.12339",
+            playerKey: "422.p.9557",
             transactionType: "drop",
           },
         ],
         reason:
-          "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping James Outman (OF, Util, BN) [38.01].",
+          "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },
@@ -893,17 +893,17 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           {
             isFromWaivers: false,
             isInactiveList: false,
-            playerKey: "422.p.9573",
+            playerKey: "422.p.9331",
             transactionType: "add",
           },
           {
             isInactiveList: false,
-            playerKey: "422.p.9557",
+            playerKey: "422.p.8918",
             transactionType: "drop",
           },
         ],
         reason:
-          "Adding Carlos Correa (SS, Util, BN) [45.19] and dropping Javier Báez (SS, Util, BN) [38.58].",
+          "Adding James Paxton (SP, P, BN) [50.03] and dropping Alex Cobb (SP, P, BN, IL) [27.88].",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },

@@ -6,7 +6,10 @@ import {
   getProgressBetween,
   getWeeklyProgressPacific,
 } from "../../common/services/utilities.service.js";
-import { INACTIVE_POSITION_LIST } from "../helpers/constants.js";
+import {
+  INACTIVE_POSITION_LIST,
+  LEAGUE_POSITION_COMPOSITIONS,
+} from "../helpers/constants.js";
 import { ownershipScoreFunctionFactory } from "../services/playerOwnershipScoreFunctions.service.js";
 import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service.js";
 import { Player } from "./Player.js";
@@ -367,22 +370,20 @@ export class Team extends PlayerCollection implements Team {
   ): string[] {
     const result: string[] = [];
 
-    // get all eligible positions for all players on roster, plus/minus pending adds/drops
-    const countablePositions: string[][] = this.players
-      .filter((player) => !this._pendingDropPlayers.has(player.player_key))
-      .map((player) => {
-        const { eligible_positions: eligiblePositions } = player;
-        return eligiblePositions;
-      })
-      .concat(Array.from(this._pendingAddPlayers.values()));
+    // validPlayerKeysWithPositions: string[playerKey] = eligiblePositions
+    const validPlayerKeysWithPositions: string[][] =
+      this.getValidPlayerKeysWithEligiblePositions();
 
-    Object.keys(this.roster_positions).forEach((position) => {
-      const playersAtPosition = countablePositions.filter((eligiblePositions) =>
-        eligiblePositions.includes(position)
+    const playersRequired: { [key: string]: number } =
+      this.getPlayersRequiredAtPosition();
+
+    Object.keys(playersRequired).forEach((position) => {
+      const playersKeysAtPosition = validPlayerKeysWithPositions.filter(
+        (eligiblePositions) => eligiblePositions.includes(position)
       );
       if (!INACTIVE_POSITION_LIST.includes(position)) {
         if (
-          compareFn(playersAtPosition.length, this.roster_positions[position])
+          compareFn(playersKeysAtPosition.length, playersRequired[position])
         ) {
           result.push(position);
         }
@@ -390,6 +391,42 @@ export class Team extends PlayerCollection implements Team {
     });
 
     return result;
+  }
+
+  private getValidPlayerKeysWithEligiblePositions(): string[][] {
+    // TODO: Do we want to exclude players on IL fromt he count? Might get hard to manage with swapping on/off IL
+    // get all eligible positions for all players on roster, minus pending drops, plus pending adds
+    return this.players
+      .filter(
+        (player) =>
+          !player.isLTIR() && !this._pendingDropPlayers.has(player.player_key)
+      )
+      .map((player) => {
+        const { eligible_positions: eligiblePositions } = player;
+        return eligiblePositions;
+      })
+      .concat(Array.from(this._pendingAddPlayers.values()));
+  }
+
+  private getPlayersRequiredAtPosition() {
+    const compoundPositions = LEAGUE_POSITION_COMPOSITIONS[this.game_code];
+    const playersRequiredAtPosition: { [key: string]: number } = Object.keys(
+      this.roster_positions
+    ).reduce((acc: { [key: string]: number }, position: string) => {
+      if (!INACTIVE_POSITION_LIST.includes(position)) {
+        acc[position] = this.roster_positions[position];
+        const isCompoundPosition =
+          Object.keys(compoundPositions).includes(position);
+        if (isCompoundPosition) {
+          const childPositions: string[] = compoundPositions[position];
+          childPositions.forEach((childPosition) => {
+            acc[position] += this.roster_positions[childPosition];
+          });
+        }
+      }
+      return acc;
+    }, {});
+    return playersRequiredAtPosition;
   }
 
   public getPlayersAt(position: string): Player[] {

@@ -366,6 +366,9 @@ export class LineupOptimizer {
       areCriticalPositionsReplaced = dropPlayerCriticalPositions.every((pos) =>
         addPlayerCriticalPositions.includes(pos)
       );
+      if (!areCriticalPositionsReplaced) {
+        continue;
+      }
 
       if (playerToDrop.isInactiveList()) {
         this.logInfo("attempting to resolve IL player");

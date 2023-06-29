@@ -564,12 +564,12 @@ describe.concurrent("Swap players", () => {
         },
         {
           isInactiveList: false,
-          playerKey: "422.p.8918",
+          playerKey: "422.p.9096",
           transactionType: "drop",
         },
       ],
       reason:
-        "Adding Dansby Swanson (SS, Util, BN) [83.91] and dropping Alex Cobb (SP, P, BN) [27.88].",
+        "Adding Dansby Swanson (SS, Util, BN) [83.91] and dropping Travis d'Arnaud (C, Util, BN) [27.51].",
       sameDayTransactions: true,
       teamKey: "422.l.119198.t.3",
     },
@@ -584,12 +584,12 @@ describe.concurrent("Swap players", () => {
         },
         {
           isInactiveList: false,
-          playerKey: "422.p.12339",
+          playerKey: "422.p.8918",
           transactionType: "drop",
         },
       ],
       reason:
-        "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
+        "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Alex Cobb (SP, P, BN) [27.88].",
       sameDayTransactions: true,
       teamKey: "422.l.119198.t.3",
     },
@@ -604,14 +604,34 @@ describe.concurrent("Swap players", () => {
         },
         {
           isInactiveList: false,
-          playerKey: "422.p.9557",
+          playerKey: "422.p.12339",
           transactionType: "drop",
         },
       ],
       reason:
-        "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
+        "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping James Outman (OF, Util, BN) [38.01].",
       sameDayTransactions: true,
       teamKey: "422.l.119198.t.3",
+    },
+    {
+      teamKey: "422.l.119198.t.3",
+      sameDayTransactions: true,
+      reason:
+        "Adding Carlos Correa (SS, Util, BN) [45.19] and dropping Javier Báez (SS, Util, BN) [38.58].",
+      isFaabRequired: true,
+      players: [
+        {
+          isFromWaivers: false,
+          isInactiveList: false,
+          playerKey: "422.p.9573",
+          transactionType: "add",
+        },
+        {
+          isInactiveList: false,
+          playerKey: "422.p.9557",
+          transactionType: "drop",
+        },
+      ],
     },
   ];
 
@@ -621,7 +641,6 @@ describe.concurrent("Swap players", () => {
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
-
     expect(playerTransactions).toEqual(swapsFromOptimalLineup);
   });
 
@@ -1047,7 +1066,7 @@ describe.concurrent("Combination Drops or Adds", () => {
     `);
   });
 
-  it("should move a player to IL for a new add, then swap worst player for the next-best player three times", () => {
+  it("should move a player to IL for a new add, then swap worst player for the next-best player two times", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/free1spot.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
@@ -1084,11 +1103,11 @@ describe.concurrent("Combination Drops or Adds", () => {
             },
             {
               "isInactiveList": false,
-              "playerKey": "422.p.8918",
+              "playerKey": "422.p.12339",
               "transactionType": "drop",
             },
           ],
-          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Alex Cobb (SP, P, BN) [27.88].",
+          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
           "sameDayTransactions": true,
           "teamKey": "422.l.119198.t.3",
         },
@@ -1103,30 +1122,11 @@ describe.concurrent("Combination Drops or Adds", () => {
             },
             {
               "isInactiveList": false,
-              "playerKey": "422.p.12339",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping James Outman (OF, Util, BN) [38.01].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.9573",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
               "playerKey": "422.p.9557",
               "transactionType": "drop",
             },
           ],
-          "reason": "Adding Carlos Correa (SS, Util, BN) [45.19] and dropping Javier Báez (SS, Util, BN) [38.58].",
+          "reason": "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
           "sameDayTransactions": true,
           "teamKey": "422.l.119198.t.3",
         },
@@ -1179,11 +1179,11 @@ describe.concurrent("Combination Drops or Adds", () => {
             },
             {
               "isInactiveList": false,
-              "playerKey": "422.p.8918",
+              "playerKey": "422.p.12339",
               "transactionType": "drop",
             },
           ],
-          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Alex Cobb (SP, P, BN, IL) [27.88].",
+          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
           "sameDayTransactions": true,
           "teamKey": "422.l.119198.t.3",
         },
@@ -1198,11 +1198,11 @@ describe.concurrent("Combination Drops or Adds", () => {
             },
             {
               "isInactiveList": false,
-              "playerKey": "422.p.12339",
+              "playerKey": "422.p.9557",
               "transactionType": "drop",
             },
           ],
-          "reason": "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping James Outman (OF, Util, BN) [38.01].",
+          "reason": "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
           "sameDayTransactions": true,
           "teamKey": "422.l.119198.t.3",
         },
@@ -1212,16 +1212,16 @@ describe.concurrent("Combination Drops or Adds", () => {
             {
               "isFromWaivers": false,
               "isInactiveList": false,
-              "playerKey": "422.p.9573",
+              "playerKey": "422.p.9331",
               "transactionType": "add",
             },
             {
               "isInactiveList": false,
-              "playerKey": "422.p.9557",
+              "playerKey": "422.p.8918",
               "transactionType": "drop",
             },
           ],
-          "reason": "Adding Carlos Correa (SS, Util, BN) [45.19] and dropping Javier Báez (SS, Util, BN) [38.58].",
+          "reason": "Adding James Paxton (SP, P, BN) [50.03] and dropping Alex Cobb (SP, P, BN, IL) [27.88].",
           "sameDayTransactions": true,
           "teamKey": "422.l.119198.t.3",
         },

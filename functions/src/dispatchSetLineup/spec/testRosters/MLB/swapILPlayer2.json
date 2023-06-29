@@ -48,7 +48,7 @@
     {
       "player_key": "422.p.9883",
       "player_name": "Josh Bell",
-      "eligible_positions": ["1B", "Util", "BN"],
+      "eligible_positions": ["C", "1B", "Util", "BN"],
       "selected_position": "1B",
       "is_editable": true,
       "is_playing": true,

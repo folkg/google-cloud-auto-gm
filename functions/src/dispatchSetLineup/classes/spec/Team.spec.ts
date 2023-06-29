@@ -146,4 +146,25 @@ describe.concurrent("Test Team Class", () => {
 
     expect(team.isCurrentTransactionPaceOK()).toEqual(false);
   });
+
+  it("underfilledPositions for teams with compound positions (eg.Util, MI, CI)", () => {
+    const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions.json");
+    const team = new Team(teamJSON);
+
+    expect(team.underfilledPositions).toEqual(["MI"]);
+  });
+
+  it("criticalPositions for teams with compound positions (eg.Util, MI, CI)", () => {
+    const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions.json");
+    const team = new Team(teamJSON);
+
+    expect(team.criticalPositions).toEqual(["C", "SS", "MI"]);
+  });
+
+  it("almostCriticalPositions for teams with compound positions (eg.Util, MI, CI)", () => {
+    const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions.json");
+    const team = new Team(teamJSON);
+
+    expect(team.almostCriticalPositions).toEqual(["C", "SS", "RP", "MI"]);
+  });
 });
