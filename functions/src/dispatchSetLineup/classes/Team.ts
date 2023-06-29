@@ -400,13 +400,13 @@ export class Team extends PlayerCollection implements Team {
       this.getPlayerCapacityAtPosition();
 
     Object.keys(positionPlayerCapacity).forEach((position) => {
-      const playersKeysAtPosition = validPlayerKeysWithPositions.filter(
+      const playerKeysAtPosition = validPlayerKeysWithPositions.filter(
         (eligiblePositions) => eligiblePositions.includes(position)
       );
       if (!INACTIVE_POSITION_LIST.includes(position)) {
         if (
           compareFn(
-            playersKeysAtPosition.length,
+            playerKeysAtPosition.length,
             positionPlayerCapacity[position],
             position
           )
@@ -436,23 +436,24 @@ export class Team extends PlayerCollection implements Team {
 
   private getPlayerCapacityAtPosition() {
     const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[this.game_code];
-    const playersRequiredAtPosition: { [key: string]: number } = Object.keys(
-      this.roster_positions
-    ).reduce((acc: { [key: string]: number }, position: string) => {
-      if (!INACTIVE_POSITION_LIST.includes(position)) {
-        acc[position] = this.roster_positions[position];
-        const isCompoundPosition =
-          Object.keys(compoundPositions).includes(position);
-        if (isCompoundPosition) {
-          const childPositions: string[] = compoundPositions[position];
-          childPositions.forEach((childPosition) => {
-            acc[position] += this.roster_positions[childPosition];
-          });
+
+    return Object.keys(this.roster_positions).reduce(
+      (acc: { [key: string]: number }, position: string) => {
+        if (!INACTIVE_POSITION_LIST.includes(position)) {
+          acc[position] = this.roster_positions[position];
+          const isCompoundPosition =
+            Object.keys(compoundPositions).includes(position);
+          if (isCompoundPosition) {
+            const childPositions: string[] = compoundPositions[position];
+            childPositions.forEach((childPosition) => {
+              acc[position] += this.roster_positions[childPosition];
+            });
+          }
         }
-      }
-      return acc;
-    }, {});
-    return playersRequiredAtPosition;
+        return acc;
+      },
+      {}
+    );
   }
 
   public getPlayersAt(position: string): Player[] {

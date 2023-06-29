@@ -433,7 +433,9 @@ function checkYahooErrorDescription(err: AxiosError, errMsg: string): boolean {
       errorDescription ===
       "You cannot add a player you dropped until the waiver period ends."
     ) {
-      console.info(errMsg);
+      console.info(
+        `You cannot add a player you dropped until the waiver period ends. ${errMsg}`
+      );
       result = false;
     }
   }

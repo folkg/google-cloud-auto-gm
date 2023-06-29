@@ -271,7 +271,9 @@ describe.concurrent("YahooAPI Service", () => {
       return;
     });
     const result = await postRosterAddDropTransaction(transaction, uid);
-    expect(spyConsoleError).toHaveBeenCalledWith(errMessage);
+    expect(spyConsoleError).toHaveBeenCalledWith(
+      `You cannot add a player you dropped until the waiver period ends. ${errMessage}`
+    );
     expect(result).toEqual(null);
   });
 });

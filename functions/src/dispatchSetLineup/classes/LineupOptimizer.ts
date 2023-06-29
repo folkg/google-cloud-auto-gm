@@ -624,7 +624,7 @@ export class LineupOptimizer {
     );
 
     while (reservePlayers.length > 0) {
-      const playerA = reservePlayers.pop();
+      const playerA: Player | undefined = reservePlayers.pop();
       if (!playerA) break;
       if (playerA.isStartingRosterPlayer()) continue;
       this.logInfo(`playerA: ${playerA.player_name}`);
@@ -682,6 +682,10 @@ export class LineupOptimizer {
   }
 
   private getEliglibleStartingPlayers(playerA: Player): Player[] | undefined {
+    // TODO: Can this be moved to the Team class?
+    // TODO: Modify this for our new partial optimization functionality. We don't just want all starting players,
+    // we want only the starting players that have no game, not starting, or not in HEALTHY_STATUS_LIST
+    // This way, we will only swap out starting players that are not playing, we don't care about score
     const startingPlayersList = this.team.startingPlayers;
     Team.sortAscendingByStartScore(startingPlayersList);
 
@@ -867,11 +871,11 @@ export class LineupOptimizer {
   }
 
   private moveILPlayerToUnfilledALPosition(player: Player): boolean {
+    assert(player.isInactiveList, "calling function must pass an IL player");
+
     this.logInfo(
       `numEmptyRosterSpots ${this.team.getPendingEmptyRosterSpots()}`
     );
-
-    if (!player.isInactiveList()) return false;
 
     if (this.team.getPendingEmptyRosterSpots() <= 0) {
       const success = this.openOneRosterSpot(player);

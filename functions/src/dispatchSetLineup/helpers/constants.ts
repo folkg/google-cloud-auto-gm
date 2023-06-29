@@ -62,10 +62,10 @@ type LeagueCompoundPositions = {
  * @type {LeagueMaxPositions}
  */
 export const POSITIONAL_MAX_EXTRA_PLAYERS: LeagueMaxPositions = {
-  mlb: {},
+  mlb: { P: 6 },
   nfl: { K: 0, DEF: 0 },
   nba: {},
-  nhl: {},
+  nhl: { G: 3 },
 };
 
 type LeagueMaxPositions = {
