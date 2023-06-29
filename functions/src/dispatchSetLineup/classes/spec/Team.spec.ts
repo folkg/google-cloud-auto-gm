@@ -167,4 +167,18 @@ describe.concurrent("Test Team Class", () => {
 
     expect(team.almostCriticalPositions).toEqual(["C", "SS", "RP", "MI"]);
   });
+
+  it("should return empty array, since there is no max cap on any MLB positions", () => {
+    const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions.json");
+    const team = new Team(teamJSON);
+
+    expect(team.atMaxCapPositions).toEqual([]);
+  });
+
+  it("should return K and DEF as at max capacity, since they have max cap of 0 extra players", () => {
+    const teamJSON = require("../../spec/testYahooLineupJSON/output/NFLLineups.json");
+    const team = new Team(teamJSON[1]);
+
+    expect(team.atMaxCapPositions).toEqual(["K", "DEF"]);
+  });
 });

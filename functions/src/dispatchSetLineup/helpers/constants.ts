@@ -19,7 +19,7 @@ export const LONG_TERM_IL_POSITIONS_LIST = ["IL", "IR"];
  * https://help.yahoo.com/kb/position-abbreviations-fantasy-basketball-sln6927.html
  * https://help.yahoo.com/kb/position-abbreviations-fantasy-hockey-sln6835.html
  */
-export const LEAGUE_POSITION_COMPOSITIONS: LeaguePositionCompositions = {
+export const COMPOUND_POSITION_COMPOSITIONS: LeagueCompoundPositions = {
   mlb: {
     CI: ["1B", "3B"],
     MI: ["2B", "SS"],
@@ -47,9 +47,29 @@ export const LEAGUE_POSITION_COMPOSITIONS: LeaguePositionCompositions = {
   },
 };
 // TODO: Confirm the NBA composition, the description seems a little vague
-
-type LeaguePositionCompositions = {
+type LeagueCompoundPositions = {
   [key: string]: {
     [key: string]: string[];
+  };
+};
+
+/**
+ * The number of extra players that can be "automatically" added to a specific position in each league by the tool
+ * If the number is 0, then the tool will not add any extra players to that position
+ * If the position is not listed, then no maximum will be enforced
+ * @date 29/06/2023 - 11:58:21
+ *
+ * @type {LeagueMaxPositions}
+ */
+export const POSITIONAL_MAX_EXTRA_PLAYERS: LeagueMaxPositions = {
+  mlb: {},
+  nfl: { K: 0, DEF: 0 },
+  nba: {},
+  nhl: {},
+};
+
+type LeagueMaxPositions = {
+  [key: string]: {
+    [key: string]: number;
   };
 };

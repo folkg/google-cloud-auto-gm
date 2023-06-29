@@ -8,7 +8,8 @@ import {
 } from "../../common/services/utilities.service.js";
 import {
   INACTIVE_POSITION_LIST,
-  LEAGUE_POSITION_COMPOSITIONS,
+  COMPOUND_POSITION_COMPOSITIONS,
+  POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../helpers/constants.js";
 import { ownershipScoreFunctionFactory } from "../services/playerOwnershipScoreFunctions.service.js";
 import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service.js";
@@ -340,7 +341,9 @@ export class Team extends PlayerCollection implements Team {
    * @type {string[]}
    */
   public get criticalPositions(): string[] {
-    return this.getPositionsHelper((a, b) => a <= b);
+    return this.getPositionsConditionalHelper(
+      (count, capacity, _) => count <= capacity
+    );
   }
 
   /**
@@ -351,7 +354,9 @@ export class Team extends PlayerCollection implements Team {
    * @type {string[]}
    */
   public get almostCriticalPositions(): string[] {
-    return this.getPositionsHelper((a, b) => a <= b + 1);
+    return this.getPositionsConditionalHelper(
+      (count, capacity, _) => count <= capacity + 1
+    );
   }
 
   /**
@@ -362,11 +367,28 @@ export class Team extends PlayerCollection implements Team {
    * @type {string[]}
    */
   public get underfilledPositions(): string[] {
-    return this.getPositionsHelper((a, b) => a < b);
+    return this.getPositionsConditionalHelper(
+      (count, capacity, _) => count < capacity
+    );
   }
 
-  private getPositionsHelper(
-    compareFn: (a: number, b: number) => boolean
+  /**
+   * positions that already meet or exceed the maximum capacity for that position (if applicable)
+   *
+   * @public
+   * @readonly
+   * @type {string[]} positions that are at or over max capacity
+   */
+  public get atMaxCapPositions(): string[] {
+    return this.getPositionsConditionalHelper(
+      (count, capacity, position) =>
+        count >=
+        capacity + POSITIONAL_MAX_EXTRA_PLAYERS[this.game_code][position]
+    );
+  }
+
+  private getPositionsConditionalHelper(
+    compareFn: (count: number, capacity: number, position: string) => boolean
   ): string[] {
     const result: string[] = [];
 
@@ -374,16 +396,20 @@ export class Team extends PlayerCollection implements Team {
     const validPlayerKeysWithPositions: string[][] =
       this.getValidPlayerKeysWithEligiblePositions();
 
-    const playersRequired: { [key: string]: number } =
-      this.getPlayersRequiredAtPosition();
+    const positionPlayerCapacity: { [key: string]: number } =
+      this.getPlayerCapacityAtPosition();
 
-    Object.keys(playersRequired).forEach((position) => {
+    Object.keys(positionPlayerCapacity).forEach((position) => {
       const playersKeysAtPosition = validPlayerKeysWithPositions.filter(
         (eligiblePositions) => eligiblePositions.includes(position)
       );
       if (!INACTIVE_POSITION_LIST.includes(position)) {
         if (
-          compareFn(playersKeysAtPosition.length, playersRequired[position])
+          compareFn(
+            playersKeysAtPosition.length,
+            positionPlayerCapacity[position],
+            position
+          )
         ) {
           result.push(position);
         }
@@ -408,8 +434,8 @@ export class Team extends PlayerCollection implements Team {
       .concat(Array.from(this._pendingAddPlayers.values()));
   }
 
-  private getPlayersRequiredAtPosition() {
-    const compoundPositions = LEAGUE_POSITION_COMPOSITIONS[this.game_code];
+  private getPlayerCapacityAtPosition() {
+    const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[this.game_code];
     const playersRequiredAtPosition: { [key: string]: number } = Object.keys(
       this.roster_positions
     ).reduce((acc: { [key: string]: number }, position: string) => {
