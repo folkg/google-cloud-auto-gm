@@ -4,6 +4,7 @@ import * as yahooHttpService from "../yahooHttp.service.js";
 
 import { describe, expect, it, vi } from "vitest";
 import { TPlayer } from "../../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import { AxiosError } from "axios";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -224,5 +225,53 @@ describe.concurrent("YahooAPI Service", () => {
       "league/418.l.201581/transactions",
       expectedXML
     );
+  });
+  it("should swallow the error for picking up a player on waivers that we recently dropped", async () => {
+    const axiosError = new AxiosError(
+      "test",
+      "400",
+      {} as any,
+      {} as any,
+      {
+        data:
+          '<?xml version="1.0" encoding="UTF-8"?>\n' +
+          '<error xml:lang="en-us" yahoo:uri="http://fantasysports.yahooapis.com/fantasy/v2/league/422.l.58716/transactions" xmlns:yahoo="http://www.yahooapis.com/v1/base.rng" xmlns="http://www.yahooapis.com/v1/base.rng">\n' +
+          " <description>You cannot add a player you dropped until the waiver period ends.</description>\n" +
+          " <detail/>\n" +
+          "</error>",
+      } as any
+    );
+    const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
+    const teamKey = "418.l.201581.t.1";
+    const transaction = {
+      sameDayTransactions: true,
+      teamKey: teamKey,
+      reason: "",
+      players: [
+        {
+          playerKey: "418.p.6048",
+          transactionType: "drop",
+          isInactiveList: false,
+          isFromWaivers: false,
+        } as TPlayer,
+      ],
+    };
+    const errMessage = `There was a problem posting one transaction. Here are the error details: User: ${uid} Team: ${teamKey} Transaction: ${JSON.stringify(
+      transaction
+    )}`;
+    const spyHttpPostAxiosAuth = vi.spyOn(
+      yahooHttpService,
+      "httpPostAxiosAuth"
+    );
+    spyHttpPostAxiosAuth.mockImplementation(() => {
+      return Promise.reject(axiosError) as any;
+    });
+    const spyConsoleError = vi.spyOn(console, "info");
+    spyConsoleError.mockImplementation(() => {
+      return;
+    });
+    const result = await postRosterAddDropTransaction(transaction, uid);
+    expect(spyConsoleError).toHaveBeenCalledWith(errMessage);
+    expect(result).toEqual(null);
   });
 });

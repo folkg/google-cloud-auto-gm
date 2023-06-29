@@ -350,9 +350,18 @@ export async function postRosterAddDropTransaction(
     logger.log("Transaction data:", { data });
     return transaction;
   } catch (err: unknown) {
-    const errMessage = `Error in postRosterAddDropTransaction. User: ${uid} Team: ${teamKey}`;
-    handleAxiosError(err, errMessage);
+    const errMessage = `There was a problem posting one transaction. Here are the error details: User: ${uid} Team: ${teamKey} Transaction: ${JSON.stringify(
+      transaction
+    )}`;
+    let throwError = true;
+    if (isAxiosError(err)) {
+      throwError = checkYahooErrorDescription(err, errMessage);
+    }
+    if (throwError) {
+      handleAxiosError(err, errMessage);
+    }
   }
+  return null;
 }
 
 type TransactionBody = {
@@ -404,4 +413,29 @@ function handleAxiosError(err: unknown, message: string | null): never {
     logger.error(errMessage, error.message);
     throw new Error(`${errMessage}${error.message}`);
   }
+}
+/**
+ * Check the Yahoo error description to see if it is a known error that we can handle
+ *
+ * @param {AxiosError} err - The axios error
+ * @param {string} errMsg - The message to log
+ * @return {boolean} - True if we should throw the error, false if we should not
+ */
+function checkYahooErrorDescription(err: AxiosError, errMsg: string): boolean {
+  let result = true;
+  const xml2js = require("xml2js");
+  const xmlString = err.response?.data;
+  xml2js.parseString(xmlString, (_err: unknown, parsedXml: any) => {
+    if (parsedXml) {
+      const errorDescription: string = parsedXml.error.description[0];
+      if (
+        errorDescription ===
+        "You cannot add a player you dropped until the waiver period ends."
+      ) {
+        console.info(errMsg);
+        result = false;
+      }
+    }
+  });
+  return result;
 }
