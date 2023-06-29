@@ -263,8 +263,9 @@ export class LineupOptimizer {
     }
     assert(this._addCandidates, "addCandidates must be set");
 
-    // the number of points the score of an add candidate must be above a potential drop candidate
-    const SCORE_THRESHOLD = 3;
+    // The number of points the score of an add candidate must be above a potential drop candidate.
+    // This adds a conservative bias to the algorithm to avoid making bad drops.
+    const SCORE_THRESHOLD = 6;
 
     const bestAddCandidate: Player = this._addCandidates.allPlayers[0];
     let baseDropCandidates: Player[] =
@@ -386,7 +387,15 @@ export class LineupOptimizer {
     this.logInfo("Swap:", playerToAdd.player_name, playerToDrop.player_name);
 
     const underfilledPositions: string[] = this.team.underfilledPositions;
-    let reason = `Adding better ${playerToAdd.player_name} and dropping worse ${playerToDrop.player_name}`;
+    let reason = `Adding ${
+      playerToAdd.player_name
+    } (${playerToAdd.eligible_positions.join(
+      ", "
+    )}) [${playerToAdd.ownership_score.toFixed(2)}] and dropping ${
+      playerToDrop.player_name
+    } (${playerToDrop.eligible_positions.join(
+      ", "
+    )}) [${playerToDrop.ownership_score.toFixed(2)}].`;
     if (underfilledPositions.length > 0) {
       reason = `There are empty ${underfilledPositions.join(
         ", "

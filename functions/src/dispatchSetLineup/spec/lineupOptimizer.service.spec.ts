@@ -862,7 +862,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
             transactionType: "drop",
           },
         ],
-        reason: "Adding better Anthony Santander and dropping worse Alex Cobb",
+        reason:
+          "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Alex Cobb (SP, P, BN, IL) [27.88].",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },
@@ -881,7 +882,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
             transactionType: "drop",
           },
         ],
-        reason: "Adding better Jordan Walker and dropping worse James Outman",
+        reason:
+          "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping James Outman (OF, Util, BN) [38.01].",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },
@@ -900,7 +902,8 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
             transactionType: "drop",
           },
         ],
-        reason: "Adding better Carlos Correa and dropping worse Javier Báez",
+        reason:
+          "Adding Carlos Correa (SS, Util, BN) [45.19] and dropping Javier Báez (SS, Util, BN) [38.58].",
         sameDayTransactions: true,
         teamKey: "422.l.119198.t.3",
       },

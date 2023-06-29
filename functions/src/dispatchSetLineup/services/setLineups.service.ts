@@ -414,20 +414,6 @@ async function postAllTransactions(
   if (error) {
     throw new Error("Error in postAllTransactions()");
   }
-
-  // // Process all transactions in series
-  // const allTransactions = playerTransactions.flat();
-  // for (const transaction of allTransactions) {
-  //   try {
-  //     await postRosterAddDropTransaction(transaction, uid);
-  //   } catch (err: any) {
-  //     logger.error(
-  //       `Error in postAllTransactions() for User: ${uid}: ${err.message}`
-  //     );
-  //     logger.error("Transaction: ", transaction);
-  //     throw err;
-  //   }
-  // }
 }
 
 function sendSuccessfulTransactionEmail(
@@ -438,9 +424,8 @@ function sendSuccessfulTransactionEmail(
     transactionsPosted.map(
       (t) =>
         `${t.teamKey}: ${t.reason} ${
-          t.players.some((p) => p.isFromWaivers)
-            ? "(Waiver claim created)"
-            : "(Transaction successfully completed"
+          t.players.some((p) => p.isFromWaivers) &&
+          "(Waiver claim created only)"
         }`
     )
   );
