@@ -1,6 +1,8 @@
 import { AxiosError, isAxiosError } from "axios";
 import dotenv from "dotenv";
+import { XMLParser } from "fast-xml-parser";
 import { logger } from "firebase-functions";
+import js2xmlparser from "js2xmlparser";
 import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges.js";
 import {
   PlayerTransaction,
@@ -16,7 +18,6 @@ import {
   httpPutAxios,
 } from "./yahooHttp.service.js";
 
-import js2xmlparser from "js2xmlparser";
 dotenv.config();
 
 /**
@@ -423,19 +424,18 @@ function handleAxiosError(err: unknown, message: string | null): never {
  */
 function checkYahooErrorDescription(err: AxiosError, errMsg: string): boolean {
   let result = true;
-  const xml2js = require("xml2js");
-  const xmlString = err.response?.data;
-  xml2js.parseString(xmlString, (_err: unknown, parsedXml: any) => {
-    if (parsedXml) {
-      const errorDescription: string = parsedXml.error.description[0];
-      if (
-        errorDescription ===
-        "You cannot add a player you dropped until the waiver period ends."
-      ) {
-        console.info(errMsg);
-        result = false;
-      }
+  const xmlString: string = err.response?.data as string;
+  const parser = new XMLParser();
+  const parsedXml = parser.parse(xmlString);
+  if (parsedXml) {
+    const errorDescription: string = parsedXml.error.description;
+    if (
+      errorDescription ===
+      "You cannot add a player you dropped until the waiver period ends."
+    ) {
+      console.info(errMsg);
+      result = false;
     }
-  });
+  }
   return result;
 }

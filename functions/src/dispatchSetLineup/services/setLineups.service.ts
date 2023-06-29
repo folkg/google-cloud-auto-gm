@@ -424,8 +424,9 @@ function sendSuccessfulTransactionEmail(
     transactionsPosted.map(
       (t) =>
         `${t.teamKey}: ${t.reason} ${
-          t.players.some((p) => p.isFromWaivers) &&
-          "(Waiver claim created only)"
+          t.players.some((p) => p.isFromWaivers)
+            ? "(Waiver claim created only)"
+            : "(Transaction completed)"
         }`
     )
   );
