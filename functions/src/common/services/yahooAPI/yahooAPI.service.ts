@@ -261,7 +261,7 @@ export async function putLineupChanges(
   const results = await Promise.allSettled(promises);
   for (const result of results) {
     if (result.status === "rejected") {
-      logger.error(result.reason);
+      logger.error(JSON.stringify(result.reason));
     }
   }
   if (results.some((result) => result.status === "rejected")) {

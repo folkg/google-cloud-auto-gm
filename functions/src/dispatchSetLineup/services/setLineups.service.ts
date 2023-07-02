@@ -274,9 +274,9 @@ async function processTransactionsForNextDayTeams(
   // TODO: Should we just go ahead and fetch tomorrow's lineup here instead of doing pre-checks?
   const teams = getTeamsForNextDayTransactions(originalTeams);
 
-  const [potentialLineupChanges, poentitalTransactions] =
+  const [potentialDrops, _, potentialAddSwaps] =
     await createPlayersTransactions(teams, topAvailablePlayerCandidates);
-  if (!potentialLineupChanges && !poentitalTransactions) {
+  if (!potentialDrops && !potentialAddSwaps) {
     return;
   }
 
@@ -301,13 +301,43 @@ async function processPlayerTransactions(
 ): Promise<boolean> {
   let result = false;
 
-  const [lineupChanges, transactions] = await createPlayersTransactions(
-    teams,
-    topAvailablePlayerCandidates
-  );
+  const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
+    await createPlayersTransactions(teams, topAvailablePlayerCandidates);
 
-  // Adding players may require lineup changes to move players from roster to IL, so we need to put lineup changes first
+  if (dropPlayerTransactions) {
+    // any dropped players need to be processed before healthy players on IL are moved to BN with lineupChanges
+    await postSomeTransactions(dropPlayerTransactions);
+    result = true;
+  }
+
   if (lineupChanges) {
+    // any injured players on roster need to be moved to IL before add player transactions are processed with addSwapTransactions
+    await putAllLineupChanges(lineupChanges);
+    result = true;
+  }
+
+  if (addSwapTransactions) {
+    await postSomeTransactions(addSwapTransactions);
+    result = true;
+  }
+
+  return result;
+
+  async function postSomeTransactions(transactions: PlayerTransaction[][]) {
+    try {
+      await postTransactionsHelper(transactions, uid);
+    } catch (error) {
+      logger.error("Error in processTransactionsForSameDayChanges()", error);
+      logger.error("Available Add Candidates object: ", {
+        topAvailablePlayerCandidates,
+      });
+      logger.error("Transactions object: ", { transactions });
+      logger.error("Original teams object: ", { teams });
+      // continue the function even if posting transactions fails, we can still proceed to optimize lineup
+    }
+  }
+
+  async function putAllLineupChanges(lineupChanges: LineupChanges[]) {
     try {
       await putLineupChanges(lineupChanges, uid);
     } catch (error) {
@@ -319,39 +349,34 @@ async function processPlayerTransactions(
       logger.error("Original teams object: ", { teams });
       throw error;
     }
-    result = true;
   }
-
-  if (transactions) {
-    try {
-      await postAllTransactions(transactions, uid);
-    } catch (error) {
-      logger.error("Error in processTransactionsForSameDayChanges()", error);
-      logger.error("Available Add Candidates object: ", {
-        topAvailablePlayerCandidates,
-      });
-      logger.error("Transactions object: ", { transactions });
-      logger.error("Original teams object: ", { teams });
-      // continue the function even if posting transactions fails, we can still proceed to optimize lineup
-    }
-    result = true;
-  }
-
-  return result;
 }
 
 async function createPlayersTransactions(
   teams: ITeamOptimizer[],
   allAddCandidates: TopAvailablePlayers
-): Promise<[LineupChanges[] | null, PlayerTransaction[][] | null]> {
-  const allPlayerTransactions: PlayerTransaction[][] = [];
+): Promise<
+  [
+    PlayerTransaction[][] | null,
+    LineupChanges[] | null,
+    PlayerTransaction[][] | null
+  ]
+> {
+  const dropPlayerTransactions: PlayerTransaction[][] = [];
+  const addSwapPlayerTransactions: PlayerTransaction[][] = [];
   const allLineupChanges: LineupChanges[] = [];
 
   for (const team of teams) {
     const lo = new LineupOptimizer(team);
 
+    let dpt: PlayerTransaction[] | null;
     if (team.allow_dropping) {
       lo.generateDropPlayerTransactions();
+
+      dpt = lo.playerTransactions;
+      if (dpt) {
+        dropPlayerTransactions.push(dpt);
+      }
     }
 
     const addCandidates: IPlayer[] = allAddCandidates[team.team_key];
@@ -365,26 +390,30 @@ async function createPlayersTransactions(
       if (team.allow_add_drops) {
         lo.generateSwapPlayerTransactions();
       }
+
+      // filter out any add transactions that are already in drop transactions by comparing the reason field
+      const pt: PlayerTransaction[] | undefined = lo.playerTransactions?.filter(
+        (pt) => !dpt?.some((dpt) => dpt.reason === pt.reason)
+      );
+      if (pt) {
+        addSwapPlayerTransactions.push(pt);
+      }
     }
 
     const lc: LineupChanges | null = lo.lineupChanges;
     if (lc) {
       allLineupChanges.push(lc);
     }
-
-    const pt: PlayerTransaction[] | null = lo.playerTransactions;
-    if (pt) {
-      allPlayerTransactions.push(pt);
-    }
   }
 
   return [
+    dropPlayerTransactions.length > 0 ? dropPlayerTransactions : null,
     allLineupChanges.length > 0 ? allLineupChanges : null,
-    allPlayerTransactions.length > 0 ? allPlayerTransactions : null,
+    addSwapPlayerTransactions.length > 0 ? addSwapPlayerTransactions : null,
   ];
 }
 
-async function postAllTransactions(
+async function postTransactionsHelper(
   playerTransactions: PlayerTransaction[][],
   uid: string
 ): Promise<void> {
@@ -403,7 +432,9 @@ async function postAllTransactions(
     } else if (result.status === "rejected") {
       error = true;
       logger.error(
-        `Error in postAllTransactions() for User: ${uid}: ${result.reason}`
+        `Error in postAllTransactions() for User: ${uid}: ${JSON.stringify(
+          result.reason
+        )}`
       );
     }
   });

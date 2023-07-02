@@ -997,6 +997,147 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
   });
 
+  it.only("should drop one player to make room for healthy on IL, post the lineup changes, then perform some swaps", async () => {
+    const uid = "testUID";
+    const teams = [
+      {
+        team_key: "422.l.115494.t.4",
+        allow_dropping: true,
+        allow_adding: true,
+        allow_add_drops: true,
+        allow_waiver_adds: true,
+        game_code: "MLB",
+      },
+    ];
+    const transactions = [
+      {
+        teamKey: "422.l.115494.t.4",
+        sameDayTransactions: true,
+        reason:
+          "Dropping Brendan Donovan to make room for Kris Bryant coming back from injury.",
+        players: [
+          {
+            playerKey: "422.p.12351",
+            transactionType: "drop",
+            isInactiveList: false,
+          },
+        ],
+      },
+      {
+        teamKey: "422.l.115494.t.4",
+        sameDayTransactions: true,
+        reason:
+          "Adding Bobby Miller (SP, P, BN) [54.79] and dropping Kris Bryant (OF, Util, BN) [29.83].",
+        isFaabRequired: true,
+        players: [
+          {
+            playerKey: "422.p.12037",
+            transactionType: "add",
+            isInactiveList: false,
+            isFromWaivers: true,
+          },
+          {
+            playerKey: "422.p.9558",
+            transactionType: "drop",
+            isInactiveList: false,
+          },
+        ],
+      },
+      {
+        teamKey: "422.l.115494.t.4",
+        sameDayTransactions: true,
+        reason:
+          "Adding José Alvarado (RP, P, BN) [30.87] and dropping Josh Sborz (RP, P, BN) [15.81].",
+        isFaabRequired: true,
+        players: [
+          {
+            playerKey: "422.p.10692",
+            transactionType: "add",
+            isInactiveList: false,
+            isFromWaivers: true,
+          },
+          {
+            playerKey: "422.p.11214",
+            transactionType: "drop",
+            isInactiveList: false,
+          },
+        ],
+      },
+    ];
+
+    const dropPlayerLineupChanges: LineupChanges[] = [
+      {
+        coveragePeriod: "2023-06-30",
+        coverageType: "date",
+        newPlayerPositions: {
+          "422.p.9558": "BN",
+        },
+        teamKey: "422.l.115494.t.4",
+      },
+    ];
+
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+
+    const initialRosters: ITeamOptimizer[] = [
+      require("./problematicAddDrop/moveILtoBN-lineup.json"),
+    ];
+    const updatedRosters: ITeamOptimizer[] = [
+      require("./problematicAddDrop/moveILtoBN-lineup2.json"),
+    ];
+
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(updatedRosters);
+    });
+
+    const spyFetchTopAvailablePlayers = vi.spyOn(
+      TopAvailablePlayersService,
+      "fetchTopAvailablePlayersFromYahoo"
+    );
+    const topAvailablePlayersPromise = require("./problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(topAvailablePlayersPromise);
+    });
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve({});
+    });
+
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchTopAvailablePlayers).toHaveBeenCalledTimes(2);
+
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(3);
+    for (const transaction of transactions) {
+      expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
+        transaction,
+        uid
+      );
+    }
+
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(2);
+    expect(spyPutLineupChanges).toHaveBeenCalledWith(
+      dropPlayerLineupChanges,
+      uid
+    );
+  });
+
   it("should add one player and then move them to the active roster (Next Day)", async () => {
     const uid = "testUID";
     const teams = [
@@ -1188,6 +1329,7 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
       is_subscribed: false,
       is_setting_lineups: false,
       last_updated: Date.now(),
+      optimization_level: 2,
       allow_transactions: false,
       allow_dropping: false,
       allow_adding: false,
