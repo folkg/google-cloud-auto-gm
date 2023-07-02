@@ -965,14 +965,14 @@ export class LineupOptimizer {
    */
   public isSuccessfullyOptimized(): boolean {
     let result = true;
-    result = this.checkForUnfilledRosterPositions() && result;
-    result = this.checkForOverfilledRosterPositions() && result;
-    result = this.checkForIllegallyMovedPlayers() && result;
-    result = this.checkForSuboptimalLineup() && result;
+    result = this.hasNoUnfilledRosterPositions() && result;
+    result = this.hasNoOverfilledRosterPositions() && result;
+    result = this.hasNoIllegallyMovedPlayers() && result;
+    result = this.hasOptimalLineup() && result;
     return result;
   }
 
-  private checkForUnfilledRosterPositions(): boolean {
+  private hasNoUnfilledRosterPositions(): boolean {
     const unfilledActiveRosterPositions = this.team.unfilledStartingPositions;
     const reservePlayersEligibleForUnfilledPositions = this.team.reservePlayers
       .filter(
@@ -998,7 +998,7 @@ export class LineupOptimizer {
     return true;
   }
 
-  private checkForOverfilledRosterPositions(): boolean {
+  private hasNoOverfilledRosterPositions(): boolean {
     const overfilledPositions = this.team.overfilledPositions;
     if (overfilledPositions.length > 0) {
       logger.error(
@@ -1013,11 +1013,11 @@ export class LineupOptimizer {
 
   private isRosterLegal(): boolean {
     return (
-      this.team.illegalPlayers.length > 0 ||
-      this.checkForOverfilledRosterPositions()
+      this.team.illegalPlayers.length === 0 &&
+      this.hasNoOverfilledRosterPositions()
     );
   }
-  private checkForIllegallyMovedPlayers(): boolean {
+  private hasNoIllegallyMovedPlayers(): boolean {
     const illegallyMovedPlayers = Object.keys(this.deltaPlayerPositions).filter(
       (movedPlayerKey) =>
         this.team.illegalPlayers.some(
@@ -1034,7 +1034,7 @@ export class LineupOptimizer {
     }
     return true;
   }
-  private checkForSuboptimalLineup(): boolean {
+  private hasOptimalLineup(): boolean {
     const suboptimalBNPlayers = this.team.reservePlayers
       .filter((reservePlayer) =>
         this.team.startingPlayers.some((startingPlayer) =>

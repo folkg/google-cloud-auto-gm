@@ -1260,4 +1260,19 @@ describe.concurrent("Combination Drops or Adds", () => {
       }
     }
   });
+
+  it.only("should not attempt swaps because the lineup is illegal (healthy on IL)", () => {
+    const roster: ITeamOptimizer = require("./problematicAddDrop/healthyOnILShouldBeIllegal-lineup.json");
+    const lo = new LineupOptimizer(roster);
+    lo.verbose = true;
+    lo.addCandidates = require("./problematicAddDrop/healthyOnILShouldBeIllegal-only-addcandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    lo.generateSwapPlayerTransactions();
+    const lineupChanges = lo.lineupChanges;
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toEqual(null);
+    expect(lineupChanges).toEqual(null);
+  });
 });
