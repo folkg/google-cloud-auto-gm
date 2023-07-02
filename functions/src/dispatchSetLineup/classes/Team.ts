@@ -420,8 +420,6 @@ export class Team extends PlayerCollection implements Team {
   }
 
   private getValidPlayerKeysWithEligiblePositions(): string[][] {
-    // TODO: Do we want to exclude players on IL fromt he count? Might get hard to manage with swapping on/off IL
-    // get all eligible positions for all players on roster, minus pending drops, plus pending adds
     return this.players
       .filter(
         (player) =>
@@ -446,7 +444,7 @@ export class Team extends PlayerCollection implements Team {
           if (isCompoundPosition) {
             const childPositions: string[] = compoundPositions[position];
             childPositions.forEach((childPosition) => {
-              acc[position] += this.roster_positions[childPosition];
+              acc[position] += this.roster_positions[childPosition] ?? 0;
             });
           }
         }

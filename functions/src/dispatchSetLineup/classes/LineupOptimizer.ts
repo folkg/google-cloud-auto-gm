@@ -448,7 +448,7 @@ export class LineupOptimizer {
 
   private preprocessAddCandidates(addCandidates: Player[]): Player[] {
     let result = this.filterForUnderfilledPositions(addCandidates);
-    result = this.filterForOverMaxCapPositions(result);
+    result = this.filterOutOverMaxCapPositions(result);
     result = this.addBonusForCriticalPositions(result);
     return PlayerCollection.sortDescendingByOwnershipScore(result);
   }
@@ -462,10 +462,10 @@ export class LineupOptimizer {
     return filtered.length === 0 ? addCandidates : filtered;
   }
 
-  private filterForOverMaxCapPositions(addCandidates: Player[]): Player[] {
+  private filterOutOverMaxCapPositions(addCandidates: Player[]): Player[] {
     const overMaxCapPositions: string[] = this.team.atMaxCapPositions;
-    const filtered = addCandidates.filter((player) =>
-      player.isEligibleForAnyPositionIn(overMaxCapPositions)
+    const filtered = addCandidates.filter(
+      (player) => !player.isEligibleForAnyPositionIn(overMaxCapPositions)
     );
 
     return filtered.length === 0 ? addCandidates : filtered;
@@ -480,7 +480,6 @@ export class LineupOptimizer {
 
     return addCandidates.map((player) => {
       if (player.isEligibleForAnyPositionIn(criticalPositions)) {
-        // const playerCopy = structuredClone(player);
         const playerCopy = new Player(player);
         playerCopy.ownership_score += 5;
         return playerCopy;

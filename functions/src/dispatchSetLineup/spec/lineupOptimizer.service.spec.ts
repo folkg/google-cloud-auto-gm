@@ -997,7 +997,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     );
   });
 
-  it.only("should drop one player to make room for healthy on IL, post the lineup changes, then perform some swaps", async () => {
+  it("should drop one player to make room for healthy on IL, post the lineup changes, then perform some swaps", async () => {
     const uid = "testUID";
     const teams = [
       {

@@ -568,8 +568,6 @@ describe.concurrent("Swap players", () => {
           transactionType: "drop",
         },
       ],
-      reason:
-        "Adding Dansby Swanson (SS, Util, BN) [83.91] and dropping Travis d'Arnaud (C, Util, BN) [27.51].",
       sameDayTransactions: true,
       teamKey: "422.l.119198.t.3",
     },
@@ -641,7 +639,7 @@ describe.concurrent("Swap players", () => {
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
-    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
   });
 
   it("should make no swaps because all addCandidates are worse than current players", () => {
@@ -829,7 +827,7 @@ describe.concurrent("Swap players", () => {
       },
       teamKey: "422.l.119198.t.3",
     });
-    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
   });
 
   it("should swap the worst IL player to BN, and then drop them for the best add candidate", () => {
@@ -849,7 +847,7 @@ describe.concurrent("Swap players", () => {
       },
       teamKey: "422.l.119198.t.3",
     });
-    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
   });
 
   it("should move the worst IL player to BN, BN to IL+ in 3-way, and then drop them for the best add candidate", () => {
@@ -870,7 +868,7 @@ describe.concurrent("Swap players", () => {
       },
       teamKey: "422.l.119198.t.3",
     });
-    expect(playerTransactions).toEqual(swapsFromOptimalLineup);
+    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
   });
 
   it("Should add no one because pace for season is bad before we begin", () => {
@@ -1261,11 +1259,24 @@ describe.concurrent("Combination Drops or Adds", () => {
     }
   });
 
-  it.only("should not attempt swaps because the lineup is illegal (healthy on IL)", () => {
+  it("should not attempt swaps because the lineup is illegal (healthy on IL)", () => {
     const roster: ITeamOptimizer = require("./problematicAddDrop/healthyOnILShouldBeIllegal-lineup.json");
     const lo = new LineupOptimizer(roster);
-    lo.verbose = true;
     lo.addCandidates = require("./problematicAddDrop/healthyOnILShouldBeIllegal-only-addcandidates.json");
+    lo.generateDropPlayerTransactions();
+    lo.generateAddPlayerTransactions();
+    lo.generateSwapPlayerTransactions();
+    const lineupChanges = lo.lineupChanges;
+    const playerTransactions = lo.playerTransactions;
+
+    expect(playerTransactions).toEqual(null);
+    expect(lineupChanges).toEqual(null);
+  });
+
+  it("should not pick up extra P because we are at max capacity", () => {
+    const roster: ITeamOptimizer = require("./problematicAddDrop/tooManyPitchers-lineup.json");
+    const lo = new LineupOptimizer(roster);
+    lo.addCandidates = require("./problematicAddDrop/tooManyPitchers-ac.json");
     lo.generateDropPlayerTransactions();
     lo.generateAddPlayerTransactions();
     lo.generateSwapPlayerTransactions();

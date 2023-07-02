@@ -6,7 +6,7 @@
     {
       "player_key": "422.p.9096",
       "player_name": "Travis d'Arnaud",
-      "eligible_positions": ["C", "Util", "BN"],
+      "eligible_positions": ["C", "Util", "BN", "IL"],
       "selected_position": "IL",
       "is_editable": true,
       "is_playing": true,
@@ -90,7 +90,7 @@
     {
       "player_key": "422.p.10923",
       "player_name": "Thairo Estrada",
-      "eligible_positions": ["2B", "SS", "OF", "Util", "BN"],
+      "eligible_positions": ["2B", "SS", "OF", "Util", "C", "BN"],
       "selected_position": "SS",
       "is_editable": true,
       "is_playing": true,
