@@ -183,6 +183,21 @@ export async function getActiveTeamsForLeagues(leagues: string[]) {
   return result;
 }
 
+export async function getActiveTeamsForUser(uid: string) {
+  let result: QuerySnapshot<DocumentData>;
+  try {
+    const teamsRef = db.collection(`users/${uid}/teams`);
+    result = await teamsRef
+      .where("is_subscribed", "==", true)
+      .where("end_date", ">=", Date.now())
+      .get();
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  return result;
+}
+
 /**
  * Fetches all teams from Firestore for the user that are actively setting
  * lineups, allow transactions, and have a weekly deadline
