@@ -26,6 +26,13 @@ interface OptionsTeam {
   allow_adding: boolean;
   allow_add_drops: boolean;
   allow_waiver_adds: boolean;
+  optimization_level: OptimizationLevel;
+}
+
+export enum OptimizationLevel {
+  Low = 0,
+  Partial = 1,
+  Full = 2,
 }
 
 export interface ITeamFirestore extends CommonTeam, OptionsTeam {
@@ -98,12 +105,14 @@ export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
     end_date: team.end_date,
     weekly_deadline: team.weekly_deadline,
   };
+  // TODO: Eventually move these options into the ITeamAngular interface since they will be user configurable
   const optionsTeam: OptionsTeam = {
     allow_transactions: false,
     allow_dropping: false,
     allow_adding: false,
     allow_add_drops: false,
     allow_waiver_adds: false,
+    optimization_level: OptimizationLevel.Full,
   };
 
   return {

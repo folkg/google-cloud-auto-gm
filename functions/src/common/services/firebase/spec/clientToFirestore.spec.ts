@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { ITeamAngular, yahooToFirestore } from "../../../interfaces/ITeam.js";
+import {
+  ITeamAngular,
+  OptimizationLevel,
+  yahooToFirestore,
+} from "../../../interfaces/ITeam.js";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -66,6 +70,7 @@ describe("clientToFirestore", () => {
     allow_add_drops: false,
     allow_transactions: false,
     allow_waiver_adds: false,
+    optimization_level: OptimizationLevel.Full,
   };
 
   it("should convert a teamclient object to a teamFirestore object", () => {

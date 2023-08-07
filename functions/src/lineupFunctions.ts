@@ -61,6 +61,7 @@ export const testsetlineups = onRequest(async (_req, res) => {
     allow_adding: true,
     allow_add_drops: true,
     allow_waiver_adds: true,
+    optimization_level: 2,
     start_date: 1,
     end_date: Number.MAX_SAFE_INTEGER,
     weekly_deadline: "2021-04-01",
