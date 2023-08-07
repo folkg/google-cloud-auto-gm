@@ -811,10 +811,22 @@ export class LineupOptimizer {
     if (playerToDrop === playerToOpenSpotFor) return;
     if (!playerToDrop.ownership_score) return; // in case of Yahoo API error
 
+    const reason = `Dropping ${
+      playerToDrop.player_name
+    } (${playerToDrop.eligible_positions.join(
+      ", "
+    )}) [${playerToDrop.ownership_score.toFixed(2)}] to make room for ${
+      playerToOpenSpotFor.player_name
+    } (${playerToOpenSpotFor.eligible_positions.join(
+      ", "
+    )}) [${playerToOpenSpotFor.ownership_score.toFixed(
+      2
+    )}] coming back from injury.`;
+
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
-      reason: `Dropping ${playerToDrop.player_name} to make room for ${playerToOpenSpotFor.player_name} coming back from injury.`,
+      reason,
       players: [
         {
           playerKey: playerToDrop.player_key,

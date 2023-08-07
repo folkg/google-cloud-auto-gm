@@ -1018,7 +1018,7 @@ describe.concurrent("Combination Drops or Adds", () => {
               "transactionType": "drop",
             },
           ],
-          "reason": "Dropping Alex Cobb to make room for Jordan Montgomery2 coming back from injury.",
+          "reason": "Dropping Alex Cobb (SP, P, BN) [27.88] to make room for Jordan Montgomery2 (SP, P, BN) [68.37] coming back from injury.",
           "sameDayTransactions": true,
           "teamKey": "422.l.119198.t.3",
         },

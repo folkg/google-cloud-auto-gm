@@ -204,7 +204,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
+        "Dropping Nick Suzuki (C, BN) [23.08] to make room for Kevin Fiala (LW, RW, BN) [94.87] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -217,7 +217,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Barrett Hayton to make room for Kevin Fiala2 coming back from injury.",
+        "Dropping Barrett Hayton (C, BN) [25.46] to make room for Kevin Fiala2 (LW, RW, BN) [94.87] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -309,7 +309,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Samuel Girard to make room for Kirill Kaprizov coming back from injury.",
+        "Dropping Samuel Girard (D, Util, BN) [16.10] to make room for Kirill Kaprizov (LW, Util, BN) [82.41] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.28340.t.1",
     };
@@ -373,7 +373,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Samuel Girard to make room for Kirill Kaprizov coming back from injury.",
+        "Dropping Samuel Girard (D, Util, BN) [16.10] to make room for Kirill Kaprizov (LW, Util, BN) [82.41] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.28340.t.1",
     };
@@ -486,7 +486,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Mitchell Robinson to make room for Zion Williamson coming back from injury.",
+        "Dropping Mitchell Robinson (C, Util, BN) [33.21] to make room for Zion Williamson (PF, F, C, Util, BN) [65.91] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "418.l.201581.t.1",
     };
@@ -577,7 +577,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
+        "Dropping Nick Suzuki (C, BN) [23.08] to make room for Kevin Fiala (LW, RW, BN) [94.87] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -590,7 +590,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Barrett Hayton to make room for Kevin Fiala2 coming back from injury.",
+        "Dropping Barrett Hayton (C, BN) [25.46] to make room for Kevin Fiala2 (LW, RW, BN) [94.87] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -603,7 +603,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         },
       ],
       reason:
-        "Dropping Samuel Girard to make room for Kirill Kaprizov coming back from injury.",
+        "Dropping Samuel Girard (D, Util, BN) [16.10] to make room for Kirill Kaprizov (LW, Util, BN) [82.41] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.28340.t.1",
     };
@@ -1014,7 +1014,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         teamKey: "422.l.115494.t.4",
         sameDayTransactions: true,
         reason:
-          "Dropping Brendan Donovan to make room for Kris Bryant coming back from injury.",
+          "Dropping Brendan Donovan (1B, 2B, 3B, SS, OF, Util, BN) [29.29] to make room for Kris Bryant (OF, Util, BN) [29.83] coming back from injury.",
         players: [
           {
             playerKey: "422.p.12351",
@@ -1357,7 +1357,7 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
         },
       ],
       reason:
-        "Dropping Mitchell Robinson to make room for Zion Williamson coming back from injury.",
+        "Dropping Mitchell Robinson (C, Util, BN) [33.21] to make room for Zion Williamson (PF, F, C, Util, BN) [65.91] coming back from injury.",
       sameDayTransactions: false,
       teamKey: "418.l.201581.t.1",
     };
@@ -1370,7 +1370,7 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
         },
       ],
       reason:
-        "Dropping Mitchell Robinson to make room for Zion Williamson coming back from injury.",
+        "Dropping Mitchell Robinson (C, Util, BN) [33.21] to make room for Zion Williamson (PF, F, C, Util, BN) [65.91] coming back from injury.",
       sameDayTransactions: false,
       teamKey: "418.l.201581.t.1",
     };
@@ -1485,7 +1485,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
         },
       ],
       reason:
-        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
+        "Dropping Nick Suzuki (C, BN) [23.08] to make room for Kevin Fiala (LW, RW, BN) [94.87] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -1498,7 +1498,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
         },
       ],
       reason:
-        "Dropping Barrett Hayton to make room for Kevin Fiala2 coming back from injury.",
+        "Dropping Barrett Hayton (C, BN) [25.46] to make room for Kevin Fiala2 (LW, RW, BN) [94.87] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
@@ -1627,7 +1627,7 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
         },
       ],
       reason:
-        "Dropping Nick Suzuki to make room for Kevin Fiala coming back from injury.",
+        "Dropping Nick Suzuki (C, BN) [23.08] to make room for Kevin Fiala (LW, RW, BN) [94.87] coming back from injury.",
       sameDayTransactions: true,
       teamKey: "419.l.19947.t.6",
     };
