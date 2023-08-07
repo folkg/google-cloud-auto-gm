@@ -69,8 +69,8 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
 
   // Fetch player transactions for today and tomorrow in parallel
   const [todays, tomorrows] = await Promise.all([
-    getPlayerTransactionsFor(uid, intradayTeams),
-    getPlayerTransactionsFor(uid, nextDayTeams, tomorrowsDateAsString()),
+    getPlayerTransactionsForDate(uid, intradayTeams),
+    getPlayerTransactionsForDate(uid, nextDayTeams, tomorrowsDateAsString()),
   ]);
 
   const dropPlayerTransactions = [
@@ -96,12 +96,13 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
 }
 
 export async function postTransactions(
-  dropPlayerTransactions: PlayerTransaction[][] | null,
-  lineupChanges: LineupChanges[] | null,
-  addSwapTransactions: PlayerTransaction[][] | null,
+  transactionData: TransctionsData,
   uid: string
 ): Promise<boolean> {
   let result = false;
+
+  const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
+    transactionData;
 
   if (dropPlayerTransactions) {
     // any dropped players need to be processed before healthy players on IL are moved to BN with lineupChanges
@@ -145,19 +146,13 @@ export async function postTransactions(
   }
 }
 
-export async function getPlayerTransactionsFor(
+export async function getPlayerTransactionsForDate(
   uid: string,
   firestoreTeams: ITeamFirestore[],
   date?: string
 ): Promise<TransctionsData> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
-
-  const [
-    topAvailablePlayersPromise,
-    nflTopAvailablePlayersPromise,
-    restTopAvailablePlayersPromise,
-  ] = generateTopAvailablePlayerPromises(firestoreTeams, uid);
 
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid, date);
@@ -169,6 +164,25 @@ export async function getPlayerTransactionsFor(
     };
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
+
+  return await getPlayerTransactionsForTeams(usersTeams, firestoreTeams, uid);
+}
+
+export async function getPlayerTransactionsForTeams(
+  usersTeams: ITeamOptimizer[],
+  firestoreTeams: ITeamFirestore[],
+  uid: string
+) {
+  // TODO: Do we want to initiate the promises here, or earlier in the call stack before we know usersTeams.length > 0?
+  // Pro: We can get the top available players while we wait for the usersTeamsPromise to resolve
+  // Con: We are initiating a bunch of promises that we may not need, using up API calls
+
+  // TODO: Check pace before fetching add candidates? Could check each team inside the following function
+  const [
+    topAvailablePlayersPromise,
+    nflTopAvailablePlayersPromise,
+    restTopAvailablePlayersPromise,
+  ] = generateTopAvailablePlayerPromises(firestoreTeams, uid);
 
   const topAvailablePlayerCandidates: TopAvailablePlayers =
     await mergeTopAvailabePlayers(
@@ -207,7 +221,7 @@ function enrichTeamsWithFirestoreSettings(
   });
 }
 
-async function createPlayersTransactions(
+export async function createPlayersTransactions(
   teams: ITeamOptimizer[],
   allAddCandidates: TopAvailablePlayers
 ): Promise<

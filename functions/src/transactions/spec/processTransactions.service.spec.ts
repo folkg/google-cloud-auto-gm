@@ -2,9 +2,9 @@ import { vi, describe, it, test, expect } from "vitest";
 import {
   generateTopAvailablePlayerPromises,
   mergeTopAvailabePlayers,
-} from "../services/setLineups.service";
+} from "../services/processTransactions.service";
 import { ITeamFirestore } from "../../common/interfaces/ITeam";
-import * as yahooTopAvailablePlayersBuilder from "../services/yahooTopAvailablePlayersBuilder.service";
+import * as yahooTopAvailablePlayersBuilder from "../../dispatchSetLineup/services/yahooTopAvailablePlayersBuilder.service";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -18,12 +18,14 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
+describe.todo("test getTransactions and postTransactions functions");
+
 describe.concurrent("test mergeTopAvailabePlayers function", () => {
   test("four MLB teams", async () => {
-    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/topAvailablePlayersPromise1.json");
-    const nflTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/nflTopAvailablePlayersPromise1.json");
-    const restTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
-    const expectedOutput = require("./topAvailablePlayers/output/output1.json");
+    const topAvailablePlayersPromise = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise1.json");
+    const nflTopAvailablePlayersPromise = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/nflTopAvailablePlayersPromise1.json");
+    const restTopAvailablePlayersPromise = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
+    const expectedOutput = require("../../dispatchSetLineup/spec/topAvailablePlayers/output/output1.json");
 
     const result = await mergeTopAvailabePlayers(
       topAvailablePlayersPromise,

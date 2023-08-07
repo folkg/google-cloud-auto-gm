@@ -2,7 +2,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 import {
   getTransactions,
   postTransactions,
-} from "./services/processTransactions.js";
+} from "./services/processTransactions.service.js";
 
 export const getransactions = onCall(async (request) => {
   const uid = request.auth?.uid;
@@ -24,19 +24,13 @@ export const posttransactions = onCall(async (request) => {
     );
   }
 
-  const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
-    request.data.transactions;
-  if (!dropPlayerTransactions || !lineupChanges || !addSwapTransactions) {
+  const transactions = request.data.transactions;
+  if (!transactions) {
     throw new HttpsError(
       "invalid-argument",
       "You must provide dropPlayerTransactions, lineupChanges, and addSwapTransactions"
     );
   }
 
-  return await postTransactions(
-    dropPlayerTransactions,
-    lineupChanges,
-    addSwapTransactions,
-    uid
-  );
+  return await postTransactions(transactions, uid);
 });
