@@ -24,6 +24,7 @@ import {
   TopAvailablePlayers,
   fetchTopAvailablePlayersFromYahoo,
 } from "../../dispatchSetLineup/services/yahooTopAvailablePlayersBuilder.service.js";
+import { enrichTeamsWithFirestoreSettings } from "../../dispatchSetLineup/services/setLineups.service.js";
 
 type TransctionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
@@ -67,26 +68,34 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
       team.weekly_deadline === (getCurrentPacificNumDay() + 1).toString()
   );
 
-  // Fetch player transactions for today and tomorrow in parallel
+  const topAvailablePlayerCandidates: TopAvailablePlayers =
+    await getTopAvailablePlayers(firestoreTeams, uid);
+
   const [todays, tomorrows] = await Promise.all([
-    getPlayerTransactionsForDate(uid, intradayTeams),
-    getPlayerTransactionsForDate(uid, nextDayTeams, tomorrowsDateAsString()),
+    getPlayerTransactionsForDate(
+      uid,
+      intradayTeams,
+      topAvailablePlayerCandidates
+    ),
+    getPlayerTransactionsForDate(
+      uid,
+      nextDayTeams,
+      topAvailablePlayerCandidates,
+      tomorrowsDateAsString()
+    ),
   ]);
 
-  const dropPlayerTransactions = [
-    ...(todays.dropPlayerTransactions ?? []),
-    ...(tomorrows.dropPlayerTransactions ?? []),
-  ];
+  const dropPlayerTransactions = (todays.dropPlayerTransactions ?? []).concat(
+    tomorrows.dropPlayerTransactions ?? []
+  );
 
-  const lineupChanges = [
-    ...(todays.lineupChanges ?? []),
-    ...(tomorrows.lineupChanges ?? []),
-  ];
+  const lineupChanges = (todays.lineupChanges ?? []).concat(
+    tomorrows.lineupChanges ?? []
+  );
 
-  const addSwapTransactions = [
-    ...(todays.addSwapTransactions ?? []),
-    ...(tomorrows.addSwapTransactions ?? []),
-  ];
+  const addSwapTransactions = (todays.addSwapTransactions ?? []).concat(
+    tomorrows.addSwapTransactions ?? []
+  );
 
   return {
     dropPlayerTransactions,
@@ -127,10 +136,9 @@ export async function postTransactions(
     try {
       await postTransactionsHelper(transactions, uid);
     } catch (error) {
-      logger.error("Error in processTransactionsForSameDayChanges()", error);
+      logger.error("Error in postSomeTransactions()", error);
       logger.error("Transactions object: ", { transactions });
-      //   logger.error("Original teams object: ", { teams });
-      // continue the function even if posting transactions fails, we can still proceed to optimize lineup
+      throw error;
     }
   }
 
@@ -138,17 +146,17 @@ export async function postTransactions(
     try {
       await putLineupChanges(lineupChanges, uid);
     } catch (error) {
-      logger.error("Error in processTransactionsForSameDayChanges()", error);
+      logger.error("Error in putAllLineupChanges()", error);
       logger.error("Lineup changes object: ", { lineupChanges });
-      //   logger.error("Original teams object: ", { teams });
       throw error;
     }
   }
 }
 
-export async function getPlayerTransactionsForDate(
+async function getPlayerTransactionsForDate(
   uid: string,
   firestoreTeams: ITeamFirestore[],
+  topAvailablePlayerCandidates: TopAvailablePlayers,
   date?: string
 ): Promise<TransctionsData> {
   assert(uid, "No uid provided");
@@ -165,11 +173,17 @@ export async function getPlayerTransactionsForDate(
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
 
-  return await getPlayerTransactionsForTeams(usersTeams, firestoreTeams, uid);
+  const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
+    await createPlayersTransactions(usersTeams, topAvailablePlayerCandidates);
+
+  return {
+    dropPlayerTransactions,
+    lineupChanges,
+    addSwapTransactions,
+  };
 }
 
-export async function getPlayerTransactionsForTeams(
-  usersTeams: ITeamOptimizer[],
+export async function getTopAvailablePlayers(
   firestoreTeams: ITeamFirestore[],
   uid: string
 ) {
@@ -178,6 +192,7 @@ export async function getPlayerTransactionsForTeams(
   // Con: We are initiating a bunch of promises that we may not need, using up API calls
 
   // TODO: Check pace before fetching add candidates? Could check each team inside the following function
+
   const [
     topAvailablePlayersPromise,
     nflTopAvailablePlayersPromise,
@@ -190,35 +205,7 @@ export async function getPlayerTransactionsForTeams(
       nflTopAvailablePlayersPromise,
       restTopAvailablePlayersPromise
     );
-
-  const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
-    await createPlayersTransactions(usersTeams, topAvailablePlayerCandidates);
-
-  return {
-    dropPlayerTransactions,
-    lineupChanges,
-    addSwapTransactions,
-  };
-}
-
-function enrichTeamsWithFirestoreSettings(
-  yahooTeams: ITeamOptimizer[],
-  firestoreTeams: ITeamFirestore[]
-): ITeamOptimizer[] {
-  return yahooTeams.map((yahooTeam) => {
-    const firestoreTeam = firestoreTeams.find(
-      (firestoreTeam) => firestoreTeam.team_key === yahooTeam.team_key
-    );
-
-    return {
-      allow_adding: firestoreTeam?.allow_adding ?? false,
-      allow_dropping: firestoreTeam?.allow_dropping ?? false,
-      allow_add_drops: firestoreTeam?.allow_add_drops ?? false,
-      allow_waiver_adds: firestoreTeam?.allow_waiver_adds ?? false,
-      allow_transactions: firestoreTeam?.allow_transactions ?? false,
-      ...yahooTeam,
-    };
-  });
+  return topAvailablePlayerCandidates;
 }
 
 export async function createPlayersTransactions(
