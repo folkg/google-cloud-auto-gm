@@ -251,6 +251,8 @@ export class LineupOptimizer {
           isFromWaivers: playerToAdd.ownership?.ownership_type === "waivers",
         },
       ],
+      teamName: this.team.team_name,
+      leagueName: this.team.league_name,
     };
     this._playerTransactions.addTransaction(pt);
 
@@ -433,6 +435,8 @@ export class LineupOptimizer {
           isInactiveList: false,
         },
       ],
+      teamName: this.team.team_name,
+      leagueName: this.team.league_name,
     };
     this._playerTransactions.addTransaction(pt);
 
@@ -844,6 +848,8 @@ export class LineupOptimizer {
           isInactiveList: playerToDrop.isInactiveList(),
         },
       ],
+      teamName: this.team.team_name,
+      leagueName: this.team.league_name,
     };
     this._playerTransactions.addTransaction(pt);
 

@@ -10,7 +10,6 @@ import { logger } from "firebase-functions";
 import {
   ITeamAngular,
   ITeamFirestore,
-  ITeamOptimizer,
   yahooToFirestore,
 } from "../../interfaces/ITeam.js";
 import { ReturnCredential, Token } from "../../interfaces/credential.js";

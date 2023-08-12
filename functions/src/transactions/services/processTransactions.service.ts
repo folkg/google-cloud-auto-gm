@@ -310,14 +310,18 @@ export function sendSuccessfulTransactionEmail(
   const body = ["The following transactions were processed:"].concat(
     transactionsPosted.map(
       (t) =>
-        `${t.teamKey}: ${t.reason} ${
+        `${t.teamName} (${t.leagueName}): ${t.reason} ${
           t.players.some((p) => p.isFromWaivers)
             ? "(Waiver claim created only)"
             : "(Transaction completed)"
         }`
     )
   );
-  sendUserEmail(uid, "Transactions were Processed!", body);
+  sendUserEmail(
+    uid,
+    "Transactions were Automatically Processed for your Teams",
+    body
+  );
 }
 
 export function sendPotentialTransactionEmail(
@@ -326,8 +330,12 @@ export function sendPotentialTransactionEmail(
 ) {
   const body = [
     "The following transactions have been proposed for your teams:",
-  ].concat(transactionsProposed.map((t) => `${t.teamKey}: ${t.reason}`));
-  sendUserEmail(uid, "Transactions Available for your Teams!", body);
+  ].concat(
+    transactionsProposed.map(
+      (t) => `${t.teamName} (${t.leagueName}): ${t.reason}`
+    )
+  );
+  sendUserEmail(uid, "New Transactions Available for your Teams", body);
 }
 
 function tomorrowsDateAsString(): string {

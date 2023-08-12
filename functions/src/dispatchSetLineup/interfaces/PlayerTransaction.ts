@@ -1,4 +1,6 @@
 export interface PlayerTransaction {
+  teamName: string;
+  leagueName: string;
   teamKey: string;
   sameDayTransactions: boolean;
   reason: string;
