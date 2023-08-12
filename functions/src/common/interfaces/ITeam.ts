@@ -15,6 +15,8 @@ interface YahooTeam extends CommonTeam {
   current_weekly_adds: number;
   current_season_adds: number;
   scoring_type: string;
+  team_name: string;
+  league_name: string;
   max_weekly_adds: number;
   max_season_adds: number;
   waiver_rule: string;
@@ -42,10 +44,8 @@ export interface ITeamAngular extends YahooTeam {
   game_name: string;
   game_season: string;
   game_is_over: boolean;
-  team_name: string;
   team_url: string;
   team_logo: string;
-  league_name: string;
   rank: string | number;
   points_for: string | number;
   points_against: string | number;

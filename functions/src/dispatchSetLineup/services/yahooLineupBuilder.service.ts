@@ -65,6 +65,8 @@ export async function fetchRostersFromYahoo(
       // TODO: Could add max/current adds condtionally as well
       const rosterObject: ITeamOptimizer = {
         team_key: getChild(usersTeam[0], "team_key"),
+        team_name: getChild(usersTeam[0], "name"),
+        league_name: getChild(league, "name"),
         players: players,
         coverage_type: coverageType,
         coverage_period: usersTeamRoster[coverageType],
