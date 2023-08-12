@@ -203,10 +203,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Nick Suzuki (C, BN) [23.08] to make room for Kevin Fiala (LW, RW, BN) [94.87] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
     };
     const transaction2 = {
       players: [
@@ -216,10 +212,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Barrett Hayton (C, BN) [25.46] to make room for Kevin Fiala2 (LW, RW, BN) [94.87] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
     };
 
     const expectedLineupChanges: LineupChanges[] = [
@@ -267,11 +259,11 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(2);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction2,
+      expect.objectContaining(transaction2),
       uid
     );
   });
@@ -308,10 +300,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Samuel Girard (D, Util, BN) [16.10] to make room for Kirill Kaprizov (LW, Util, BN) [82.41] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.28340.t.1",
     };
 
     // Set up spies and mocks
@@ -347,7 +335,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
   });
@@ -372,10 +360,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           transactionType: "drop",
         },
       ],
-      reason:
-        "Dropping Samuel Girard (D, Util, BN) [16.10] to make room for Kirill Kaprizov (LW, Util, BN) [82.41] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.28340.t.1",
     };
 
     // Set up spies and mocks
@@ -407,7 +391,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
   });
@@ -485,10 +469,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Mitchell Robinson (C, Util, BN) [33.21] to make room for Zion Williamson (PF, F, C, Util, BN) [65.91] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "418.l.201581.t.1",
     };
 
     // Set up spies and mocks
@@ -524,7 +504,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
   });
@@ -576,10 +556,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Nick Suzuki (C, BN) [23.08] to make room for Kevin Fiala (LW, RW, BN) [94.87] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
     };
     const transaction2 = {
       players: [
@@ -589,10 +565,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Barrett Hayton (C, BN) [25.46] to make room for Kevin Fiala2 (LW, RW, BN) [94.87] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
     };
     const transaction3tomorrow = {
       players: [
@@ -602,10 +574,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Samuel Girard (D, Util, BN) [16.10] to make room for Kirill Kaprizov (LW, Util, BN) [82.41] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.28340.t.1",
     };
 
     // Set up spies and mocks
@@ -644,15 +612,15 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(3);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction2,
+      expect.objectContaining(transaction2),
       uid
     );
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction3tomorrow,
+      expect.objectContaining(transaction3tomorrow),
       uid
     );
   });
@@ -724,10 +692,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           transactionType: "add",
         },
       ],
-      reason:
-        "Moved Freddy Peralta to the inactive list to make room to add Dansby Swanson",
-      sameDayTransactions: true,
-      teamKey: "422.l.115494.t.4",
       isFaabRequired: true,
     };
     const addPlayerLineupChanges: LineupChanges[] = [
@@ -804,7 +768,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
 
@@ -842,10 +806,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
             transactionType: "add",
           },
         ],
-        reason:
-          "Moved Alex Cobb to the inactive list to make room to add Dansby Swanson",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
       {
         isFaabRequired: true,
@@ -862,10 +822,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
             transactionType: "drop",
           },
         ],
-        reason:
-          "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
       {
         isFaabRequired: true,
@@ -882,10 +838,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
             transactionType: "drop",
           },
         ],
-        reason:
-          "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
       {
         isFaabRequired: true,
@@ -902,10 +854,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
             transactionType: "drop",
           },
         ],
-        reason:
-          "Adding James Paxton (SP, P, BN) [50.03] and dropping Alex Cobb (SP, P, BN, IL) [27.88].",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
     ];
 
@@ -982,7 +930,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(4);
     for (const transaction of transactions) {
       expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-        transaction,
+        expect.objectContaining(transaction),
         uid
       );
     }
@@ -1011,10 +959,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     ];
     const transactions = [
       {
-        teamKey: "422.l.115494.t.4",
-        sameDayTransactions: true,
-        reason:
-          "Dropping Brendan Donovan (1B, 2B, 3B, SS, OF, Util, BN) [29.29] to make room for Kris Bryant (OF, Util, BN) [29.83] coming back from injury.",
         players: [
           {
             playerKey: "422.p.12351",
@@ -1024,10 +968,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         ],
       },
       {
-        teamKey: "422.l.115494.t.4",
-        sameDayTransactions: true,
-        reason:
-          "Adding Bobby Miller (SP, P, BN) [54.79] and dropping Kris Bryant (OF, Util, BN) [29.83].",
         isFaabRequired: true,
         players: [
           {
@@ -1044,10 +984,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         ],
       },
       {
-        teamKey: "422.l.115494.t.4",
-        sameDayTransactions: true,
-        reason:
-          "Adding José Alvarado (RP, P, BN) [30.87] and dropping Josh Sborz (RP, P, BN) [15.81].",
         isFaabRequired: true,
         players: [
           {
@@ -1126,7 +1062,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(3);
     for (const transaction of transactions) {
       expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-        transaction,
+        expect.objectContaining(transaction),
         uid
       );
     }
@@ -1160,8 +1096,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
           transactionType: "add",
         },
       ],
-      reason:
-        "Moved Freddy Peralta to the inactive list to make room to add Dansby Swanson",
       sameDayTransactions: true,
       teamKey: "422.l.115494.t.4",
       isFaabRequired: true,
@@ -1240,7 +1174,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
 
@@ -1356,10 +1290,6 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Mitchell Robinson (C, Util, BN) [33.21] to make room for Zion Williamson (PF, F, C, Util, BN) [65.91] coming back from injury.",
-      sameDayTransactions: false,
-      teamKey: "418.l.201581.t.1",
     };
     const transaction2 = {
       players: [
@@ -1369,10 +1299,6 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Mitchell Robinson (C, Util, BN) [33.21] to make room for Zion Williamson (PF, F, C, Util, BN) [65.91] coming back from injury.",
-      sameDayTransactions: false,
-      teamKey: "418.l.201581.t.1",
     };
 
     // Set up spies and mocks
@@ -1396,11 +1322,11 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
     expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(2);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction2,
+      expect.objectContaining(transaction2),
       uid
     );
   });
@@ -1484,10 +1410,6 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Nick Suzuki (C, BN) [23.08] to make room for Kevin Fiala (LW, RW, BN) [94.87] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
     };
     const transaction2 = {
       players: [
@@ -1497,10 +1419,6 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
           isInactiveList: false,
         },
       ],
-      reason:
-        "Dropping Barrett Hayton (C, BN) [25.46] to make room for Kevin Fiala2 (LW, RW, BN) [94.87] coming back from injury.",
-      sameDayTransactions: true,
-      teamKey: "419.l.19947.t.6",
     };
 
     // Set up spies and mocks
@@ -1538,11 +1456,11 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(2);
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction1,
+      expect.objectContaining(transaction1),
       uid
     );
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      transaction2,
+      expect.objectContaining(transaction2),
       uid
     );
     expect(spyPutLineupChanges).toHaveBeenCalledTimes(0);

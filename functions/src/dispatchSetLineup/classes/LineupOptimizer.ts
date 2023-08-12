@@ -190,7 +190,13 @@ export class LineupOptimizer {
     let playerMovedToIL: Player | null;
     while ((playerMovedToIL = this.openOneRosterSpot()) !== null) {
       reasons.push(
-        `Moved ${playerMovedToIL.player_name} to the inactive list to make room to add`
+        `Moved ${
+          playerMovedToIL.player_name
+        } (${playerMovedToIL.eligible_positions.join(
+          ", "
+        )}) [${playerMovedToIL.ownership_score.toFixed(
+          2
+        )}] to the inactive list to make room to add`
       );
     }
 
@@ -231,7 +237,11 @@ export class LineupOptimizer {
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
-      reason: `${reason} ${playerToAdd.player_name}`,
+      reason: `${reason} ${
+        playerToAdd.player_name
+      } (${playerToAdd.eligible_positions.join(
+        ", "
+      )}) [${playerToAdd.ownership_score.toFixed(2)}]`,
       isFaabRequired: this.team.faab_balance !== -1,
       players: [
         {

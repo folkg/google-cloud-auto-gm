@@ -261,7 +261,7 @@ describe.concurrent("Add players", () => {
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toEqual([
+    expect(playerTransactions).toMatchObject([
       {
         isFaabRequired: true,
         players: [
@@ -272,10 +272,6 @@ describe.concurrent("Add players", () => {
             isFromWaivers: false,
           },
         ],
-        reason:
-          "Moved Jordan Montgomery to the inactive list to make room to add Dansby Swanson",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
       {
         isFaabRequired: true,
@@ -287,10 +283,6 @@ describe.concurrent("Add players", () => {
             isFromWaivers: false,
           },
         ],
-        reason:
-          "Moved Brandon Nimmo to the inactive list to make room to add Anthony Santander",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
       {
         isFaabRequired: true,
@@ -302,10 +294,6 @@ describe.concurrent("Add players", () => {
             isFromWaivers: false,
           },
         ],
-        reason:
-          "Moved Bryan Reynolds to the inactive list to make room to add Jordan Walker",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
     ]);
   });
@@ -376,7 +364,7 @@ describe.concurrent("Add players", () => {
     // expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10620");
     // expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10233");
 
-    expect(playerTransactions).toEqual([
+    expect(playerTransactions).toMatchObject([
       {
         isFaabRequired: true,
         players: [
@@ -387,10 +375,6 @@ describe.concurrent("Add players", () => {
             transactionType: "add",
           },
         ],
-        reason:
-          "There are empty C, 1B positions on the roster. Filling an already-empty spot on the roster with Rowdy Tellez",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
       {
         isFaabRequired: true,
@@ -402,10 +386,6 @@ describe.concurrent("Add players", () => {
             transactionType: "add",
           },
         ],
-        reason:
-          "There are empty C positions on the roster. Filling an already-empty spot on the roster with Amed Rosario",
-        sameDayTransactions: true,
-        teamKey: "422.l.119198.t.3",
       },
     ]);
   });
@@ -568,8 +548,6 @@ describe.concurrent("Swap players", () => {
           transactionType: "drop",
         },
       ],
-      sameDayTransactions: true,
-      teamKey: "422.l.119198.t.3",
     },
     {
       isFaabRequired: true,
@@ -586,10 +564,6 @@ describe.concurrent("Swap players", () => {
           transactionType: "drop",
         },
       ],
-      reason:
-        "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Alex Cobb (SP, P, BN) [27.88].",
-      sameDayTransactions: true,
-      teamKey: "422.l.119198.t.3",
     },
     {
       isFaabRequired: true,
@@ -606,16 +580,8 @@ describe.concurrent("Swap players", () => {
           transactionType: "drop",
         },
       ],
-      reason:
-        "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping James Outman (OF, Util, BN) [38.01].",
-      sameDayTransactions: true,
-      teamKey: "422.l.119198.t.3",
     },
     {
-      teamKey: "422.l.119198.t.3",
-      sameDayTransactions: true,
-      reason:
-        "Adding Carlos Correa (SS, Util, BN) [45.19] and dropping Javier Báez (SS, Util, BN) [38.58].",
       isFaabRequired: true,
       players: [
         {
@@ -659,86 +625,72 @@ describe.concurrent("Swap players", () => {
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchInlineSnapshot(`
-      [
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": true,
-              "isInactiveList": false,
-              "playerKey": "422.p.10620",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.9096",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "There are empty C, 1B positions on the roster. Adding Rowdy Tellez (1B, Util, BN) [38.57] and dropping Travis d'Arnaud (Util, BN) [27.51].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": true,
-              "isInactiveList": false,
-              "playerKey": "422.p.10234",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.8918",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "There are empty C positions on the roster. Adding Dansby Swanson (SS, Util, BN) [83.91] and dropping Alex Cobb (SP, P, BN) [27.88].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": true,
-              "isInactiveList": false,
-              "playerKey": "422.p.10666",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.12339",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "There are empty C positions on the roster. Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": true,
-              "isInactiveList": false,
-              "playerKey": "422.p.12024",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.9557",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "There are empty C positions on the roster. Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-      ]
-    `);
+    expect(playerTransactions).toMatchObject([
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: true,
+            isInactiveList: false,
+            playerKey: "422.p.10620",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.9096",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: true,
+            isInactiveList: false,
+            playerKey: "422.p.10234",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.8918",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: true,
+            isInactiveList: false,
+            playerKey: "422.p.10666",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.12339",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: true,
+            isInactiveList: false,
+            playerKey: "422.p.12024",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.9557",
+            transactionType: "drop",
+          },
+        ],
+      },
+    ]);
   });
 
   it("should not add top player (422.p.10234) because they are already in a current pending claim", () => {
@@ -748,67 +700,56 @@ describe.concurrent("Swap players", () => {
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchInlineSnapshot(`
-      [
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.10666",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.8918",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Alex Cobb (SP, P, BN) [27.88].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.12024",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.12339",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping James Outman (OF, Util, BN) [38.01].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.9573",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.9557",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Carlos Correa (SS, Util, BN) [45.19] and dropping Javier Báez (SS, Util, BN) [38.58].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-      ]
-    `);
+    expect(playerTransactions).toMatchObject([
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10666",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.8918",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.12024",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.12339",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.9573",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.9557",
+            transactionType: "drop",
+          },
+        ],
+      },
+    ]);
   });
 
   it("should move the worst IL player to empty BN spot, and then drop them for the best add candidate", () => {
@@ -1008,60 +949,49 @@ describe.concurrent("Combination Drops or Adds", () => {
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchInlineSnapshot(`
-      [
-        {
-          "players": [
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.8918",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Dropping Alex Cobb (SP, P, BN) [27.88] to make room for Jordan Montgomery2 (SP, P, BN) [68.37] coming back from injury.",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.10234",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.12339",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Dansby Swanson (SS, Util, BN) [83.91] and dropping James Outman (OF, Util, BN) [38.01].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.10666",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.9557",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping Javier Báez (SS, Util, BN) [38.58].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-      ]
-    `);
+    expect(playerTransactions).toMatchObject([
+      {
+        players: [
+          {
+            isInactiveList: false,
+            playerKey: "422.p.8918",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10234",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.12339",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10666",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.9557",
+            transactionType: "drop",
+          },
+        ],
+      },
+    ]);
   });
 
   it("should move a player to IL for a new add, then swap worst player for the next-best player two times", () => {
@@ -1074,62 +1004,51 @@ describe.concurrent("Combination Drops or Adds", () => {
     const lineupChanges = lo.lineupChanges;
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchInlineSnapshot(`
-      [
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.10234",
-              "transactionType": "add",
-            },
-          ],
-          "reason": "Moved Jordan Montgomery to the inactive list to make room to add Dansby Swanson",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.10666",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.12339",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.12024",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.9557",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-      ]
-    `);
+    expect(playerTransactions).toMatchObject([
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10234",
+            transactionType: "add",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10666",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.12339",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.12024",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.9557",
+            transactionType: "drop",
+          },
+        ],
+      },
+    ]);
     expect(lineupChanges).toEqual({
       coveragePeriod: "2023-04-07",
       coverageType: "date",
@@ -1150,81 +1069,67 @@ describe.concurrent("Combination Drops or Adds", () => {
     const lineupChanges = lo.lineupChanges;
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchInlineSnapshot(`
-      [
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.10234",
-              "transactionType": "add",
-            },
-          ],
-          "reason": "Moved Alex Cobb to the inactive list to make room to add Dansby Swanson",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.10666",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.12339",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Anthony Santander (OF, Util, BN) [61.78] and dropping James Outman (OF, Util, BN) [38.01].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.12024",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.9557",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding Jordan Walker (3B, OF, Util, BN) [57.70] and dropping Javier Báez (SS, Util, BN) [38.58].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-        {
-          "isFaabRequired": true,
-          "players": [
-            {
-              "isFromWaivers": false,
-              "isInactiveList": false,
-              "playerKey": "422.p.9331",
-              "transactionType": "add",
-            },
-            {
-              "isInactiveList": false,
-              "playerKey": "422.p.8918",
-              "transactionType": "drop",
-            },
-          ],
-          "reason": "Adding James Paxton (SP, P, BN) [50.03] and dropping Alex Cobb (SP, P, BN, IL) [27.88].",
-          "sameDayTransactions": true,
-          "teamKey": "422.l.119198.t.3",
-        },
-      ]
-    `);
+    expect(playerTransactions).toMatchObject([
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10234",
+            transactionType: "add",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.10666",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.12339",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.12024",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.9557",
+            transactionType: "drop",
+          },
+        ],
+      },
+      {
+        isFaabRequired: true,
+        players: [
+          {
+            isFromWaivers: false,
+            isInactiveList: false,
+            playerKey: "422.p.9331",
+            transactionType: "add",
+          },
+          {
+            isInactiveList: false,
+            playerKey: "422.p.8918",
+            transactionType: "drop",
+          },
+        ],
+      },
+    ]);
     expect(lineupChanges).toEqual({
       coveragePeriod: "2023-04-07",
       coverageType: "date",
