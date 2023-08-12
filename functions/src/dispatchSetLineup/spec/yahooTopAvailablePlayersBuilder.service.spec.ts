@@ -21,7 +21,6 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     const teamKeys = ["422.l.90351.t.1"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/free-agents.json");
-    const expected = require("./testYahooPlayersJSON/output/free-agents.json");
 
     vi.spyOn(yahooAPIService, "getTopAvailablePlayers").mockReturnValue(
       yahooJSON
@@ -29,14 +28,13 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
 
     const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);
 
-    expect(result).toEqual(expected);
+    expect(result).toMatchSnapshot();
   });
 
   test("With waivers and freeagents", async function () {
     const teamKeys = ["422.l.115494.t.4", "422.l.16955.t.10"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/yahooJSONWaivers.json");
-    const expected = require("./testYahooPlayersJSON/output/outputWaivers.json");
 
     vi.spyOn(yahooAPIService, "getTopAvailablePlayers").mockReturnValue(
       yahooJSON
@@ -44,7 +42,6 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
 
     const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);
 
-    expect(result).toEqual(expected);
-    // expect(result).toMatchSnapshot();
+    expect(result).toMatchSnapshot();
   });
 });

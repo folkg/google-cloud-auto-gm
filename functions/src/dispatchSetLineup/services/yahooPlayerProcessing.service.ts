@@ -28,10 +28,13 @@ export default function getPlayersFromRoster(playersJSON: any): IPlayer[] {
         selected_position:
           selectedPosition && getChild(selectedPosition, "position"),
         is_editable: getChild(player, "is_editable") === 1,
-        is_playing: !opponent || opponent === "Bye" ? false : true,
+        is_playing: !(!opponent || opponent === "Bye"),
         injury_status: getChild(player[0], "status_full") || "Healthy",
         percent_started: getPercentObject(player, "percent_started"),
         percent_owned: getPercentObject(player, "percent_owned"),
+        percent_owned_delta: parseStringToInt(
+          getChild(getChild(player, "percent_owned"), "delta")
+        ),
         is_starting: getChild(player, "starting_status")
           ? getChild(getChild(player, "starting_status"), "is_starting")
           : "N/A",

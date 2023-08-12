@@ -21,28 +21,26 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     const teams = ["419.l.28340.t.1"];
     const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1";
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/419.l.28340.t.1.json");
-    const expected = require("./testYahooLineupJSON/output/419.l.28340.t.1.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
     vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
-    expect(result).toEqual(expected);
+    expect(result).toMatchSnapshot();
   });
 
   test("Irish Lacrosse roster - weekly max pickups", async function () {
     const teams = ["419.l.28340.t.1"];
     const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1";
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/419.l.19947.t.6.json");
-    const expected = require("./testYahooLineupJSON/output/419.l.19947.t.6.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
     vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
-    expect(result).toEqual(expected);
+    expect(result).toMatchSnapshot();
   });
 
   test("NBA Weekly League - not editable", async function () {
@@ -62,14 +60,13 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     const teams = ["419.l.28340.t.1"];
     const uid = "RLSrRcWN3lcYbxKQU1FKqditGDu1";
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/NBAWeekly.json");
-    const expected = require("./testYahooLineupJSON/output/NBAWeekly.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
     vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
-    expect(result).toEqual(expected);
+    expect(result).toMatchSnapshot();
   });
 
   test("Two NHL, two NBA for Jeff Barnes", async function () {
@@ -81,41 +78,38 @@ describe.concurrent("Test fetchRostersFromYahoo", function () {
     ]; // Jeff Barnes
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2";
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/2NHL&1NBA.json");
-    const expected = require("./testYahooLineupJSON/output/2NHL&1NBA.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
     vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
-    expect(result).toEqual(expected);
+    expect(result).toMatchSnapshot();
   });
 
   test("MLB with pending waiver claim", async function () {
     const teams = ["422.l.115494.t.4"];
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2";
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/MLB.json");
-    const expected = require("./testYahooLineupJSON/output/MLB.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
     vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
-    expect(result).toEqual(expected);
+    expect(result).toMatchSnapshot();
   });
 
   test("MLB with multiple pending transactions", async function () {
     const teams = ["test"];
     const uid = "test";
     const yahooJSON = require("./testYahooLineupJSON/yahooJSON/MLBpendingTransactions.json");
-    const expected = require("./testYahooLineupJSON/output/MLBpendingTransactions.json");
 
     // mock the JSON result from yahooAPI getRostersByTeamID()
     vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
 
     const result = await fetchRostersFromYahoo(teams, uid);
 
-    expect(result).toEqual(expected);
+    expect(result).toMatchSnapshot();
   });
 });

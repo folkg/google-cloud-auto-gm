@@ -8,6 +8,7 @@ export interface IPlayer {
   injury_status: string;
   percent_started: number;
   percent_owned: number;
+  percent_owned_delta: number;
   is_starting: number | string;
   is_undroppable: boolean;
   ranks: PlayerRanks;
