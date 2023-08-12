@@ -24,7 +24,7 @@ import {
   TopAvailablePlayers,
   fetchTopAvailablePlayersFromYahoo,
 } from "../../dispatchSetLineup/services/yahooTopAvailablePlayersBuilder.service.js";
-import { enrichTeamsWithFirestoreSettings } from "../../dispatchSetLineup/services/setLineups.service.js";
+import { enrichTeamsWithFirestoreSettings } from "../../common/services/firebase/firestoreUtils.service.js";
 
 type TransctionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
