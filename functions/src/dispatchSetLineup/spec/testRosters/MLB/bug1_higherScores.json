@@ -5,6 +5,7 @@
   "current_weekly_adds": 5,
   "end_date": 1696229999999,
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "num_teams": 12,
   "weekly_deadline": "intraday",
   "max_season_adds": -1,

@@ -1,16 +1,13 @@
 {
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "allow_dropping": true,
   "team_key": "422.l.119198.t.3",
   "players": [
     {
       "player_key": "422.p.9096",
       "player_name": "Travis d'Arnaud",
-      "eligible_positions": [
-        "C",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["C", "Util", "BN"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": true,
@@ -31,11 +28,7 @@
     {
       "player_key": "422.p.9883",
       "player_name": "Josh Bell",
-      "eligible_positions": [
-        "1B",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["1B", "Util", "BN"],
       "selected_position": "1B",
       "is_editable": true,
       "is_playing": true,
@@ -56,13 +49,7 @@
     {
       "player_key": "422.p.10923",
       "player_name": "Thairo Estrada",
-      "eligible_positions": [
-        "2B",
-        "SS",
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["2B", "SS", "OF", "Util", "BN"],
       "selected_position": "SS",
       "is_editable": true,
       "is_playing": true,
@@ -83,12 +70,7 @@
     {
       "player_key": "422.p.12024",
       "player_name": "Jordan Walker",
-      "eligible_positions": [
-        "3B",
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["3B", "OF", "Util", "BN"],
       "selected_position": "3B",
       "is_editable": true,
       "is_playing": true,
@@ -109,11 +91,7 @@
     {
       "player_key": "422.p.9557",
       "player_name": "Javier Báez",
-      "eligible_positions": [
-        "SS",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["SS", "Util", "BN"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": false,
@@ -135,11 +113,7 @@
     {
       "player_key": "422.p.10883",
       "player_name": "Yordan Alvarez",
-      "eligible_positions": [
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "OF",
       "is_editable": true,
       "is_playing": true,
@@ -161,11 +135,7 @@
     {
       "player_key": "422.p.9861",
       "player_name": "Kyle Schwarber",
-      "eligible_positions": [
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "OF",
       "is_editable": true,
       "is_playing": true,
@@ -186,11 +156,7 @@
     {
       "player_key": "422.p.10036",
       "player_name": "Ketel Marte",
-      "eligible_positions": [
-        "2B",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["2B", "Util", "BN"],
       "selected_position": "2B",
       "is_editable": true,
       "is_playing": true,
@@ -211,11 +177,7 @@
     {
       "player_key": "422.p.10626",
       "player_name": "Juan Soto",
-      "eligible_positions": [
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "Util",
       "is_editable": true,
       "is_playing": true,
@@ -237,11 +199,7 @@
     {
       "player_key": "422.p.10166",
       "player_name": "Willson Contreras",
-      "eligible_positions": [
-        "C",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["C", "Util", "BN"],
       "selected_position": "C",
       "is_editable": true,
       "is_playing": true,
@@ -262,11 +220,7 @@
     {
       "player_key": "422.p.10577",
       "player_name": "Bryan Reynolds",
-      "eligible_positions": [
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "OF",
       "is_editable": true,
       "is_playing": true,
@@ -287,11 +241,7 @@
     {
       "player_key": "422.p.9876",
       "player_name": "Brandon Nimmo",
-      "eligible_positions": [
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "Util",
       "is_editable": true,
       "is_playing": true,
@@ -312,11 +262,7 @@
     {
       "player_key": "422.p.12339",
       "player_name": "James Outman",
-      "eligible_positions": [
-        "OF",
-        "Util",
-        "BN"
-      ],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": true,
@@ -337,11 +283,7 @@
     {
       "player_key": "422.p.10597",
       "player_name": "Sandy Alcantara",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "SP",
       "is_editable": true,
       "is_playing": true,
@@ -362,11 +304,7 @@
     {
       "player_key": "422.p.11398",
       "player_name": "Shane McClanahan",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "SP",
       "is_editable": true,
       "is_playing": true,
@@ -387,11 +325,7 @@
     {
       "player_key": "422.p.10131",
       "player_name": "Josh Hader",
-      "eligible_positions": [
-        "RP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["RP", "P", "BN"],
       "selected_position": "RP",
       "is_editable": true,
       "is_playing": true,
@@ -412,11 +346,7 @@
     {
       "player_key": "422.p.12346",
       "player_name": "Félix Bautista",
-      "eligible_positions": [
-        "RP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["RP", "P", "BN"],
       "selected_position": "RP",
       "is_editable": true,
       "is_playing": true,
@@ -437,11 +367,7 @@
     {
       "player_key": "422.p.10970",
       "player_name": "Nestor Cortes",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "P",
       "is_editable": true,
       "is_playing": true,
@@ -462,11 +388,7 @@
     {
       "player_key": "422.p.11251",
       "player_name": "Merrill Kelly",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": true,
@@ -487,11 +409,7 @@
     {
       "player_key": "422.p.11750",
       "player_name": "Nick Lodolo",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "P",
       "is_editable": true,
       "is_playing": true,
@@ -512,11 +430,7 @@
     {
       "player_key": "422.p.8918",
       "player_name": "Alex Cobb",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "P",
       "is_editable": true,
       "is_playing": true,
@@ -537,11 +451,7 @@
     {
       "player_key": "422.p.11014",
       "player_name": "Freddy Peralta",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "P",
       "is_editable": true,
       "is_playing": true,
@@ -562,11 +472,7 @@
     {
       "player_key": "422.p.10660",
       "player_name": "Jordan Montgomery",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "BN",
       "is_editable": true,
       "is_playing": true,
@@ -587,11 +493,7 @@
     {
       "player_key": "422.p.106602",
       "player_name": "Jordan Montgomery2",
-      "eligible_positions": [
-        "SP",
-        "P",
-        "BN"
-      ],
+      "eligible_positions": ["SP", "P", "BN"],
       "selected_position": "IL",
       "is_editable": true,
       "is_playing": true,

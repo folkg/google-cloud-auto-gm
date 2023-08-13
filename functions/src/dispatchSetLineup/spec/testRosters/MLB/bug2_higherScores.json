@@ -10,6 +10,7 @@
   "max_weekly_adds": 5,
   "transactions": [],
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "faab_balance": -1,
   "allow_dropping": false,
   "max_season_adds": -1,

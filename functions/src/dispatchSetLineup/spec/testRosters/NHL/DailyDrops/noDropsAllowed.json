@@ -2,6 +2,7 @@
   "team_key": "419.l.28340.t.1",
   "allow_dropping": false,
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "players": [
     {
       "player_key": "419.p.3737",

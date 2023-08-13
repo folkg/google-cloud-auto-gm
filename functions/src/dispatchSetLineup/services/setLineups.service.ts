@@ -4,6 +4,10 @@ import {
   ITeamFirestore,
   ITeamOptimizer,
 } from "../../common/interfaces/ITeam.js";
+import {
+  enrichTeamsWithFirestoreSettings,
+  patchTeamChangesInFirestore,
+} from "../../common/services/firebase/firestoreUtils.service.js";
 import { getPacificTimeDateString } from "../../common/services/utilities.service.js";
 import { putLineupChanges } from "../../common/services/yahooAPI/yahooAPI.service.js";
 import {
@@ -14,15 +18,13 @@ import {
   createPlayersTransactions,
   getTopAvailablePlayers,
   postTransactions,
+  sendPotentialTransactionEmail,
 } from "../../transactions/services/processTransactions.service.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { LineupChanges } from "../interfaces/LineupChanges.js";
+import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service.js";
 import { TopAvailablePlayers } from "./yahooTopAvailablePlayersBuilder.service.js";
-import {
-  enrichTeamsWithFirestoreSettings,
-  patchTeamChangesInFirestore,
-} from "../../common/services/firebase/firestoreUtils.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -143,27 +145,17 @@ async function processTransactionsForIntradayTeams(
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
 ): Promise<ITeamOptimizer[]> {
-  let result: ITeamOptimizer[] = originalTeams;
-
   const teams = getTeamsWithSameDayTransactions(originalTeams);
 
-  const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
-    await createPlayersTransactions(teams, topAvailablePlayerCandidates);
+  await processManualTransactions(teams, topAvailablePlayerCandidates, uid);
 
-  const transactionData = {
-    dropPlayerTransactions,
-    lineupChanges,
-    addSwapTransactions,
-  };
+  let result: ITeamOptimizer[] = originalTeams;
 
-  let transactionsCompleted: boolean;
-  try {
-    transactionsCompleted = await postTransactions(transactionData, uid);
-  } catch (error) {
-    logger.error("Transaction data: ", { transactionData });
-    logger.error("Original teams object: ", { teams });
-    throw error;
-  }
+  const transactionsCompleted: boolean = await processAutomaticTransactions(
+    teams,
+    topAvailablePlayerCandidates,
+    uid
+  );
 
   if (transactionsCompleted) {
     const teamKeys: string[] = originalTeams.map((t) => t.team_key);
@@ -205,9 +197,35 @@ async function processTomorrowsTransactions(
     tomorrowsDateAsString()
   );
 
+  await processManualTransactions(
+    tomorrowsTeams,
+    topAvailablePlayerCandidates,
+    uid
+  );
+
+  await processAutomaticTransactions(
+    tomorrowsTeams,
+    topAvailablePlayerCandidates,
+    uid
+  );
+}
+
+async function processAutomaticTransactions(
+  teams: ITeamOptimizer[],
+  topAvailablePlayerCandidates: TopAvailablePlayers,
+  uid: string
+) {
+  const teamsWithAutoTransactions = teams.filter(
+    (t) => t.automated_transaction_processing
+  );
+
+  if (teamsWithAutoTransactions.length === 0) {
+    return false;
+  }
+
   const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
     await createPlayersTransactions(
-      tomorrowsTeams,
+      teamsWithAutoTransactions,
       topAvailablePlayerCandidates
     );
 
@@ -218,12 +236,40 @@ async function processTomorrowsTransactions(
   };
 
   try {
-    await postTransactions(transactionData, uid);
+    return await postTransactions(transactionData, uid);
   } catch (error) {
     logger.error("Transaction data: ", { transactionData });
-    logger.error("Original teams object: ", { teams });
+    logger.error("Original teams object: ", { teamsWithAutoTransactions });
     throw error;
   }
+}
+
+async function processManualTransactions(
+  teams: ITeamOptimizer[],
+  topAvailablePlayerCandidates: TopAvailablePlayers,
+  uid: string
+): Promise<void> {
+  const teamsWithManualTransactions = teams.filter(
+    (t) => !t.automated_transaction_processing
+  );
+
+  if (teamsWithManualTransactions.length === 0) {
+    return;
+  }
+
+  const [dropPlayerTransactions, _, addSwapTransactions] =
+    await createPlayersTransactions(
+      teamsWithManualTransactions,
+      topAvailablePlayerCandidates
+    );
+
+  const proposedTransactions: PlayerTransaction[] = (
+    dropPlayerTransactions ?? []
+  )
+    .concat(addSwapTransactions ?? [])
+    .flat();
+
+  sendPotentialTransactionEmail(proposedTransactions, uid);
 }
 
 function getTeamsWithSameDayTransactions(

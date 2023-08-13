@@ -17,6 +17,8 @@ export function enrichTeamsWithFirestoreSettings(
       allow_add_drops: firestoreTeam?.allow_add_drops ?? false,
       allow_waiver_adds: firestoreTeam?.allow_waiver_adds ?? false,
       allow_transactions: firestoreTeam?.allow_transactions ?? false,
+      automated_transaction_processing:
+        firestoreTeam?.automated_transaction_processing ?? false,
       ...yahooTeam,
     };
   });

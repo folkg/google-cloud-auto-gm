@@ -27,6 +27,7 @@
   "coverage_type": "date",
   "team_key": "422.l.132403.t.4",
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "max_season_adds": -1,
   "coverage_period": "2023-04-13",
   "waiver_rule": "continuous",

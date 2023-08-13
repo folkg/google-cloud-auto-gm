@@ -1,5 +1,6 @@
 {
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "allow_dropping": true,
   "team_key": "422.l.119198.t.3",
   "players": [

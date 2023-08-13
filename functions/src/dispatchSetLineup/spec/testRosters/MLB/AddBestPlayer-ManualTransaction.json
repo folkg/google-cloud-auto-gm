@@ -1,9 +1,9 @@
 {
-  "allow_adding": false,
-  "automated_transaction_processing": true,
+  "allow_adding": true,
+  "automated_transaction_processing": false,
+  "allow_waivers": true,
   "allow_dropping": true,
-  "allow_waiver_adds": true,
-  "team_key": "422.l.119198.t.3",
+  "team_key": "422.l.115494.t.4",
   "players": [
     {
       "player_key": "422.p.9096",
@@ -242,7 +242,7 @@
     {
       "player_key": "422.p.9876",
       "player_name": "Brandon Nimmo",
-      "eligible_positions": ["OF", "Util", "BN", "IL"],
+      "eligible_positions": ["OF", "Util", "BN"],
       "selected_position": "Util",
       "is_editable": true,
       "is_playing": true,
@@ -452,11 +452,11 @@
     {
       "player_key": "422.p.11014",
       "player_name": "Freddy Peralta",
-      "eligible_positions": ["SP", "P", "BN"],
+      "eligible_positions": ["SP", "P", "BN", "IL+"],
       "selected_position": "P",
       "is_editable": true,
       "is_playing": true,
-      "injury_status": "Healthy",
+      "injury_status": "IL+",
       "percent_started": 53,
       "percent_owned": 88,
       "is_starting": "N/A",
@@ -473,8 +473,29 @@
     {
       "player_key": "422.p.10660",
       "player_name": "Jordan Montgomery",
-      "eligible_positions": ["SP", "P", "BN", "IL"],
+      "eligible_positions": ["SP", "P", "BN", "IL", "IL+"],
       "selected_position": "BN",
+      "is_editable": true,
+      "is_playing": true,
+      "injury_status": "IL",
+      "percent_started": 36,
+      "percent_owned": 65,
+      "is_starting": "N/A",
+      "ranks": {
+        "last30Days": 406,
+        "last14Days": 406,
+        "next7Days": 288,
+        "restOfSeason": 262,
+        "last4Weeks": -1,
+        "projectedWeek": -1,
+        "next4Weeks": -1
+      }
+    },
+    {
+      "player_key": "422.p.106602",
+      "player_name": "Jordan Montgomery2",
+      "eligible_positions": ["SP", "P", "BN"],
+      "selected_position": "IL",
       "is_editable": true,
       "is_playing": true,
       "injury_status": "Healthy",
@@ -510,7 +531,8 @@
     "RP": 2,
     "P": 4,
     "BN": 5,
-    "IL": 4
+    "IL": 4,
+    "IL+": 2
   },
   "scoring_type": null,
   "current_weekly_adds": 2,

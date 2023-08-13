@@ -1,5 +1,6 @@
 {
   "allow_adding": true,
+  "automated_transaction_processing": true,
   "allow_waivers": true,
   "allow_dropping": true,
   "team_key": "422.l.115494.t.4",

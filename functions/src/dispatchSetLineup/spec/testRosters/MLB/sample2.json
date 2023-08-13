@@ -5,6 +5,7 @@
   "current_weekly_adds": 2,
   "game_code": "mlb",
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "max_games_played": -1,
   "scoring_type": null,
   "weekly_deadline": "intraday",

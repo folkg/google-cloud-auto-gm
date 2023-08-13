@@ -8,6 +8,7 @@
   "transactions": [],
   "allow_waiver_adds": true,
   "allow_adding": true,
+  "automated_transaction_processing": true,
   "current_season_adds": 22,
   "edit_key": "2023-06-29",
   "coverage_type": "date",

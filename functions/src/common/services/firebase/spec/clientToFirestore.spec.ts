@@ -66,6 +66,7 @@ describe("clientToFirestore", () => {
     allow_add_drops: false,
     allow_transactions: false,
     allow_waiver_adds: false,
+    automated_transaction_processing: false,
   };
 
   it("should convert a teamclient object to a teamFirestore object", () => {

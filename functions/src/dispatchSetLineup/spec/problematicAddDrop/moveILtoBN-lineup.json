@@ -2,6 +2,7 @@
   "start_date": 1680159600000,
   "coverage_type": "date",
   "allow_adding": true,
+  "automated_transaction_processing": true,
   "current_weekly_adds": 8,
   "allow_dropping": true,
   "players": [

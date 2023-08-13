@@ -28,6 +28,7 @@ interface OptionsTeam {
   allow_adding: boolean;
   allow_add_drops: boolean;
   allow_waiver_adds: boolean;
+  automated_transaction_processing?: boolean;
 }
 
 export interface ITeamFirestore extends CommonTeam, OptionsTeam {
@@ -104,6 +105,7 @@ export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
     allow_adding: false,
     allow_add_drops: false,
     allow_waiver_adds: false,
+    automated_transaction_processing: false,
   };
 
   return {

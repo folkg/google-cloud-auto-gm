@@ -113,6 +113,7 @@ export async function postTransactions(
   const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
     transactionData;
 
+  // TODO: Return an email object from each of these functions and send them all at once
   if (dropPlayerTransactions) {
     // any dropped players need to be processed before healthy players on IL are moved to BN with lineupChanges
     await postSomeTransactions(dropPlayerTransactions);

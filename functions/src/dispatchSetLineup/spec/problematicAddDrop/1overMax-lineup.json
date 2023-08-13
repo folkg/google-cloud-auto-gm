@@ -742,6 +742,7 @@
   "edit_key": "2023-06-26",
   "end_date": 1696229999999,
   "allow_adding": true,
+  "automated_transaction_processing": true,
   "game_code": "mlb",
   "faab_balance": -1,
   "current_weekly_adds": 0,

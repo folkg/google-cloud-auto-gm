@@ -1,6 +1,7 @@
 {
   "allow_transactions": true,
   "allow_adding": true,
+  "automated_transaction_processing": true,
   "coverage_period": "2023-07-01",
   "allow_dropping": true,
   "current_season_adds": 17,

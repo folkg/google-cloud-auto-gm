@@ -356,6 +356,7 @@
   "max_season_adds": -1,
   "allow_dropping": true,
   "allow_adding": false,
+  "automated_transaction_processing": true,
   "start_date": 1674432000000,
   "end_date": 1680393600000,
   "faab_balance": -1
