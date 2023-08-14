@@ -71,6 +71,7 @@ export async function setUsersLineup(
 
   await processTransactionsForNextDayTeams(
     usersTeams,
+    firestoreTeams,
     topAvailablePlayerCandidates,
     uid
   );
@@ -91,6 +92,7 @@ export async function performWeeklyLeagueTransactions(
     await getTopAvailablePlayers(firestoreTeams, uid);
 
   await processTomorrowsTransactions(
+    firestoreTeams,
     firestoreTeams,
     uid,
     topAvailablePlayerCandidates
@@ -168,6 +170,7 @@ async function processTransactionsForIntradayTeams(
 
 async function processTransactionsForNextDayTeams(
   originalTeams: ITeamOptimizer[],
+  firestoreTeams: ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
 ): Promise<void> {
@@ -182,19 +185,30 @@ async function processTransactionsForNextDayTeams(
     return;
   }
 
-  await processTomorrowsTransactions(teams, uid, topAvailablePlayerCandidates);
+  await processTomorrowsTransactions(
+    teams,
+    firestoreTeams,
+    uid,
+    topAvailablePlayerCandidates
+  );
 }
 
 async function processTomorrowsTransactions(
   teams: ITeamOptimizer[] | ITeamFirestore[],
+  firestoreTeams: ITeamFirestore[],
   uid: string,
   topAvailablePlayerCandidates: TopAvailablePlayers
 ) {
   const teamKeys: string[] = teams.map((t) => t.team_key);
-  const tomorrowsTeams = await fetchRostersFromYahoo(
+  let tomorrowsTeams = await fetchRostersFromYahoo(
     teamKeys,
     uid,
     tomorrowsDateAsString()
+  );
+
+  tomorrowsTeams = enrichTeamsWithFirestoreSettings(
+    tomorrowsTeams,
+    firestoreTeams
   );
 
   await processManualTransactions(
@@ -257,6 +271,12 @@ async function processManualTransactions(
     return;
   }
 
+  // TODO: Remove this. Just here for testing / debugging.
+  logger.warn(
+    "Performing processManualTransactions() for teams:",
+    teamsWithManualTransactions
+  );
+
   const [dropPlayerTransactions, _, addSwapTransactions] =
     await createPlayersTransactions(
       teamsWithManualTransactions,
@@ -269,7 +289,9 @@ async function processManualTransactions(
     .concat(addSwapTransactions ?? [])
     .flat();
 
-  sendPotentialTransactionEmail(proposedTransactions, uid);
+  if (proposedTransactions.length > 0) {
+    sendPotentialTransactionEmail(proposedTransactions, uid);
+  }
 }
 
 function getTeamsWithSameDayTransactions(

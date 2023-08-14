@@ -1087,7 +1087,7 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
         allow_adding: true,
         allow_dropping: true,
         allow_transactions: true,
-        allow_add_drops: true,
+        allow_add_drops: false,
         allow_waiver_adds: true,
         game_code: "MLB",
       },
