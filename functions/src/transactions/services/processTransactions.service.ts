@@ -113,10 +113,14 @@ export async function postTransactions(
   const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
     transactionData;
 
-  // TODO: Return an email object from each of these functions and send them all at once
+  let allPostedTransactions: PlayerTransaction[] = [];
+
   if (dropPlayerTransactions) {
     // any dropped players need to be processed before healthy players on IL are moved to BN with lineupChanges
-    await postSomeTransactions(dropPlayerTransactions);
+    const postedTransactions = await postSomeTransactions(
+      dropPlayerTransactions
+    );
+    allPostedTransactions = postedTransactions;
     result = true;
   }
 
@@ -127,15 +131,22 @@ export async function postTransactions(
   }
 
   if (addSwapTransactions) {
-    await postSomeTransactions(addSwapTransactions);
+    const postedTransactions = await postSomeTransactions(addSwapTransactions);
+    allPostedTransactions = allPostedTransactions.concat(postedTransactions);
     result = true;
+  }
+
+  if (allPostedTransactions.length > 0) {
+    sendSuccessfulTransactionEmail(allPostedTransactions, uid);
   }
 
   return result;
 
-  async function postSomeTransactions(transactions: PlayerTransaction[][]) {
+  async function postSomeTransactions(
+    transactions: PlayerTransaction[][]
+  ): Promise<PlayerTransaction[]> {
     try {
-      await postTransactionsHelper(transactions, uid);
+      return await postTransactionsHelper(transactions, uid);
     } catch (error) {
       logger.error("Error in postSomeTransactions()", error);
       logger.error("Transactions object: ", { transactions });
@@ -273,19 +284,20 @@ export async function createPlayersTransactions(
 async function postTransactionsHelper(
   playerTransactions: PlayerTransaction[][],
   uid: string
-): Promise<void> {
+): Promise<PlayerTransaction[]> {
+  const postedTransactions: PlayerTransaction[] = [];
+
   const allTransactionsPromises = playerTransactions
     .flat()
     .map((transaction) => postRosterAddDropTransaction(transaction, uid));
 
   const results = await Promise.allSettled(allTransactionsPromises);
 
-  const transactionsPosted: PlayerTransaction[] = [];
   let error = false;
   results.forEach((result) => {
     if (result.status === "fulfilled") {
       const transaction = result.value;
-      transaction && transactionsPosted.push(transaction);
+      transaction && postedTransactions.push(transaction);
     } else if (result.status === "rejected") {
       error = true;
       logger.error(
@@ -296,12 +308,11 @@ async function postTransactionsHelper(
     }
   });
 
-  if (transactionsPosted.length > 0) {
-    sendSuccessfulTransactionEmail(transactionsPosted, uid);
-  }
   if (error) {
     throw new Error("Error in postAllTransactions()");
   }
+
+  return postedTransactions;
 }
 
 export function sendSuccessfulTransactionEmail(
@@ -309,14 +320,7 @@ export function sendSuccessfulTransactionEmail(
   uid: string
 ) {
   const body = ["The following transactions were processed:"].concat(
-    transactionsPosted.map(
-      (t) =>
-        `${t.teamName} (${t.leagueName}): ${t.reason} ${
-          t.players.some((p) => p.isFromWaivers)
-            ? "(Waiver claim created only)"
-            : "(Transaction completed)"
-        }`
-    )
+    stringifyTransactions(transactionsPosted)
   );
   sendUserEmail(
     uid,
@@ -331,12 +335,46 @@ export function sendPotentialTransactionEmail(
 ) {
   const body = [
     "The following transactions have been proposed for your teams:",
-  ].concat(
-    transactionsProposed.map(
-      (t) => `${t.teamName} (${t.leagueName}): ${t.reason}`
-    )
-  );
+  ].concat(stringifyTransactions(transactionsProposed));
   sendUserEmail(uid, "New Transactions Available for your Teams", body);
+}
+
+function stringifyTransactions(transactions: PlayerTransaction[]): string[] {
+  const result: string[] = [];
+
+  const groupedTransactions = groupTransactionsByTeam(transactions);
+
+  Object.keys(groupedTransactions).forEach((teamKey) => {
+    const teamTransactions = groupedTransactions[teamKey];
+    result.push(
+      `<strong>${teamTransactions[0].teamName} (${teamTransactions[0].leagueName}):</strong>`
+    );
+    teamTransactions.forEach((t) => {
+      result.push(
+        `${t.reason} ${
+          t.players.some((p) => p.isFromWaivers)
+            ? "(Waiver Claim)"
+            : "(Free Agent Pickup)"
+        }`
+      );
+    });
+  });
+
+  return result;
+}
+
+function groupTransactionsByTeam(transactions: PlayerTransaction[]) {
+  const result: { [key: string]: PlayerTransaction[] } = {};
+
+  transactions.forEach((t) => {
+    if (result[t.teamKey]) {
+      result[t.teamKey].push(t);
+    } else {
+      result[t.teamKey] = [t];
+    }
+  });
+
+  return result;
 }
 
 function tomorrowsDateAsString(): string {
