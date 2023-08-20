@@ -6,6 +6,17 @@ import {
   postRosterAddDropTransaction,
 } from "../yahooAPI.service.js";
 
+describe.skip("Playground", () => {
+  it.only("will get the roster for a specific team and day", async () => {
+    const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
+    const yahooJSON = await getRostersByTeamID(
+      ["418.l.16955.t.10"],
+      uid,
+      "2023-08-13"
+    );
+  });
+});
+
 describe.skip("Yahoo API Live Integration Tests", () => {
   beforeAll(async () => {
     // Cannot quite get this to work. Revisit another time if we need to use integration tests.

@@ -29,13 +29,13 @@ interface OptionsTeam {
   allow_add_drops: boolean;
   allow_waiver_adds: boolean;
   automated_transaction_processing?: boolean;
+  last_updated: number;
 }
 
 export interface ITeamFirestore extends CommonTeam, OptionsTeam {
   uid: string;
   is_subscribed: boolean;
   is_setting_lineups: boolean;
-  last_updated: number;
 }
 
 export interface ITeamAngular extends YahooTeam {
@@ -106,13 +106,13 @@ export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
     allow_add_drops: false,
     allow_waiver_adds: false,
     automated_transaction_processing: false,
+    last_updated: -1,
   };
 
   return {
     uid: team.uid ?? "",
     is_subscribed: true,
     is_setting_lineups: false,
-    last_updated: -1,
     ...commonTeam,
     ...optionsTeam,
   };

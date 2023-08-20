@@ -19,6 +19,7 @@ export function enrichTeamsWithFirestoreSettings(
       allow_transactions: firestoreTeam?.allow_transactions ?? false,
       automated_transaction_processing:
         firestoreTeam?.automated_transaction_processing ?? false,
+      last_updated: firestoreTeam?.last_updated ?? -1,
       ...yahooTeam,
     };
   });

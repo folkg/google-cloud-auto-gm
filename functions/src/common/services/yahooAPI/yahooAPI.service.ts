@@ -72,7 +72,7 @@ export async function refreshYahooAccessToken(
  * "414.l.240994.t.12, 414.l.358976.t.4, 419.l.14950.t.2,
  * 419.l.19947.t.6,419.l.28340.t.1,419.l.59985.t.12"
  * @param {string} uid - The firebase uid
- * @param {string} [date=""] - The date to get the roster for. Defaults to today.
+ * @param {string} [date=""] - The date to get the roster for in the format 2023-01-27. Defaults to today.
  * @return {Promise<any>} The Yahoo JSON object containing the rosters
  */
 export async function getRostersByTeamID(

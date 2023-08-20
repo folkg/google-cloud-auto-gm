@@ -1,7 +1,5 @@
 import { GoogleAuth } from "google-auth-library";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import spacetime from "spacetime";
-// const spacetime = require("spacetime"); // problematic with TS ES module imports for some reason
 
 /**
  * The properties of the Player object are not consistent.
@@ -103,6 +101,19 @@ export function getCurrentPacificHour(): number {
  */
 export function getCurrentPacificNumDay(): number {
   return spacetime.now("Canada/Pacific").day();
+}
+
+/**
+ * Return true if the timestamp is today in pacific time
+ *
+ * @export
+ * @param {number} timestamp - The timestamp to check
+ * @return {boolean} - True if the timestamp is today in pacific time
+ */
+export function isTodayPacificTime(timestamp: number | undefined): boolean {
+  const now = spacetime.now("Canada/Pacific");
+  const date = spacetime(timestamp ?? -1, "Canada/Pacific");
+  return now.isSame(date, "day");
 }
 
 /**

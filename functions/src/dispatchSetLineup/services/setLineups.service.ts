@@ -8,7 +8,10 @@ import {
   enrichTeamsWithFirestoreSettings,
   patchTeamChangesInFirestore,
 } from "../../common/services/firebase/firestoreUtils.service.js";
-import { getPacificTimeDateString } from "../../common/services/utilities.service.js";
+import {
+  getPacificTimeDateString,
+  isTodayPacificTime,
+} from "../../common/services/utilities.service.js";
 import { putLineupChanges } from "../../common/services/yahooAPI/yahooAPI.service.js";
 import {
   initStartingGoalies,
@@ -263,25 +266,24 @@ async function processManualTransactions(
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
 ): Promise<void> {
-  const teamsWithManualTransactions = teams.filter(
-    (t) => !t.automated_transaction_processing
+  // Only process teams that have not been updated today. Only propose changes once per day.
+  const teamsToCheck = teams.filter(
+    (t) =>
+      !t.automated_transaction_processing && !isTodayPacificTime(t.last_updated)
   );
 
-  if (teamsWithManualTransactions.length === 0) {
+  if (teamsToCheck.length === 0) {
     return;
   }
 
   // TODO: Remove this. Just here for testing / debugging.
   logger.warn(
     "Performing processManualTransactions() for teams:",
-    teamsWithManualTransactions
+    teamsToCheck
   );
 
   const [dropPlayerTransactions, _, addSwapTransactions] =
-    await createPlayersTransactions(
-      teamsWithManualTransactions,
-      topAvailablePlayerCandidates
-    );
+    await createPlayersTransactions(teamsToCheck, topAvailablePlayerCandidates);
 
   const proposedTransactions: PlayerTransaction[] = (
     dropPlayerTransactions ?? []
