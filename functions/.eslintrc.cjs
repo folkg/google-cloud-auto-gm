@@ -31,5 +31,8 @@ module.exports = {
     "import/no-unresolved": 0,
     "@typescript-eslint/no-var-requires": 0,
     "require-jsdoc": 0,
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unsafe-declaration-merging": "warn"
   },
 };

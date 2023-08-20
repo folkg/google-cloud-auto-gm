@@ -5,7 +5,7 @@
       "es2022"
     ],
     "module": "ES2022",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noImplicitReturns": true,

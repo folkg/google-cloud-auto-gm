@@ -1,16 +1,14 @@
 import axios from "axios";
-import axiosRetry, { isNetworkError, isRetryableError } from "axios-retry"; // problematic with TS ES module imports for some reason
-// const axiosRetry = require("axios-retry");
+import axiosRetry, { isNetworkError, isRetryableError } from "axios-retry";
 import { loadYahooAccessToken } from "../firebase/firestore.service.js";
 
 const API_URL = "https://fantasysports.yahooapis.com/fantasy/v2/";
-type AxiosRetry = typeof axiosRetry.default; // weird hack to get around the import issues
 const shouldRetry = (error: any) =>
   isNetworkError(error) ||
   isRetryableError(error) ||
   error.code === "ECONNABORTED" ||
   error.response?.status === 429;
-(axiosRetry as unknown as AxiosRetry)(axios, {
+axiosRetry(axios, {
   retries: 3,
   retryCondition: shouldRetry,
 });
