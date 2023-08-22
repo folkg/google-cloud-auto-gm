@@ -4,7 +4,7 @@ import {
   postTransactions,
 } from "./services/processTransactions.service.js";
 
-export const getransactions = onCall(async (request) => {
+export const gettransactions = onCall(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new HttpsError(
