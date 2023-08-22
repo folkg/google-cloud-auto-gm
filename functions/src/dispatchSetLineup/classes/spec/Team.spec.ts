@@ -147,25 +147,38 @@ describe.concurrent("Test Team Class", () => {
     expect(team.isCurrentTransactionPaceOK()).toEqual(false);
   });
 
-  it("underfilledPositions for teams with compound positions (eg.Util, MI, CI)", () => {
+  test("underfilledPositions for teams with compound positions (eg. Util, MI, CI)", () => {
     const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions.json");
     const team = new Team(teamJSON);
 
     expect(team.underfilledPositions).toEqual(["MI"]);
   });
 
-  it("criticalPositions for teams with compound positions (eg.Util, MI, CI)", () => {
+  test("criticalPositions for teams with compound positions (eg. Util, MI, CI)", () => {
     const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions.json");
     const team = new Team(teamJSON);
 
     expect(team.criticalPositions).toEqual(["C", "SS", "MI"]);
   });
 
-  it("almostCriticalPositions for teams with compound positions (eg.Util, MI, CI)", () => {
+  test("almostCriticalPositions for teams with compound positions (eg. Util, MI, CI)", () => {
     const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions.json");
     const team = new Team(teamJSON);
 
     expect(team.almostCriticalPositions).toEqual(["C", "SS", "RP", "MI"]);
+  });
+
+  test("almostCriticalPositions where Util is critical for teams with compound positions (eg. Util, MI, CI)", () => {
+    const teamJSON = require("../../spec/testRosters/MLB/unfilledRosterPositions-UtilCritical.json");
+    const team = new Team(teamJSON);
+
+    expect(team.almostCriticalPositions).toEqual([
+      "C",
+      "SS",
+      "RP",
+      "MI",
+      "Util",
+    ]);
   });
 
   it("should return empty array, since there is no max cap on any MLB positions", () => {

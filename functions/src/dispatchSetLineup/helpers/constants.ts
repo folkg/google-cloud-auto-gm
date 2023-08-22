@@ -25,7 +25,20 @@ export const COMPOUND_POSITION_COMPOSITIONS: LeagueCompoundPositions = {
     MI: ["2B", "SS"],
     IF: ["1B", "2B", "3B", "SS"],
     OF: ["LF", "CF", "RF"],
-    Util: ["1B", "2B", "3B", "SS", "C", "LF", "CF", "RF"],
+    Util: [
+      "1B",
+      "2B",
+      "3B",
+      "SS",
+      "C",
+      "LF",
+      "CF",
+      "RF",
+      "CI",
+      "MI",
+      "IF",
+      "OF",
+    ],
     P: ["SP", "RP"],
   },
   nfl: {
@@ -38,12 +51,12 @@ export const COMPOUND_POSITION_COMPOSITIONS: LeagueCompoundPositions = {
   nba: {
     G: ["PG", "SG"],
     F: ["SF", "PF"],
-    Util: ["PG", "SG", "SF", "PF", "C"],
+    Util: ["PG", "SG", "SF", "PF", "C", "G", "F"],
   },
   nhl: {
     W: ["LW", "RW"],
     F: ["LW", "RW", "C"],
-    Util: ["LW", "RW", "C", "D"],
+    Util: ["LW", "RW", "C", "D", "W", "F"],
   },
 };
 // TODO: Confirm the NBA composition, the description seems a little vague
