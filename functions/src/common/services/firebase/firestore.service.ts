@@ -188,7 +188,8 @@ export async function getActiveTeamsForUser(uid: string) {
   try {
     const teamsRef = db.collection(`users/${uid}/teams`);
     result = await teamsRef
-      .where("is_subscribed", "==", true)
+      .where("is_setting_lineups", "==", true)
+      .where("allow_transactions", "==", true)
       .where("end_date", ">=", Date.now())
       .get();
   } catch (error) {

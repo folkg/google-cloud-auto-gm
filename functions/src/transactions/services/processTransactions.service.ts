@@ -56,7 +56,11 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
   }
 
   const firestoreTeams: ITeamFirestore[] = teams.docs
-    .map((team) => team.data() as ITeamFirestore)
+    .map((doc) => {
+      const team = doc.data();
+      team.team_key = doc.id;
+      return team as ITeamFirestore;
+    })
     .filter((team) => team.start_date <= Date.now());
 
   const intradayTeams = firestoreTeams.filter(
