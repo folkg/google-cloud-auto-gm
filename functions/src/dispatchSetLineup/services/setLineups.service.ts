@@ -9,6 +9,7 @@ import {
   patchTeamChangesInFirestore,
 } from "../../common/services/firebase/firestoreUtils.service.js";
 import {
+  getCurrentPacificNumDay,
   getPacificTimeDateString,
   isTodayPacificTime,
 } from "../../common/services/utilities.service.js";
@@ -296,28 +297,25 @@ async function processManualTransactions(
   }
 }
 
-function getTeamsWithSameDayTransactions(
+export function getTeamsWithSameDayTransactions(
   teams: ITeamOptimizer[]
 ): ITeamOptimizer[] {
-  // Note: This is only for daily leagues, so we don't need to check for weekly_deadline === 1, 2,3, etc. (weekly leagues)
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
-      (team.weekly_deadline === "intraday" || team.game_code === "nfl") &&
-      team.edit_key === team.coverage_period
+      (team.weekly_deadline === "intraday" || team.game_code === "nfl")
   );
 }
 
-function getTeamsForNextDayTransactions(
+export function getTeamsForNextDayTransactions(
   teams: ITeamOptimizer[]
 ): ITeamOptimizer[] {
-  // Note: This is only for daily leagues, so we don't need to check for weekly_deadline === 1, 2,3, etc. (weekly leagues)
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
-      team.weekly_deadline === "" &&
-      team.game_code !== "nfl" &&
-      team.edit_key !== team.coverage_period
+      (team.weekly_deadline === "" ||
+        team.weekly_deadline === (getCurrentPacificNumDay() + 1).toString()) &&
+      team.game_code !== "nfl"
   );
 }
 

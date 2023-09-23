@@ -16,6 +16,7 @@ import {
 
 import { sendUserEmail } from "../../common/services/email/email.service.js";
 import { getActiveTeamsForUser } from "../../common/services/firebase/firestore.service.js";
+import { enrichTeamsWithFirestoreSettings } from "../../common/services/firebase/firestoreUtils.service.js";
 import { LineupOptimizer } from "../../dispatchSetLineup/classes/LineupOptimizer.js";
 import { LineupChanges } from "../../dispatchSetLineup/interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../../dispatchSetLineup/interfaces/PlayerTransaction.js";
@@ -24,7 +25,6 @@ import {
   TopAvailablePlayers,
   fetchTopAvailablePlayersFromYahoo,
 } from "../../dispatchSetLineup/services/yahooTopAvailablePlayersBuilder.service.js";
-import { enrichTeamsWithFirestoreSettings } from "../../common/services/firebase/firestoreUtils.service.js";
 
 type TransctionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
@@ -64,12 +64,13 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
     .filter((team) => team.start_date <= Date.now());
 
   const intradayTeams = firestoreTeams.filter(
-    (team) => team.weekly_deadline === "intraday"
+    (team) => team.weekly_deadline === "intraday" || team.game_code === "nfl"
   );
   const nextDayTeams = firestoreTeams.filter(
     (team) =>
-      team.weekly_deadline === "" ||
-      team.weekly_deadline === (getCurrentPacificNumDay() + 1).toString()
+      (team.weekly_deadline === "" ||
+        team.weekly_deadline === (getCurrentPacificNumDay() + 1).toString()) &&
+      team.game_code !== "nfl"
   );
 
   const topAvailablePlayerCandidates: TopAvailablePlayers =
