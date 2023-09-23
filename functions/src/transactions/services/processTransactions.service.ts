@@ -340,7 +340,13 @@ export function sendPotentialTransactionEmail(
   const body = [
     "The following transactions have been proposed for your teams:",
   ].concat(stringifyTransactions(transactionsProposed));
-  sendUserEmail(uid, "New Transactions Available for your Teams", body);
+  sendUserEmail(
+    uid,
+    "New Transactions Available for your Teams",
+    body,
+    "Go to Transactions",
+    "https://fantasyautocoach.com/transactions"
+  );
 }
 
 function stringifyTransactions(transactions: PlayerTransaction[]): string[] {
