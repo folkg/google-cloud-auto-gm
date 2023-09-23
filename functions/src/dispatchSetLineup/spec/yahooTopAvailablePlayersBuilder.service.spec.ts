@@ -16,7 +16,7 @@ vi.mock("firebase-admin/app", () => {
 });
 
 // To mock the result from yahooAPI getRostersByTeamID()
-describe.concurrent("Test fetchRostersFromYahoo", function () {
+describe("Test fetchRostersFromYahoo", function () {
   test("Test Players", async function () {
     const teamKeys = ["422.l.90351.t.1"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
