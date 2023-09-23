@@ -299,10 +299,11 @@ async function processManualTransactions(
 function getTeamsWithSameDayTransactions(
   teams: ITeamOptimizer[]
 ): ITeamOptimizer[] {
+  // Note: This is only for daily leagues, so we don't need to check for weekly_deadline === 1, 2,3, etc. (weekly leagues)
   return teams.filter(
     (team) =>
-      (team.allow_adding || team.allow_dropping) &&
-      team.weekly_deadline === "intraday" &&
+      (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
+      (team.weekly_deadline === "intraday" || team.game_code === "nfl") &&
       team.edit_key === team.coverage_period
   );
 }
@@ -310,10 +311,12 @@ function getTeamsWithSameDayTransactions(
 function getTeamsForNextDayTransactions(
   teams: ITeamOptimizer[]
 ): ITeamOptimizer[] {
+  // Note: This is only for daily leagues, so we don't need to check for weekly_deadline === 1, 2,3, etc. (weekly leagues)
   return teams.filter(
     (team) =>
-      (team.allow_adding || team.allow_dropping) &&
+      (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
       team.weekly_deadline === "" &&
+      team.game_code !== "nfl" &&
       team.edit_key !== team.coverage_period
   );
 }
