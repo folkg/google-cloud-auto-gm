@@ -402,12 +402,16 @@ function handleAxiosError(err: unknown, message: string | null): never {
   if (err instanceof RevokedRefreshTokenError) {
     throw err;
   } else if (isAxiosError(err) && err.response) {
-    logger.error(errMessage, err, err.response.data);
+    logger.error(
+      errMessage,
+      JSON.stringify(err),
+      JSON.stringify(err.response.data, null, 2)
+    );
     const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
     enrichedError.response = err.response;
     throw enrichedError;
   } else if (isAxiosError(err) && err.request) {
-    logger.error(errMessage, err.request);
+    logger.error(errMessage, JSON.stringify(err.request));
     throw new Error(`${errMessage}${err.request}`);
   } else {
     const error = err as Error;
