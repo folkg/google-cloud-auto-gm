@@ -23,14 +23,14 @@ vi.mock("firebase-admin/app", () => {
 
 describe.concurrent("Utilities test", function () {
   test("single digit month, day ", function () {
-    const date = new Date(2020, 0, 3, 1, 1, 1);
+    const date = new Date(Date.UTC(2020, 0, 3, 1, 1, 1));
     const result = getPacificTimeDateString(date);
-    expect(result).toEqual("2020-01-03");
+    expect(result).toEqual("2020-01-02");
   });
   test("double digit month, day ", function () {
-    const date = new Date(2023, 10, 13, 1, 1, 1);
+    const date = new Date(Date.UTC(2023, 10, 13, 1, 1, 1));
     const result = getPacificTimeDateString(date);
-    expect(result).toEqual("2023-11-13");
+    expect(result).toEqual("2023-11-12");
   });
   test("today", function () {
     const date = new Date();
