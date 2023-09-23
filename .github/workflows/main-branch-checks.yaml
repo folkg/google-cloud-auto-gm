@@ -2,9 +2,13 @@ name: Main Branch Checks
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
+    branches: [main]
+
+defaults:
+  run:
+    working-directory: functions
 
 jobs:
   build-and-test:
@@ -18,16 +22,14 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
-        cache: npm
+        cache: "npm"
+        cache-dependency-path: functions/package-lock.json
 
     - name: Install dependencies
       run: npm ci
-      working-directory: functions
 
     - name: Run tests
       run: npm run test:once
-      working-directory: functions
 
     - name: Build
       run: npm run build
-      working-directory: functions
