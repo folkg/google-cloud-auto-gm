@@ -31,6 +31,14 @@ type TransctionsData = {
   lineupChanges: LineupChanges[] | null;
   addSwapTransactions: PlayerTransaction[][] | null;
 };
+type TransactionResults = {
+  postedTransactions: PlayerTransaction[];
+  failedReasons: string[];
+};
+type PostTransactionsResult = {
+  success: boolean;
+  transactionResults: TransactionResults;
+};
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -112,44 +120,57 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
 export async function postTransactions(
   transactionData: TransctionsData,
   uid: string
-): Promise<boolean> {
-  let result = false;
+): Promise<PostTransactionsResult> {
+  let success = false;
+  let allPostedTransactions: PlayerTransaction[] = [];
+  let allFailedReasons: string[] = [];
 
   const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
     transactionData;
 
-  let allPostedTransactions: PlayerTransaction[] = [];
-
   if (dropPlayerTransactions) {
     // any dropped players need to be processed before healthy players on IL are moved to BN with lineupChanges
-    const postedTransactions = await postSomeTransactions(
+    const { postedTransactions, failedReasons } = await postSomeTransactions(
       dropPlayerTransactions
     );
+
+    success = true;
     allPostedTransactions = postedTransactions;
-    result = true;
+    allFailedReasons = failedReasons;
   }
 
   if (lineupChanges) {
     // any injured players on roster need to be moved to IL before add player transactions are processed with addSwapTransactions
     await putAllLineupChanges(lineupChanges);
-    result = true;
+
+    success = true;
   }
 
   if (addSwapTransactions) {
-    const postedTransactions = await postSomeTransactions(addSwapTransactions);
+    const { postedTransactions, failedReasons } = await postSomeTransactions(
+      addSwapTransactions
+    );
+
     allPostedTransactions = allPostedTransactions.concat(postedTransactions);
-    result = true;
+    allFailedReasons = allFailedReasons.concat(failedReasons);
+    success = true;
   }
 
   if (allPostedTransactions.length > 0) {
     sendSuccessfulTransactionEmail(allPostedTransactions, uid);
   }
 
-  return result;
+  return {
+    success,
+    transactionResults: {
+      postedTransactions: allPostedTransactions,
+      failedReasons: allFailedReasons,
+    },
+  };
 
   async function postSomeTransactions(
     transactions: PlayerTransaction[][]
-  ): Promise<PlayerTransaction[]> {
+  ): Promise<TransactionResults> {
     try {
       return await postTransactionsHelper(transactions, uid);
     } catch (error) {
@@ -289,8 +310,9 @@ export async function createPlayersTransactions(
 async function postTransactionsHelper(
   playerTransactions: PlayerTransaction[][],
   uid: string
-): Promise<PlayerTransaction[]> {
+): Promise<TransactionResults> {
   const postedTransactions: PlayerTransaction[] = [];
+  const failedReasons: string[] = [];
 
   const allTransactionsPromises = playerTransactions
     .flat()
@@ -305,11 +327,13 @@ async function postTransactionsHelper(
       transaction && postedTransactions.push(transaction);
     } else if (result.status === "rejected") {
       error = true;
+      const { reason } = result;
       logger.error(
         `Error in postAllTransactions() for User: ${uid}: ${JSON.stringify(
-          result.reason
+          reason
         )}`
       );
+      failedReasons.push(reason);
     }
   });
 
@@ -317,7 +341,7 @@ async function postTransactionsHelper(
     throw new Error("Error in postAllTransactions()");
   }
 
-  return postedTransactions;
+  return { postedTransactions, failedReasons };
 }
 
 export function sendSuccessfulTransactionEmail(

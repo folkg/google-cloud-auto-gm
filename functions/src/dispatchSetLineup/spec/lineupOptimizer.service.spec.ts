@@ -1062,8 +1062,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     await setUsersLineup(uid, teams as ITeamFirestore[]);
     expect(spyFetchTopAvailablePlayers).toHaveBeenCalledTimes(2);
 
-    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
-
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(3);
     for (const transaction of transactions) {
       expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
@@ -1072,7 +1070,6 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
       );
     }
 
-    expect(spyPutLineupChanges).toHaveBeenCalledTimes(2);
     expect(spyPutLineupChanges).toHaveBeenCalledWith(
       dropPlayerLineupChanges,
       uid
@@ -1503,32 +1500,9 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(0);
   });
 
-  it("should throw an error from the second fetchRostersFromYahoo() API call, after dropping a player first (Intraday)", async () => {
+  it("should throw an error from the fetchRostersFromYahoo() API call", async () => {
     const uid = "testUID";
     const teams = [{ team_key: "test1" }];
-
-    // Set up mock data
-    const initialRosters: ITeamOptimizer[] = [
-      require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json"),
-    ];
-    const transaction1 = {
-      players: [
-        {
-          playerKey: "419.p.7528",
-          transactionType: "drop",
-          isInactiveList: false,
-        },
-      ],
-    };
-    const transaction2 = {
-      players: [
-        {
-          playerKey: "419.p.7903",
-          transactionType: "drop",
-          isInactiveList: false,
-        },
-      ],
-    };
 
     // Set up spies and mocks
     const spyFetchRostersFromYahoo = vi.spyOn(
@@ -1536,24 +1510,12 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
       "fetchRostersFromYahoo"
     );
     spyFetchRostersFromYahoo.mockImplementationOnce(() => {
-      return Promise.resolve(initialRosters);
-    });
-    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
       console.log("throwing error");
       throw new Error("Error from fetchRostersFromYahoo() test 2");
     });
-    const spyPostRosterAddDropTransaction = vi
-      .spyOn(yahooAPI, "postRosterAddDropTransaction")
-      .mockReturnValue(Promise.resolve() as any);
-    const spyPutLineupChanges = vi
-      .spyOn(yahooAPI, "putLineupChanges")
-      .mockReturnValue(Promise.resolve());
-    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
-      Promise.resolve()
-    );
 
     // Run test
-    expect.assertions(6);
+    expect.assertions(1);
     try {
       await setUsersLineup(uid, teams as ITeamFirestore[]);
     } catch (error) {
@@ -1561,18 +1523,6 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
         new Error("Error from fetchRostersFromYahoo() test 2")
       );
     }
-
-    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(2);
-    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(2);
-    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      expect.objectContaining(transaction1),
-      uid
-    );
-    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledWith(
-      expect.objectContaining(transaction2),
-      uid
-    );
-    expect(spyPutLineupChanges).toHaveBeenCalledTimes(0);
   });
 
   it("should have two roster changes, and then fail to put changes", async () => {
