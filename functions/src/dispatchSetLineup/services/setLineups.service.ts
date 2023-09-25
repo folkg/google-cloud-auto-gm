@@ -232,7 +232,7 @@ async function processAutomaticTransactions(
   teams: ITeamOptimizer[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
-) {
+): Promise<boolean> {
   const teamsWithAutoTransactions = teams.filter(
     (t) => t.automated_transaction_processing
   );
@@ -254,7 +254,8 @@ async function processAutomaticTransactions(
   };
 
   try {
-    return await postTransactions(transactionData, uid);
+    const result = await postTransactions(transactionData, uid);
+    return result.success;
   } catch (error) {
     logger.error("Transaction data: ", { transactionData });
     logger.error("Original teams object: ", { teamsWithAutoTransactions });

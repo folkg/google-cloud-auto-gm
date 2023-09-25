@@ -30,6 +30,10 @@ export async function fetchRostersFromYahoo(
 ): Promise<ITeamOptimizer[]> {
   const result: ITeamOptimizer[] = [];
 
+  if (teamKeys.length === 0) {
+    return result;
+  }
+
   const yahooJSON = await getRostersByTeamID(teamKeys, uid, date);
   const gamesJSON = getChild(yahooJSON.fantasy_content.users[0].user, "games");
 
