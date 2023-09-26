@@ -383,6 +383,28 @@
         "is_undroppable": false
       },
       {
+        "player_key": "414.p.266622",
+        "player_name": "Geno Smith 2",
+        "eligible_positions": ["QB"],
+        "selected_position": "QB",
+        "is_editable": false,
+        "is_playing": true,
+        "injury_status": "Healthy",
+        "percent_started": 19,
+        "percent_owned": 52,
+        "is_starting": "N/A",
+        "ranks": {
+          "last30Days": -1,
+          "last14Days": -1,
+          "next7Days": -1,
+          "restOfSeason": 13,
+          "last4Weeks": 31,
+          "projectedWeek": 55,
+          "next4Weeks": 15
+        },
+        "is_undroppable": false
+      },
+      {
         "player_key": "414.p.31896",
         "player_name": "DK Metcalf",
         "eligible_positions": ["WR", "W/R/T"],
@@ -727,7 +749,7 @@
       "W/R/T": 1,
       "K": 1,
       "DEF": 1,
-      "BN": 6,
+      "BN": 7,
       "IR": 1
     },
     "current_weekly_adds": 0,

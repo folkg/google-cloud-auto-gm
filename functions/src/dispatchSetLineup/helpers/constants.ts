@@ -76,7 +76,7 @@ type LeagueCompoundPositions = {
  */
 export const POSITIONAL_MAX_EXTRA_PLAYERS: LeagueMaxPositions = {
   mlb: { P: 6 },
-  nfl: { K: 0, DEF: 0 },
+  nfl: { QB: 1, K: 0, DEF: 0 },
   nba: {},
   nhl: { G: 3 },
 };
