@@ -104,19 +104,6 @@ export function getCurrentPacificNumDay(): number {
 }
 
 /**
- * Return true if the timestamp is today in pacific time
- *
- * @export
- * @param {number} timestamp - The timestamp to check
- * @return {boolean} - True if the timestamp is today in pacific time
- */
-export function isTodayPacificTime(timestamp: number | undefined): boolean {
-  const now = spacetime.now("Canada/Pacific");
-  const date = spacetime(timestamp ?? -1, "Canada/Pacific");
-  return now.isSame(date, "day");
-}
-
-/**
  * Return now() as an epoch number.
  *
  * Useful for mocking the current time in tests, if we ever need to.
