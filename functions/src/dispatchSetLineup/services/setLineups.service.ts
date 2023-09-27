@@ -11,13 +11,13 @@ import {
 import {
   getCurrentPacificNumDay,
   getPacificTimeDateString,
-  isTodayPacificTime,
 } from "../../common/services/utilities.service.js";
 import { putLineupChanges } from "../../common/services/yahooAPI/yahooAPI.service.js";
 import {
   initStartingGoalies,
   initStartingPitchers,
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
+import { isFirstRunOfTheDay } from "../../scheduleSetLineup/services/scheduleSetLineup.service.js";
 import {
   createPlayersTransactions,
   getTopAvailablePlayers,
@@ -268,21 +268,14 @@ async function processManualTransactions(
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
 ): Promise<void> {
-  // Only process teams that have not been updated today. Only propose changes once per day.
+  // Only process teams on the first run of the day. Only propose changes once per day.
   const teamsToCheck = teams.filter(
-    (t) =>
-      !t.automated_transaction_processing && !isTodayPacificTime(t.last_updated)
+    (t) => !t.automated_transaction_processing && isFirstRunOfTheDay()
   );
 
   if (teamsToCheck.length === 0) {
     return;
   }
-
-  // TODO: Remove this. Just here for testing / debugging.
-  logger.warn(
-    "Performing processManualTransactions() for teams:",
-    teamsToCheck
-  );
 
   const [dropPlayerTransactions, _, addSwapTransactions] =
     await createPlayersTransactions(teamsToCheck, topAvailablePlayerCandidates);

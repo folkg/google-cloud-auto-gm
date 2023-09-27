@@ -1,3 +1,4 @@
+import spacetime from "spacetime";
 import { describe, expect, test, vi } from "vitest";
 import {
   getPacificEndOfDay,
@@ -5,9 +6,7 @@ import {
   getPacificTimeDateString,
   getProgressBetween,
   getWeeklyProgressPacific,
-  isTodayPacificTime,
 } from "../services/utilities.service.js";
-import spacetime from "spacetime";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -84,29 +83,5 @@ describe.concurrent("Utilities test", function () {
     const result = getProgressBetween(startDate, endDate);
 
     expect(result).toEqual(0.25);
-  });
-
-  test("isTodayPacificTime true", function () {
-    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific").time(
-      "11:30am"
-    );
-    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
-    const date = spacetime("June 22, 2023", "Canada/Pacific").time(
-      "11:30pm"
-    ).epoch;
-
-    const result = isTodayPacificTime(date);
-
-    expect(result).toEqual(true);
-  });
-
-  test("isTodayPacificTime false", function () {
-    const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific");
-    vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
-    const date = spacetime("June 21, 2023", "Canada/Pacific").epoch;
-
-    const result = isTodayPacificTime(date);
-
-    expect(result).toEqual(false);
   });
 });

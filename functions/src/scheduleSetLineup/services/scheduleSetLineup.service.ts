@@ -18,6 +18,10 @@ if (getApps().length === 0) {
   initializeApp();
 }
 
+export function isFirstRunOfTheDay(): boolean {
+  return getCurrentPacificHour() === 1;
+}
+
 export async function scheduleSetLineup() {
   // We want the first run of the function to be at 1:55 AM Pacific Time
   // Waiver claims hadn't been fully proceseed at 0:55 AM

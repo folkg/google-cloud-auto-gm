@@ -13,6 +13,7 @@ import {
 } from "../services/setLineups.service.js";
 import * as LineupBuilderService from "../services/yahooLineupBuilder.service.js";
 import * as TopAvailablePlayersService from "../services/yahooTopAvailablePlayersBuilder.service.js";
+import * as ScheduleSetLineupService from "../../scheduleSetLineup/services/scheduleSetLineup.service.js";
 
 // mock firebase-admin
 vi.mock("firebase-admin/firestore", () => {
@@ -1301,17 +1302,76 @@ describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
     const sendPotentialTransactionEmailSpy = vi
       .spyOn(processTransactionsService, "sendPotentialTransactionEmail")
       .mockResolvedValue();
+    vi.spyOn(ScheduleSetLineupService, "isFirstRunOfTheDay").mockReturnValue(
+      true
+    );
 
     // Run test
     await setUsersLineup(uid, teams as ITeamFirestore[]);
-    expect(spyFetchTopAvailablePlayers).toHaveBeenCalledTimes(2);
-
-    expect(spyFetchRostersFromYahoo).toHaveBeenCalledTimes(1);
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(0);
-
     expect(sendPotentialTransactionEmailSpy).toHaveBeenCalledTimes(1);
+    expect(spyPutLineupChanges).toHaveBeenCalledTimes(1);
+  });
 
+  it("should NOT send an email for adding a player because it is not the first run of the day", async () => {
+    const uid = "testUID";
+    const teams = [
+      { team_key: "422.l.115494.t.4", allow_adding: true, game_code: "MLB" },
+    ];
+
+    const spyFetchRostersFromYahoo = vi.spyOn(
+      LineupBuilderService,
+      "fetchRostersFromYahoo"
+    );
+
+    const initialRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/AddBestPlayer-ManualTransaction.json"),
+    ];
+    const updatedRosters: ITeamOptimizer[] = [
+      require("./testRosters/MLB/AddBestPlayer-refetched.json"),
+    ];
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(initialRosters);
+    });
+    spyFetchRostersFromYahoo.mockImplementationOnce(() => {
+      return Promise.resolve(updatedRosters);
+    });
+
+    const spyFetchTopAvailablePlayers = vi.spyOn(
+      TopAvailablePlayersService,
+      "fetchTopAvailablePlayersFromYahoo"
+    );
+    const topAvailablePlayersPromise = require("./topAvailablePlayers/promises/topAvailablePlayersPromise1.json");
+    const restTopAvailablePlayersPromise = require("./topAvailablePlayers/promises/restTopAvailablePlayersPromise1.json");
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(topAvailablePlayersPromise);
+    });
+    spyFetchTopAvailablePlayers.mockImplementationOnce(() => {
+      return Promise.resolve(restTopAvailablePlayersPromise);
+    });
+
+    const spyPostRosterAddDropTransaction = vi
+      .spyOn(yahooAPI, "postRosterAddDropTransaction")
+      .mockReturnValue(Promise.resolve() as any);
+    const spyPutLineupChanges = vi
+      .spyOn(yahooAPI, "putLineupChanges")
+      .mockReturnValue(Promise.resolve() as any);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockReturnValue(
+      Promise.resolve()
+    );
+    const sendPotentialTransactionEmailSpy = vi
+      .spyOn(processTransactionsService, "sendPotentialTransactionEmail")
+      .mockResolvedValue();
+    vi.spyOn(ScheduleSetLineupService, "isFirstRunOfTheDay").mockReturnValue(
+      false
+    );
+
+    // Run test
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+
+    expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(0);
+    expect(sendPotentialTransactionEmailSpy).toHaveBeenCalledTimes(0);
     expect(spyPutLineupChanges).toHaveBeenCalledTimes(1);
   });
 });
@@ -1412,6 +1472,10 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
     ];
 
     // Set up spies and mocks
+    vi.spyOn(ScheduleSetLineupService, "isFirstRunOfTheDay").mockReturnValue(
+      true
+    );
+
     const spyFetchRostersFromYahoo = vi.spyOn(
       LineupBuilderService,
       "fetchRostersFromYahoo"
