@@ -31,7 +31,7 @@
     "axios-retry": "3.8.0",
     "dotenv": "16.3.1",
     "fast-xml-parser": "4.3.1",
-    "firebase-admin": "11.10.1",
+    "firebase-admin": "11.11.0",
     "firebase-functions": "4.4.1",
     "js2xmlparser": "5.0.0",
     "spacetime": "7.4.7"
@@ -40,14 +40,14 @@
     "@types/nodemailer": "6.4.11",
     "@typescript-eslint/eslint-plugin": "6.7.3",
     "@typescript-eslint/parser": "6.7.3",
-    "@vitest/coverage-v8": "0.34.5",
+    "@vitest/coverage-v8": "0.34.6",
     "eslint": "8.50.0",
     "eslint-config-google": "0.14.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-import": "2.28.1",
     "firebase-functions-test": "3.1.0",
     "typescript": "5.2.2",
-    "vitest": "0.34.5"
+    "vitest": "0.34.6"
   },
   "private": true
 }
