@@ -6,10 +6,11 @@ interface CommonTeam {
   start_date: number;
   end_date: number;
   weekly_deadline: string;
+  roster_positions: { [key: string]: number };
+  num_teams: number;
 }
 
 interface YahooTeam extends CommonTeam {
-  num_teams: number;
   edit_key: string;
   faab_balance: number;
   current_weekly_adds: number;
@@ -63,7 +64,6 @@ export interface ITeamOptimizer extends YahooTeam, Partial<OptionsTeam> {
   players: IPlayer[];
   coverage_type: string;
   coverage_period: string;
-  roster_positions: { [key: string]: number };
   transactions: any[];
   games_played?: GamesPlayed[];
   innings_pitched?: InningsPitched;
@@ -98,6 +98,8 @@ export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
     start_date: team.start_date,
     end_date: team.end_date,
     weekly_deadline: team.weekly_deadline,
+    roster_positions: team.roster_positions,
+    num_teams: team.num_teams,
   };
   const optionsTeam: OptionsTeam = {
     allow_transactions: false,

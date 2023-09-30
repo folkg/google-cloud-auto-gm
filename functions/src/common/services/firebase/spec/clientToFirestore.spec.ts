@@ -25,7 +25,7 @@ describe("clientToFirestore", () => {
     team_url: "team URL",
     team_logo: "team logo",
     league_name: "league name",
-    num_teams: 5,
+    num_teams: 12,
     rank: "1st",
     points_for: 100,
     points_against: 50,
@@ -35,6 +35,11 @@ describe("clientToFirestore", () => {
       losses: 2,
       ties: 0,
       percentage: "60%",
+    },
+    roster_positions: {
+      LW: 2,
+      C: 2,
+      RW: 2,
     },
     scoring_type: "scoring type",
     start_date: 1680418800000, //  Sunday April 02, 2023 14:02:47 GMT-0700 (Pacific Daylight Time)
@@ -56,6 +61,12 @@ describe("clientToFirestore", () => {
     is_subscribed: true,
     is_setting_lineups: false,
     last_updated: -1,
+    num_teams: 12,
+    roster_positions: {
+      LW: 2,
+      C: 2,
+      RW: 2,
+    },
     game_code: mockTeam.game_code,
     team_key: mockTeam.team_key,
     start_date: mockTeam.start_date,
