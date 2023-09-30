@@ -5,7 +5,7 @@ import {
   PlayerSort,
   getTopAvailablePlayers,
 } from "../../common/services/yahooAPI/yahooAPI.service.js";
-import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
+import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
 
 /**
  * A map of teamKeys to IPlayer Interface Objects

@@ -1,7 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ITeamFirestore } from "../../common/interfaces/ITeam";
-import { getReplacementLevels } from "../calcPositionalScarcity";
-import * as constants from "../../dispatchSetLineup/helpers/constants";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ITeamFirestore } from "../../../common/interfaces/ITeam";
+import * as constants from "../../../dispatchSetLineup/helpers/constants";
+import {
+  fetchPlayersFromYahoo,
+  getReplacementLevels,
+} from "../positionalScarcity.service";
+import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
 
 // This changes sometimes, I want to make sure it's always the same for testing, since this isn't the focus
 const maxExtraSpy = vi
@@ -210,4 +214,50 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
   });
+});
+
+describe("fetchPlayersFromYahoo", () => {
+  let team = {
+    game_code: "nhl",
+    roster_positions: {
+      C: 2,
+      LW: 2,
+    },
+    num_teams: 12,
+  } as unknown as ITeamFirestore;
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should return null if the fetch fails even once", async () => {
+    vi.spyOn(yahooAPI, "getTopPlayersGeneral")
+      .mockRejectedValueOnce("Could not fetch players - sample error")
+      .mockResolvedValue({});
+
+    const result = await fetchPlayersFromYahoo(
+      "testuid",
+      getReplacementLevels(team),
+      team
+    );
+
+    expect(result).toBeNull();
+  });
+  it.skip("should return an array of 2 positions x 25 players", async () => {
+    // TODO: Missing the firebase credentials
+    const uid = process.env.TEST_UID ?? "";
+    if (uid === "") {
+      return;
+    }
+    const result = await fetchPlayersFromYahoo(
+      uid,
+      getReplacementLevels(team),
+      team
+    );
+
+    expect(result).toHaveLength(2);
+    for (const position of result!) {
+      expect(position).toHaveLength(25);
+    }
+  }, 10000);
 });

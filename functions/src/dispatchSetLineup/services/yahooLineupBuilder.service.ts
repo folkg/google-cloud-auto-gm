@@ -11,7 +11,7 @@ import {
   parseStringToInt,
 } from "../../common/services/utilities.service.js";
 import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service.js";
-import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
+import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
 
 /**
  * Get the roster objects for the given teams

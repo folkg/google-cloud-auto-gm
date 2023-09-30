@@ -1,8 +1,5 @@
-import { IPlayer, PlayerRanks } from "../../common/interfaces/IPlayer.js";
-import {
-  getChild,
-  parseStringToInt,
-} from "../../common/services/utilities.service.js";
+import { IPlayer, PlayerRanks } from "../../interfaces/IPlayer.js";
+import { getChild, parseStringToInt } from "../utilities.service.js";
 
 /**
  * Deconstruct the players JSON object to get the required properties

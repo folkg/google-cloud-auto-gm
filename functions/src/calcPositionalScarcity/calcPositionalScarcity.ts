@@ -2,13 +2,11 @@ import assert from "assert";
 import { logger } from "firebase-functions";
 import { ITeamFirestore } from "../common/interfaces/ITeam";
 import {
-  COMPOUND_POSITION_COMPOSITIONS,
-  POSITIONAL_MAX_EXTRA_PLAYERS,
-} from "../dispatchSetLineup/helpers/constants";
-import { getTopPlayersGeneral } from "../common/services/yahooAPI/yahooAPI.service";
-import { getChild } from "../common/services/utilities.service";
-import { IPlayer } from "../common/interfaces/IPlayer";
-
+  ScarcityOffets,
+  fetchPlayersFromYahoo,
+  getReplacementLevels,
+  getScarcityOffsets,
+} from "./services/positionalScarcity.service";
 export async function calculatePositionalScarcity(
   uid: string,
   firestoreTeams: ITeamFirestore[]
@@ -47,11 +45,12 @@ export async function calculatePositionalScarcity(
     return;
   }
 
-  const result: Record<string, number> = {};
+  const result: ScarcityOffets[] = [];
 
   for (const team of firestoreTeams) {
-    const players = await fetchPlayersFromYahoo(team);
-    const offsets = getScarcityOffsets(players);
+    const replacementLevels = getReplacementLevels(team);
+    const players = await fetchPlayersFromYahoo(uid, replacementLevels, team);
+    const offsets = getScarcityOffsets(replacementLevels, players);
     if (offsets) {
       result.push(offsets);
     }
@@ -64,160 +63,6 @@ export async function calculatePositionalScarcity(
   // Adjust the player's ownership score by the modifier for their position when we are performing transactions elsewhere.
   // Make note that the max games played (and other??) uses this score for other purposes, and we DONT want it modified for that.
   return result;
-
-  function getScarcityOffsets(players: any[] | null) {
-    if (!players) {
-      return null;
-    }
-    const replacementLevelPlayers = players.map((playerList, index) => {
-      const replacementIndex = Math.floor(
-        replacementLevels[Object.keys(replacementLevels)[index]] / 25
-      );
-      return playerList[replacementIndex];
-    });
-
-    return replacementLevelPlayers.map((player) => {
-      return { [player.position]: player.ownership_score };
-    });
-  }
-}
-
-async function fetchPlayersFromYahoo(team: ITeamFirestore) {
-  const replacementLevels = getReplacementLevels(team);
-  const getPlayersPromises: Promise<any>[] = [];
-
-  for (const position in replacementLevels) {
-    // round the starting replacement level down to the nearest 25
-    const fetchStartingAt = Math.floor(replacementLevels[position] / 25) * 25;
-    getPlayersPromises.push(
-      getTopPlayersGeneral(team.game_code, position, fetchStartingAt)
-    );
-  }
-
-  try {
-    const yahooJSONs: any[] = await Promise.all(getPlayersPromises);
-    const players: IPlayer[][] = yahooJSONs.map((yahooJSON) => {
-      // TODO: We need to verify this works
-      const gameJSON = yahooJSON.fantasy_content.games[0].game;
-      const playersJSON = getChild(gameJSON, "players");
-      // TODO: This should be moved into common territory. We might need to move a lot of things.
-      return getPlayersFromRoster(playersJSON);
-    });
-  } catch (e) {
-    logger.error(e);
-    return null;
-  }
-}
-
-export function getReplacementLevels(
-  team: ITeamFirestore
-): Record<string, number> {
-  const {
-    game_code: gameCode,
-    roster_positions: rosterPositions,
-    num_teams: numTeams,
-  } = team;
-
-  const positionsList = Object.keys(rosterPositions);
-  const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[gameCode];
-  const maxExtraPlayers = POSITIONAL_MAX_EXTRA_PLAYERS[gameCode];
-
-  const result: Record<string, number> = {};
-
-  assignStandardPositions();
-  assignCompoundPositions();
-  assignBenchPositions();
-
-  return result;
-
-  function assignStandardPositions() {
-    for (const position of positionsList) {
-      const hasSubPositions =
-        compoundPositions[position]?.filter((subPosition) =>
-          positionsList.includes(subPosition)
-        ).length > 0;
-
-      if (position === "BN" || hasSubPositions) {
-        continue;
-      }
-
-      result[position] = rosterPositions[position] * numTeams;
-    }
-  }
-
-  function assignCompoundPositions() {
-    for (const compoundPosition in compoundPositions) {
-      if (!positionsList.includes(compoundPosition)) {
-        continue;
-      }
-
-      const numPlayersAtCompoundPosition = rosterPositions[compoundPosition];
-
-      const subPositions: string[] = compoundPositions[compoundPosition].filter(
-        (subPosition) => positionsList.includes(subPosition)
-      );
-
-      const numStarters = subPositions.reduce(
-        (acc, subPosition) => acc + rosterPositions[subPosition],
-        0
-      );
-
-      distributeExtraPositions(
-        subPositions,
-        numStarters,
-        numPlayersAtCompoundPosition
-      );
-    }
-  }
-
-  function assignBenchPositions() {
-    const numBenchPositions = rosterPositions["BN"];
-
-    if (numBenchPositions > 0) {
-      const numBenchPlayers = numBenchPositions;
-      const numStarters = Object.keys(result).reduce(
-        (acc, position) => acc + rosterPositions[position],
-        0
-      );
-
-      const sortedList = Object.keys(result);
-      distributeExtraPositions(sortedList, numStarters, numBenchPlayers);
-    }
-  }
-
-  function distributeExtraPositions(
-    positionList: string[],
-    numTotalStartingSpots: number,
-    numSpotsToDistribute: number
-  ) {
-    let numPlayersToDistribute = numSpotsToDistribute * numTeams;
-
-    positionList.sort(
-      (a, b) =>
-        (maxExtraPlayers[a] ?? Infinity) - (maxExtraPlayers[b] ?? Infinity)
-    );
-
-    for (const position of positionList) {
-      const numStartersAtPosition = rosterPositions[position];
-      const newShare =
-        (numStartersAtPosition / numTotalStartingSpots) *
-        numPlayersToDistribute;
-
-      const extraAllowed: number | undefined = maxExtraPlayers[position];
-      const totalAllowed: number =
-        extraAllowed !== undefined
-          ? (numStartersAtPosition + extraAllowed) * numTeams
-          : Infinity;
-
-      const newTotal = Math.min(newShare + result[position], totalAllowed);
-      const numAdded = newTotal - result[position];
-
-      numPlayersToDistribute -= numAdded;
-      numTotalStartingSpots -= rosterPositions[position];
-
-      result[position] = newTotal;
-    }
-  }
 }
 
 function test() {
