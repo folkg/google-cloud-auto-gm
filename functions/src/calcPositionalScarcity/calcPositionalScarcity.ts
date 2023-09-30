@@ -5,11 +5,33 @@ import {
   COMPOUND_POSITION_COMPOSITIONS,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../dispatchSetLineup/helpers/constants";
+import { getTopPlayersGeneral } from "../common/services/yahooAPI/yahooAPI.service";
+import { getChild } from "../common/services/utilities.service";
+import { IPlayer } from "../common/interfaces/IPlayer";
 
-export function calculatePositionalScarcity(
+export async function calculatePositionalScarcity(
   uid: string,
   firestoreTeams: ITeamFirestore[]
 ) {
+  // Load document from firestore that has the following format:
+  // {
+  //   nfl: {
+  //     QB: {
+  //       24: 50,
+  //       48: 50,
+  //     },
+  //   },
+  //   nba: {
+  //     PG: {
+  //       24: 50,
+  //       48: 50,
+  //     },
+  //   },
+  // }
+  // If we cannot find our number of players at each position, we need to calculate it, and then add it to the document.
+  // Once per week, we will do a full recalculation of the firestore document.
+  // A user should only have to calculate this once ever, and then the document will take care of itself after that.
+
   // TODO: Do we want to rename the dispatchSetLineup folder? It containes most of the code we will be using for this
   // TODO: Do we want to rename the scheduleSetLineup folder? It is going to be scheduling more than just setting lineups
   // TODO:
@@ -25,8 +47,14 @@ export function calculatePositionalScarcity(
     return;
   }
 
+  const result: Record<string, number> = {};
+
   for (const team of firestoreTeams) {
-    getReplacementLevels(team);
+    const players = await fetchPlayersFromYahoo(team);
+    const offsets = getScarcityOffsets(players);
+    if (offsets) {
+      result.push(offsets);
+    }
   }
 
   // getTopPlayersGeneral(); for each position
@@ -35,6 +63,50 @@ export function calculatePositionalScarcity(
   // TODO:
   // Adjust the player's ownership score by the modifier for their position when we are performing transactions elsewhere.
   // Make note that the max games played (and other??) uses this score for other purposes, and we DONT want it modified for that.
+  return result;
+
+  function getScarcityOffsets(players: any[] | null) {
+    if (!players) {
+      return null;
+    }
+    const replacementLevelPlayers = players.map((playerList, index) => {
+      const replacementIndex = Math.floor(
+        replacementLevels[Object.keys(replacementLevels)[index]] / 25
+      );
+      return playerList[replacementIndex];
+    });
+
+    return replacementLevelPlayers.map((player) => {
+      return { [player.position]: player.ownership_score };
+    });
+  }
+}
+
+async function fetchPlayersFromYahoo(team: ITeamFirestore) {
+  const replacementLevels = getReplacementLevels(team);
+  const getPlayersPromises: Promise<any>[] = [];
+
+  for (const position in replacementLevels) {
+    // round the starting replacement level down to the nearest 25
+    const fetchStartingAt = Math.floor(replacementLevels[position] / 25) * 25;
+    getPlayersPromises.push(
+      getTopPlayersGeneral(team.game_code, position, fetchStartingAt)
+    );
+  }
+
+  try {
+    const yahooJSONs: any[] = await Promise.all(getPlayersPromises);
+    const players: IPlayer[][] = yahooJSONs.map((yahooJSON) => {
+      // TODO: We need to verify this works
+      const gameJSON = yahooJSON.fantasy_content.games[0].game;
+      const playersJSON = getChild(gameJSON, "players");
+      // TODO: This should be moved into common territory. We might need to move a lot of things.
+      return getPlayersFromRoster(playersJSON);
+    });
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
 }
 
 export function getReplacementLevels(
@@ -115,9 +187,11 @@ export function getReplacementLevels(
 
   function distributeExtraPositions(
     positionList: string[],
-    numStarters: number,
-    numPlayersInPool: number
+    numTotalStartingSpots: number,
+    numSpotsToDistribute: number
   ) {
+    let numPlayersToDistribute = numSpotsToDistribute * numTeams;
+
     positionList.sort(
       (a, b) =>
         (maxExtraPlayers[a] ?? Infinity) - (maxExtraPlayers[b] ?? Infinity)
@@ -125,17 +199,23 @@ export function getReplacementLevels(
 
     for (const position of positionList) {
       const numStartersAtPosition = rosterPositions[position];
-      const extraAllowed: number | undefined = maxExtraPlayers[position];
-      const newShare = (numStartersAtPosition / numStarters) * numPlayersInPool;
-      const numToAdd =
-        numTeams *
-        (extraAllowed !== undefined
-          ? Math.min(newShare, extraAllowed)
-          : newShare);
-      numStarters -= rosterPositions[position];
-      numPlayersInPool -= numToAdd / numTeams;
+      const newShare =
+        (numStartersAtPosition / numTotalStartingSpots) *
+        numPlayersToDistribute;
 
-      result[position] += numToAdd;
+      const extraAllowed: number | undefined = maxExtraPlayers[position];
+      const totalAllowed: number =
+        extraAllowed !== undefined
+          ? (numStartersAtPosition + extraAllowed) * numTeams
+          : Infinity;
+
+      const newTotal = Math.min(newShare + result[position], totalAllowed);
+      const numAdded = newTotal - result[position];
+
+      numPlayersToDistribute -= numAdded;
+      numTotalStartingSpots -= rosterPositions[position];
+
+      result[position] = newTotal;
     }
   }
 }

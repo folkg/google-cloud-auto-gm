@@ -112,10 +112,10 @@ describe("getReplacementLevel", () => {
       num_teams: 12,
     } as unknown as ITeamFirestore;
     const expectedOutput = {
-      QB: 26,
-      RB: 56.8,
-      WR: 56.8,
-      TE: 28.4,
+      QB: 24,
+      RB: 57.6,
+      WR: 57.6,
+      TE: 28.8,
       K: 12,
       DEF: 12,
     };
@@ -140,6 +140,34 @@ describe("getReplacementLevel", () => {
       F: 108,
       D: 72,
       G: 36,
+    };
+
+    const result = getReplacementLevels(team);
+    for (const position in expectedOutput) {
+      expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
+    }
+  });
+  it("should return the correct replacement level for a team with compound positions (subs and no subs), BN positions, and max extra players (NHL)", () => {
+    // set this artifical value just to test the functionality
+    maxExtraSpy.mockReturnValueOnce({
+      nhl: { D: 2, G: 1 },
+    });
+
+    const team = {
+      game_code: "nhl",
+      roster_positions: {
+        F: 6,
+        D: 4,
+        G: 2,
+        Util: 3,
+        BN: 6,
+      },
+      num_teams: 12,
+    } as unknown as ITeamFirestore;
+    const expectedOutput = {
+      D: 72, // 48 + 14.4 (from Util) = 62.4 + 24 (from BN) = 86.4 ! Too much. Should cap at 72, then allocate elsewhere.
+      G: 36, // 24 + (72 - 9.6) * (2/8) = 39.6 ! Too much. Should cap at 36, then allocate elsewhere.
+      F: 144, // 72 + 21.6 (from Util) = 93.6 + the rest = 144
     };
 
     const result = getReplacementLevels(team);
