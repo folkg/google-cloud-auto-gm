@@ -4,8 +4,10 @@ import * as constants from "../../../dispatchSetLineup/helpers/constants";
 import {
   fetchPlayersFromYahoo,
   getReplacementLevels,
+  getScarcityOffsets,
 } from "../positionalScarcity.service";
 import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
+import { I } from "vitest/dist/reporters-5f784f42";
 
 // This changes sometimes, I want to make sure it's always the same for testing, since this isn't the focus
 const maxExtraSpy = vi
@@ -216,18 +218,39 @@ describe("getReplacementLevel", () => {
   });
 });
 
-describe("fetchPlayersFromYahoo", () => {
-  let team = {
-    game_code: "nhl",
-    roster_positions: {
-      C: 2,
-      LW: 2,
-    },
-    num_teams: 12,
-  } as unknown as ITeamFirestore;
+describe("fetchPlayersFromYahoo", async () => {
+  let uid: string;
+  let team: ITeamFirestore;
+
+  beforeEach(() => {
+    uid = "testuid";
+    team = {
+      game_code: "nhl",
+      roster_positions: {
+        F: 6,
+        D: 4,
+        G: 2,
+      },
+      num_teams: 12,
+    } as unknown as ITeamFirestore;
+  });
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it("should call getTopPlayersGeneral with the correct parameters", async () => {
+    const getTopPlayersGeneralSpy = vi
+      .spyOn(yahooAPI, "getTopPlayersGeneral")
+      .mockResolvedValue({});
+
+    await fetchPlayersFromYahoo(uid, getReplacementLevels(team), team);
+
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(3);
+    // replacement level for F is 72, D is 48, G is 24
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(uid, "nhl", "F", 50);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(uid, "nhl", "D", 25);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(uid, "nhl", "G", 0);
   });
 
   it("should return null if the fetch fails even once", async () => {
@@ -236,14 +259,34 @@ describe("fetchPlayersFromYahoo", () => {
       .mockResolvedValue({});
 
     const result = await fetchPlayersFromYahoo(
-      "testuid",
+      uid,
       getReplacementLevels(team),
       team
     );
 
     expect(result).toBeNull();
   });
-  it.skip("should return an array of 2 positions x 25 players", async () => {
+  it("should return an array of 3 positions x 25 players", async () => {
+    const playersF = require("./playersF.json");
+    const playersD = require("./playersD.json");
+    const playersG = require("./playersG.json");
+    vi.spyOn(yahooAPI, "getTopPlayersGeneral")
+      .mockResolvedValueOnce(playersF)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersG);
+
+    const result = await fetchPlayersFromYahoo(
+      uid,
+      getReplacementLevels(team),
+      team
+    );
+
+    expect(result).toHaveLength(3);
+    for (const position of result!) {
+      expect(position).toHaveLength(25);
+    }
+  });
+  it.skip("should return an array of 3 positions x 25 players (integration)", async () => {
     // TODO: Missing the firebase credentials
     const uid = process.env.TEST_UID ?? "";
     if (uid === "") {
@@ -255,9 +298,52 @@ describe("fetchPlayersFromYahoo", () => {
       team
     );
 
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
     for (const position of result!) {
       expect(position).toHaveLength(25);
     }
   }, 10000);
+});
+
+describe("getScarcityOffsets", () => {
+  const team = {
+    game_code: "nhl",
+    roster_positions: {
+      F: 6,
+      D: 4,
+      G: 2,
+    },
+    num_teams: 12,
+  } as unknown as ITeamFirestore;
+  const replacementLevels = getReplacementLevels(team);
+
+  it("should return null if players is null", () => {
+    const players = null;
+    const result = getScarcityOffsets(replacementLevels, players);
+    expect(result).toBeNull();
+  });
+  it("should return empty if players is empty", () => {
+    const players = [];
+    const result = getScarcityOffsets(replacementLevels, players);
+    expect(result).toEqual({});
+  });
+  it("should return the correct offsets for team with 3 positions", async () => {
+    const playersF = require("./playersF.json");
+    const playersD = require("./playersD.json");
+    const playersG = require("./playersG.json");
+    vi.spyOn(yahooAPI, "getTopPlayersGeneral")
+      .mockResolvedValueOnce(playersF)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersG);
+
+    const players = await fetchPlayersFromYahoo("uid", replacementLevels, team);
+
+    const result = getScarcityOffsets(replacementLevels, players);
+    // replacement level for F is 72, D is 48, G is 24. Get the ownership at each index.
+    expect(result).toEqual({
+      F: 690,
+      D: 700,
+      G: 600,
+    });
+  });
 });

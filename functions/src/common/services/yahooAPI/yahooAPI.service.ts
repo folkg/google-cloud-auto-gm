@@ -136,10 +136,6 @@ export async function getTopAvailablePlayers(
   });
 
   const leagueKeys = leagueKeysArray.join(",");
-  // sort=AR_L30;sort_type=lastmonth
-  // sort=AR_L14;sort_type=biweekly
-  // sort=AR_L4W;sort_type=last4weeks (NFL)
-  // sort=R_PO (percent owned)
   const url =
     `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKeys}` +
     `/players;status=${availabilityStatus}` +
@@ -155,6 +151,37 @@ export async function getTopAvailablePlayers(
     return data;
   } catch (err: unknown) {
     const errMessage = `Error in getTopAvailablePlayers. User: ${uid} League: ${teamKeys}`;
+    handleAxiosError(err, errMessage);
+  }
+}
+
+export async function getTopPlayersGeneral(
+  uid: string,
+  gameKey: string,
+  position: string,
+  start: number = 0,
+  availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
+  sort: PlayerSort = "sort=R_PO"
+): Promise<any> {
+  // TODO: Add a full integrtion that uses this function. It requires no user API to call, so it should be easy to test.
+  // Maybe do a full stack test that goes conditionally if it is on github actions?
+  const url =
+    `/games;game_keys=${gameKey}` +
+    `/players;status=${availabilityStatus}` +
+    `;position=${position}` +
+    `;${sort}` +
+    `;count=25;start=${start}` +
+    ";out=ownership,percent_started,percent_owned,ranks,opponent,starting_status" +
+    ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
+    ";percent_started.cut_types=diamond" +
+    ";percent_owned.cut_types=diamond" +
+    "?format=json";
+
+  try {
+    const { data } = await httpGetAxios(url, uid);
+    return data;
+  } catch (err: unknown) {
+    const errMessage = "Error in getTopPlayersGeneral.";
     handleAxiosError(err, errMessage);
   }
 }

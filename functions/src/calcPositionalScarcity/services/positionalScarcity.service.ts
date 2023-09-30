@@ -22,7 +22,7 @@ export function getScarcityOffsets(
 
   const replacementLevelPlayers = players.map((playerList, index) => {
     const position = Object.keys(replacementLevels)[index];
-    const replacementIndex = replacementLevels[position] % 25;
+    const replacementIndex = (replacementLevels[position] - 1) % 25;
     return { position, player: playerList[replacementIndex] };
   });
 
@@ -42,8 +42,9 @@ export async function fetchPlayersFromYahoo(
   const getPlayersPromises: Promise<any>[] = [];
 
   for (const position in replacementLevels) {
-    // round the starting replacement level down to the nearest 25 to match the Yahoo pagination
-    const fetchStartingAt = Math.floor(replacementLevels[position] / 25) * 25;
+    // round the starting replacement level down to the nearest 25 to match the Yahoo pagination (0-indexed)
+    const fetchStartingAt =
+      Math.floor((replacementLevels[position] - 1) / 25) * 25;
     getPlayersPromises.push(
       getTopPlayersGeneral(uid, team.game_code, position, fetchStartingAt)
     );
