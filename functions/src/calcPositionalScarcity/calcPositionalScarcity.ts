@@ -64,10 +64,3 @@ export async function calculatePositionalScarcity(
   // Make note that the max games played (and other??) uses this score for other purposes, and we DONT want it modified for that.
   return result;
 }
-
-function test() {
-  // const testUsers: string[] = [
-  //   "RLSrRcWN3lcYbxKQU1FKqditGDu1",
-  //   "xAyXmaHKO3aRm9J3fnj2rgZRPnX2",
-  // ]; // Graeme Folk, Jeff Barnes
-}

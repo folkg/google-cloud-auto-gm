@@ -64,6 +64,8 @@ export const testsetlineups = onRequest(async (_req, res) => {
     start_date: 1,
     end_date: Number.MAX_SAFE_INTEGER,
     weekly_deadline: "2021-04-01",
+    num_teams: 12,
+    roster_positions: {},
   }));
 
   try {

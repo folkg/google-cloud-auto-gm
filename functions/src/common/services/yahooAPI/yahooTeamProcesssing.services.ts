@@ -1,5 +1,5 @@
-import { GamesPlayed, InningsPitched } from "../../interfaces/ITeam";
-import { getChild } from "../utilities.service";
+import { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
+import { getChild } from "../utilities.service.js";
 
 export function createTransactionArray(transactions: any): any[] {
   const result: any[] = [];

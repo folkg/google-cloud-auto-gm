@@ -42,12 +42,15 @@ export async function fetchPlayersFromYahoo(
   const getPlayersPromises: Promise<any>[] = [];
 
   for (const position in replacementLevels) {
-    // round the starting replacement level down to the nearest 25 to match the Yahoo pagination (0-indexed)
-    const fetchStartingAt =
-      Math.floor((replacementLevels[position] - 1) / 25) * 25;
-    getPlayersPromises.push(
-      getTopPlayersGeneral(uid, team.game_code, position, fetchStartingAt)
-    );
+    // TODO: Guard for in to filter out unwanted properties
+    if (Object.hasOwn(replacementLevels, position)) {
+      // round the starting replacement level down to the nearest 25 to match the Yahoo pagination (0-indexed)
+      const fetchStartingAt =
+        Math.floor((replacementLevels[position] - 1) / 25) * 25;
+      getPlayersPromises.push(
+        getTopPlayersGeneral(uid, team.game_code, position, fetchStartingAt)
+      );
+    }
   }
 
   try {
