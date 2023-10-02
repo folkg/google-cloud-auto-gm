@@ -1,4 +1,4 @@
-import { IPlayer } from "../../common/interfaces/IPlayer.js";
+import { IPlayer } from "../interfaces/IPlayer.js";
 import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,

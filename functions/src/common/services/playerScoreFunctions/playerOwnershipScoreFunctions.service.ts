@@ -1,4 +1,4 @@
-import { Player } from "../classes/Player.js";
+import { Player } from "../../classes/Player.js";
 
 const scoreComponentLimit = {
   PERCENT_OWNED_DELTA_LIMIT: 3, // Applies to all sports

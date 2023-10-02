@@ -1,11 +1,11 @@
 import assert from "assert";
-import { GamesPlayed, InningsPitched } from "../../common/interfaces/ITeam.js";
+import { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
 import {
   getMLBStartingPitchers,
   getNHLStartingGoalies,
-} from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
-import { Player } from "../classes/Player.js";
-import { HEALTHY_STATUS_LIST } from "../helpers/constants.js";
+} from "../yahooAPI/yahooStartingPlayer.service.js";
+import { Player } from "../../classes/Player.js";
+import { HEALTHY_STATUS_LIST } from "../../helpers/constants.js";
 
 const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001
 const INJURY_FACTOR = 1e-3; // 0.001

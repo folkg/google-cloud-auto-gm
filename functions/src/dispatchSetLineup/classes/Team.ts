@@ -10,10 +10,10 @@ import {
   INACTIVE_POSITION_LIST,
   COMPOUND_POSITION_COMPOSITIONS,
   POSITIONAL_MAX_EXTRA_PLAYERS,
-} from "../helpers/constants.js";
-import { ownershipScoreFunctionFactory } from "../services/playerOwnershipScoreFunctions.service.js";
-import { playerStartScoreFunctionFactory } from "../services/playerStartScoreFunctions.service.js";
-import { Player } from "./Player.js";
+} from "../../common/helpers/constants.js";
+import { ownershipScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerOwnershipScoreFunctions.service.js";
+import { playerStartScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerStartScoreFunctions.service.js";
+import { Player } from "../../common/classes/Player.js";
 import { PlayerCollection } from "./PlayerCollection.js";
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class

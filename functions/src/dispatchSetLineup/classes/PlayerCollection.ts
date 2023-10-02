@@ -1,6 +1,6 @@
 import assert from "assert";
 import { IPlayer } from "../../common/interfaces/IPlayer.js";
-import { Player } from "./Player.js";
+import { Player } from "../../common/classes/Player.js";
 
 export class PlayerCollection {
   players: Player[];
