@@ -4,7 +4,7 @@ import { IPlayer } from "../../common/interfaces/IPlayer.js";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
-import { Player } from "./Player.js";
+import { Player } from "../../common/classes/Player.js";
 import { PlayerCollection } from "./PlayerCollection.js";
 import { Team } from "./Team.js";
 import { PlayerTransactions } from "./PlayerTransactions.js";

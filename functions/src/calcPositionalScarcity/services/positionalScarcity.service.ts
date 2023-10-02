@@ -7,7 +7,7 @@ import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProc
 import {
   COMPOUND_POSITION_COMPOSITIONS,
   POSITIONAL_MAX_EXTRA_PLAYERS,
-} from "../../dispatchSetLineup/helpers/constants";
+} from "../../common/helpers/constants";
 
 export type ReplacementLevels = Record<string, number>;
 export type ScarcityOffets = Record<string, number>;
