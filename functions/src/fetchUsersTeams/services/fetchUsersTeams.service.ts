@@ -6,6 +6,7 @@ import {
   parseStringToInt,
 } from "../../common/services/utilities.service.js";
 import { getUsersTeams } from "../../common/services/yahooAPI/yahooAPI.service.js";
+import { getPositionCounts } from "../../common/services/yahooAPI/yahooTeamProcesssing.services.js";
 
 /**
  * Get the user's teams from the Yahoo API
@@ -36,6 +37,7 @@ export async function fetchTeamsYahoo(uid: string): Promise<ITeamAngular[]> {
       const leagueSettings = getChild(league, "settings");
       const usersTeam = getChild(league, "teams")[0].team;
       const teamStandings = getChild(usersTeam, "team_standings");
+      const rosterPositions = getPositionCounts(leaguesJSON, leagueKey);
 
       const teamObj: ITeamAngular = {
         game_name: getChild(gameJSON, "name"),
@@ -78,6 +80,7 @@ export async function fetchTeamsYahoo(uid: string): Promise<ITeamAngular[]> {
           getChild(leagueSettings, "max_innings_pitched")
         ),
         edit_key: getChild(league, "edit_key"),
+        roster_positions: rosterPositions,
       };
       result.push(teamObj);
     }

@@ -14,10 +14,9 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("fetchUsersTeams", () => {
+describe("fetchUsersTeams", () => {
   it("should return a list of teams v2", async () => {
     const input = require("./input.json");
-    const expectedOutput = require("./output.json");
 
     const mockGetUserStandings = vi.spyOn(yahooAPI, "getUsersTeams");
     mockGetUserStandings.mockReturnValue(input);
@@ -29,6 +28,6 @@ describe.concurrent("fetchUsersTeams", () => {
     //   JSON.stringify(teams)
     // );
 
-    expect(teams).toEqual(expectedOutput);
+    expect(teams).toMatchSnapshot();
   });
 });
