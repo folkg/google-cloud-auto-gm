@@ -17,6 +17,7 @@
     "pp": "npm run test:once && npm run build",
     "logs": "firebase functions:log",
     "test": "vitest",
+    "test:debug": "vitest --test-timeout=999999999",
     "test:once": "vitest run",
     "coverage": "vitest --coverage"
   },
