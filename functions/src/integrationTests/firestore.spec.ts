@@ -17,9 +17,9 @@ describeIfIntegrationTesting("Firestore Integration", () => {
     console.log(result);
     expect(result).toBeDefined();
     for (const league in result) {
-      if (Object.hasOwn(result, league)) {
+      if (result.hasOwnProperty(league)) {
         for (const position in result[league]) {
-          if (Object.hasOwn(result[league], position)) {
+          if (result[league].hasOwnProperty(position)) {
             expect(Array.isArray(result[league][position])).toBe(true);
           }
         }

@@ -1,14 +1,14 @@
 import { logger } from "firebase-functions";
-import { IPlayer } from "../../common/interfaces/IPlayer";
-import { ITeamFirestore } from "../../common/interfaces/ITeam";
-import { getChild } from "../../common/services/utilities.service";
-import { getTopPlayersGeneral } from "../../common/services/yahooAPI/yahooAPI.service";
-import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service";
+import { IPlayer } from "../../common/interfaces/IPlayer.js";
+import { ITeamFirestore } from "../../common/interfaces/ITeam.js";
+import { getChild } from "../../common/services/utilities.service.js";
+import { getTopPlayersGeneral } from "../../common/services/yahooAPI/yahooAPI.service.js";
+import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
 import {
   COMPOUND_POSITION_COMPOSITIONS,
   POSITIONAL_MAX_EXTRA_PLAYERS,
-} from "../../common/helpers/constants";
-import * as Firestore from "../../common/services/firebase/firestore.service";
+} from "../../common/helpers/constants.js";
+import * as Firestore from "../../common/services/firebase/firestore.service.js";
 
 export type ReplacementLevels = Record<string, number>;
 export type ScarcityOffsets = Record<string, Record<string, number[]>>;
