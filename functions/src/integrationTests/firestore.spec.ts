@@ -9,6 +9,7 @@ import {
 describeIfIntegrationTesting("Firestore Integration", () => {
   it("should return uid", async () => {
     const result = await getRandomUID();
+    console.log(result);
     expect(result).toBeDefined();
   });
 
