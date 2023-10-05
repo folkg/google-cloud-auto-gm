@@ -1,10 +1,15 @@
 import { initializeApp } from "firebase-admin";
-import { firebaseConfig } from "./firebaseConfig";
 import { describe } from "vitest";
 
 let describeIfIntegrationTesting = describe.skip;
 
 if (process.env.INTEGRATION_TEST_ENABLED === "true") {
+  let firebaseConfig;
+  try {
+    firebaseConfig = require("./firebaseConfig.json");
+  } catch (e) {
+    firebaseConfig = {};
+  }
   initializeApp(firebaseConfig);
   describeIfIntegrationTesting = describe;
 }
