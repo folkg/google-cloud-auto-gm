@@ -1,9 +1,10 @@
+import { schedulecalcpositionalscarcity } from "./scheduleCalcPositionalScarcity/scheduleCalcPositionalScarcity.js";
 import { getTransactions } from "./transactions/services/processTransactions.service.js";
 import {
   gettransactions,
   posttransactions,
 } from "./transactions/transactions.js";
-export { gettransactions, posttransactions };
+export { gettransactions, posttransactions, schedulecalcpositionalscarcity };
 
 // TODO: This is just for testing. Remove later.
 import { logger } from "firebase-functions";
