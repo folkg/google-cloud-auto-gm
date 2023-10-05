@@ -464,7 +464,7 @@ export async function getRandomUID(): Promise<string> {
   // Allow any errors to bubble up to the caller
   // Orders by the ever-changing access token, then gets the first one
   const randomUserSnapshot = await usersRef
-    .orderBy("accessToken")
+    .orderBy("tokenExpirationTime", "desc")
     .limit(1)
     .get();
   const randomUser = randomUserSnapshot.docs[0];
