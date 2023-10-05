@@ -22,6 +22,7 @@ import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service.js";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service.js";
 import { RevokedRefreshTokenError } from "./errors.js";
 import { revokeRefreshToken } from "./revokeRefreshToken.service.js";
+import { ScarcityOffsets } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
 
 if (getApps().length === 0) {
   initializeApp();
@@ -414,4 +415,58 @@ export async function getStartingPlayersFromFirestore(
   // return an empty array if there was an error
   // we can still proceed with the rest of the program
   return [];
+}
+
+export async function getPositionalScarcityOffsets() {
+  const scarcityOffsetsRef = db.collection("positionalScarcityOffsets");
+  try {
+    const scarcityOffsetsSnapshot: QuerySnapshot<DocumentData> =
+      await scarcityOffsetsRef.get();
+
+    if (scarcityOffsetsSnapshot.empty) {
+      return {};
+    }
+
+    const offsets: ScarcityOffsets = {};
+    scarcityOffsetsSnapshot.forEach((doc) => {
+      offsets[doc.id] = doc.data();
+    });
+    return offsets;
+  } catch (error) {
+    logger.error("Error getting scarcity offsets from Firestore", error);
+    return {};
+  }
+}
+
+export async function updatePositionalScarcityOffset(
+  league: string,
+  position: string,
+  offsets: number[]
+) {
+  const scarcityOffsetsRef = db.collection("positionalScarcityOffsets");
+  try {
+    await scarcityOffsetsRef.doc(league).set({
+      [position]: offsets,
+    });
+    logger.info(
+      `Updated positional scarcity offsets for ${league.toUpperCase()} ${position} in Firestore`
+    );
+  } catch (error) {
+    logger.error(
+      `Error storing positional scarcity offsets for ${league.toUpperCase()} ${position} in Firestore`,
+      error
+    );
+  }
+}
+
+export async function getRandomUID(): Promise<string> {
+  const usersRef = db.collection("users");
+  // Allow any errors to bubble up to the caller
+  // Orders by the ever-changing access token, then gets the first one
+  const randomUserSnapshot = await usersRef
+    .orderBy("accessToken")
+    .limit(1)
+    .get();
+  const randomUser = randomUserSnapshot.docs[0];
+  return randomUser.id;
 }
