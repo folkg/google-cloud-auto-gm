@@ -8,64 +8,169 @@ import {
   COMPOUND_POSITION_COMPOSITIONS,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants";
+import * as Firestore from "../../common/services/firebase/firestore.service";
 
 export type ReplacementLevels = Record<string, number>;
-export type ScarcityOffets = Record<string, number>;
+export type ScarcityOffsets = Record<string, Record<string, number[]>>;
 
-export function getScarcityOffsets(
-  replacementLevels: ReplacementLevels,
-  players: IPlayer[][] | null
-): ScarcityOffets | null {
-  if (!players) {
-    return null;
+let SCARCITY_OFFSETS: ScarcityOffsets | null = null;
+
+async function loadScarcityOffsets() {
+  SCARCITY_OFFSETS = await Firestore.getPositionalScarcityOffsets();
+}
+
+export function clearScarcityOffsets() {
+  SCARCITY_OFFSETS = null;
+}
+
+export function getScarcityOffsetsForGame(gameCode: string) {
+  return SCARCITY_OFFSETS?.[gameCode] ?? {};
+}
+
+export async function getScarcityOffsetsForLeague(
+  gameCode: string,
+  replacementLevels: ReplacementLevels
+): Promise<Record<string, number>> {
+  if (!SCARCITY_OFFSETS) {
+    await loadScarcityOffsets();
   }
 
-  const replacementLevelPlayers = players.map((playerList, index) => {
-    const position = Object.keys(replacementLevels)[index];
-    const replacementIndex = (replacementLevels[position] - 1) % 25;
-    return { position, player: playerList[replacementIndex] };
-  });
+  const result: Record<string, number> = {};
 
-  const result: ScarcityOffets = {};
-  for (const p of replacementLevelPlayers) {
-    result[p.position] = p.player.percent_owned;
+  for (const position in replacementLevels) {
+    if (Object.hasOwn(replacementLevels, position)) {
+      const replacementIndex = replacementLevels[position] - 1;
+      const positionScarcityOffsets = SCARCITY_OFFSETS?.[gameCode][position];
+
+      if (!positionScarcityOffsets?.[replacementIndex]) {
+        await calculateOffsetForPosition(
+          position,
+          gameCode,
+          replacementIndex + 1
+        );
+      }
+
+      const offset =
+        SCARCITY_OFFSETS?.[gameCode]?.[position]?.[replacementIndex];
+
+      if (!offset) {
+        logger.error(
+          `No offsets found for position ${position} and replacement level ${replacementIndex}`
+        );
+        return {};
+      }
+
+      result[position] = offset;
+    }
   }
 
   return result;
 }
 
-export async function fetchPlayersFromYahoo(
-  uid: string,
-  replacementLevels: ReplacementLevels,
-  team: ITeamFirestore
-) {
-  const getPlayersPromises: Promise<any>[] = [];
+export async function recalculateScarcityOffsetsForAll() {
+  const uid = await Firestore.getRandomUID();
 
-  for (const position in replacementLevels) {
-    // TODO: Guard for in to filter out unwanted properties
-    if (Object.hasOwn(replacementLevels, position)) {
-      // round the starting replacement level down to the nearest 25 to match the Yahoo pagination (0-indexed)
-      const fetchStartingAt =
-        Math.floor((replacementLevels[position] - 1) / 25) * 25;
-      getPlayersPromises.push(
-        getTopPlayersGeneral(uid, team.game_code, position, fetchStartingAt)
-      );
+  if (!SCARCITY_OFFSETS) {
+    await loadScarcityOffsets();
+  }
+
+  const promises: Promise<void>[] = [];
+
+  for (const league in SCARCITY_OFFSETS) {
+    if (Object.hasOwn(SCARCITY_OFFSETS, league)) {
+      const leagueScarcityOffsets = SCARCITY_OFFSETS[league];
+      for (const position in leagueScarcityOffsets) {
+        if (Object.hasOwn(leagueScarcityOffsets, position)) {
+          // Don't await this, just let it run in the background
+          const calcPromise = calculateOffsetForPosition(
+            position,
+            league,
+            leagueScarcityOffsets[position].length,
+            uid
+          );
+          promises.push(calcPromise);
+        }
+      }
     }
   }
 
+  // Wait for all the promises to resolve before exiting
+  await Promise.allSettled(promises);
+}
+
+export async function calculateOffsetForPosition(
+  position: string,
+  league: string,
+  count: number,
+  uid?: string
+): Promise<void> {
+  if (!uid) {
+    uid = await Firestore.getRandomUID();
+  }
+  const promises = generateFetchPlayerPromises(uid, position, league, count);
+  const players = await fetchYahooPlayers(promises);
+  if (players) {
+    updateOffsetArray(league, position, players);
+  }
+}
+
+export function generateFetchPlayerPromises(
+  uid: string,
+  position: string,
+  gameCode: string,
+  count: number
+): Promise<any>[] {
+  const result: Promise<any>[] = [];
+
+  if (count < 1) {
+    return result;
+  }
+
+  let i = 0;
+  do {
+    result.push(getTopPlayersGeneral(uid, gameCode, position, i * 25));
+    i++;
+  } while (i * 25 < count);
+
+  return result;
+}
+
+async function fetchYahooPlayers(fetchPlayersPromises: Promise<any>[]) {
   try {
-    const yahooJSONs: any[] = await Promise.all(getPlayersPromises);
-    const players: IPlayer[][] = yahooJSONs.map((yahooJSON) => {
-      // TODO: We need to verify this works
-      const gameJSON = yahooJSON.fantasy_content.games[0].game;
-      const playersJSON = getChild(gameJSON, "players");
-      return getPlayersFromRoster(playersJSON);
-    });
+    const yahooJSONs: any[] = await Promise.all(fetchPlayersPromises);
+    const players: IPlayer[] = yahooJSONs
+      .flatMap((yahooJSON) => {
+        const gameJSON = yahooJSON.fantasy_content.games[0].game;
+        const playersJSON = getChild(gameJSON, "players");
+        return getPlayersFromRoster(playersJSON);
+      })
+      .sort((a, b) => a.percent_owned - b.percent_owned);
     return players;
   } catch (e: any) {
     logger.error("Error in fetchPlayersFromYahoo:", e);
     return null;
   }
+}
+
+function updateOffsetArray(
+  league: string,
+  position: string,
+  players: IPlayer[]
+) {
+  const array: number[] = [];
+  for (const player of players) {
+    array.push(player.percent_owned);
+  }
+  array.reverse();
+
+  if (!SCARCITY_OFFSETS) {
+    SCARCITY_OFFSETS = {};
+  }
+  if (!SCARCITY_OFFSETS[league]) {
+    SCARCITY_OFFSETS[league] = {};
+  }
+  SCARCITY_OFFSETS[league][position] = array;
+  Firestore.updatePositionalScarcityOffset(league, position, array);
 }
 
 export function getReplacementLevels(team: ITeamFirestore): ReplacementLevels {

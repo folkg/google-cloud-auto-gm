@@ -1,13 +1,29 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { ITeamFirestore } from "../../../common/interfaces/ITeam";
 import * as constants from "../../../common/helpers/constants";
 import {
-  fetchPlayersFromYahoo,
+  clearScarcityOffsets,
+  generateFetchPlayerPromises,
   getReplacementLevels,
-  getScarcityOffsets,
+  getScarcityOffsetsForGame,
+  getScarcityOffsetsForLeague,
+  recalculateScarcityOffsetsForAll,
 } from "../positionalScarcity.service";
 import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
+import * as firestoreService from "../../../common/services/firebase/firestore.service";
 
+const numbersArr100 = Array.from({ length: 100 }, (_, i) => 100 - i);
+const playersF = require("./playersF.json");
+const playersD = require("./playersD.json");
+const playersG = require("./playersG.json");
 // This changes sometimes, I want to make sure it's always the same for testing, since this isn't the focus
 const maxExtraSpy = vi
   .spyOn(constants, "POSITIONAL_MAX_EXTRA_PLAYERS", "get")
@@ -17,6 +33,12 @@ const maxExtraSpy = vi
     nba: {},
     nhl: { G: 3 },
   });
+
+// Stop calls to Firestore
+vi.spyOn(firestoreService, "getRandomUID").mockResolvedValue("1");
+const updatePositionalScarcityOffsetSpy = vi
+  .spyOn(firestoreService, "updatePositionalScarcityOffset")
+  .mockResolvedValue();
 
 describe("getReplacementLevel", () => {
   beforeEach(() => {
@@ -217,94 +239,157 @@ describe("getReplacementLevel", () => {
   });
 });
 
-describe("fetchPlayersFromYahoo", async () => {
-  let uid: string;
-  let team: ITeamFirestore;
+describe("recalculateScarcityOffsetsForAll", () => {
+  const league = "nhl";
+  const scarcityOffsets = {
+    nhl: {
+      F: numbersArr100,
+      D: numbersArr100,
+      G: numbersArr100,
+    },
+  };
+
+  let getPositionalScarcityOffsetsSpy;
+  let getTopPlayersGeneralSpy;
+
+  beforeAll(() => {
+    getTopPlayersGeneralSpy = vi.spyOn(yahooAPI, "getTopPlayersGeneral");
+    getPositionalScarcityOffsetsSpy = vi.spyOn(
+      firestoreService,
+      "getPositionalScarcityOffsets"
+    );
+  });
 
   beforeEach(() => {
-    uid = "testuid";
-    team = {
-      game_code: "nhl",
-      roster_positions: {
-        F: 6,
-        D: 4,
-        G: 2,
-      },
-      num_teams: 12,
-    } as unknown as ITeamFirestore;
+    getTopPlayersGeneralSpy.mockResolvedValue({});
+    getPositionalScarcityOffsetsSpy.mockResolvedValue(scarcityOffsets);
+    clearScarcityOffsets();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
-  it("should call getTopPlayersGeneral with the correct parameters", async () => {
-    const getTopPlayersGeneralSpy = vi
-      .spyOn(yahooAPI, "getTopPlayersGeneral")
-      .mockResolvedValue({});
+  it("should not call getTopPlayersGeneral if there is no scarcity offset", async () => {
+    getPositionalScarcityOffsetsSpy.mockResolvedValueOnce(null);
 
-    await fetchPlayersFromYahoo(uid, getReplacementLevels(team), team);
+    await recalculateScarcityOffsetsForAll();
 
-    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(3);
-    // replacement level for F is 72, D is 48, G is 24
-    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(uid, "nhl", "F", 50);
-    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(uid, "nhl", "D", 25);
-    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(uid, "nhl", "G", 0);
+    const scarcityOffsetArray = getScarcityOffsetsForGame(league);
+    expect(scarcityOffsetArray).toEqual({});
+
+    expect(getTopPlayersGeneralSpy).not.toHaveBeenCalled();
+    expect(updatePositionalScarcityOffsetSpy).not.toHaveBeenCalled();
   });
 
-  it("should return null if the fetch fails even once", async () => {
-    vi.spyOn(yahooAPI, "getTopPlayersGeneral")
-      .mockRejectedValueOnce("Could not fetch players - sample error")
-      .mockResolvedValue({});
+  it("should not call getTopPlayersGeneral if scarcity offset is empty", async () => {
+    getPositionalScarcityOffsetsSpy.mockResolvedValueOnce({});
 
-    const result = await fetchPlayersFromYahoo(
-      uid,
-      getReplacementLevels(team),
-      team
-    );
+    await recalculateScarcityOffsetsForAll();
 
-    expect(result).toBeNull();
+    const scarcityOffsetArray = getScarcityOffsetsForGame(league);
+    expect(scarcityOffsetArray).toEqual({});
+
+    expect(getTopPlayersGeneralSpy).not.toHaveBeenCalled();
+    expect(updatePositionalScarcityOffsetSpy).not.toHaveBeenCalled();
   });
-  it("should return an array of 3 positions x 25 players", async () => {
-    const playersF = require("./playersF.json");
-    const playersD = require("./playersD.json");
-    const playersG = require("./playersG.json");
-    vi.spyOn(yahooAPI, "getTopPlayersGeneral")
+
+  it("should call getTopPlayersGeneral 12 times (3 positions x 4 calls each (100 / 25))", async () => {
+    await recalculateScarcityOffsetsForAll();
+
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(12);
+  });
+
+  it("should call for multiple leagues", async () => {
+    const scarcityOffsets = {
+      nfl: { QB: [0, 1] },
+      nhl: { G: [1] },
+      nba: {},
+      mlb: { P: [0, 1], OF: numbersArr100 },
+    };
+    getPositionalScarcityOffsetsSpy.mockResolvedValue(scarcityOffsets);
+
+    await recalculateScarcityOffsetsForAll();
+
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(7);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", "nfl", "QB", 0);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", "nhl", "G", 0);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", "mlb", "P", 0);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", "mlb", "OF", 0);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", "mlb", "OF", 25);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", "mlb", "OF", 50);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", "mlb", "OF", 75);
+  });
+
+  it("should call updatePositionalScarcityOffset 3 times for 3 positions in SCARCITY_OFFSETS when there are players returned", async () => {
+    getTopPlayersGeneralSpy
+      .mockResolvedValueOnce(playersF)
+      .mockResolvedValueOnce(playersF)
+      .mockResolvedValueOnce(playersF)
       .mockResolvedValueOnce(playersF)
       .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersG)
+      .mockResolvedValueOnce(playersG)
+      .mockResolvedValueOnce(playersG)
       .mockResolvedValueOnce(playersG);
 
-    const result = await fetchPlayersFromYahoo(
-      uid,
-      getReplacementLevels(team),
-      team
-    );
+    await recalculateScarcityOffsetsForAll();
 
-    expect(result).toHaveLength(3);
-    for (const position of result!) {
-      expect(position).toHaveLength(25);
-    }
+    const scarcityOffsetArray = getScarcityOffsetsForGame(league);
+    expect(scarcityOffsetArray).toEqual(scarcityOffsets[league]);
+
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(3);
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
+      league,
+      "F",
+      expect.arrayContaining([expect.any(Number)])
+    );
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
+      league,
+      "D",
+      expect.arrayContaining([expect.any(Number)])
+    );
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
+      league,
+      "G",
+      expect.arrayContaining([expect.any(Number)])
+    );
   });
-  it.skip("should return an array of 3 positions x 25 players (integration)", async () => {
-    // TODO: Missing the firebase credentials
-    const uid = process.env.TEST_UID ?? "";
-    if (uid === "") {
-      return;
-    }
-    const result = await fetchPlayersFromYahoo(
-      uid,
-      getReplacementLevels(team),
-      team
+
+  it("should not call updatePositionalScarcityOffset if there are no players returned", async () => {
+    await recalculateScarcityOffsetsForAll();
+
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it("should not call updatePositionalScarcityOffset for a position if a fetch fails", async () => {
+    getTopPlayersGeneralSpy
+      .mockRejectedValueOnce("Could not fetch F players")
+      .mockResolvedValueOnce(playersF)
+      .mockResolvedValueOnce(playersF)
+      .mockResolvedValueOnce(playersF)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersD)
+      .mockResolvedValueOnce(playersG)
+      .mockResolvedValueOnce(playersG)
+      .mockRejectedValueOnce("Could not fetch G players")
+      .mockResolvedValueOnce(playersG);
+    await recalculateScarcityOffsetsForAll();
+
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(1);
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
+      league,
+      "D",
+      expect.arrayContaining([expect.any(Number)])
     );
-
-    expect(result).toHaveLength(3);
-    for (const position of result!) {
-      expect(position).toHaveLength(25);
-    }
-  }, 10000);
+  });
 });
-
-describe("getScarcityOffsets", () => {
+describe("getScarcityOffsetsForLeague", () => {
   const team = {
     game_code: "nhl",
     roster_positions: {
@@ -314,35 +399,184 @@ describe("getScarcityOffsets", () => {
     },
     num_teams: 12,
   } as unknown as ITeamFirestore;
-  const replacementLevels = getReplacementLevels(team);
+  const league = team.game_code;
+  const replacementLevels = { F: 72, D: 48, G: 24 };
 
-  it("should return null if players is null", () => {
-    const players = null;
-    const result = getScarcityOffsets(replacementLevels, players);
-    expect(result).toBeNull();
+  let getPositionalScarcityOffsetsSpy;
+
+  beforeAll(() => {
+    getPositionalScarcityOffsetsSpy = vi
+      .spyOn(firestoreService, "getPositionalScarcityOffsets")
+      .mockResolvedValue({
+        nhl: {
+          F: numbersArr100,
+          D: numbersArr100,
+          G: numbersArr100,
+          Util: numbersArr100,
+          LW: numbersArr100,
+        },
+      });
   });
-  it("should return empty if players is empty", () => {
-    const players = [];
-    const result = getScarcityOffsets(replacementLevels, players);
-    expect(result).toEqual({});
+
+  beforeEach(() => {
+    clearScarcityOffsets();
   });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should return the correct offsets for team with 3 positions", async () => {
-    const playersF = require("./playersF.json");
-    const playersD = require("./playersD.json");
-    const playersG = require("./playersG.json");
-    vi.spyOn(yahooAPI, "getTopPlayersGeneral")
-      .mockResolvedValueOnce(playersF)
-      .mockResolvedValueOnce(playersD)
-      .mockResolvedValueOnce(playersG);
-
-    const players = await fetchPlayersFromYahoo("uid", replacementLevels, team);
-
-    const result = getScarcityOffsets(replacementLevels, players);
+    const result = await getScarcityOffsetsForLeague(league, replacementLevels);
     // replacement level for F is 72, D is 48, G is 24. Get the ownership at each index.
     expect(result).toEqual({
-      F: 690,
-      D: 700,
-      G: 600,
+      F: 29,
+      D: 53,
+      G: 77,
     });
+
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it("should return empty if loading/calculating scarcity offsets fails", async () => {
+    getPositionalScarcityOffsetsSpy.mockResolvedValueOnce(null);
+    // Don't actually fetch players from yahoo
+    vi.spyOn(yahooAPI, "getTopPlayersGeneral").mockResolvedValue({});
+
+    const result = await getScarcityOffsetsForLeague(league, replacementLevels);
+
+    expect(result).toEqual({});
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it("should call updatePositionalScarcityOffset if there are no offsets for a position (RW)", async () => {
+    const getTopPlayersGeneralSpy = vi
+      .spyOn(yahooAPI, "getTopPlayersGeneral")
+      .mockResolvedValue(playersF);
+    await getScarcityOffsetsForLeague(league, {
+      F: 72,
+      D: 48,
+      G: 24,
+      RW: 24,
+    });
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(1);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith("1", league, "RW", 0);
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(1);
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
+      league,
+      "RW",
+      expect.arrayContaining([expect.any(Number)])
+    );
+  });
+
+  it("should call updatePositionalScarcityOffset if there are not enough offsets for a position (F)", async () => {
+    const getTopPlayersGeneralSpy = vi
+      .spyOn(yahooAPI, "getTopPlayersGeneral")
+      .mockResolvedValue(playersF);
+    await getScarcityOffsetsForLeague(league, {
+      F: 101,
+      D: 48,
+      G: 24,
+    });
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(5);
+    const position = "F";
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(
+      "1",
+      league,
+      position,
+      0
+    );
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(
+      "1",
+      league,
+      position,
+      100
+    );
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(1);
+    expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
+      league,
+      "F",
+      expect.arrayContaining([expect.any(Number)])
+    );
+  });
+
+  it("should return all arrays (existing and new(F, RW)) in descending order", async () => {
+    vi.spyOn(yahooAPI, "getTopPlayersGeneral").mockResolvedValue(playersF);
+    await getScarcityOffsetsForLeague(league, {
+      F: 101,
+      D: 48,
+      G: 24,
+      RW: 24,
+    });
+
+    const scarcityOffsetArray = getScarcityOffsetsForGame(league);
+    for (const position in scarcityOffsetArray) {
+      const pOffsets = scarcityOffsetArray[position];
+      expect(pOffsets[0]).toBeGreaterThan(pOffsets[pOffsets.length - 1]);
+    }
+  });
+});
+
+describe("generateFetchPlayerPromises", () => {
+  const uid = "testuid";
+  const position = "F";
+  const gameCode = "nhl";
+  let getTopPlayersGeneralSpy;
+
+  beforeAll(() => {
+    vi.restoreAllMocks();
+    getTopPlayersGeneralSpy = vi
+      .spyOn(yahooAPI, "getTopPlayersGeneral")
+      .mockResolvedValue({});
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should return an array of 1 promise if count is <= 25", async () => {
+    const count = 25;
+    const result = generateFetchPlayerPromises(uid, position, gameCode, count);
+
+    expect(result).toHaveLength(1);
+
+    await Promise.all(result);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(1);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(
+      uid,
+      gameCode,
+      position,
+      0
+    );
+  });
+  it("should return an array of 2 promises if count is 26", async () => {
+    const count = 26;
+    const result = generateFetchPlayerPromises(uid, position, gameCode, count);
+
+    expect(result).toHaveLength(2);
+
+    await Promise.all(result);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(2);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(
+      uid,
+      gameCode,
+      position,
+      0
+    );
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(
+      uid,
+      gameCode,
+      position,
+      25
+    );
+  });
+  it("should return an empty array if count is 0", async () => {
+    const count = 0;
+    const result = generateFetchPlayerPromises(uid, position, gameCode, count);
+
+    expect(result).toHaveLength(0);
+
+    await Promise.all(result);
+    expect(getTopPlayersGeneralSpy).toHaveBeenCalledTimes(0);
   });
 });
