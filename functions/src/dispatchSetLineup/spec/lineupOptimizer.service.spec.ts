@@ -11,8 +11,8 @@ import {
   performWeeklyLeagueTransactions,
   setUsersLineup,
 } from "../services/setLineups.service.js";
-import * as LineupBuilderService from "../services/yahooLineupBuilder.service.js";
-import * as TopAvailablePlayersService from "../services/yahooTopAvailablePlayersBuilder.service.js";
+import * as LineupBuilderService from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
+import * as TopAvailablePlayersService from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 import * as ScheduleSetLineupService from "../../scheduleSetLineup/services/scheduleSetLineup.service.js";
 
 // mock firebase-admin

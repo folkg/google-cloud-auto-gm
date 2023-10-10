@@ -27,8 +27,8 @@ import {
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
-import { fetchRostersFromYahoo } from "./yahooLineupBuilder.service.js";
-import { TopAvailablePlayers } from "./yahooTopAvailablePlayersBuilder.service.js";
+import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
+import { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams

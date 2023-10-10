@@ -1,19 +1,14 @@
-import { IPlayer } from "../../common/interfaces/IPlayer.js";
-import { getChild } from "../../common/services/utilities.service.js";
+import { IPlayer } from "../../interfaces/IPlayer.js";
+import { getChild } from "../utilities.service.js";
 import {
   AvailabilityStatus,
   PlayerSort,
   getTopAvailablePlayers,
-} from "../../common/services/yahooAPI/yahooAPI.service.js";
-import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
+} from "./yahooAPI.service.js";
+import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
 
-/**
- * A map of teamKeys to IPlayer Interface Objects
- *
- * @typedef {TopAvailablePlayers}
- */
 export type TopAvailablePlayers = {
-  [key: string]: IPlayer[];
+  [teamKey: string]: IPlayer[];
 };
 
 /**

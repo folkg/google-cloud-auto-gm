@@ -4,7 +4,7 @@ import {
   mergeTopAvailabePlayers,
 } from "../services/processTransactions.service";
 import { ITeamFirestore } from "../../common/interfaces/ITeam";
-import * as yahooTopAvailablePlayersBuilder from "../../dispatchSetLineup/services/yahooTopAvailablePlayersBuilder.service";
+import * as yahooTopAvailablePlayersBuilder from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service";
 
 vi.mock("firebase-admin/firestore", () => {
   return {

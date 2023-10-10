@@ -189,7 +189,7 @@ describe.concurrent("Test Team Class", () => {
   });
 
   it("should return QB, K and DEF as at max capacity, since they have max cap of extra players", () => {
-    const teamJSON = require("../../spec/testYahooLineupJSON/output/NFLLineups.json");
+    const teamJSON = require("../../../common/services/yahooAPI/spec/testYahooLineupJSON/output/NFLLineups.json");
     const team = new Team(teamJSON[1]);
 
     expect(team.atMaxCapPositions).toEqual(["QB", "K", "DEF"]);

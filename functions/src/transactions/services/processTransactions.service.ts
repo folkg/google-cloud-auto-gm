@@ -20,11 +20,11 @@ import { enrichTeamsWithFirestoreSettings } from "../../common/services/firebase
 import { LineupOptimizer } from "../../dispatchSetLineup/classes/LineupOptimizer.js";
 import { LineupChanges } from "../../dispatchSetLineup/interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../../dispatchSetLineup/interfaces/PlayerTransaction.js";
-import { fetchRostersFromYahoo } from "../../dispatchSetLineup/services/yahooLineupBuilder.service.js";
+import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
 import {
   TopAvailablePlayers,
   fetchTopAvailablePlayersFromYahoo,
-} from "../../dispatchSetLineup/services/yahooTopAvailablePlayersBuilder.service.js";
+} from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 
 type TransctionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
