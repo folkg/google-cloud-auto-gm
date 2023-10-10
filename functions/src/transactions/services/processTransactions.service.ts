@@ -64,13 +64,11 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
     };
   }
 
-  const firestoreTeams: ITeamFirestore[] = teams.docs
-    .map((doc) => {
-      const team = doc.data();
-      team.team_key = doc.id;
-      return team as ITeamFirestore;
-    })
-    .filter((team) => team.start_date <= Date.now());
+  const firestoreTeams: ITeamFirestore[] = teams.docs.map((doc) => {
+    const team = doc.data();
+    team.team_key = doc.id;
+    return team as ITeamFirestore;
+  });
 
   const intradayTeams = firestoreTeams.filter(
     (team) => team.weekly_deadline === "intraday" || team.game_code === "nfl"
