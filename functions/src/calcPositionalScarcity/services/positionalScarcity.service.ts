@@ -1,6 +1,7 @@
 import { logger } from "firebase-functions";
 import {
   COMPOUND_POSITION_COMPOSITIONS,
+  INACTIVE_POSITION_LIST,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants.js";
 import { IPlayer } from "../../common/interfaces/IPlayer.js";
@@ -204,7 +205,9 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
     num_teams: numTeams,
   } = team;
 
-  const positionsList = Object.keys(rosterPositions);
+  const positionsList = Object.keys(rosterPositions).filter(
+    (position) => INACTIVE_POSITION_LIST.includes(position) === false
+  );
   const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[gameCode];
   const maxExtraPlayers = POSITIONAL_MAX_EXTRA_PLAYERS[gameCode];
 

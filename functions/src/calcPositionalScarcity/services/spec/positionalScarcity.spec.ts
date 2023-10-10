@@ -60,6 +60,9 @@ describe("getReplacementLevel", () => {
         RW: 2,
         D: 4,
         G: 2,
+        IR: 2,
+        "IR+": 2,
+        NA: 2,
       },
       num_teams: 12,
     } as unknown as ITeamFirestore;
@@ -142,6 +145,8 @@ describe("getReplacementLevel", () => {
         K: 1,
         DEF: 1,
         BN: 6,
+        "IL+": 2,
+        IL: 2,
       },
       num_teams: 12,
     } as unknown as ITeamFirestore;
@@ -226,6 +231,9 @@ describe("getReplacementLevel", () => {
         OF: 3,
         P: 9,
         BN: 10,
+        IL: 2,
+        "IL+": 2,
+        NA: 2,
       },
       num_teams: 12,
     } as unknown as ITeamFirestore;
