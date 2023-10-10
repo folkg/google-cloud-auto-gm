@@ -64,25 +64,27 @@ export async function getLeagueSpecificScarcityOffsets(
         Math.floor(replacementLevels[position] - 1),
         0
       );
-      const positionScarcityOffsets =
-        getScarcityOffsetsForGame(gameCode)[position];
 
-      if (!positionScarcityOffsets?.[replacementIndex]) {
+      let offset =
+        getScarcityOffsetsForGame(gameCode)[position]?.[replacementIndex];
+
+      if (offset === undefined) {
         await calculateOffsetForPosition(
           position,
           gameCode,
           replacementIndex + 1
         );
-      }
 
-      const offset =
-        getScarcityOffsetsForGame(gameCode)[position]?.[replacementIndex];
+        // Refresh the offsets
+        offset =
+          getScarcityOffsetsForGame(gameCode)[position]?.[replacementIndex];
 
-      if (!offset) {
-        logger.error(
-          `No offsets found for position ${position} and replacement level ${replacementIndex}`
-        );
-        return {};
+        if (offset === undefined) {
+          logger.error(
+            `No offsets found for position ${position} and replacement level ${replacementIndex}. Returning empty object. No offsets will be applied to team.`
+          );
+          return {};
+        }
       }
 
       result[position] = offset;
@@ -184,7 +186,7 @@ function updateOffsetArray(
 ) {
   const array: number[] = [];
   for (const player of players) {
-    array.push(player.percent_owned);
+    array.push(player?.percent_owned ?? 0);
   }
   array.reverse();
 
