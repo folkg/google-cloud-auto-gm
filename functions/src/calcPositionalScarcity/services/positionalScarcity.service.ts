@@ -1,19 +1,28 @@
 import { logger } from "firebase-functions";
-import { IPlayer } from "../../common/interfaces/IPlayer.js";
-import { ITeamFirestore } from "../../common/interfaces/ITeam.js";
-import { getChild } from "../../common/services/utilities.service.js";
-import { getTopPlayersGeneral } from "../../common/services/yahooAPI/yahooAPI.service.js";
-import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
 import {
   COMPOUND_POSITION_COMPOSITIONS,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants.js";
+import { IPlayer } from "../../common/interfaces/IPlayer.js";
+import { CommonTeam } from "../../common/interfaces/ITeam.js";
 import * as Firestore from "../../common/services/firebase/firestore.service.js";
+import { getChild } from "../../common/services/utilities.service.js";
+import { getTopPlayersGeneral } from "../../common/services/yahooAPI/yahooAPI.service.js";
+import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
 
-export type ReplacementLevels = Record<string, number>;
-export type ScarcityOffsets = Record<string, Record<string, number[]>>;
+export type ReplacementLevels = {
+  [position: string]: number;
+};
+export type ScarcityOffsetsCollection = {
+  [league: string]: {
+    [position: string]: number[];
+  };
+};
+export type LeagueSpecificScarcityOffsets = {
+  [position: string]: number;
+};
 
-let SCARCITY_OFFSETS: ScarcityOffsets | null = null;
+let SCARCITY_OFFSETS: ScarcityOffsetsCollection | null = null;
 
 async function loadScarcityOffsets() {
   SCARCITY_OFFSETS = await Firestore.getPositionalScarcityOffsets();
@@ -23,14 +32,25 @@ export function clearScarcityOffsets() {
   SCARCITY_OFFSETS = null;
 }
 
+// TODO: Do we have to export all of these other internal functions just for testing?
+export async function getScarcityOffsetsForTeam(
+  team: CommonTeam
+): Promise<LeagueSpecificScarcityOffsets> {
+  const replacementLevels = getReplacementLevels(team);
+  return await getLeagueSpecificScarcityOffsets(
+    team.game_code,
+    replacementLevels
+  );
+}
+
 export function getScarcityOffsetsForGame(gameCode: string) {
   return SCARCITY_OFFSETS?.[gameCode] ?? {};
 }
 
-export async function getScarcityOffsetsForLeague(
+export async function getLeagueSpecificScarcityOffsets(
   gameCode: string,
   replacementLevels: ReplacementLevels
-): Promise<Record<string, number>> {
+): Promise<LeagueSpecificScarcityOffsets> {
   if (!SCARCITY_OFFSETS) {
     await loadScarcityOffsets();
   }
@@ -39,8 +59,12 @@ export async function getScarcityOffsetsForLeague(
 
   for (const position in replacementLevels) {
     if (Object.hasOwn(replacementLevels, position)) {
-      const replacementIndex = replacementLevels[position] - 1;
-      const positionScarcityOffsets = SCARCITY_OFFSETS?.[gameCode][position];
+      const replacementIndex = Math.max(
+        Math.floor(replacementLevels[position] - 1),
+        0
+      );
+      const positionScarcityOffsets =
+        getScarcityOffsetsForGame(gameCode)[position];
 
       if (!positionScarcityOffsets?.[replacementIndex]) {
         await calculateOffsetForPosition(
@@ -51,7 +75,7 @@ export async function getScarcityOffsetsForLeague(
       }
 
       const offset =
-        SCARCITY_OFFSETS?.[gameCode]?.[position]?.[replacementIndex];
+        getScarcityOffsetsForGame(gameCode)[position]?.[replacementIndex];
 
       if (!offset) {
         logger.error(
@@ -173,7 +197,7 @@ function updateOffsetArray(
   Firestore.updatePositionalScarcityOffset(league, position, array);
 }
 
-export function getReplacementLevels(team: ITeamFirestore): ReplacementLevels {
+export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
   const {
     game_code: gameCode,
     roster_positions: rosterPositions,

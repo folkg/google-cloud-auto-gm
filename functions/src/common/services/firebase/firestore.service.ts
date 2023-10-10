@@ -22,7 +22,7 @@ import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service.js";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service.js";
 import { RevokedRefreshTokenError } from "./errors.js";
 import { revokeRefreshToken } from "./revokeRefreshToken.service.js";
-import { ScarcityOffsets } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import { ScarcityOffsetsCollection } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
 
 if (getApps().length === 0) {
   initializeApp();
@@ -427,7 +427,7 @@ export async function getPositionalScarcityOffsets() {
       return {};
     }
 
-    const offsets: ScarcityOffsets = {};
+    const offsets: ScarcityOffsetsCollection = {};
     scarcityOffsetsSnapshot.forEach((doc) => {
       offsets[doc.id] = doc.data();
     });
