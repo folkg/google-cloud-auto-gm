@@ -1,6 +1,6 @@
 import { IPlayer } from "./IPlayer.js";
 
-interface CommonTeam {
+export interface CommonTeam {
   team_key: string;
   game_code: string;
   start_date: number;
