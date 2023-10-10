@@ -25,6 +25,7 @@ import {
   TopAvailablePlayers,
   fetchTopAvailablePlayersFromYahoo,
 } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
+import { getScarcityOffsetsForTeam } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 
 type TransctionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
@@ -261,7 +262,8 @@ export async function createPlayersTransactions(
   const allLineupChanges: LineupChanges[] = [];
 
   for (const team of teams) {
-    const lo = new LineupOptimizer(team);
+    const positionalScarcityOffsets = await getScarcityOffsetsForTeam(team);
+    const lo = new LineupOptimizer(team, positionalScarcityOffsets);
 
     let dpt: PlayerTransaction[] | null;
     if (team.allow_dropping) {
