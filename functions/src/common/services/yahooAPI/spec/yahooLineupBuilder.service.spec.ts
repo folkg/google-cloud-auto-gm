@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
-import * as yahooAPIService from "../../common/services/yahooAPI/yahooAPI.service.js";
-import { fetchRostersFromYahoo } from "../services/yahooLineupBuilder.service.js";
+import * as yahooAPIService from "../yahooAPI.service.js";
+import { fetchRostersFromYahoo } from "../yahooLineupBuilder.service.js";
 
 // mock firebase-admin
 vi.mock("firebase-admin/firestore", () => {

@@ -1,19 +1,19 @@
-import { IPlayer } from "../../common/interfaces/IPlayer.js";
-import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import { IPlayer } from "../../interfaces/IPlayer.js";
+import { ITeamOptimizer } from "../../interfaces/ITeam.js";
 import {
   getChild,
   getPacificEndOfDay,
   getPacificStartOfDay,
   parseStringToInt,
-} from "../../common/services/utilities.service.js";
-import { getRostersByTeamID } from "../../common/services/yahooAPI/yahooAPI.service.js";
-import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
+} from "../utilities.service.js";
+import { getRostersByTeamID } from "./yahooAPI.service.js";
+import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
 import {
   createTransactionArray,
   getGamesPlayedArray,
   getInningsPitchedArray,
   getPositionCounts,
-} from "../../common/services/yahooAPI/yahooTeamProcesssing.services.js";
+} from "./yahooTeamProcesssing.services.js";
 
 /**
  * Get the roster objects for the given teams
