@@ -270,6 +270,13 @@ export async function createPlayersTransactions(
       dpt = lo.playerTransactions;
       if (dpt) {
         dropPlayerTransactions.push(dpt);
+        // TODO: Remove this, temporary logging to spot check the new positional scarcity offset functionality
+        logger.log(
+          `positionalScarcityOffsets for team ${
+            team.team_key
+          }: ${JSON.stringify(positionalScarcityOffsets)}`
+        );
+        logger.log(`dropPlayerTransactions: ${JSON.stringify(dpt)}`);
       }
     }
 
@@ -291,6 +298,13 @@ export async function createPlayersTransactions(
       );
       if (pt) {
         addSwapPlayerTransactions.push(pt);
+        // TODO: Remove this, temporary logging to spot check the new positional scarcity offset functionality
+        logger.log(
+          `positionalScarcityOffsets for team ${
+            team.team_key
+          }: ${JSON.stringify(positionalScarcityOffsets)}`
+        );
+        logger.log(`addSwapPlayerTransactions: ${JSON.stringify(pt)}`);
       }
     }
 
