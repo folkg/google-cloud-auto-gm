@@ -445,9 +445,12 @@ export async function updatePositionalScarcityOffset(
 ) {
   const scarcityOffsetsRef = db.collection("positionalScarcityOffsets");
   try {
-    await scarcityOffsetsRef.doc(league).set({
-      [position]: offsets,
-    });
+    await scarcityOffsetsRef.doc(league).set(
+      {
+        [position]: offsets,
+      },
+      { merge: true }
+    );
     logger.info(
       `Updated positional scarcity offsets for ${league.toUpperCase()} ${position} in Firestore`
     );
