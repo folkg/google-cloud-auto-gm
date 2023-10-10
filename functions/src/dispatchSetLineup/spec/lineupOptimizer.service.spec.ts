@@ -41,6 +41,15 @@ const spyUpdateTeamFirestore = vi
   .spyOn(firestoreService, "updateTeamFirestore")
   .mockImplementation(() => Promise.resolve());
 
+vi.spyOn(firestoreService, "getPositionalScarcityOffsets").mockResolvedValue(
+  {}
+);
+vi.spyOn(firestoreService, "getRandomUID").mockResolvedValue("1");
+vi.spyOn(
+  firestoreService,
+  "updatePositionalScarcityOffset"
+).mockResolvedValue();
+
 describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
   // Notes:
   // fetchRostersFromYahoo() should throw an error and cause the function to eit.skip.

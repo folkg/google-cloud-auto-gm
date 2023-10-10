@@ -1,20 +1,21 @@
 import assert from "assert";
+import { Player } from "../../common/classes/Player.js";
+import {
+  COMPOUND_POSITION_COMPOSITIONS,
+  INACTIVE_POSITION_LIST,
+  POSITIONAL_MAX_EXTRA_PLAYERS,
+} from "../../common/helpers/constants.js";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import { ownershipScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerOwnershipScoreFunctions.service.js";
+import { playerStartScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerStartScoreFunctions.service.js";
 import {
   getChild,
   getNow,
   getProgressBetween,
   getWeeklyProgressPacific,
 } from "../../common/services/utilities.service.js";
-import {
-  INACTIVE_POSITION_LIST,
-  COMPOUND_POSITION_COMPOSITIONS,
-  POSITIONAL_MAX_EXTRA_PLAYERS,
-} from "../../common/helpers/constants.js";
-import { ownershipScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerOwnershipScoreFunctions.service.js";
-import { playerStartScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerStartScoreFunctions.service.js";
-import { Player } from "../../common/classes/Player.js";
 import { PlayerCollection } from "./PlayerCollection.js";
+import { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
 export interface Team extends ITeamOptimizer {
@@ -28,7 +29,10 @@ export class Team extends PlayerCollection implements Team {
   private _lockedPlayers: Set<string> = new Set();
   private _numNewAdds = 0;
 
-  constructor(team: ITeamOptimizer) {
+  constructor(
+    team: ITeamOptimizer,
+    positionalScarcityOffsets?: LeagueSpecificScarcityOffsets
+  ) {
     super(team.players);
 
     const teamCopy: Team = structuredClone(team) as Team;
@@ -38,7 +42,8 @@ export class Team extends PlayerCollection implements Team {
     this._editablePlayers = this.players.filter((player) => player.is_editable);
 
     this.ownershipScoreFunction = ownershipScoreFunctionFactory(
-      this.num_teams * this.numStandardRosterSpots
+      this.num_teams * this.numStandardRosterSpots,
+      positionalScarcityOffsets
     );
 
     const playerStartScoreFunction = playerStartScoreFunctionFactory({

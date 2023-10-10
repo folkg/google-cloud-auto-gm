@@ -8,6 +8,7 @@ import { Player } from "../../common/classes/Player.js";
 import { PlayerCollection } from "./PlayerCollection.js";
 import { Team } from "./Team.js";
 import { PlayerTransactions } from "./PlayerTransactions.js";
+import { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 
 export class LineupOptimizer {
   private team: Team;
@@ -21,8 +22,11 @@ export class LineupOptimizer {
     if (this.verbose) logger.info(...args);
   }
 
-  constructor(team: ITeamOptimizer) {
-    this.team = new Team(team);
+  constructor(
+    team: ITeamOptimizer,
+    positionalScarcityOffsets?: LeagueSpecificScarcityOffsets
+  ) {
+    this.team = new Team(team, positionalScarcityOffsets);
     this._playerTransactions = new PlayerTransactions();
     this.originalPlayerPositions = this.createPlayerPositionDictionary(
       this.team.editablePlayers

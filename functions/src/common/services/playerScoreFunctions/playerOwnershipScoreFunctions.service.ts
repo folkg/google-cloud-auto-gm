@@ -1,3 +1,4 @@
+import { LeagueSpecificScarcityOffsets } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import { Player } from "../../classes/Player.js";
 
 const scoreComponentLimit = {
@@ -16,10 +17,12 @@ const scoreComponentLimit = {
  *
  * @export
  * @param {number} numPlayersInLeague - The number of players in the league
+ * @param {LeagueSpecificScarcityOffsets} positionalScarcityOffsets - The offset to apply to each position based on it's scarcity in the league settings
  * @return {()} - Returns a function that takes a palyer and returns a score between 0 and 120
  */
 export function ownershipScoreFunctionFactory(
-  numPlayersInLeague: number
+  numPlayersInLeague: number,
+  positionalScarcityOffsets?: LeagueSpecificScarcityOffsets
 ): (player: Player) => number {
   return (player: Player) => {
     const percentOwnedDelta = player.percent_owned_delta
@@ -31,6 +34,21 @@ export function ownershipScoreFunctionFactory(
           )
         )
       : 0;
+
+    let positionalScarcityOffset = 0;
+    const matchingPositions = player.eligible_positions.filter(
+      (pos) => pos in (positionalScarcityOffsets ?? {})
+    );
+    if (matchingPositions.length > 0) {
+      positionalScarcityOffset = Math.max(
+        Math.min(
+          ...matchingPositions.map(
+            (pos) => positionalScarcityOffsets![pos] ?? Infinity
+          )
+        ),
+        0
+      );
+    }
 
     return (
       player.percent_owned +
@@ -62,7 +80,8 @@ export function ownershipScoreFunctionFactory(
       Math.min(
         numPlayersInLeague / resolveRank(player.ranks.next4Weeks),
         scoreComponentLimit.RANK_NEXT_4_WEEKS_LIMIT
-      )
+      ) -
+      positionalScarcityOffset
     );
 
     function resolveRank(rank: number): number {
