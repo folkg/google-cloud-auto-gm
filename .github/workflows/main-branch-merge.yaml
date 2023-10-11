@@ -1,0 +1,35 @@
+name: Main Branch Push
+
+on:
+  push:
+    branches: [main]
+
+defaults:
+  run:
+    working-directory: functions
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@master
+
+    - name: Setup Node
+      uses: actions/setup-node@master
+      with:
+        node-version: 20.x
+        cache: "npm"
+        cache-dependency-path: functions/package-lock.json
+
+    - name: Install Dependencies
+      run: npm ci
+
+    # Predeploy steps in firebase.json include running tests and building the app, so we will execute them explicitly in this pipeline
+    - name: Deploy to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only functions:lineup,functions:email,functions:transactions
+      env:
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
