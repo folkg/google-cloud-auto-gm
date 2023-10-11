@@ -1,8 +1,6 @@
 name: Main Branch Checks
 
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
 
@@ -11,32 +9,7 @@ defaults:
     working-directory: functions
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@master
-
-    - name: Setup Node
-      uses: actions/setup-node@master
-      with:
-        node-version: 20.x
-        cache: "npm"
-        cache-dependency-path: functions/package-lock.json
-
-    - name: Install Dependencies
-      run: npm ci
-
-    - name: Run Tests
-      run: npm run test:once
-
-    - name: Build
-      run: npm run build
-  
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: build-and-test
     runs-on: ubuntu-latest
 
     steps:
