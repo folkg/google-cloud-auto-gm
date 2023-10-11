@@ -194,7 +194,7 @@ export class LineupOptimizer {
     let playerMovedToIL: Player | null;
     while ((playerMovedToIL = this.openOneRosterSpot()) !== null) {
       reasons.push(
-        `Moved ${
+        `Moving ${
           playerMovedToIL.player_name
         } (${playerMovedToIL.eligible_positions.join(
           ", "
