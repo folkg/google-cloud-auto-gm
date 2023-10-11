@@ -50,6 +50,8 @@ vi.spyOn(
   "updatePositionalScarcityOffset"
 ).mockResolvedValue();
 
+vi.spyOn(yahooAPI, "getTopPlayersGeneral").mockResolvedValue({});
+
 describe.concurrent("Full Stack Add Drop Tests in setUsersLineup()", () => {
   // Notes:
   // fetchRostersFromYahoo() should throw an error and cause the function to eit.skip.
