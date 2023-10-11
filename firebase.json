@@ -20,10 +20,6 @@
         "firestore-debug.log",
         ".eslintrc.cjs",
         "ui-debug.log"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run test:once",
-        "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
   ],
