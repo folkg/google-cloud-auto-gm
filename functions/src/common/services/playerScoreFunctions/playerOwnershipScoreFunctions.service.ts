@@ -2,7 +2,7 @@ import { LeagueSpecificScarcityOffsets } from "../../../calcPositionalScarcity/s
 import { Player } from "../../classes/Player.js";
 
 const scoreComponentLimit = {
-  PERCENT_OWNED_DELTA_LIMIT: 3, // Applies to all sports
+  PERCENT_OWNED_DELTA_UPPER_LIMIT: 3, // Applies to all sports
   RANK_LAST_30_DAYS_LIMIT: 6, // Applies to NHL, MLB, NBA only
   RANK_LAST_14_DAYS_LIMIT: 6,
   RANK_NEXT_7_DAYS_LIMIT: 4,
@@ -26,12 +26,9 @@ export function ownershipScoreFunctionFactory(
 ): (player: Player) => number {
   return (player: Player) => {
     const percentOwnedDelta = player.percent_owned_delta
-      ? Math.max(
-          -scoreComponentLimit.PERCENT_OWNED_DELTA_LIMIT,
-          Math.min(
-            player.percent_owned_delta,
-            scoreComponentLimit.PERCENT_OWNED_DELTA_LIMIT
-          )
+      ? Math.min(
+          player.percent_owned_delta,
+          scoreComponentLimit.PERCENT_OWNED_DELTA_UPPER_LIMIT
         )
       : 0;
 
