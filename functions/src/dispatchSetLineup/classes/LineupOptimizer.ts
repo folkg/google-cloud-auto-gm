@@ -245,7 +245,11 @@ export class LineupOptimizer {
         playerToAdd.player_name
       } (${playerToAdd.eligible_positions.join(
         ", "
-      )}) [${playerToAdd.ownership_score.toFixed(2)}]`,
+      )}) [${playerToAdd.ownership_score.toFixed(2)}] ${
+        playerToAdd.ownership?.ownership_type === "waivers"
+          ? "(Waiver Claim)"
+          : "(Free Agent Pickup)"
+      }`,
       isFaabRequired: this.team.faab_balance !== -1,
       players: [
         {
@@ -414,7 +418,11 @@ export class LineupOptimizer {
       playerToDrop.player_name
     } (${playerToDrop.eligible_positions.join(
       ", "
-    )}) [${playerToDrop.ownership_score.toFixed(2)}].`;
+    )}) [${playerToDrop.ownership_score.toFixed(2)}]. ${
+      playerToAdd.ownership?.ownership_type === "waivers"
+        ? "(Waiver Claim)"
+        : "(Free Agent Pickup)"
+    }`;
     if (underfilledPositions.length > 0) {
       reason = `There are empty ${underfilledPositions.join(
         ", "

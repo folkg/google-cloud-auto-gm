@@ -399,14 +399,7 @@ function stringifyTransactions(transactions: PlayerTransaction[]): string[] {
       `<strong>${teamTransactions[0].teamName} (${teamTransactions[0].leagueName}):</strong>`
     );
     teamTransactions.forEach((t) => {
-      result.push(
-        `${t.reason} ${
-          t.players.some((p) => p.transactionType === "add") &&
-          t.players.some((p) => p.isFromWaivers)
-            ? "(Waiver Claim)"
-            : "(Free Agent Pickup)"
-        }`
-      );
+      result.push(t.reason);
     });
   });
 
