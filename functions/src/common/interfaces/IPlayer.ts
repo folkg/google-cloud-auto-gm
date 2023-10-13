@@ -2,6 +2,7 @@ export interface IPlayer {
   player_key: string;
   player_name: string;
   eligible_positions: string[];
+  display_positions: string[];
   selected_position: string;
   is_editable: boolean;
   is_playing: boolean;
@@ -15,7 +16,7 @@ export interface IPlayer {
   ownership?: PlayerOwnership;
 }
 
-export interface PlayerRanks {
+export type PlayerRanks = {
   last30Days: number;
   last14Days: number;
   next7Days: number;
@@ -23,11 +24,11 @@ export interface PlayerRanks {
   last4Weeks: number;
   projectedWeek: number;
   next4Weeks: number;
-}
+};
 
-export interface PlayerOwnership {
+export type PlayerOwnership = {
   ownership_type: PlayerOwnershipType;
   waiver_date?: string; // "2023-06-21"
-}
+};
 
 type PlayerOwnershipType = "waivers" | "freeagents";

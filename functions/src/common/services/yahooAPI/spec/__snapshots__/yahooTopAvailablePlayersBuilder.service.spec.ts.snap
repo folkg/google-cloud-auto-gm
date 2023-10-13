@@ -4,6 +4,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
 {
   "422.l.90351.t.1": [
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -33,6 +36,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -62,6 +68,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -91,6 +100,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -120,6 +132,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -149,6 +164,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -178,6 +196,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -207,6 +228,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -236,6 +260,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -265,6 +292,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -294,6 +324,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -323,6 +356,10 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -353,6 +390,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -382,6 +422,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -411,6 +454,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -440,6 +486,10 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -470,6 +520,10 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -500,6 +554,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -529,6 +586,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -558,6 +618,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -587,6 +650,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -616,6 +682,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -645,6 +714,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+      ],
       "eligible_positions": [
         "3B",
         "Util",
@@ -674,6 +746,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -703,6 +778,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -739,6 +817,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
 {
   "422.l.115494.t.4": [
     {
+      "display_positions": [
+        "SS",
+      ],
       "eligible_positions": [
         "SS",
         "Util",
@@ -770,6 +851,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -802,6 +887,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -833,6 +921,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+        "OF",
+      ],
       "eligible_positions": [
         "3B",
         "OF",
@@ -865,6 +957,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",
@@ -897,6 +992,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -928,6 +1026,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -960,6 +1061,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -992,6 +1096,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1023,6 +1130,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -1054,6 +1164,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",
@@ -1085,6 +1198,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "C",
+      ],
       "eligible_positions": [
         "C",
         "Util",
@@ -1116,6 +1232,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -1148,6 +1268,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1180,6 +1303,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1211,6 +1337,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -1242,6 +1371,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SS",
+        "OF",
+      ],
       "eligible_positions": [
         "SS",
         "OF",
@@ -1274,6 +1407,13 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "2B",
+        "3B",
+        "SS",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "2B",
@@ -1309,6 +1449,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1341,6 +1484,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -1373,6 +1520,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -1404,6 +1554,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1435,6 +1588,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -1467,6 +1624,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1498,6 +1658,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "C",
+      ],
       "eligible_positions": [
         "C",
         "Util",
@@ -1531,6 +1694,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
   ],
   "422.l.16955.t.10": [
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1560,6 +1726,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1589,6 +1758,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1619,6 +1791,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1648,6 +1823,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "CI",
@@ -1678,6 +1856,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1707,6 +1888,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1736,6 +1920,12 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "2B",
+        "3B",
+        "SS",
+        "OF",
+      ],
       "eligible_positions": [
         "2B",
         "3B",
@@ -1770,6 +1960,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1799,6 +1992,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1828,6 +2024,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1857,6 +2056,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1886,6 +2088,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1915,6 +2120,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "CI",
@@ -1945,6 +2153,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1974,6 +2185,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2003,6 +2217,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2032,6 +2249,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2061,6 +2281,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2090,6 +2313,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2119,6 +2345,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2148,6 +2377,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -2177,6 +2409,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SS",
+      ],
       "eligible_positions": [
         "SS",
         "MI",
@@ -2207,6 +2442,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -2237,6 +2476,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2268,6 +2510,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
   ],
   "undefined": [
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2297,6 +2542,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2326,6 +2574,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2354,6 +2605,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
       ],
@@ -2382,6 +2636,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2410,6 +2667,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "C",
+        "OF",
+      ],
       "eligible_positions": [
         "C",
         "OF",
@@ -2440,6 +2701,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+      ],
       "eligible_positions": [
         "3B",
         "Util",
@@ -2469,6 +2733,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2497,6 +2764,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2525,6 +2795,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2554,6 +2827,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2582,6 +2858,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "2B",
+      ],
       "eligible_positions": [
         "2B",
         "Util",
@@ -2611,6 +2890,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",
@@ -2640,6 +2922,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SS",
+      ],
       "eligible_positions": [
         "SS",
         "Util",
@@ -2669,6 +2954,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2698,6 +2986,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "2B",
+      ],
       "eligible_positions": [
         "1B",
         "2B",
@@ -2728,6 +3020,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2756,6 +3051,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2784,6 +3082,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
       ],
@@ -2812,6 +3113,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "IL",
@@ -2841,6 +3145,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2870,6 +3177,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+        "SS",
+      ],
       "eligible_positions": [
         "3B",
         "SS",
@@ -2900,6 +3211,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "2B",
+        "SS",
+      ],
       "eligible_positions": [
         "2B",
         "SS",
@@ -2930,6 +3245,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
       ],
@@ -2958,6 +3276,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",

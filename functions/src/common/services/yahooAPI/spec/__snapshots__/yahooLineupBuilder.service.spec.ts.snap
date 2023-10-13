@@ -17,6 +17,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -43,6 +46,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -69,6 +75,11 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "C",
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "C",
           "LW",
@@ -97,6 +108,10 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -124,6 +139,10 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -151,6 +170,10 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -178,6 +201,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
           "Util",
@@ -204,6 +230,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
           "Util",
@@ -230,6 +259,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
           "Util",
@@ -256,6 +288,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
           "Util",
@@ -282,6 +317,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -308,6 +346,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -334,6 +375,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
           "Util",
@@ -360,6 +404,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
           "Util",
@@ -386,6 +433,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -412,6 +462,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -438,6 +491,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -463,6 +519,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -488,6 +547,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -513,6 +575,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -538,6 +603,9 @@ exports[`Test fetchRostersFromYahoo > Elite League roster 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
           "Util",
@@ -604,6 +672,10 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "C",
+          "RW",
+        ],
         "eligible_positions": [
           "C",
           "RW",
@@ -630,6 +702,10 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "C",
+          "LW",
+        ],
         "eligible_positions": [
           "C",
           "LW",
@@ -656,6 +732,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -681,6 +760,10 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -707,6 +790,10 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "C",
+          "RW",
+        ],
         "eligible_positions": [
           "C",
           "RW",
@@ -733,6 +820,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "RW",
+        ],
         "eligible_positions": [
           "RW",
         ],
@@ -758,6 +848,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -783,6 +876,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -808,6 +904,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -833,6 +932,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -858,6 +960,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -883,6 +988,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -908,6 +1016,10 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -934,6 +1046,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
           "IR+",
@@ -960,6 +1075,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -985,6 +1103,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -1010,6 +1131,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -1035,6 +1159,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -1060,6 +1187,9 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -1085,6 +1215,10 @@ exports[`Test fetchRostersFromYahoo > Irish Lacrosse roster - weekly max pickups
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -1151,6 +1285,10 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "1B",
+          "2B",
+        ],
         "eligible_positions": [
           "1B",
           "2B",
@@ -1178,6 +1316,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "1B",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -1204,6 +1345,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -1230,6 +1374,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -1256,6 +1403,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -1282,6 +1432,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -1308,6 +1461,10 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "2B",
+          "SS",
+        ],
         "eligible_positions": [
           "2B",
           "SS",
@@ -1335,6 +1492,10 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "3B",
+          "OF",
+        ],
         "eligible_positions": [
           "3B",
           "OF",
@@ -1362,6 +1523,10 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "2B",
+          "SS",
+        ],
         "eligible_positions": [
           "2B",
           "SS",
@@ -1389,6 +1554,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -1415,6 +1583,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1441,6 +1612,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1467,6 +1641,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -1493,6 +1670,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -1519,6 +1699,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1545,6 +1728,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -1571,6 +1757,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1597,6 +1786,10 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+          "RP",
+        ],
         "eligible_positions": [
           "SP",
           "RP",
@@ -1624,6 +1817,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1650,6 +1846,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1676,6 +1875,10 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+          "RP",
+        ],
         "eligible_positions": [
           "SP",
           "RP",
@@ -1703,6 +1906,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1729,6 +1935,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1756,6 +1965,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
           "Util",
@@ -1783,6 +1995,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1810,6 +2025,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -1837,6 +2055,9 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -2587,6 +2808,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -2613,6 +2837,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
           "Util",
@@ -2639,6 +2866,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "1B",
       },
       {
+        "display_positions": [
+          "2B",
+        ],
         "eligible_positions": [
           "2B",
           "Util",
@@ -2665,6 +2895,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "2B",
       },
       {
+        "display_positions": [
+          "3B",
+          "SS",
+        ],
         "eligible_positions": [
           "3B",
           "SS",
@@ -2692,6 +2926,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "3B",
       },
       {
+        "display_positions": [
+          "2B",
+          "SS",
+        ],
         "eligible_positions": [
           "2B",
           "SS",
@@ -2719,6 +2957,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SS",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -2745,6 +2986,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -2771,6 +3015,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "2B",
+          "OF",
+        ],
         "eligible_positions": [
           "2B",
           "OF",
@@ -2798,6 +3046,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
           "Util",
@@ -2824,6 +3075,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
           "Util",
@@ -2851,6 +3105,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
           "Util",
@@ -2877,6 +3134,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -2903,6 +3163,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
           "Util",
@@ -2929,6 +3192,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "1B",
+          "OF",
+        ],
         "eligible_positions": [
           "1B",
           "OF",
@@ -2957,6 +3224,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -2983,6 +3253,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3009,6 +3282,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -3035,6 +3311,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -3061,6 +3340,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3087,6 +3369,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3113,6 +3398,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3139,6 +3427,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3165,6 +3456,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3228,6 +3522,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -3254,6 +3551,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
           "Util",
@@ -3280,6 +3580,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "1B",
       },
       {
+        "display_positions": [
+          "2B",
+        ],
         "eligible_positions": [
           "2B",
           "Util",
@@ -3306,6 +3609,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "2B",
       },
       {
+        "display_positions": [
+          "3B",
+          "OF",
+        ],
         "eligible_positions": [
           "3B",
           "OF",
@@ -3333,6 +3640,11 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "3B",
       },
       {
+        "display_positions": [
+          "2B",
+          "SS",
+          "OF",
+        ],
         "eligible_positions": [
           "2B",
           "SS",
@@ -3361,6 +3673,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SS",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -3387,6 +3702,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -3413,6 +3731,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -3439,6 +3760,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -3465,6 +3789,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -3491,6 +3818,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -3517,6 +3847,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
           "Util",
@@ -3543,6 +3876,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -3570,6 +3906,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3596,6 +3935,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3622,6 +3964,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -3648,6 +3993,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -3674,6 +4022,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3700,6 +4051,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3726,6 +4080,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3752,6 +4109,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3778,6 +4138,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3804,6 +4167,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -3932,6 +4298,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "C",
+          "OF",
+        ],
         "eligible_positions": [
           "C",
           "OF",
@@ -3959,6 +4329,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "1B",
+          "2B",
+        ],
         "eligible_positions": [
           "1B",
           "2B",
@@ -3986,6 +4360,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "1B",
       },
       {
+        "display_positions": [
+          "2B",
+        ],
         "eligible_positions": [
           "2B",
           "Util",
@@ -4012,6 +4389,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "2B",
       },
       {
+        "display_positions": [
+          "1B",
+          "3B",
+        ],
         "eligible_positions": [
           "1B",
           "3B",
@@ -4039,6 +4420,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "3B",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
           "Util",
@@ -4065,6 +4449,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SS",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -4091,6 +4478,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -4117,6 +4507,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -4143,6 +4536,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
           "Util",
@@ -4169,6 +4565,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -4195,6 +4594,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
           "Util",
@@ -4221,6 +4623,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -4248,6 +4653,11 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "2B",
+          "3B",
+          "SS",
+        ],
         "eligible_positions": [
           "2B",
           "3B",
@@ -4276,6 +4686,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -4302,6 +4715,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -4328,6 +4744,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -4354,6 +4773,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -4380,6 +4802,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -4406,6 +4831,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -4432,6 +4860,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -4458,6 +4889,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -4484,6 +4918,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -4511,6 +4948,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -4575,6 +5015,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
     "num_teams": 20,
     "players": [
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -4600,6 +5043,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
         ],
@@ -4625,6 +5071,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "1B",
       },
       {
+        "display_positions": [
+          "2B",
+          "SS",
+        ],
         "eligible_positions": [
           "2B",
           "SS",
@@ -4651,6 +5101,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "2B",
       },
       {
+        "display_positions": [
+          "3B",
+        ],
         "eligible_positions": [
           "3B",
         ],
@@ -4676,6 +5129,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "3B",
       },
       {
+        "display_positions": [
+          "3B",
+          "SS",
+        ],
         "eligible_positions": [
           "3B",
           "SS",
@@ -4702,6 +5159,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SS",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
         ],
@@ -4727,6 +5187,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
         ],
@@ -4752,6 +5215,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
         ],
@@ -4777,6 +5243,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
         ],
@@ -4802,6 +5271,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
         ],
@@ -4827,6 +5299,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+          "1B",
+        ],
         "eligible_positions": [
           "C",
           "1B",
@@ -4853,6 +5329,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
         ],
@@ -4878,6 +5357,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "1B",
+          "3B",
+        ],
         "eligible_positions": [
           "1B",
           "3B",
@@ -4904,6 +5387,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
         ],
@@ -4929,6 +5415,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "2B",
+          "3B",
+        ],
         "eligible_positions": [
           "2B",
           "3B",
@@ -4955,6 +5445,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
         ],
@@ -4980,6 +5473,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "P",
+        ],
         "eligible_positions": [
           "P",
         ],
@@ -5005,6 +5501,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "P",
+        ],
         "eligible_positions": [
           "P",
         ],
@@ -5030,6 +5529,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "P",
+        ],
         "eligible_positions": [
           "P",
         ],
@@ -5055,6 +5557,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "P",
+        ],
         "eligible_positions": [
           "P",
         ],
@@ -5080,6 +5585,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "P",
+        ],
         "eligible_positions": [
           "P",
           "IL",
@@ -5106,6 +5614,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
           "IL",
@@ -5132,6 +5643,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "1B",
+          "OF",
+        ],
         "eligible_positions": [
           "1B",
           "OF",
@@ -5193,6 +5708,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
     "num_teams": 10,
     "players": [
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -5219,6 +5737,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "1B",
+        ],
         "eligible_positions": [
           "1B",
           "Util",
@@ -5245,6 +5766,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "1B",
       },
       {
+        "display_positions": [
+          "2B",
+        ],
         "eligible_positions": [
           "2B",
           "Util",
@@ -5271,6 +5795,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "2B",
       },
       {
+        "display_positions": [
+          "3B",
+        ],
         "eligible_positions": [
           "3B",
           "Util",
@@ -5297,6 +5824,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "3B",
       },
       {
+        "display_positions": [
+          "SS",
+        ],
         "eligible_positions": [
           "SS",
           "Util",
@@ -5323,6 +5853,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SS",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -5349,6 +5882,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -5375,6 +5911,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -5401,6 +5940,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "OF",
       },
       {
+        "display_positions": [
+          "2B",
+          "SS",
+        ],
         "eligible_positions": [
           "2B",
           "SS",
@@ -5428,6 +5971,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "Util",
+        ],
         "eligible_positions": [
           "Util",
         ],
@@ -5453,6 +5999,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "C",
+          "OF",
+        ],
         "eligible_positions": [
           "C",
           "OF",
@@ -5480,6 +6030,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "1B",
+          "3B",
+        ],
         "eligible_positions": [
           "1B",
           "3B",
@@ -5507,6 +6061,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "3B",
+        ],
         "eligible_positions": [
           "3B",
           "Util",
@@ -5533,6 +6090,10 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "1B",
+          "OF",
+        ],
         "eligible_positions": [
           "1B",
           "OF",
@@ -5560,6 +6121,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -5586,6 +6150,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -5613,6 +6180,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "2B",
+        ],
         "eligible_positions": [
           "2B",
           "Util",
@@ -5639,6 +6209,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5665,6 +6238,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5691,6 +6267,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5717,6 +6296,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "SP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -5743,6 +6325,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -5769,6 +6354,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "RP",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5795,6 +6383,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5821,6 +6412,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "RP",
+        ],
         "eligible_positions": [
           "RP",
           "P",
@@ -5847,6 +6441,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "P",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5873,6 +6470,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5899,6 +6499,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SP",
+        ],
         "eligible_positions": [
           "SP",
           "P",
@@ -5926,6 +6529,11 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "2B",
+          "3B",
+          "SS",
+        ],
         "eligible_positions": [
           "2B",
           "3B",
@@ -5955,6 +6563,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "OF",
+        ],
         "eligible_positions": [
           "OF",
           "Util",
@@ -6025,6 +6636,9 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
     "num_teams": 7,
     "players": [
       {
+        "display_positions": [
+          "PG",
+        ],
         "eligible_positions": [
           "PG",
           "G",
@@ -6052,6 +6666,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "PG",
       },
       {
+        "display_positions": [
+          "PG",
+          "SG",
+        ],
         "eligible_positions": [
           "PG",
           "SG",
@@ -6080,6 +6698,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "SG",
       },
       {
+        "display_positions": [
+          "PG",
+          "SG",
+        ],
         "eligible_positions": [
           "PG",
           "SG",
@@ -6108,6 +6730,11 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "SG",
+          "SF",
+          "PF",
+        ],
         "eligible_positions": [
           "SG",
           "G",
@@ -6138,6 +6765,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "SF",
       },
       {
+        "display_positions": [
+          "SF",
+          "PF",
+        ],
         "eligible_positions": [
           "SF",
           "PF",
@@ -6166,6 +6797,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "PF",
       },
       {
+        "display_positions": [
+          "SG",
+          "SF",
+        ],
         "eligible_positions": [
           "SG",
           "G",
@@ -6195,6 +6830,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "F",
       },
       {
+        "display_positions": [
+          "PF",
+          "C",
+        ],
         "eligible_positions": [
           "PF",
           "F",
@@ -6223,6 +6862,9 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -6249,6 +6891,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "SF",
+          "PF",
+        ],
         "eligible_positions": [
           "SF",
           "PF",
@@ -6277,6 +6923,9 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -6303,6 +6952,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "PG",
+          "SG",
+        ],
         "eligible_positions": [
           "PG",
           "SG",
@@ -6331,6 +6984,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SF",
+          "PF",
+        ],
         "eligible_positions": [
           "SF",
           "PF",
@@ -6359,6 +7016,9 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -6385,6 +7045,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "PG",
+          "SG",
+        ],
         "eligible_positions": [
           "PG",
           "SG",
@@ -6414,6 +7078,10 @@ exports[`Test fetchRostersFromYahoo > NBA Weekly League - editable 1`] = `
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "PF",
+          "C",
+        ],
         "eligible_positions": [
           "PF",
           "F",
@@ -6483,6 +7151,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -6508,6 +7179,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -6533,6 +7207,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -6559,6 +7237,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -6584,6 +7265,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "RW",
+        ],
         "eligible_positions": [
           "RW",
         ],
@@ -6609,6 +7293,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "RW",
+        ],
         "eligible_positions": [
           "RW",
         ],
@@ -6634,6 +7321,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -6659,6 +7349,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -6684,6 +7377,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -6709,6 +7405,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -6734,6 +7433,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -6759,6 +7461,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -6784,6 +7489,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -6809,6 +7517,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -6834,6 +7545,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -6859,6 +7573,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -6884,6 +7601,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -6941,6 +7661,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -6966,6 +7689,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -6991,6 +7717,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -7016,6 +7745,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -7041,6 +7773,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "LW",
       },
       {
+        "display_positions": [
+          "RW",
+        ],
         "eligible_positions": [
           "RW",
         ],
@@ -7066,6 +7801,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "RW",
+        ],
         "eligible_positions": [
           "RW",
         ],
@@ -7091,6 +7829,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "RW",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -7116,6 +7857,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -7141,6 +7885,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -7166,6 +7913,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "D",
+        ],
         "eligible_positions": [
           "D",
         ],
@@ -7191,6 +7941,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "D",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
         ],
@@ -7216,6 +7969,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "LW",
+        ],
         "eligible_positions": [
           "LW",
         ],
@@ -7241,6 +7997,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "LW",
+          "RW",
+        ],
         "eligible_positions": [
           "LW",
           "RW",
@@ -7267,6 +8027,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -7292,6 +8055,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -7317,6 +8083,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "G",
+        ],
         "eligible_positions": [
           "G",
         ],
@@ -7374,6 +8143,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
     "num_teams": 12,
     "players": [
       {
+        "display_positions": [
+          "PG",
+        ],
         "eligible_positions": [
           "PG",
           "G",
@@ -7401,6 +8173,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "PG",
       },
       {
+        "display_positions": [
+          "PG",
+          "SG",
+        ],
         "eligible_positions": [
           "PG",
           "SG",
@@ -7429,6 +8205,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "SG",
       },
       {
+        "display_positions": [
+          "SG",
+          "SF",
+        ],
         "eligible_positions": [
           "SG",
           "G",
@@ -7458,6 +8238,11 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "G",
       },
       {
+        "display_positions": [
+          "SG",
+          "SF",
+          "PF",
+        ],
         "eligible_positions": [
           "SG",
           "G",
@@ -7488,6 +8273,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "SF",
       },
       {
+        "display_positions": [
+          "PF",
+          "C",
+        ],
         "eligible_positions": [
           "PF",
           "F",
@@ -7516,6 +8305,11 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "PF",
       },
       {
+        "display_positions": [
+          "SG",
+          "SF",
+          "PF",
+        ],
         "eligible_positions": [
           "SG",
           "G",
@@ -7546,6 +8340,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "F",
       },
       {
+        "display_positions": [
+          "PF",
+          "C",
+        ],
         "eligible_positions": [
           "PF",
           "F",
@@ -7574,6 +8372,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -7600,6 +8401,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "C",
       },
       {
+        "display_positions": [
+          "PG",
+          "SG",
+        ],
         "eligible_positions": [
           "PG",
           "SG",
@@ -7628,6 +8433,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "PG",
+        ],
         "eligible_positions": [
           "PG",
           "G",
@@ -7655,6 +8463,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "Util",
       },
       {
+        "display_positions": [
+          "PF",
+        ],
         "eligible_positions": [
           "PF",
           "F",
@@ -7682,6 +8493,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SF",
+          "PF",
+        ],
         "eligible_positions": [
           "SF",
           "PF",
@@ -7710,6 +8525,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "SG",
+          "SF",
+        ],
         "eligible_positions": [
           "SG",
           "G",
@@ -7739,6 +8558,9 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "BN",
       },
       {
+        "display_positions": [
+          "C",
+        ],
         "eligible_positions": [
           "C",
           "Util",
@@ -7766,6 +8588,10 @@ exports[`Test fetchRostersFromYahoo > Two NHL, two NBA for Jeff Barnes 1`] = `
         "selected_position": "IL",
       },
       {
+        "display_positions": [
+          "PF",
+          "C",
+        ],
         "eligible_positions": [
           "PF",
           "F",
