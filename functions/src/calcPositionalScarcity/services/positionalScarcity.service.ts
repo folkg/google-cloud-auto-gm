@@ -83,6 +83,8 @@ export async function getLeagueSpecificScarcityOffsets(
           logger.error(
             `No offsets found for position ${position} and replacement level ${replacementIndex}. Returning empty object. No offsets will be applied to team.`
           );
+          logger.info("SCARCITY_OFFSETS:", SCARCITY_OFFSETS);
+          logger.info("replacementLevels:", replacementLevels);
           return {};
         }
       }
@@ -207,13 +209,23 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
     num_teams: numTeams,
   } = team;
 
-  const positionsList = Object.keys(rosterPositions).filter(
-    (position) => INACTIVE_POSITION_LIST.includes(position) === false
-  );
-  const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[gameCode];
+  const compoundPositionCompositions = COMPOUND_POSITION_COMPOSITIONS[gameCode];
   const maxExtraPlayers = POSITIONAL_MAX_EXTRA_PLAYERS[gameCode];
 
   const result: Record<string, number> = {};
+
+  const positionsList = Object.keys(rosterPositions).filter(
+    (position) => INACTIVE_POSITION_LIST.includes(position) === false
+  );
+  const standardPositions = positionsList.filter(
+    (position) =>
+      !compoundPositionCompositions[position]?.some((subPosition) =>
+        positionsList.includes(subPosition)
+      ) && position !== "BN"
+  );
+  const compoundPositions = positionsList.filter(
+    (position) => !standardPositions.includes(position) && position !== "BN"
+  );
 
   assignStandardPositions();
   assignCompoundPositions();
@@ -222,31 +234,18 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
   return result;
 
   function assignStandardPositions() {
-    for (const position of positionsList) {
-      const hasSubPositions =
-        compoundPositions[position]?.filter((subPosition) =>
-          positionsList.includes(subPosition)
-        ).length > 0;
-
-      if (position === "BN" || hasSubPositions) {
-        continue;
-      }
-
+    for (const position of standardPositions) {
       result[position] = rosterPositions[position] * numTeams;
     }
   }
 
   function assignCompoundPositions() {
-    for (const compoundPosition in compoundPositions) {
-      if (!positionsList.includes(compoundPosition)) {
-        continue;
-      }
-
+    for (const compoundPosition of compoundPositions) {
       const numPlayersAtCompoundPosition = rosterPositions[compoundPosition];
 
-      const subPositions: string[] = compoundPositions[compoundPosition].filter(
-        (subPosition) => positionsList.includes(subPosition)
-      );
+      const subPositions: string[] = compoundPositionCompositions[
+        compoundPosition
+      ].filter((subPosition) => standardPositions.includes(subPosition));
 
       const numStarters = subPositions.reduce(
         (acc, subPosition) => acc + rosterPositions[subPosition],

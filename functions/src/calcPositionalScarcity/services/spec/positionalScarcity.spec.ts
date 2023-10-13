@@ -7,18 +7,18 @@ import {
   it,
   vi,
 } from "vitest";
-import { ITeamFirestore } from "../../../common/interfaces/ITeam";
 import * as constants from "../../../common/helpers/constants";
+import { ITeamFirestore } from "../../../common/interfaces/ITeam";
+import * as firestoreService from "../../../common/services/firebase/firestore.service";
+import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
 import {
   clearScarcityOffsets,
   generateFetchPlayerPromises,
+  getLeagueSpecificScarcityOffsets,
   getReplacementLevels,
   getScarcityOffsetsForGame,
-  getLeagueSpecificScarcityOffsets,
   recalculateScarcityOffsetsForAll,
 } from "../positionalScarcity.service";
-import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
-import * as firestoreService from "../../../common/services/firebase/firestore.service";
 
 const numbersArr100 = Array.from({ length: 100 }, (_, i) => 100 - i);
 const playersF = require("./playersF.json");
@@ -245,6 +245,47 @@ describe("getReplacementLevel", () => {
       SS: 24,
       OF: 72,
       P: 132,
+    };
+
+    const result = getReplacementLevels(team);
+    for (const position in expectedOutput) {
+      expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
+    }
+  });
+
+  it("should return the correct replacement level for a team with nested compound positions (W inside Util)", () => {
+    const NUM_TEAMS = 12;
+    const team = {
+      game_code: "nhl",
+      roster_positions: {
+        BN: 4,
+        C: 2,
+        D: 4,
+        G: 2,
+        IR: 2,
+        "IR+": 2,
+        LW: 2,
+        RW: 2,
+        Util: 2,
+        W: 1,
+      },
+      num_teams: NUM_TEAMS,
+    } as unknown as ITeamFirestore;
+
+    const expectedOutput = {
+      C: 2 * NUM_TEAMS + 4 * (2 / 12) * NUM_TEAMS + 2 * (2 / 10) * NUM_TEAMS,
+      D: 4 * NUM_TEAMS + 4 * (4 / 12) * NUM_TEAMS + 4 * (2 / 10) * NUM_TEAMS,
+      G: 2 * NUM_TEAMS + 4 * (2 / 12) * NUM_TEAMS,
+      LW:
+        2 * NUM_TEAMS +
+        4 * (2 / 12) * NUM_TEAMS +
+        2 * (2 / 10) * NUM_TEAMS +
+        1 * (2 / 4) * NUM_TEAMS,
+      RW:
+        2 * NUM_TEAMS +
+        4 * (2 / 12) * NUM_TEAMS +
+        2 * (2 / 10) * NUM_TEAMS +
+        1 * (2 / 4) * NUM_TEAMS,
     };
 
     const result = getReplacementLevels(team);
