@@ -39,7 +39,7 @@ vi.mock("firebase-admin/functions", () => {
   };
 });
 
-describe.concurrent("scheduleWeeklyLeagueTransactions", () => {
+describe("scheduleWeeklyLeagueTransactions", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });

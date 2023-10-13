@@ -20,7 +20,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("Utilities test", function () {
+describe("Utilities test", function () {
   test("single digit month, day ", function () {
     const date = new Date(Date.UTC(2020, 0, 3, 1, 1, 1));
     const result = getPacificTimeDateString(date);

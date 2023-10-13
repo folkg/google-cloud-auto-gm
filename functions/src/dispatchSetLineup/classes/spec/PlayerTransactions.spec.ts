@@ -2,7 +2,7 @@ import { describe, expect, it, beforeAll } from "vitest";
 import { PlayerTransactions } from "../PlayerTransactions";
 import { PlayerTransaction } from "../../interfaces/PlayerTransaction";
 
-describe.concurrent("PlayerTransactions", () => {
+describe("PlayerTransactions", () => {
   let playerTransactions: PlayerTransactions;
   let playerTransaction: PlayerTransaction;
 

@@ -18,7 +18,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("YahooAPI Service", () => {
+describe("YahooAPI Service", () => {
   it("should call API to drop players", async () => {
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
 

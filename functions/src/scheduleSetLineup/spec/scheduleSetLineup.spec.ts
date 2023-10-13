@@ -46,7 +46,7 @@ vi.mock("firebase-admin/functions", () => {
   };
 });
 
-describe.concurrent("scheduleSetLineup", () => {
+describe("scheduleSetLineup", () => {
   beforeEach(() => {
     mockLeaguesToSetLineupsFor.mockReturnValue(
       Promise.resolve(["nhl", "mlb", "nba"])

@@ -23,7 +23,7 @@ vi.mock("firebase-admin/app", () => {
 
 describe.todo("test getTransactions and postTransactions functions");
 
-describe.concurrent("test mergeTopAvailabePlayers function", () => {
+describe("test mergeTopAvailabePlayers function", () => {
   test("four MLB teams", async () => {
     const topAvailablePlayersPromise = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise1.json");
     const nflTopAvailablePlayersPromise = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/nflTopAvailablePlayersPromise1.json");
@@ -54,7 +54,7 @@ describe.concurrent("test mergeTopAvailabePlayers function", () => {
   });
 });
 
-describe.concurrent("generateTopAvailablePlayerPromises", () => {
+describe("generateTopAvailablePlayerPromises", () => {
   test("no teams adding players", () => {
     const teams: ITeamFirestore[] = [
       { allow_adding: false, game_code: "mlb" },

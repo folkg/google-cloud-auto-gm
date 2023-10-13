@@ -15,7 +15,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("Test LineupOptimizer Class NBA Daily", function () {
+describe("Test LineupOptimizer Class NBA Daily", function () {
   // NBA should be very similar to NHL, so we'll just test a few things
   it("One healthy on IL, one IL on IL, one injured on roster", async function () {
     const roster: ITeamOptimizer = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");
