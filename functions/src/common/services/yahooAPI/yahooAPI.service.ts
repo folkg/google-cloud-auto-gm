@@ -20,6 +20,20 @@ import {
 
 dotenv.config();
 
+export type AvailabilityStatus = "A" | "FA" | "W";
+export type PlayerSort =
+  | "sort=R_PO"
+  | "sort=AR_L30;sort_type=lastmonth"
+  | "sort=AR_L14;sort_type=biweekly"
+  | "sort=AR_L4W;sort_type=last4weeks";
+// Required for URL replacement when specifying combo positions
+const POSITION_EXPANSION: Record<string, string> = {
+  "W/T": "WR, TE",
+  "W/R": "WR, RB",
+  "W/R/T": "WR,RB,TE",
+  "Q/W/R/T": "QB, WR, RB, TE",
+};
+
 /**
  * Refresh the Yahoo access token for the given user
  * @param {string} refreshToken The refresh token
@@ -105,13 +119,6 @@ export async function getRostersByTeamID(
   }
 }
 
-export type AvailabilityStatus = "A" | "FA" | "W";
-export type PlayerSort =
-  | "sort=R_PO"
-  | "sort=AR_L30;sort_type=lastmonth"
-  | "sort=AR_L14;sort_type=biweekly"
-  | "sort=AR_L4W;sort_type=last4weeks";
-
 /**
  * Will fetch the top 25 free agents for the given league, based on rank over
  * the last 14 days
@@ -163,12 +170,16 @@ export async function getTopPlayersGeneral(
   availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
   sort: PlayerSort = "sort=R_PO"
 ): Promise<any> {
-  // TODO: Add a full integrtion that uses this function. It requires no user API to call, so it should be easy to test.
-  // Maybe do a full stack test that goes conditionally if it is on github actions?
+  const positionArray = position.split(",");
+  const expandedPositions = positionArray.map(
+    (pos) => POSITION_EXPANSION[pos] ?? pos
+  );
+  const positions = expandedPositions.join(",");
+
   const url =
     `/games;game_keys=${gameKey}` +
     `/players;status=${availabilityStatus}` +
-    `;position=${position}` +
+    `;position=${positions}` +
     `;${sort}` +
     `;count=25;start=${start}` +
     ";out=ownership,percent_started,percent_owned,ranks,opponent,starting_status" +
