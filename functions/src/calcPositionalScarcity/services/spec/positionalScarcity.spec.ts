@@ -17,6 +17,7 @@ import {
   getLeagueSpecificScarcityOffsets,
   getReplacementLevels,
   getScarcityOffsetsForGame,
+  getScarcityOffsetsForTeam,
   recalculateScarcityOffsetsForAll,
 } from "../positionalScarcity.service";
 
@@ -78,6 +79,9 @@ describe("getReplacementLevel", () => {
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
   it("should return the correct replacement level for a team with compound positions", () => {
     const team = {
@@ -99,11 +103,19 @@ describe("getReplacementLevel", () => {
       D: 67.2,
       G: 24,
     };
+    expectedOutput["Util"] =
+      expectedOutput["C"] +
+      expectedOutput["LW"] +
+      expectedOutput["RW"] +
+      expectedOutput["D"];
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
   it("should return the correct replacement level for a team with compound positions and BN positions", () => {
     const team = {
@@ -126,11 +138,19 @@ describe("getReplacementLevel", () => {
       D: 87.2,
       G: 34,
     };
+    expectedOutput["Util"] =
+      expectedOutput["C"] +
+      expectedOutput["LW"] +
+      expectedOutput["RW"] +
+      expectedOutput["D"];
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
   it("should return the correct replacement level for a team with compound positions, BN positions, and max extra players (NFL)", () => {
     const team = {
@@ -158,11 +178,21 @@ describe("getReplacementLevel", () => {
       K: 12,
       DEF: 12,
     };
+    expectedOutput["W/R/T"] =
+      expectedOutput["RB"] + expectedOutput["WR"] + expectedOutput["TE"];
+    expectedOutput["Q/W/R/T"] =
+      expectedOutput["QB"] +
+      expectedOutput["RB"] +
+      expectedOutput["WR"] +
+      expectedOutput["TE"];
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
   it("should return the correct replacement level for a team with compound positions (with no subs listed) and BN positions (NHL)", () => {
     const team = {
@@ -185,6 +215,9 @@ describe("getReplacementLevel", () => {
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
   it("should return the correct replacement level for a team with compound positions (subs and no subs), BN positions, and max extra players (NHL)", () => {
     // set this artifical value just to test the functionality
@@ -208,11 +241,15 @@ describe("getReplacementLevel", () => {
       G: 36, // 24 + (72 - 9.6) * (2/8) = 39.6 ! Too much. Should cap at 36, then allocate elsewhere.
       F: 144, // 72 + 21.6 (from Util) = 93.6 + the rest = 144
     };
+    expectedOutput["Util"] = expectedOutput["F"] + expectedOutput["D"];
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
   it("should return the correct replacement level for a team with compound positions (with no subs listed), BN positions, and max extra players (MLB)", () => {
     // set this artifically low just to test the functionality
@@ -251,6 +288,9 @@ describe("getReplacementLevel", () => {
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
 
   it("should return the correct replacement level for a team with nested compound positions (W inside Util)", () => {
@@ -287,11 +327,20 @@ describe("getReplacementLevel", () => {
         2 * (2 / 10) * NUM_TEAMS +
         1 * (2 / 4) * NUM_TEAMS,
     };
+    expectedOutput["W"] = expectedOutput["LW"] + expectedOutput["RW"];
+    expectedOutput["Util"] =
+      expectedOutput["C"] +
+      expectedOutput["D"] +
+      expectedOutput["LW"] +
+      expectedOutput["RW"];
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
 });
 
@@ -583,6 +632,67 @@ describe("getScarcityOffsetsForLeague", () => {
       const pOffsets = scarcityOffsetArray[position];
       expect(pOffsets[0]).toBeGreaterThan(pOffsets[pOffsets.length - 1]);
     }
+  });
+});
+
+describe("getScarcityOffsetsForTeam", () => {
+  beforeAll(() => {
+    getPositionalScarcityOffsetsSpy.mockResolvedValue({
+      nfl: {
+        RB: numbersArr100,
+        WR: numbersArr100,
+        TE: numbersArr100,
+        K: numbersArr100,
+        DEF: numbersArr100,
+        "W/R/T": numbersArr100,
+        "Q/W/R/T": numbersArr100,
+      },
+    });
+  });
+
+  beforeEach(() => {
+    getTopPlayersGeneralSpy.mockResolvedValue({});
+    clearScarcityOffsets();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should return the correct offsets (including compound positions) for an NFL team with no explicit QB position", async () => {
+    const team = {
+      game_code: "nfl",
+      roster_positions: {
+        RB: 2,
+        WR: 2,
+        TE: 1,
+        "W/R/T": 1,
+        "Q/W/R/T": 1,
+        K: 1,
+        DEF: 1,
+        BN: 6,
+        "IL+": 2,
+        IL: 2,
+      },
+      num_teams: 6,
+    } as unknown as ITeamFirestore;
+    const expectedOutput = {
+      RB: 70,
+      WR: 70,
+      TE: 86,
+      K: 95,
+      DEF: 95,
+      "W/R/T": 23,
+      "Q/W/R/T": 23,
+    };
+
+    const result = await getScarcityOffsetsForTeam(team);
+
+    expect(result).toEqual(expectedOutput);
+
+    expect(Object.keys(result).length).toEqual(
+      Object.keys(expectedOutput).length
+    );
   });
 });
 

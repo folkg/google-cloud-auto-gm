@@ -33,7 +33,6 @@ export function clearScarcityOffsets() {
   SCARCITY_OFFSETS = null;
 }
 
-// TODO: Do we have to export all of these other internal functions just for testing?
 export async function getScarcityOffsetsForTeam(
   team: CommonTeam
 ): Promise<LeagueSpecificScarcityOffsets> {
@@ -228,8 +227,9 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
   );
 
   assignStandardPositions();
+  distributeCompoundPositions();
+  distributeBenchPositions();
   assignCompoundPositions();
-  assignBenchPositions();
 
   return result;
 
@@ -239,7 +239,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
     }
   }
 
-  function assignCompoundPositions() {
+  function distributeCompoundPositions() {
     for (const compoundPosition of compoundPositions) {
       const numPlayersAtCompoundPosition = rosterPositions[compoundPosition];
 
@@ -260,7 +260,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
     }
   }
 
-  function assignBenchPositions() {
+  function distributeBenchPositions() {
     const numBenchPositions = rosterPositions["BN"];
 
     if (numBenchPositions > 0) {
@@ -272,6 +272,21 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
 
       const sortedList = Object.keys(result);
       distributeExtraPositions(sortedList, numStarters, numBenchPlayers);
+    }
+  }
+
+  function assignCompoundPositions() {
+    // assign to the compound position itself as a fallback for cases where not all sub-positions are accounted for
+    // ex. QBs in leagues with only Q/W/R/T flex positions (no explicit QB  replacement level will exist for QB players)
+    for (const compoundPosition of compoundPositions) {
+      const subPositions: string[] = compoundPositionCompositions[
+        compoundPosition
+      ].filter((subPosition) => standardPositions.includes(subPosition));
+
+      result[compoundPosition] = subPositions.reduce(
+        (acc, subPosition) => acc + result[subPosition],
+        0
+      );
     }
   }
 
