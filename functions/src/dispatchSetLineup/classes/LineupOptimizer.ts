@@ -491,10 +491,12 @@ export class LineupOptimizer {
   private filterOutOverMaxCapPositions(addCandidates: Player[]): Player[] {
     const overMaxCapPositions: string[] = this.team.atMaxCapPositions;
     const filtered = addCandidates.filter(
-      (player) => !player.isEligibleForAnyPositionIn(overMaxCapPositions)
+      (player) =>
+        !player.isEligibleForAnyPositionIn(overMaxCapPositions) &&
+        !player.hasDisplayPositionIn(overMaxCapPositions)
     );
 
-    return filtered.length === 0 ? addCandidates : filtered;
+    return filtered;
   }
 
   private addBonusForCriticalPositions(addCandidates: Player[]): Player[] {

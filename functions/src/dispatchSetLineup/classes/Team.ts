@@ -346,9 +346,7 @@ export class Team extends PlayerCollection implements Team {
    * @type {string[]}
    */
   public get criticalPositions(): string[] {
-    return this.getPositionsConditionalHelper(
-      (count, capacity, _) => count <= capacity
-    );
+    return this.getPositionsHelper((count, capacity) => count <= capacity);
   }
 
   /**
@@ -359,9 +357,7 @@ export class Team extends PlayerCollection implements Team {
    * @type {string[]}
    */
   public get almostCriticalPositions(): string[] {
-    return this.getPositionsConditionalHelper(
-      (count, capacity, _) => count <= capacity + 1
-    );
+    return this.getPositionsHelper((count, capacity) => count <= capacity + 1);
   }
 
   /**
@@ -372,9 +368,7 @@ export class Team extends PlayerCollection implements Team {
    * @type {string[]}
    */
   public get underfilledPositions(): string[] {
-    return this.getPositionsConditionalHelper(
-      (count, capacity, _) => count < capacity
-    );
+    return this.getPositionsHelper((count, capacity) => count < capacity);
   }
 
   /**
@@ -385,30 +379,30 @@ export class Team extends PlayerCollection implements Team {
    * @type {string[]} positions that are at or over max capacity
    */
   public get atMaxCapPositions(): string[] {
-    return this.getPositionsConditionalHelper(
+    return this.getPositionsHelper(
       (count, capacity, position) =>
         count >=
         capacity + POSITIONAL_MAX_EXTRA_PLAYERS[this.game_code][position]
     );
   }
 
-  private getPositionsConditionalHelper(
+  private getPositionsHelper(
     compareFn: (count: number, capacity: number, position: string) => boolean
   ): string[] {
     const result: string[] = [];
 
-    // validPlayerKeysWithPositions: string[playerKey] = eligiblePositions
+    // validPlayerKeysWithPositions: string[playerKey] = [eligiblePositions]
     const validPlayerKeysWithPositions: string[][] =
       this.getValidPlayerKeysWithEligiblePositions();
 
-    const positionPlayerCapacity: { [key: string]: number } =
+    const positionPlayerCapacity: { [position: string]: number } =
       this.getPlayerCapacityAtPosition();
 
-    Object.keys(positionPlayerCapacity).forEach((position) => {
-      const playerKeysAtPosition = validPlayerKeysWithPositions.filter(
-        (eligiblePositions) => eligiblePositions.includes(position)
-      );
-      if (!INACTIVE_POSITION_LIST.includes(position)) {
+    for (const position in positionPlayerCapacity) {
+      if (Object.hasOwn(positionPlayerCapacity, position)) {
+        const playerKeysAtPosition = validPlayerKeysWithPositions.filter(
+          (eligiblePositions) => eligiblePositions.includes(position)
+        );
         if (
           compareFn(
             playerKeysAtPosition.length,
@@ -419,7 +413,7 @@ export class Team extends PlayerCollection implements Team {
           result.push(position);
         }
       }
-    });
+    }
 
     return result;
   }
@@ -431,8 +425,11 @@ export class Team extends PlayerCollection implements Team {
           !player.isLTIR() && !this._pendingDropPlayers.has(player.player_key)
       )
       .map((player) => {
-        const { eligible_positions: eligiblePositions } = player;
-        return eligiblePositions;
+        const {
+          eligible_positions: eligiblePositions,
+          display_positions: displayPositions = [], // We need a default because not all players in the test files have this property, it was added later
+        } = player;
+        return [...new Set([...eligiblePositions, ...displayPositions])];
       })
       .concat(Array.from(this._pendingAddPlayers.values()));
   }
@@ -440,23 +437,51 @@ export class Team extends PlayerCollection implements Team {
   private getPlayerCapacityAtPosition() {
     const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[this.game_code];
 
-    return Object.keys(this.roster_positions).reduce(
-      (acc: { [key: string]: number }, position: string) => {
-        if (!INACTIVE_POSITION_LIST.includes(position)) {
-          acc[position] = this.roster_positions[position];
-          const isCompoundPosition =
-            Object.keys(compoundPositions).includes(position);
-          if (isCompoundPosition) {
-            const childPositions: string[] = compoundPositions[position];
-            childPositions.forEach((childPosition) => {
-              acc[position] += this.roster_positions[childPosition] ?? 0;
-            });
-          }
+    const positions = Object.keys(this.roster_positions).filter(
+      (position) => !INACTIVE_POSITION_LIST.includes(position)
+    );
+
+    const result = positions.reduce(
+      (acc: { [position: string]: number }, position: string) => {
+        acc[position] = this.roster_positions[position];
+        const isCompoundPosition =
+          Object.keys(compoundPositions).includes(position);
+        if (isCompoundPosition) {
+          const childPositions: string[] = compoundPositions[position];
+          childPositions.forEach((childPosition) => {
+            acc[position] += this.roster_positions[childPosition] ?? 0;
+          });
         }
         return acc;
       },
       {}
     );
+
+    // Limit the capacity of specific sub-positions to the max capacity of the parent compound positions
+    // even if they don't explicitly exist in the league settings
+    // Example: A league with one QB/WR/RB/TE spot but zero QB spots, we still want to limit the number of QBs
+    // as defined by the POSITIONAL_MAX_EXTRA_PLAYERS["QB"] value
+    const extraPositionsToCheck = Object.keys(
+      POSITIONAL_MAX_EXTRA_PLAYERS[this.game_code]
+    ).filter((position) => !Object.keys(result).includes(position));
+
+    for (const extraPosition of extraPositionsToCheck) {
+      const parentPositions = Object.keys(compoundPositions).filter(
+        (parentPosition) =>
+          compoundPositions[parentPosition].includes(extraPosition)
+      );
+
+      if (parentPositions.length === 0) {
+        continue;
+      }
+
+      result[extraPosition] ??= 0;
+      for (const parentPosition of parentPositions) {
+        result[extraPosition] += this.roster_positions[parentPosition] ?? 0;
+      }
+    }
+
+    return result;
   }
 
   public getPlayersAt(position: string): Player[] {

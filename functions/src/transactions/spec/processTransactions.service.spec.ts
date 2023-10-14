@@ -423,4 +423,40 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     expect(addSwapTransactionsPlayers?.length).toEqual(2);
     expect(addSwapTransactionsPlayers).toMatchObject(addSwapTransactions);
   });
+
+  it("should not pick up a QB if the team is already at QB capacity (1) even with no dedicated QB spot(Q/W/R/T)", async () => {
+    // TODO: Do we need a positional scrcity offset for QBs in this league? Or just don't pick them up?
+    // 414.l.240994
+    positionalScarcityServiceSpy.mockResolvedValue({
+      WR: 0,
+      RB: 3,
+      TE: 1,
+      DEF: 7,
+      "Q/W/R/T": 3,
+    });
+
+    const rosters: ITeamOptimizer[] = [
+      require("../../common/services/yahooAPI/spec/testYahooLineupJSON/output/NFLLineupEmptySpot.json")[0],
+    ];
+    const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/nflReal.json");
+    const qbAddCandidates = addCandidates["414.l.240994.t.12"]
+      .filter((p) => p.display_positions.includes("QB"))
+      .map((p) => p.player_key);
+
+    const [, , resultAddSwapTransactions] = await createPlayersTransactions(
+      rosters,
+      addCandidates
+    );
+
+    const addSwapTransactionsPlayers = resultAddSwapTransactions?.[0].flatMap(
+      (t) => t.players
+    );
+
+    // expect that we do not add any QB players since we already have 2 on the roster (max capacity is 1)
+    const areQBsAdded = addSwapTransactionsPlayers?.some(
+      (t) =>
+        t.transactionType === "add" && qbAddCandidates.includes(t.playerKey)
+    );
+    expect(areQBsAdded).toBeFalsy();
+  });
 });

@@ -13,7 +13,7 @@ vi.mock("firebase-admin/app", () => {
     initializeApp: vi.fn(),
   };
 });
-describe.concurrent("Test Team Class", () => {
+describe("Test Team Class", () => {
   it("should remove IL eligible position from players in pending transactions", () => {
     const teamJSON = require("./MLBpendingTransactions.json");
     const team = new Team(teamJSON[0]);
@@ -192,6 +192,15 @@ describe.concurrent("Test Team Class", () => {
     const teamJSON = require("../../../common/services/yahooAPI/spec/testYahooLineupJSON/output/NFLLineups.json");
     const team = new Team(teamJSON[1]);
 
-    expect(team.atMaxCapPositions).toEqual(["QB", "K", "DEF"]);
+    expect(team.atMaxCapPositions).toEqual(
+      expect.arrayContaining(["QB", "K", "DEF"])
+    );
+  });
+
+  it("should include QB as at max capacity even though there is only a Q/W/R/T position on roster", () => {
+    const teamJSON = require("../../../common/services/yahooAPI/spec/testYahooLineupJSON/output/NFLLineups.json");
+    const team = new Team(teamJSON[0]);
+
+    expect(team.atMaxCapPositions).toEqual(expect.arrayContaining(["QB"]));
   });
 });
