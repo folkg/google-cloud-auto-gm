@@ -15,7 +15,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("Test LineupOptimizer Class NFL", function () {
+describe("Test LineupOptimizer Class NFL", function () {
   it.todo("Optimal Lineup", async function () {
     const roster: ITeamOptimizer = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);

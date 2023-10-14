@@ -61,8 +61,8 @@ export const COMPOUND_POSITION_COMPOSITIONS: LeagueCompoundPositions = {
 };
 // TODO: Confirm the NBA composition, the description seems a little vague
 type LeagueCompoundPositions = {
-  [key: string]: {
-    [key: string]: string[];
+  [league: string]: {
+    [position: string]: string[];
   };
 };
 
@@ -70,19 +70,18 @@ type LeagueCompoundPositions = {
  * The number of extra players that can be "automatically" added to a specific position in each league by the tool
  * If the number is 0, then the tool will not add any extra players to that position
  * If the position is not listed, then no maximum will be enforced
- * @date 29/06/2023 - 11:58:21
  *
  * @type {LeagueMaxPositions}
  */
 export const POSITIONAL_MAX_EXTRA_PLAYERS: LeagueMaxPositions = {
   mlb: { P: 6 },
-  nfl: { QB: 1, K: 0, DEF: 0 },
+  nfl: { QB: 0, K: 0, DEF: 0 },
   nba: {},
   nhl: { G: 2, D: 2 },
 };
 
 type LeagueMaxPositions = {
-  [key: string]: {
-    [key: string]: number;
+  [league: string]: {
+    [position: string]: number;
   };
 };

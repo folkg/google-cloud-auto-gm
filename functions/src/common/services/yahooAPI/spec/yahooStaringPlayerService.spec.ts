@@ -16,7 +16,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("Test setStartingPlayers()", function () {
+describe("Test setStartingPlayers()", function () {
   const intradayTeamsObject = {
     docs: [
       {

@@ -22,6 +22,7 @@ export default function getPlayersFromRoster(playersJSON: any): IPlayer[] {
         player_key: getChild(player[0], "player_key"),
         player_name: getChild(player[0], "name").full,
         eligible_positions: getEligiblePositions(player),
+        display_positions: getChild(player[0], "display_position").split(","),
         selected_position:
           selectedPosition && getChild(selectedPosition, "position"),
         is_editable: getChild(player, "is_editable") === 1,

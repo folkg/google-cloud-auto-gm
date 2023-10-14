@@ -33,7 +33,6 @@ export function clearScarcityOffsets() {
   SCARCITY_OFFSETS = null;
 }
 
-// TODO: Do we have to export all of these other internal functions just for testing?
 export async function getScarcityOffsetsForTeam(
   team: CommonTeam
 ): Promise<LeagueSpecificScarcityOffsets> {
@@ -83,6 +82,8 @@ export async function getLeagueSpecificScarcityOffsets(
           logger.error(
             `No offsets found for position ${position} and replacement level ${replacementIndex}. Returning empty object. No offsets will be applied to team.`
           );
+          logger.info("SCARCITY_OFFSETS:", SCARCITY_OFFSETS);
+          logger.info("replacementLevels:", replacementLevels);
           return {};
         }
       }
@@ -207,46 +208,44 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
     num_teams: numTeams,
   } = team;
 
-  const positionsList = Object.keys(rosterPositions).filter(
-    (position) => INACTIVE_POSITION_LIST.includes(position) === false
-  );
-  const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[gameCode];
+  const compoundPositionCompositions = COMPOUND_POSITION_COMPOSITIONS[gameCode];
   const maxExtraPlayers = POSITIONAL_MAX_EXTRA_PLAYERS[gameCode];
 
   const result: Record<string, number> = {};
 
+  const positionsList = Object.keys(rosterPositions).filter(
+    (position) => INACTIVE_POSITION_LIST.includes(position) === false
+  );
+  const standardPositions = positionsList.filter(
+    (position) =>
+      !compoundPositionCompositions[position]?.some((subPosition) =>
+        positionsList.includes(subPosition)
+      ) && position !== "BN"
+  );
+  const compoundPositions = positionsList.filter(
+    (position) => !standardPositions.includes(position) && position !== "BN"
+  );
+
   assignStandardPositions();
+  distributeCompoundPositions();
+  distributeBenchPositions();
   assignCompoundPositions();
-  assignBenchPositions();
 
   return result;
 
   function assignStandardPositions() {
-    for (const position of positionsList) {
-      const hasSubPositions =
-        compoundPositions[position]?.filter((subPosition) =>
-          positionsList.includes(subPosition)
-        ).length > 0;
-
-      if (position === "BN" || hasSubPositions) {
-        continue;
-      }
-
+    for (const position of standardPositions) {
       result[position] = rosterPositions[position] * numTeams;
     }
   }
 
-  function assignCompoundPositions() {
-    for (const compoundPosition in compoundPositions) {
-      if (!positionsList.includes(compoundPosition)) {
-        continue;
-      }
-
+  function distributeCompoundPositions() {
+    for (const compoundPosition of compoundPositions) {
       const numPlayersAtCompoundPosition = rosterPositions[compoundPosition];
 
-      const subPositions: string[] = compoundPositions[compoundPosition].filter(
-        (subPosition) => positionsList.includes(subPosition)
-      );
+      const subPositions: string[] = compoundPositionCompositions[
+        compoundPosition
+      ].filter((subPosition) => standardPositions.includes(subPosition));
 
       const numStarters = subPositions.reduce(
         (acc, subPosition) => acc + rosterPositions[subPosition],
@@ -261,7 +260,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
     }
   }
 
-  function assignBenchPositions() {
+  function distributeBenchPositions() {
     const numBenchPositions = rosterPositions["BN"];
 
     if (numBenchPositions > 0) {
@@ -273,6 +272,21 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
 
       const sortedList = Object.keys(result);
       distributeExtraPositions(sortedList, numStarters, numBenchPlayers);
+    }
+  }
+
+  function assignCompoundPositions() {
+    // assign to the compound position itself as a fallback for cases where not all sub-positions are accounted for
+    // ex. QBs in leagues with only Q/W/R/T flex positions (no explicit QB  replacement level will exist for QB players)
+    for (const compoundPosition of compoundPositions) {
+      const subPositions: string[] = compoundPositionCompositions[
+        compoundPosition
+      ].filter((subPosition) => standardPositions.includes(subPosition));
+
+      result[compoundPosition] = subPositions.reduce(
+        (acc, subPosition) => acc + result[subPosition],
+        0
+      );
     }
   }
 

@@ -1,9 +1,838 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
+exports[`Test fetchTopAvailablePlayersFromYahoo > NFL 1`] = `
+{
+  "423.l.784843.t.12": [
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": false,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 15,
+      "percent_owned_delta": -3,
+      "percent_started": 1,
+      "player_key": "423.p.100023",
+      "player_name": "Pittsburgh",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 125,
+        "next4Weeks": 228,
+        "next7Days": -1,
+        "projectedWeek": 1066,
+        "restOfSeason": 203,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "TE",
+      ],
+      "eligible_positions": [
+        "TE",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Questionable",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 9,
+      "percent_owned_delta": -10,
+      "percent_started": 2,
+      "player_key": "423.p.40048",
+      "player_name": "Dalton Kincaid",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 229,
+        "next4Weeks": 168,
+        "next7Days": -1,
+        "projectedWeek": 173,
+        "restOfSeason": 195,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "QB",
+      ],
+      "eligible_positions": [
+        "Q/W/R/T",
+        "IR",
+      ],
+      "injury_status": "Out",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 5,
+      "percent_owned_delta": -10,
+      "percent_started": null,
+      "player_key": "423.p.31838",
+      "player_name": "Daniel Jones",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 140,
+        "next4Weeks": 68,
+        "next7Days": -1,
+        "projectedWeek": 755,
+        "restOfSeason": 42,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "TE",
+      ],
+      "eligible_positions": [
+        "TE",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -1,
+      "percent_started": 1,
+      "player_key": "423.p.34099",
+      "player_name": "Chigoziem Okonkwo",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 184,
+        "next4Weeks": 211,
+        "next7Days": -1,
+        "projectedWeek": 137,
+        "restOfSeason": 184,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "display_date": "6",
+        "ownership_type": "waivers",
+        "waiver_date": "2023-10-16",
+      },
+      "percent_owned": 5,
+      "percent_owned_delta": -38,
+      "percent_started": 3,
+      "player_key": "423.p.100028",
+      "player_name": "Washington",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 386,
+        "next4Weeks": 199,
+        "next7Days": -1,
+        "projectedWeek": 200,
+        "restOfSeason": 223,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 4,
+      "percent_owned_delta": 2,
+      "percent_started": 1,
+      "player_key": "423.p.100027",
+      "player_name": "Tampa Bay",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 183,
+        "next4Weeks": 203,
+        "next7Days": -1,
+        "projectedWeek": 203,
+        "restOfSeason": 207,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "WR",
+      ],
+      "eligible_positions": [
+        "WR",
+        "W/R/T",
+        "Q/W/R/T",
+        "IR",
+      ],
+      "injury_status": "Out",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -7,
+      "percent_started": null,
+      "player_key": "423.p.30175",
+      "player_name": "JuJu Smith-Schuster",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 294,
+        "next4Weeks": 222,
+        "next7Days": -1,
+        "projectedWeek": 595,
+        "restOfSeason": 217,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "display_date": "7",
+        "ownership_type": "waivers",
+        "waiver_date": "2023-10-18",
+      },
+      "percent_owned": 1,
+      "percent_owned_delta": -8,
+      "percent_started": 1,
+      "player_key": "423.p.100007",
+      "player_name": "Denver",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 124,
+        "next4Weeks": 271,
+        "next7Days": -1,
+        "projectedWeek": 265,
+        "restOfSeason": 229,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "RB",
+      ],
+      "eligible_positions": [
+        "RB",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Questionable",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 5,
+      "percent_owned_delta": -5,
+      "percent_started": null,
+      "player_key": "423.p.33582",
+      "player_name": "Elijah Mitchell",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 296,
+        "next4Weeks": 283,
+        "next7Days": -1,
+        "projectedWeek": 240,
+        "restOfSeason": 270,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 7,
+      "percent_owned_delta": -2,
+      "percent_started": 1,
+      "player_key": "423.p.100005",
+      "player_name": "Cleveland",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 204,
+        "next4Weeks": 167,
+        "next7Days": -1,
+        "projectedWeek": 210,
+        "restOfSeason": 187,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "WR",
+      ],
+      "eligible_positions": [
+        "WR",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "display_date": "7",
+        "ownership_type": "waivers",
+        "waiver_date": "2023-10-18",
+      },
+      "percent_owned": 3,
+      "percent_owned_delta": -10,
+      "percent_started": null,
+      "player_key": "423.p.40090",
+      "player_name": "Marvin Mims Jr.",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 141,
+        "next4Weeks": 253,
+        "next7Days": -1,
+        "projectedWeek": 236,
+        "restOfSeason": 213,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 6,
+      "percent_owned_delta": 10,
+      "percent_started": 4,
+      "player_key": "423.p.100030",
+      "player_name": "Jacksonville",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 165,
+        "next4Weeks": 231,
+        "next7Days": -1,
+        "projectedWeek": 187,
+        "restOfSeason": 214,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "WR",
+      ],
+      "eligible_positions": [
+        "WR",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "display_date": "6",
+        "ownership_type": "waivers",
+        "waiver_date": "2023-10-15",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -3,
+      "percent_started": null,
+      "player_key": "423.p.31268",
+      "player_name": "Allen Lazard",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 119,
+        "next4Weeks": 215,
+        "next7Days": -1,
+        "projectedWeek": 171,
+        "restOfSeason": 177,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "TE",
+      ],
+      "eligible_positions": [
+        "TE",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -1,
+      "percent_started": null,
+      "player_key": "423.p.30157",
+      "player_name": "Gerald Everett",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 239,
+        "next4Weeks": 158,
+        "next7Days": -1,
+        "projectedWeek": 161,
+        "restOfSeason": 171,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "WR",
+      ],
+      "eligible_positions": [
+        "WR",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 4,
+      "percent_owned_delta": -19,
+      "percent_started": null,
+      "player_key": "423.p.40121",
+      "player_name": "Michael Wilson",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 68,
+        "next4Weeks": 157,
+        "next7Days": -1,
+        "projectedWeek": 156,
+        "restOfSeason": 178,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "QB",
+      ],
+      "eligible_positions": [
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 3,
+      "percent_owned_delta": -1,
+      "percent_started": 1,
+      "player_key": "423.p.27564",
+      "player_name": "Derek Carr",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 129,
+        "next4Weeks": 26,
+        "next7Days": -1,
+        "projectedWeek": 50,
+        "restOfSeason": 40,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "WR",
+      ],
+      "eligible_positions": [
+        "WR",
+        "W/R/T",
+        "Q/W/R/T",
+        "IR",
+      ],
+      "injury_status": "Injured Reserve",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 3,
+      "percent_owned_delta": -2,
+      "percent_started": null,
+      "player_key": "423.p.30120",
+      "player_name": "Mike Williams",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 121,
+        "next4Weeks": 620,
+        "next7Days": -1,
+        "projectedWeek": 579,
+        "restOfSeason": 626,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 5,
+      "percent_owned_delta": 5,
+      "percent_started": 2,
+      "player_key": "423.p.100026",
+      "player_name": "Seattle",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 97,
+        "next4Weeks": 181,
+        "next7Days": -1,
+        "projectedWeek": 211,
+        "restOfSeason": 189,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "RB",
+      ],
+      "eligible_positions": [
+        "RB",
+        "W/R/T",
+        "Q/W/R/T",
+        "IR",
+      ],
+      "injury_status": "Injured Reserve",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -1,
+      "percent_started": null,
+      "player_key": "423.p.32725",
+      "player_name": "J.K. Dobbins",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 1054,
+        "next4Weeks": 1059,
+        "next7Days": -1,
+        "projectedWeek": 1055,
+        "restOfSeason": 1059,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "QB",
+      ],
+      "eligible_positions": [
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": false,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -1,
+      "percent_started": null,
+      "player_key": "423.p.33975",
+      "player_name": "Kenny Pickett",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 84,
+        "next4Weeks": 73,
+        "next7Days": -1,
+        "projectedWeek": 543,
+        "restOfSeason": 39,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "RB",
+      ],
+      "eligible_positions": [
+        "RB",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 1,
+      "percent_owned_delta": -2,
+      "percent_started": null,
+      "player_key": "423.p.30997",
+      "player_name": "Rashaad Penny",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 727,
+        "next4Weeks": 396,
+        "next7Days": -1,
+        "projectedWeek": 349,
+        "restOfSeason": 405,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "TE",
+      ],
+      "eligible_positions": [
+        "TE",
+        "W/R/T",
+        "Q/W/R/T",
+        "IR",
+      ],
+      "injury_status": "Out",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 1,
+      "percent_owned_delta": -1,
+      "percent_started": null,
+      "player_key": "423.p.33113",
+      "player_name": "Juwan Johnson",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 349,
+        "next4Weeks": 232,
+        "next7Days": -1,
+        "projectedWeek": 424,
+        "restOfSeason": 226,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "QB",
+      ],
+      "eligible_positions": [
+        "Q/W/R/T",
+        "IR",
+      ],
+      "injury_status": "Injured Reserve",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "ownership_type": "freeagents",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -1,
+      "percent_started": null,
+      "player_key": "423.p.7200",
+      "player_name": "Aaron Rodgers",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 769,
+        "next4Weeks": 772,
+        "next7Days": -1,
+        "projectedWeek": 746,
+        "restOfSeason": 775,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "DEF",
+      ],
+      "eligible_positions": [
+        "DEF",
+      ],
+      "injury_status": "Healthy",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "display_date": "7",
+        "ownership_type": "waivers",
+        "waiver_date": "2023-10-18",
+      },
+      "percent_owned": 2,
+      "percent_owned_delta": -16,
+      "percent_started": 2,
+      "player_key": "423.p.100034",
+      "player_name": "Houston",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 114,
+        "next4Weeks": 229,
+        "next7Days": -1,
+        "projectedWeek": 193,
+        "restOfSeason": 240,
+      },
+      "selected_position": null,
+    },
+    {
+      "display_positions": [
+        "TE",
+      ],
+      "eligible_positions": [
+        "TE",
+        "W/R/T",
+        "Q/W/R/T",
+      ],
+      "injury_status": "Questionable",
+      "is_editable": false,
+      "is_playing": true,
+      "is_starting": "N/A",
+      "is_undroppable": false,
+      "ownership": {
+        "display_date": "7",
+        "ownership_type": "waivers",
+        "waiver_date": "2023-10-18",
+      },
+      "percent_owned": 1,
+      "percent_owned_delta": -1,
+      "percent_started": null,
+      "player_key": "423.p.34036",
+      "player_name": "Greg Dulcich",
+      "ranks": {
+        "last14Days": -1,
+        "last30Days": -1,
+        "last4Weeks": 405,
+        "next4Weeks": 225,
+        "next7Days": -1,
+        "projectedWeek": 196,
+        "restOfSeason": 191,
+      },
+      "selected_position": null,
+    },
+  ],
+}
+`;
+
+exports[`Test fetchTopAvailablePlayersFromYahoo > Test Players 1`] = `
 {
   "422.l.90351.t.1": [
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -33,6 +862,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -62,6 +894,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -91,6 +926,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -120,6 +958,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -149,6 +990,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -178,6 +1022,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -207,6 +1054,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -236,6 +1086,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -265,6 +1118,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -294,6 +1150,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -323,6 +1182,10 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -353,6 +1216,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -382,6 +1248,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -411,6 +1280,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -440,6 +1312,10 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -470,6 +1346,10 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -500,6 +1380,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -529,6 +1412,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -558,6 +1444,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -587,6 +1476,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -616,6 +1508,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -645,6 +1540,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+      ],
       "eligible_positions": [
         "3B",
         "Util",
@@ -674,6 +1572,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -703,6 +1604,9 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -735,10 +1639,13 @@ exports[`Test fetchRostersFromYahoo > Test Players 1`] = `
 }
 `;
 
-exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
+exports[`Test fetchTopAvailablePlayersFromYahoo > With waivers and freeagents 1`] = `
 {
   "422.l.115494.t.4": [
     {
+      "display_positions": [
+        "SS",
+      ],
       "eligible_positions": [
         "SS",
         "Util",
@@ -770,6 +1677,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -802,6 +1713,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -833,6 +1747,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+        "OF",
+      ],
       "eligible_positions": [
         "3B",
         "OF",
@@ -865,6 +1783,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",
@@ -897,6 +1818,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -928,6 +1852,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -960,6 +1887,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -992,6 +1922,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1023,6 +1956,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -1054,6 +1990,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",
@@ -1085,6 +2024,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "C",
+      ],
       "eligible_positions": [
         "C",
         "Util",
@@ -1116,6 +2058,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -1148,6 +2094,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1180,6 +2129,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1211,6 +2163,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -1242,6 +2197,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SS",
+        "OF",
+      ],
       "eligible_positions": [
         "SS",
         "OF",
@@ -1274,6 +2233,13 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "2B",
+        "3B",
+        "SS",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "2B",
@@ -1309,6 +2275,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1341,6 +2310,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -1373,6 +2346,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -1404,6 +2380,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1435,6 +2414,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "OF",
+      ],
       "eligible_positions": [
         "1B",
         "OF",
@@ -1467,6 +2450,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1498,6 +2484,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "C",
+      ],
       "eligible_positions": [
         "C",
         "Util",
@@ -1531,6 +2520,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
   ],
   "422.l.16955.t.10": [
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1560,6 +2552,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1589,6 +2584,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1619,6 +2617,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1648,6 +2649,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "CI",
@@ -1678,6 +2682,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1707,6 +2714,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1736,6 +2746,12 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "2B",
+        "3B",
+        "SS",
+        "OF",
+      ],
       "eligible_positions": [
         "2B",
         "3B",
@@ -1770,6 +2786,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1799,6 +2818,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1828,6 +2850,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1857,6 +2882,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1886,6 +2914,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -1915,6 +2946,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "CI",
@@ -1945,6 +2979,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -1974,6 +3011,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2003,6 +3043,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2032,6 +3075,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2061,6 +3107,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2090,6 +3139,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2119,6 +3171,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2148,6 +3203,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
         "P",
@@ -2177,6 +3235,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SS",
+      ],
       "eligible_positions": [
         "SS",
         "MI",
@@ -2207,6 +3268,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+        "RP",
+      ],
       "eligible_positions": [
         "SP",
         "RP",
@@ -2237,6 +3302,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "P",
@@ -2268,6 +3336,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
   ],
   "undefined": [
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2297,6 +3368,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2326,6 +3400,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2354,6 +3431,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
       ],
@@ -2382,6 +3462,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2410,6 +3493,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "C",
+        "OF",
+      ],
       "eligible_positions": [
         "C",
         "OF",
@@ -2440,6 +3527,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+      ],
       "eligible_positions": [
         "3B",
         "Util",
@@ -2469,6 +3559,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2497,6 +3590,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2525,6 +3621,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2554,6 +3653,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2582,6 +3684,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "2B",
+      ],
       "eligible_positions": [
         "2B",
         "Util",
@@ -2611,6 +3716,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",
@@ -2640,6 +3748,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SS",
+      ],
       "eligible_positions": [
         "SS",
         "Util",
@@ -2669,6 +3780,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2698,6 +3812,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+        "2B",
+      ],
       "eligible_positions": [
         "1B",
         "2B",
@@ -2728,6 +3846,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2756,6 +3877,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "RP",
+      ],
       "eligible_positions": [
         "RP",
       ],
@@ -2784,6 +3908,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
       ],
@@ -2812,6 +3939,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
         "IL",
@@ -2841,6 +3971,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "OF",
+      ],
       "eligible_positions": [
         "OF",
         "Util",
@@ -2870,6 +4003,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "3B",
+        "SS",
+      ],
       "eligible_positions": [
         "3B",
         "SS",
@@ -2900,6 +4037,10 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "2B",
+        "SS",
+      ],
       "eligible_positions": [
         "2B",
         "SS",
@@ -2930,6 +4071,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "SP",
+      ],
       "eligible_positions": [
         "SP",
       ],
@@ -2958,6 +4102,9 @@ exports[`Test fetchRostersFromYahoo > With waivers and freeagents 1`] = `
       "selected_position": null,
     },
     {
+      "display_positions": [
+        "1B",
+      ],
       "eligible_positions": [
         "1B",
         "Util",

@@ -15,7 +15,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("Test LineupOptimizer Class NBA Weekly", function () {
+describe("Test LineupOptimizer Class NBA Weekly", function () {
   test("Optimal Lineup", function () {
     const roster: ITeamOptimizer = require("./testRosters/NBA/Weekly/optimalRoster.json");
     const lo = new LineupOptimizer(roster);

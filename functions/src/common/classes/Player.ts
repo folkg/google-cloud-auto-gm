@@ -129,6 +129,12 @@ export class Player implements Player {
     );
   }
 
+  hasDisplayPositionIn(positionsList: string[]): boolean {
+    return positionsList.some((position) =>
+      this.display_positions?.includes(position)
+    );
+  }
+
   hasLowerStartScoreThanAll(playersList: Player[]): boolean {
     return playersList.every((player) => this.compareStartScore(player) <= 0);
   }

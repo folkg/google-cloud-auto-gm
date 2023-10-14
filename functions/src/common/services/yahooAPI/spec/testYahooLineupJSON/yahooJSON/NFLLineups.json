@@ -3857,7 +3857,7 @@
                                       },
                                       "coverage_type": "week",
                                       "week": "17",
-                                      "is_editable": 0
+                                      "is_editable": 1
                                     }
                                   }
                                 ]
@@ -7963,7 +7963,7 @@
                                       },
                                       "coverage_type": "week",
                                       "week": "17",
-                                      "is_editable": 0
+                                      "is_editable": 1
                                     }
                                   }
                                 ]

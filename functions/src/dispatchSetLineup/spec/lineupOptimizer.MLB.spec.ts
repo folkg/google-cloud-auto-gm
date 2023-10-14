@@ -16,7 +16,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.concurrent("Test LineupOptimizer Class MLB Daily", function () {
+describe("Test LineupOptimizer Class MLB Daily", function () {
   test("Already optimal roster", function () {
     const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
