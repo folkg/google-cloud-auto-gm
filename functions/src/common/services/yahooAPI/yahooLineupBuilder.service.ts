@@ -75,7 +75,7 @@ export async function fetchRostersFromYahoo(
         league_name: getChild(league, "name"),
         players: players,
         coverage_type: coverageType,
-        coverage_period: usersTeamRoster[coverageType],
+        coverage_period: usersTeamRoster[coverageType].toString(),
         weekly_deadline: getChild(league, "weekly_deadline"),
         edit_key: getChild(league, "edit_key"),
         game_code: getChild(gameJSON, "code"),
