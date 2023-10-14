@@ -112,4 +112,17 @@ describe("Test fetchRostersFromYahoo", function () {
 
     expect(result).toMatchSnapshot();
   });
+
+  test("2 NFL Teams", async function () {
+    const teams = ["414.l.240994.t.12", "414.l.358976.t.4"];
+    const uid = "test";
+    const yahooJSON = require("./testYahooLineupJSON/yahooJSON/NFLLineups.json");
+
+    // mock the JSON result from yahooAPI getRostersByTeamID()
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
+
+    const result = await fetchRostersFromYahoo(teams, uid);
+
+    expect(result).toMatchSnapshot();
+  });
 });

@@ -15,8 +15,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-// To mock the result from yahooAPI getRostersByTeamID()
-describe("Test fetchRostersFromYahoo", function () {
+describe("Test fetchTopAvailablePlayersFromYahoo", function () {
   test("Test Players", async function () {
     const teamKeys = ["422.l.90351.t.1"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
@@ -35,6 +34,20 @@ describe("Test fetchRostersFromYahoo", function () {
     const teamKeys = ["422.l.115494.t.4", "422.l.16955.t.10"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/yahooJSONWaivers.json");
+
+    vi.spyOn(yahooAPIService, "getTopAvailablePlayers").mockReturnValue(
+      yahooJSON
+    );
+
+    const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);
+
+    expect(result).toMatchSnapshot();
+  });
+
+  test("NFL", async function () {
+    const teamKeys = ["423.l.784843.t.12"];
+    const uid = "test";
+    const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/NFL.json");
 
     vi.spyOn(yahooAPIService, "getTopAvailablePlayers").mockReturnValue(
       yahooJSON
