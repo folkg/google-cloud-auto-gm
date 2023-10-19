@@ -28,7 +28,7 @@ import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
-import { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
+import { AssignedPlayerList } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -61,7 +61,7 @@ export async function setUsersLineup(
 
   await initializeGlobalStartingPlayers(firestoreTeams);
 
-  const topAvailablePlayerCandidates: TopAvailablePlayers =
+  const topAvailablePlayerCandidates: AssignedPlayerList =
     await getTopAvailablePlayers(firestoreTeams, uid);
 
   usersTeams = await processTransactionsForIntradayTeams(
@@ -92,7 +92,7 @@ export async function performWeeklyLeagueTransactions(
     return;
   }
 
-  const topAvailablePlayerCandidates: TopAvailablePlayers =
+  const topAvailablePlayerCandidates: AssignedPlayerList =
     await getTopAvailablePlayers(firestoreTeams, uid);
 
   await processTomorrowsTransactions(
@@ -148,7 +148,7 @@ async function processLineupChanges(
 async function processTransactionsForIntradayTeams(
   originalTeams: ITeamOptimizer[],
   firestoreTeams: ITeamFirestore[],
-  topAvailablePlayerCandidates: TopAvailablePlayers,
+  topAvailablePlayerCandidates: AssignedPlayerList,
   uid: string
 ): Promise<ITeamOptimizer[]> {
   const teams = getTeamsWithSameDayTransactions(originalTeams);
@@ -175,15 +175,17 @@ async function processTransactionsForIntradayTeams(
 async function processTransactionsForNextDayTeams(
   originalTeams: ITeamOptimizer[],
   firestoreTeams: ITeamFirestore[],
-  topAvailablePlayerCandidates: TopAvailablePlayers,
+  topAvailablePlayerCandidates: AssignedPlayerList,
   uid: string
 ): Promise<void> {
   const teams = getTeamsForNextDayTransactions(originalTeams);
 
   // pre-check to see if we need to do anything using today's roster.
   // May not catch 100% if the user made some changes, but it will catch most.
-  const [potentialDrops, _, potentialAddSwaps] =
-    await createPlayersTransactions(teams, topAvailablePlayerCandidates);
+  const {
+    dropPlayerTransactions: potentialDrops,
+    addSwapTransactions: potentialAddSwaps,
+  } = await createPlayersTransactions(teams, topAvailablePlayerCandidates);
 
   if (!potentialDrops && !potentialAddSwaps) {
     return;
@@ -201,7 +203,7 @@ async function processTomorrowsTransactions(
   teams: ITeamOptimizer[] | ITeamFirestore[],
   firestoreTeams: ITeamFirestore[],
   uid: string,
-  topAvailablePlayerCandidates: TopAvailablePlayers
+  topAvailablePlayerCandidates: AssignedPlayerList
 ) {
   const teamKeys: string[] = teams.map((t) => t.team_key);
   let tomorrowsTeams = await fetchRostersFromYahoo(
@@ -230,7 +232,7 @@ async function processTomorrowsTransactions(
 
 async function processAutomaticTransactions(
   teams: ITeamOptimizer[],
-  topAvailablePlayerCandidates: TopAvailablePlayers,
+  topAvailablePlayerCandidates: AssignedPlayerList,
   uid: string
 ): Promise<boolean> {
   const teamsWithAutoTransactions = teams.filter(
@@ -241,7 +243,7 @@ async function processAutomaticTransactions(
     return false;
   }
 
-  const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
+  const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
     await createPlayersTransactions(
       teamsWithAutoTransactions,
       topAvailablePlayerCandidates
@@ -265,7 +267,7 @@ async function processAutomaticTransactions(
 
 async function processManualTransactions(
   teams: ITeamOptimizer[],
-  topAvailablePlayerCandidates: TopAvailablePlayers,
+  topAvailablePlayerCandidates: AssignedPlayerList,
   uid: string
 ): Promise<void> {
   // Only process teams on the first run of the day. Only propose changes once per day.
@@ -277,7 +279,7 @@ async function processManualTransactions(
     return;
   }
 
-  const [dropPlayerTransactions, _, addSwapTransactions] =
+  const { dropPlayerTransactions, addSwapTransactions } =
     await createPlayersTransactions(teamsToCheck, topAvailablePlayerCandidates);
 
   const proposedTransactions: PlayerTransaction[] = (

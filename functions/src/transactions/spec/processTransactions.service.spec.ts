@@ -161,11 +161,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -195,11 +195,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -223,11 +223,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const addSwapTransactionsPlayers = resultAddSwapTransactions?.[0].flatMap(
       (t) => t.players
@@ -267,11 +267,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const addSwapTransactionsPlayers = resultAddSwapTransactions?.[0].flatMap(
       (t) => t.players
@@ -333,11 +333,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -397,11 +397,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -443,10 +443,8 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       .filter((p) => p.display_positions.includes("QB"))
       .map((p) => p.player_key);
 
-    const [, , resultAddSwapTransactions] = await createPlayersTransactions(
-      rosters,
-      addCandidates
-    );
+    const { addSwapTransactions: resultAddSwapTransactions } =
+      await createPlayersTransactions(rosters, addCandidates);
 
     const addSwapTransactionsPlayers = resultAddSwapTransactions?.[0].flatMap(
       (t) => t.players
