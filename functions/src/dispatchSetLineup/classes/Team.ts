@@ -196,7 +196,7 @@ export class Team extends PlayerCollection implements Team {
    * @public
    * @return {ITeamOptimizer}
    */
-  public toITeamObject(): ITeamOptimizer {
+  public toPlainTeamObject(): ITeamOptimizer {
     const { _editablePlayers, _ownershipScoreFunction, ...team } = this;
     return structuredClone(team) as ITeamOptimizer;
   }

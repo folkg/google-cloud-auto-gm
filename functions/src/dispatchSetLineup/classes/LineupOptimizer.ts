@@ -35,7 +35,7 @@ export class LineupOptimizer {
   }
 
   public getCurrentTeamState(): ITeamOptimizer {
-    return this.team.toITeamObject();
+    return this.team.toPlainTeamObject();
   }
 
   public getCurrentTeamStateObject(): Team {
@@ -256,6 +256,7 @@ export class LineupOptimizer {
           playerKey: playerToAdd.player_key,
           transactionType: "add",
           isInactiveList: false,
+          player: playerToAdd.toPlainPlayerObject(),
           isFromWaivers: playerToAdd.ownership?.ownership_type === "waivers",
         },
       ],
@@ -439,12 +440,14 @@ export class LineupOptimizer {
           playerKey: playerToAdd.player_key,
           transactionType: "add",
           isInactiveList: false,
+          player: playerToAdd.toPlainPlayerObject(),
           isFromWaivers: playerToAdd.ownership?.ownership_type === "waivers",
         },
         {
           playerKey: playerToDrop.player_key,
           transactionType: "drop",
           isInactiveList: false,
+          player: playerToDrop.toPlainPlayerObject(),
         },
       ],
       teamName: this.team.team_name,
@@ -860,6 +863,7 @@ export class LineupOptimizer {
           playerKey: playerToDrop.player_key,
           transactionType: "drop",
           isInactiveList: playerToDrop.isInactiveList(),
+          player: playerToDrop.toPlainPlayerObject(),
         },
       ],
       teamName: this.team.team_name,

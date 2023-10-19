@@ -31,6 +31,10 @@ export class Player implements Player {
     }
   }
 
+  public toPlainPlayerObject(): this {
+    return structuredClone(this);
+  }
+
   compareStartScore(playerB: Player): number {
     return this.compareScores(this.start_score, playerB.start_score);
   }
