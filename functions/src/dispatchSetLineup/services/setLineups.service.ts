@@ -182,8 +182,10 @@ async function processTransactionsForNextDayTeams(
 
   // pre-check to see if we need to do anything using today's roster.
   // May not catch 100% if the user made some changes, but it will catch most.
-  const [potentialDrops, _, potentialAddSwaps] =
-    await createPlayersTransactions(teams, topAvailablePlayerCandidates);
+  const {
+    dropPlayerTransactions: potentialDrops,
+    addSwapTransactions: potentialAddSwaps,
+  } = await createPlayersTransactions(teams, topAvailablePlayerCandidates);
 
   if (!potentialDrops && !potentialAddSwaps) {
     return;
@@ -241,7 +243,7 @@ async function processAutomaticTransactions(
     return false;
   }
 
-  const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
+  const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
     await createPlayersTransactions(
       teamsWithAutoTransactions,
       topAvailablePlayerCandidates
@@ -277,7 +279,7 @@ async function processManualTransactions(
     return;
   }
 
-  const [dropPlayerTransactions, _, addSwapTransactions] =
+  const { dropPlayerTransactions, addSwapTransactions } =
     await createPlayersTransactions(teamsToCheck, topAvailablePlayerCandidates);
 
   const proposedTransactions: PlayerTransaction[] = (

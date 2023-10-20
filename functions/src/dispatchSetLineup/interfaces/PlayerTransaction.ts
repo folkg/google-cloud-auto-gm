@@ -1,3 +1,5 @@
+import { Player } from "../../common/classes/Player";
+
 export interface PlayerTransaction {
   teamName: string;
   leagueName: string;
@@ -12,6 +14,7 @@ export type TPlayer = {
   playerKey: string;
   transactionType: TransactionType;
   isInactiveList: boolean;
+  player: Player;
   isFromWaivers?: boolean;
 };
 

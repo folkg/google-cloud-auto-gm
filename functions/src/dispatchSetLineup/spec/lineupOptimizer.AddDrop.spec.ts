@@ -186,8 +186,7 @@ describe("Add players", () => {
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
-    const numEmptyRosterSpots =
-      lo.getCurrentTeamStateObject().currentEmptyRosterSpots;
+    const numEmptyRosterSpots = lo.teamObject.currentEmptyRosterSpots;
 
     expect(numEmptyRosterSpots).toEqual(0);
   });
@@ -197,8 +196,7 @@ describe("Add players", () => {
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
-    const numEmptyRosterSpots =
-      lo.getCurrentTeamStateObject().currentEmptyRosterSpots;
+    const numEmptyRosterSpots = lo.teamObject.currentEmptyRosterSpots;
 
     expect(numEmptyRosterSpots).toEqual(3);
   });

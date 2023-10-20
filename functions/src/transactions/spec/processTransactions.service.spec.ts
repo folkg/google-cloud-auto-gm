@@ -2,6 +2,7 @@ import { vi, describe, it, test, expect, afterEach } from "vitest";
 import {
   createPlayersTransactions,
   generateTopAvailablePlayerPromises,
+  getTransactions,
   mergeTopAvailabePlayers,
 } from "../services/processTransactions.service";
 import { ITeamFirestore, ITeamOptimizer } from "../../common/interfaces/ITeam";
@@ -21,7 +22,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.todo("test getTransactions and postTransactions functions");
+describe.todo("test getTransactions and postTransactions functions", () => {});
 
 describe("test mergeTopAvailabePlayers function", () => {
   test("four MLB teams", async () => {
@@ -161,11 +162,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -195,11 +196,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -223,11 +224,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const addSwapTransactionsPlayers = resultAddSwapTransactions?.[0].flatMap(
       (t) => t.players
@@ -267,11 +268,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const addSwapTransactionsPlayers = resultAddSwapTransactions?.[0].flatMap(
       (t) => t.players
@@ -333,11 +334,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -397,11 +398,11 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
 
-    const [
-      resultDropTransactions,
-      resultLineupChanges,
-      resultAddSwapTransactions,
-    ] = await createPlayersTransactions(rosters, addCandidates);
+    const {
+      dropPlayerTransactions: resultDropTransactions,
+      lineupChanges: resultLineupChanges,
+      addSwapTransactions: resultAddSwapTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
     const dropTransactionsPlayers = resultDropTransactions?.[0].flatMap(
       (t) => t.players
@@ -424,6 +425,51 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     expect(addSwapTransactionsPlayers).toMatchObject(addSwapTransactions);
   });
 
+  it("should return the add / drop/ position lists as expected", async () => {
+    const teamKey = "422.l.115494.t.4";
+    positionalScarcityServiceSpy.mockResolvedValue({});
+    const rosters: ITeamOptimizer[] = [
+      require("../../dispatchSetLineup/spec/problematicAddDrop/moveILtoBN-lineup.json"),
+    ];
+    const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
+
+    const {
+      topAddCandidatesList,
+      topDropCandidatesList,
+      playersAtPositionList,
+    } = await createPlayersTransactions(rosters, addCandidates);
+
+    // Expect all add candidates to be better than all drop candidates
+    expect(topAddCandidatesList?.[teamKey].length).toBeGreaterThan(0);
+    expect(topDropCandidatesList?.[teamKey].length).toBeGreaterThan(0);
+    const worstAddCandidate = topAddCandidatesList?.[teamKey][0];
+    const bestDropCandidate = topDropCandidatesList?.[teamKey][0];
+
+    expect(worstAddCandidate?.ownership_score ?? 0).toBeGreaterThan(
+      bestDropCandidate?.ownership_score ?? 1
+    );
+
+    // Expect all players on the roster to be counted as BN eligible
+    expect(playersAtPositionList?.[teamKey]["BN"]).toEqual(
+      rosters[0].players.length
+    );
+  });
+
+  it("should return empty add / drop lists if there are no drop candidates", async () => {
+    const teamKey = "422.l.115494.t.4";
+    positionalScarcityServiceSpy.mockResolvedValue({});
+    const rosters: ITeamOptimizer[] = [
+      require("../../dispatchSetLineup/spec/problematicAddDrop/noDropCandidates.json"),
+    ];
+    const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
+
+    const { topAddCandidatesList, topDropCandidatesList } =
+      await createPlayersTransactions(rosters, addCandidates);
+
+    expect(topAddCandidatesList?.[teamKey].length).toBe(0);
+    expect(topDropCandidatesList?.[teamKey].length).toBe(0);
+  });
+
   it("should not pick up a QB if the team is already at QB capacity (1) even with no dedicated QB spot(Q/W/R/T)", async () => {
     // TODO: Do we need a positional scrcity offset for QBs in this league? Or just don't pick them up?
     // 414.l.240994
@@ -443,10 +489,8 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       .filter((p) => p.display_positions.includes("QB"))
       .map((p) => p.player_key);
 
-    const [, , resultAddSwapTransactions] = await createPlayersTransactions(
-      rosters,
-      addCandidates
-    );
+    const { addSwapTransactions: resultAddSwapTransactions } =
+      await createPlayersTransactions(rosters, addCandidates);
 
     const addSwapTransactionsPlayers = resultAddSwapTransactions?.[0].flatMap(
       (t) => t.players

@@ -26,11 +26,15 @@ import {
   fetchTopAvailablePlayersFromYahoo,
 } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 import { getScarcityOffsetsForTeam } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import { Player } from "../../common/classes/Player.js";
 
-type TransctionsData = {
+type TransactionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
   lineupChanges: LineupChanges[] | null;
   addSwapTransactions: PlayerTransaction[][] | null;
+  topAddCandidatesList?: AssignedPlayersList;
+  topDropCandidatesList?: AssignedPlayersList;
+  playersAtPositionList?: PlayetsAtPositionsList;
 };
 type TransactionResults = {
   postedTransactions: PlayerTransaction[];
@@ -39,6 +43,14 @@ type TransactionResults = {
 type PostTransactionsResult = {
   success: boolean;
   transactionResults: TransactionResults;
+};
+type PlayetsAtPositionsList = {
+  [teamKey: string]: {
+    [position: string]: number;
+  };
+};
+type AssignedPlayersList = {
+  [teamKey: string]: Player[];
 };
 
 /**
@@ -50,7 +62,7 @@ type PostTransactionsResult = {
  * @param {(any[])} firestoreTeams - The team objects from Firestore
  * @return {unknown}
  */
-export async function getTransactions(uid: string): Promise<TransctionsData> {
+export async function getTransactions(uid: string): Promise<TransactionsData> {
   assert(uid, "No uid provided");
 
   const teams = await getActiveTeamsForUser(uid);
@@ -61,6 +73,9 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
       dropPlayerTransactions: null,
       lineupChanges: null,
       addSwapTransactions: null,
+      topAddCandidatesList: {},
+      topDropCandidatesList: {},
+      playersAtPositionList: {},
     };
   }
 
@@ -109,15 +124,31 @@ export async function getTransactions(uid: string): Promise<TransctionsData> {
     tomorrows.addSwapTransactions ?? []
   );
 
+  const topAddCandidatesList = {
+    ...todays.topAddCandidatesList,
+    ...tomorrows.topAddCandidatesList,
+  };
+  const topDropCandidatesList = {
+    ...todays.topDropCandidatesList,
+    ...tomorrows.topDropCandidatesList,
+  };
+  const playersAtPositionList = {
+    ...todays.playersAtPositionList,
+    ...tomorrows.playersAtPositionList,
+  };
+
   return {
     dropPlayerTransactions,
     lineupChanges,
     addSwapTransactions,
+    topAddCandidatesList,
+    topDropCandidatesList,
+    playersAtPositionList,
   };
 }
 
 export async function postTransactions(
-  transactionData: TransctionsData,
+  transactionData: TransactionsData,
   uid: string
 ): Promise<PostTransactionsResult> {
   let success = false;
@@ -195,7 +226,7 @@ async function getPlayerTransactionsForDate(
   firestoreTeams: ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   date?: string
-): Promise<TransctionsData> {
+): Promise<TransactionsData> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
 
@@ -210,14 +241,10 @@ async function getPlayerTransactionsForDate(
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
 
-  const [dropPlayerTransactions, lineupChanges, addSwapTransactions] =
-    await createPlayersTransactions(usersTeams, topAvailablePlayerCandidates);
-
-  return {
-    dropPlayerTransactions,
-    lineupChanges,
-    addSwapTransactions,
-  };
+  return await createPlayersTransactions(
+    usersTeams,
+    topAvailablePlayerCandidates
+  );
 }
 
 export async function getTopAvailablePlayers(
@@ -248,16 +275,13 @@ export async function getTopAvailablePlayers(
 export async function createPlayersTransactions(
   teams: ITeamOptimizer[],
   allAddCandidates: TopAvailablePlayers
-): Promise<
-  [
-    PlayerTransaction[][] | null,
-    LineupChanges[] | null,
-    PlayerTransaction[][] | null
-  ]
-> {
+): Promise<TransactionsData> {
   const dropPlayerTransactions: PlayerTransaction[][] = [];
   const addSwapPlayerTransactions: PlayerTransaction[][] = [];
   const allLineupChanges: LineupChanges[] = [];
+  const topAddCandidatesList: AssignedPlayersList = {};
+  const topDropCandidatesList: AssignedPlayersList = {};
+  const playersAtPositionList: PlayetsAtPositionsList = {};
 
   for (const team of teams) {
     const positionalScarcityOffsets = await getScarcityOffsetsForTeam(team);
@@ -293,18 +317,19 @@ export async function createPlayersTransactions(
       }
 
       // filter out any add transactions that are already in drop transactions by comparing the reason field
-      const pt: PlayerTransaction[] | undefined = lo.playerTransactions?.filter(
-        (pt) => !dpt?.some((dpt) => dpt.reason === pt.reason)
-      );
-      if (pt) {
-        addSwapPlayerTransactions.push(pt);
+      const aspt: PlayerTransaction[] | undefined =
+        lo.playerTransactions?.filter(
+          (pt) => !dpt?.some((dpt) => dpt.reason === pt.reason)
+        );
+      if (aspt) {
+        addSwapPlayerTransactions.push(aspt);
         // TODO: Remove this, temporary logging to spot check the new positional scarcity offset functionality
         logger.log(
           `positionalScarcityOffsets for team ${
             team.team_key
           }: ${JSON.stringify(positionalScarcityOffsets)}`
         );
-        logger.log(`addSwapPlayerTransactions: ${JSON.stringify(pt)}`);
+        logger.log(`addSwapPlayerTransactions: ${JSON.stringify(aspt)}`);
       }
     }
 
@@ -312,13 +337,24 @@ export async function createPlayersTransactions(
     if (lc) {
       allLineupChanges.push(lc);
     }
+
+    const { baseDropCandidates, baseAddCandidates } =
+      lo.getBaseAddDropCandidates();
+    topAddCandidatesList[team.team_key] = baseAddCandidates;
+    topDropCandidatesList[team.team_key] = baseDropCandidates;
+    playersAtPositionList[team.team_key] = lo.teamObject.positionCounts;
   }
 
-  return [
-    dropPlayerTransactions.length > 0 ? dropPlayerTransactions : null,
-    allLineupChanges.length > 0 ? allLineupChanges : null,
-    addSwapPlayerTransactions.length > 0 ? addSwapPlayerTransactions : null,
-  ];
+  return {
+    dropPlayerTransactions:
+      dropPlayerTransactions.length > 0 ? dropPlayerTransactions : null,
+    lineupChanges: allLineupChanges.length > 0 ? allLineupChanges : null,
+    addSwapTransactions:
+      addSwapPlayerTransactions.length > 0 ? addSwapPlayerTransactions : null,
+    topAddCandidatesList,
+    topDropCandidatesList,
+    playersAtPositionList,
+  };
 }
 
 async function postTransactionsHelper(
