@@ -10,6 +10,10 @@ import { Team } from "./Team.js";
 import { PlayerTransactions } from "./PlayerTransactions.js";
 import { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 
+// The number of points the score of an add candidate must be above a potential drop candidate.
+// This adds a conservative bias to the algorithm to avoid making bad drops.
+const SCORE_THRESHOLD = 6;
+
 export class LineupOptimizer {
   private team: Team;
   private originalPlayerPositions: { [key: string]: string };
@@ -38,7 +42,7 @@ export class LineupOptimizer {
     return this.team.toPlainTeamObject();
   }
 
-  public getCurrentTeamStateObject(): Team {
+  public get teamObject(): Team {
     return new Team(this.getCurrentTeamState());
   }
 
@@ -282,44 +286,9 @@ export class LineupOptimizer {
     if (!this.isAddingAllowed()) {
       return;
     }
-    assert(this._addCandidates, "addCandidates must be set");
 
-    // The number of points the score of an add candidate must be above a potential drop candidate.
-    // This adds a conservative bias to the algorithm to avoid making bad drops.
-    const SCORE_THRESHOLD = 6;
-
-    const bestAddCandidate: Player = this._addCandidates.allPlayers[0];
-    let baseDropCandidates: Player[] =
-      PlayerCollection.sortAscendingByOwnershipScore(
-        this.team.droppablePlayersInclIL
-      );
-    baseDropCandidates = baseDropCandidates.filter(
-      (dropCandidate) =>
-        !this.isTooLateToDrop(dropCandidate) &&
-        bestAddCandidate.compareOwnershipScore(dropCandidate) > SCORE_THRESHOLD
-    );
-
-    this.logInfo("Base drop candidates:");
-    baseDropCandidates.forEach((player) =>
-      this.logInfo(
-        `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`
-      )
-    );
-    const worstDropCandidate: Player | undefined = baseDropCandidates?.[0];
-    if (!worstDropCandidate) {
-      return;
-    }
-    let baseAddCandidates: Player[] = this._addCandidates.allPlayers.filter(
-      (addCandidate) =>
-        addCandidate.compareOwnershipScore(worstDropCandidate) > SCORE_THRESHOLD
-    );
-
-    this.logInfo("Base add candidates:");
-    baseAddCandidates.forEach((player) =>
-      this.logInfo(
-        `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`
-      )
-    );
+    let { baseDropCandidates, baseAddCandidates } =
+      this.getBaseAddDropCandidates();
 
     if (baseAddCandidates.length === 0 || baseDropCandidates.length === 0) {
       return;
@@ -340,6 +309,47 @@ export class LineupOptimizer {
     }
 
     this.generateDeltaPlayerPositions();
+  }
+
+  public getBaseAddDropCandidates() {
+    if (!this._addCandidates) {
+      return { baseDropCandidates: [], baseAddCandidates: [] };
+    }
+
+    const bestAddCandidate: Player = this._addCandidates.allPlayers[0];
+    let baseDropCandidates: Player[] =
+      PlayerCollection.sortAscendingByOwnershipScore(
+        this.team.droppablePlayersInclIL
+      );
+    baseDropCandidates = baseDropCandidates.filter(
+      (dropCandidate) =>
+        !this.isTooLateToDrop(dropCandidate) &&
+        bestAddCandidate.compareOwnershipScore(dropCandidate) > SCORE_THRESHOLD
+    );
+
+    this.logInfo("Base drop candidates:");
+    baseDropCandidates.forEach((player) =>
+      this.logInfo(
+        `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`
+      )
+    );
+    const worstDropCandidate: Player | undefined = baseDropCandidates?.[0];
+    if (!worstDropCandidate) {
+      return { baseDropCandidates: [], baseAddCandidates: [] };
+    }
+    const baseAddCandidates: Player[] = this._addCandidates.allPlayers.filter(
+      (addCandidate) =>
+        addCandidate.compareOwnershipScore(worstDropCandidate) > SCORE_THRESHOLD
+    );
+
+    this.logInfo("Base add candidates:");
+    baseAddCandidates.forEach((player) =>
+      this.logInfo(
+        `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`
+      )
+    );
+
+    return { baseDropCandidates, baseAddCandidates };
   }
 
   private createSwapPlayerTransaction(

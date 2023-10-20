@@ -201,6 +201,18 @@ export class Team extends PlayerCollection implements Team {
     return structuredClone(team) as ITeamOptimizer;
   }
 
+  public get positionCounts(): { [position: string]: number } {
+    const result: { [position: string]: number } = {};
+
+    for (const player of this.players) {
+      for (const position of player.eligible_positions) {
+        result[position] = (result[position] ?? 0) + 1;
+      }
+    }
+
+    return result;
+  }
+
   public get sameDayTransactions(): boolean {
     return (
       (this.weekly_deadline === "" || this.weekly_deadline === "intraday") &&

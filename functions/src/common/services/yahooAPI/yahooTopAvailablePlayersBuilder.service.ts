@@ -7,7 +7,7 @@ import {
 } from "./yahooAPI.service.js";
 import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
 
-export type AssignedPlayerList = {
+export type TopAvailablePlayers = {
   [teamKey: string]: IPlayer[];
 };
 
@@ -20,19 +20,19 @@ export type AssignedPlayerList = {
  * @param {string} uid - The user ID
  * @param {AvailabilityStatus} [availabilityStatus="A"] - The availability status of the players to fetch
  * @param {PlayerSort} [sort="sort=R_PO"] - The sort order of the players to fetch
- * @return {Promise<AssignedPlayerList>} - A map of teamKeys' Top Available Players in an array
+ * @return {Promise<TopAvailablePlayers>} - A map of teamKeys' Top Available Players in an array
  */
 export async function fetchTopAvailablePlayersFromYahoo(
   teamKeys: string[],
   uid: string,
   availabilityStatus: AvailabilityStatus = "A",
   sort: PlayerSort = "sort=R_PO"
-): Promise<AssignedPlayerList> {
+): Promise<TopAvailablePlayers> {
   if (teamKeys.length === 0) {
     return {};
   }
 
-  const result: AssignedPlayerList = {};
+  const result: TopAvailablePlayers = {};
 
   // create a map of leagueKeys to teamKeys
   const mapLeagueToTeam: { [key: string]: string } = {};

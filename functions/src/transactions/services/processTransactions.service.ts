@@ -22,15 +22,19 @@ import { LineupChanges } from "../../dispatchSetLineup/interfaces/LineupChanges.
 import { PlayerTransaction } from "../../dispatchSetLineup/interfaces/PlayerTransaction.js";
 import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
 import {
-  AssignedPlayerList,
+  TopAvailablePlayers,
   fetchTopAvailablePlayersFromYahoo,
 } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 import { getScarcityOffsetsForTeam } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import { Player } from "../../common/classes/Player.js";
 
 type TransactionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
   lineupChanges: LineupChanges[] | null;
   addSwapTransactions: PlayerTransaction[][] | null;
+  topAddCandidatesList?: AssignedPlayersList;
+  topDropCandidatesList?: AssignedPlayersList;
+  playersAtPositionList?: PlayetsAtPositionsList;
 };
 type TransactionResults = {
   postedTransactions: PlayerTransaction[];
@@ -39,6 +43,14 @@ type TransactionResults = {
 type PostTransactionsResult = {
   success: boolean;
   transactionResults: TransactionResults;
+};
+type PlayetsAtPositionsList = {
+  [teamKey: string]: {
+    [position: string]: number;
+  };
+};
+type AssignedPlayersList = {
+  [teamKey: string]: Player[];
 };
 
 /**
@@ -61,6 +73,9 @@ export async function getTransactions(uid: string): Promise<TransactionsData> {
       dropPlayerTransactions: null,
       lineupChanges: null,
       addSwapTransactions: null,
+      topAddCandidatesList: {},
+      topDropCandidatesList: {},
+      playersAtPositionList: {},
     };
   }
 
@@ -80,7 +95,7 @@ export async function getTransactions(uid: string): Promise<TransactionsData> {
       team.game_code !== "nfl"
   );
 
-  const topAvailablePlayerCandidates: AssignedPlayerList =
+  const topAvailablePlayerCandidates: TopAvailablePlayers =
     await getTopAvailablePlayers(firestoreTeams, uid);
 
   const [todays, tomorrows] = await Promise.all([
@@ -109,10 +124,26 @@ export async function getTransactions(uid: string): Promise<TransactionsData> {
     tomorrows.addSwapTransactions ?? []
   );
 
+  const topAddCandidatesList = {
+    ...todays.topAddCandidatesList,
+    ...tomorrows.topAddCandidatesList,
+  };
+  const topDropCandidatesList = {
+    ...todays.topDropCandidatesList,
+    ...tomorrows.topDropCandidatesList,
+  };
+  const playersAtPositionList = {
+    ...todays.playersAtPositionList,
+    ...tomorrows.playersAtPositionList,
+  };
+
   return {
     dropPlayerTransactions,
     lineupChanges,
     addSwapTransactions,
+    topAddCandidatesList,
+    topDropCandidatesList,
+    playersAtPositionList,
   };
 }
 
@@ -193,7 +224,7 @@ export async function postTransactions(
 async function getPlayerTransactionsForDate(
   uid: string,
   firestoreTeams: ITeamFirestore[],
-  topAvailablePlayerCandidates: AssignedPlayerList,
+  topAvailablePlayerCandidates: TopAvailablePlayers,
   date?: string
 ): Promise<TransactionsData> {
   assert(uid, "No uid provided");
@@ -210,14 +241,10 @@ async function getPlayerTransactionsForDate(
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
 
-  const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
-    await createPlayersTransactions(usersTeams, topAvailablePlayerCandidates);
-
-  return {
-    dropPlayerTransactions,
-    lineupChanges,
-    addSwapTransactions,
-  };
+  return await createPlayersTransactions(
+    usersTeams,
+    topAvailablePlayerCandidates
+  );
 }
 
 export async function getTopAvailablePlayers(
@@ -236,7 +263,7 @@ export async function getTopAvailablePlayers(
     restTopAvailablePlayersPromise,
   ] = generateTopAvailablePlayerPromises(firestoreTeams, uid);
 
-  const topAvailablePlayerCandidates: AssignedPlayerList =
+  const topAvailablePlayerCandidates: TopAvailablePlayers =
     await mergeTopAvailabePlayers(
       topAvailablePlayersPromise,
       nflTopAvailablePlayersPromise,
@@ -247,11 +274,14 @@ export async function getTopAvailablePlayers(
 
 export async function createPlayersTransactions(
   teams: ITeamOptimizer[],
-  allAddCandidates: AssignedPlayerList
+  allAddCandidates: TopAvailablePlayers
 ): Promise<TransactionsData> {
   const dropPlayerTransactions: PlayerTransaction[][] = [];
   const addSwapPlayerTransactions: PlayerTransaction[][] = [];
   const allLineupChanges: LineupChanges[] = [];
+  const topAddCandidatesList: AssignedPlayersList = {};
+  const topDropCandidatesList: AssignedPlayersList = {};
+  const playersAtPositionList: PlayetsAtPositionsList = {};
 
   for (const team of teams) {
     const positionalScarcityOffsets = await getScarcityOffsetsForTeam(team);
@@ -287,18 +317,19 @@ export async function createPlayersTransactions(
       }
 
       // filter out any add transactions that are already in drop transactions by comparing the reason field
-      const pt: PlayerTransaction[] | undefined = lo.playerTransactions?.filter(
-        (pt) => !dpt?.some((dpt) => dpt.reason === pt.reason)
-      );
-      if (pt) {
-        addSwapPlayerTransactions.push(pt);
+      const aspt: PlayerTransaction[] | undefined =
+        lo.playerTransactions?.filter(
+          (pt) => !dpt?.some((dpt) => dpt.reason === pt.reason)
+        );
+      if (aspt) {
+        addSwapPlayerTransactions.push(aspt);
         // TODO: Remove this, temporary logging to spot check the new positional scarcity offset functionality
         logger.log(
           `positionalScarcityOffsets for team ${
             team.team_key
           }: ${JSON.stringify(positionalScarcityOffsets)}`
         );
-        logger.log(`addSwapPlayerTransactions: ${JSON.stringify(pt)}`);
+        logger.log(`addSwapPlayerTransactions: ${JSON.stringify(aspt)}`);
       }
     }
 
@@ -306,6 +337,12 @@ export async function createPlayersTransactions(
     if (lc) {
       allLineupChanges.push(lc);
     }
+
+    const { baseDropCandidates, baseAddCandidates } =
+      lo.getBaseAddDropCandidates();
+    topAddCandidatesList[team.team_key] = baseAddCandidates;
+    topDropCandidatesList[team.team_key] = baseDropCandidates;
+    playersAtPositionList[team.team_key] = lo.teamObject.positionCounts;
   }
 
   return {
@@ -314,6 +351,9 @@ export async function createPlayersTransactions(
     lineupChanges: allLineupChanges.length > 0 ? allLineupChanges : null,
     addSwapTransactions:
       addSwapPlayerTransactions.length > 0 ? addSwapPlayerTransactions : null,
+    topAddCandidatesList,
+    topDropCandidatesList,
+    playersAtPositionList,
   };
 }
 
@@ -446,7 +486,7 @@ export function generateTopAvailablePlayerPromises(
     return [Promise.resolve({}), Promise.resolve({}), Promise.resolve({})];
   }
 
-  const topAvailablePlayersPromise: Promise<AssignedPlayerList> =
+  const topAvailablePlayersPromise: Promise<TopAvailablePlayers> =
     fetchTopAvailablePlayersFromYahoo(
       allTeamKeysAddingPlayers,
       uid,
@@ -454,7 +494,7 @@ export function generateTopAvailablePlayerPromises(
       "sort=R_PO"
     );
 
-  let nflTopAvailablePlayersPromise: Promise<AssignedPlayerList>;
+  let nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>;
   if (nflTeamKeysAddingPlayers.length > 0) {
     nflTopAvailablePlayersPromise = fetchTopAvailablePlayersFromYahoo(
       nflTeamKeysAddingPlayers,
@@ -466,7 +506,7 @@ export function generateTopAvailablePlayerPromises(
     nflTopAvailablePlayersPromise = Promise.resolve({});
   }
 
-  let restTopAvailablePlayersPromise: Promise<AssignedPlayerList>;
+  let restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>;
   if (restTeamKeysAddingPlayers.length > 0) {
     restTopAvailablePlayersPromise = fetchTopAvailablePlayersFromYahoo(
       restTeamKeysAddingPlayers,
@@ -486,11 +526,11 @@ export function generateTopAvailablePlayerPromises(
 }
 
 export async function mergeTopAvailabePlayers(
-  topAvailablePlayersPromise: Promise<AssignedPlayerList>,
-  nflTopAvailablePlayersPromise: Promise<AssignedPlayerList>,
-  restTopAvailablePlayersPromise: Promise<AssignedPlayerList>
-): Promise<AssignedPlayerList> {
-  const result: AssignedPlayerList = {};
+  topAvailablePlayersPromise: Promise<TopAvailablePlayers>,
+  nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>,
+  restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>
+): Promise<TopAvailablePlayers> {
+  const result: TopAvailablePlayers = {};
 
   const resolvedPlayers = await Promise.all([
     topAvailablePlayersPromise,
@@ -498,7 +538,7 @@ export async function mergeTopAvailabePlayers(
     restTopAvailablePlayersPromise,
   ]);
 
-  resolvedPlayers.forEach((resolvedPromise: AssignedPlayerList) => {
+  resolvedPlayers.forEach((resolvedPromise: TopAvailablePlayers) => {
     Object.keys(resolvedPromise).forEach((teamKey) => {
       if (Array.isArray(result[teamKey])) {
         result[teamKey].push(...resolvedPromise[teamKey]);

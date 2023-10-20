@@ -6,7 +6,7 @@ export interface CommonTeam {
   start_date: number;
   end_date: number;
   weekly_deadline: string;
-  roster_positions: { [key: string]: number };
+  roster_positions: { [position: string]: number };
   num_teams: number;
 }
 
