@@ -5,7 +5,8 @@ export interface PlayerTransaction {
   leagueName: string;
   teamKey: string;
   sameDayTransactions: boolean;
-  reason: string;
+  description: string;
+  reason: string | null;
   isFaabRequired?: boolean;
   players: TPlayer[];
 }
