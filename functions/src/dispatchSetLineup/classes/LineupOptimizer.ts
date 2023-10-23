@@ -189,22 +189,24 @@ export class LineupOptimizer {
       return;
     }
 
-    const reasons: string[] = [];
+    const reasonsList: string[] = [];
     for (let i = this.team.getPendingEmptyRosterSpots(); i > 0; i--) {
-      reasons.push("Filling an already-empty spot on the roster with");
+      reasonsList.push(
+        "There is an empty spot on the roster. A new player can be added."
+      );
     }
 
     // free up as many roster spots as possible
     let playerMovedToIL: Player | null;
     while ((playerMovedToIL = this.openOneRosterSpot()) !== null) {
-      reasons.push(
+      reasonsList.push(
         `Moving ${
           playerMovedToIL.player_name
         } (${playerMovedToIL.eligible_positions.join(
           ", "
         )}) [${playerMovedToIL.ownership_score.toFixed(
           2
-        )}] to the inactive list to make room to add`
+        )}] to the inactive list. A new player can be added.`
       );
     }
 
@@ -214,7 +216,7 @@ export class LineupOptimizer {
       this.team.getPendingEmptyRosterSpots() > 0 &&
       this.team.isCurrentTransactionPaceOK()
     ) {
-      const result = this.createAddPlayerTransaction(reasons.shift());
+      const result = this.createAddPlayerTransaction(reasonsList.shift());
       if (!result) {
         break;
       }
@@ -223,7 +225,7 @@ export class LineupOptimizer {
     this.generateDeltaPlayerPositions();
   }
 
-  private createAddPlayerTransaction(reason = ""): boolean {
+  private createAddPlayerTransaction(reason: string | null = null): boolean {
     assert(this._addCandidates, "addCandidates must be set");
 
     const currentCandidates = this.preprocessAddCandidates(
@@ -245,7 +247,7 @@ export class LineupOptimizer {
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
-      reason: `${reason} ${
+      description: `${reason ?? ""} Adding ${
         playerToAdd.player_name
       } (${playerToAdd.eligible_positions.join(
         ", "
@@ -254,6 +256,7 @@ export class LineupOptimizer {
           ? "(Waiver Claim)"
           : "(Free Agent Pickup)"
       }`,
+      reason: reason,
       isFaabRequired: this.team.faab_balance !== -1,
       players: [
         {
@@ -421,7 +424,7 @@ export class LineupOptimizer {
     this.logInfo("Swap:", playerToAdd.player_name, playerToDrop.player_name);
 
     const underfilledPositions: string[] = this.team.underfilledPositions;
-    let reason = `Adding ${
+    let description = `Adding ${
       playerToAdd.player_name
     } (${playerToAdd.eligible_positions.join(
       ", "
@@ -434,15 +437,19 @@ export class LineupOptimizer {
         ? "(Waiver Claim)"
         : "(Free Agent Pickup)"
     }`;
+
+    let reason: string | null = null;
     if (underfilledPositions.length > 0) {
       reason = `There are empty ${underfilledPositions.join(
         ", "
-      )} positions on the roster. ${reason}`;
+      )} positions on the roster.`;
+      description = `${reason} ${description}`;
     }
 
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
+      description: description,
       reason: reason,
       isFaabRequired: this.team.faab_balance !== -1,
       players: [
@@ -852,22 +859,25 @@ export class LineupOptimizer {
     if (playerToDrop === playerToOpenSpotFor) return;
     if (!playerToDrop.ownership_score) return; // in case of Yahoo API error
 
-    const reason = `Dropping ${
-      playerToDrop.player_name
-    } (${playerToDrop.eligible_positions.join(
-      ", "
-    )}) [${playerToDrop.ownership_score.toFixed(2)}] to make room for ${
+    const reason = `${
       playerToOpenSpotFor.player_name
     } (${playerToOpenSpotFor.eligible_positions.join(
       ", "
     )}) [${playerToOpenSpotFor.ownership_score.toFixed(
       2
-    )}] coming back from injury.`;
+    )}] is coming back from injury and moving to the active roster.`;
+
+    const description = `Dropping ${
+      playerToDrop.player_name
+    } (${playerToDrop.eligible_positions.join(
+      ", "
+    )}) [${playerToDrop.ownership_score.toFixed(2)}]. ${reason}`;
 
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
-      reason,
+      description: description,
+      reason: reason,
       players: [
         {
           playerKey: playerToDrop.player_key,

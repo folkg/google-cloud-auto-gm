@@ -319,7 +319,7 @@ export async function createPlayersTransactions(
       // filter out any add transactions that are already in drop transactions by comparing the reason field
       const aspt: PlayerTransaction[] | undefined =
         lo.playerTransactions?.filter(
-          (pt) => !dpt?.some((dpt) => dpt.reason === pt.reason)
+          (pt) => !dpt?.some((dpt) => dpt.description === pt.description)
         );
       if (aspt) {
         addSwapPlayerTransactions.push(aspt);
@@ -435,7 +435,7 @@ function stringifyTransactions(transactions: PlayerTransaction[]): string[] {
       `<strong>${teamTransactions[0].teamName} (${teamTransactions[0].leagueName}):</strong>`
     );
     teamTransactions.forEach((t) => {
-      result.push(t.reason);
+      result.push(t.description);
     });
   });
 
