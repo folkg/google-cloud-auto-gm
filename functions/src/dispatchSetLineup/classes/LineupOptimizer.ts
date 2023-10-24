@@ -352,7 +352,10 @@ export class LineupOptimizer {
       )
     );
 
-    return { baseDropCandidates, baseAddCandidates };
+    return {
+      baseDropCandidates: [...baseDropCandidates],
+      baseAddCandidates: [...baseAddCandidates],
+    };
   }
 
   private createSwapPlayerTransaction(

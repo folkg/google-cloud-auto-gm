@@ -455,7 +455,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     );
   });
 
-  it("should return empty add / drop lists if there are no drop candidates", async () => {
+  it("should return the players added and dropped as the only candidates when applicable", async () => {
     const teamKey = "422.l.115494.t.4";
     positionalScarcityServiceSpy.mockResolvedValue({});
     const rosters: ITeamOptimizer[] = [
@@ -463,11 +463,36 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
 
-    const { topAddCandidatesList, topDropCandidatesList } =
-      await createPlayersTransactions(rosters, addCandidates);
+    const {
+      topAddCandidatesList,
+      topDropCandidatesList,
+      addSwapTransactions,
+      dropPlayerTransactions,
+    } = await createPlayersTransactions(rosters, addCandidates);
 
-    expect(topAddCandidatesList?.[teamKey].length).toBe(0);
-    expect(topDropCandidatesList?.[teamKey].length).toBe(0);
+    const droppedPlayers1 =
+      dropPlayerTransactions?.[0]
+        .flatMap((t) => t.players)
+        .map((p) => p.playerKey) ?? [];
+    const droppedPlayers2 =
+      addSwapTransactions?.[0]
+        .flatMap((t) => t.players)
+        .filter((p) => p.transactionType === "drop")
+        .map((p) => p.playerKey) ?? [];
+    const droppedPlayerKeys = [...droppedPlayers1, ...droppedPlayers2];
+    const addedPlayerKeys =
+      addSwapTransactions?.[0]
+        .flatMap((t) => t.players)
+        .filter((p) => p.transactionType === "add")
+        .map((p) => p.playerKey) ?? [];
+
+    const topDropCandidateKeys =
+      topDropCandidatesList?.[teamKey].map((p) => p.player_key) ?? [];
+    const topAddCandidateKeys =
+      topAddCandidatesList?.[teamKey].map((p) => p.player_key) ?? [];
+
+    expect(droppedPlayerKeys).toEqual(topDropCandidateKeys);
+    expect(addedPlayerKeys).toEqual(topAddCandidateKeys);
   });
 
   it("should not pick up a QB if the team is already at QB capacity (1) even with no dedicated QB spot(Q/W/R/T)", async () => {
