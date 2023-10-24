@@ -331,7 +331,7 @@ exports[`Test fetchRostersFromYahoo > 2 NFL Teams 1`] = `
         "is_undroppable": false,
         "percent_owned": 1,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "414.p.34009",
         "player_name": "Skyy Moore",
         "ranks": {
@@ -359,7 +359,7 @@ exports[`Test fetchRostersFromYahoo > 2 NFL Teams 1`] = `
         "is_undroppable": false,
         "percent_owned": 7,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "414.p.31833",
         "player_name": "Kyler Murray",
         "ranks": {
@@ -389,7 +389,7 @@ exports[`Test fetchRostersFromYahoo > 2 NFL Teams 1`] = `
         "is_undroppable": false,
         "percent_owned": 3,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "414.p.33437",
         "player_name": "Rondale Moore",
         "ranks": {
@@ -447,7 +447,7 @@ exports[`Test fetchRostersFromYahoo > 2 NFL Teams 1`] = `
         "is_undroppable": false,
         "percent_owned": 4,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "414.p.32702",
         "player_name": "Clyde Edwards-Helaire",
         "ranks": {
@@ -798,7 +798,7 @@ exports[`Test fetchRostersFromYahoo > 2 NFL Teams 1`] = `
         "is_undroppable": false,
         "percent_owned": 2,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "414.p.32727",
         "player_name": "Van Jefferson",
         "ranks": {
@@ -856,7 +856,7 @@ exports[`Test fetchRostersFromYahoo > 2 NFL Teams 1`] = `
         "is_undroppable": false,
         "percent_owned": 2,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "414.p.29307",
         "player_name": "Kenyan Drake",
         "ranks": {
@@ -941,7 +941,7 @@ exports[`Test fetchRostersFromYahoo > 2 NFL Teams 1`] = `
         "is_undroppable": false,
         "percent_owned": 29,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "414.p.30182",
         "player_name": "Cooper Kupp",
         "ranks": {
@@ -3048,7 +3048,7 @@ exports[`Test fetchRostersFromYahoo > MLB with multiple pending transactions 1`]
         "is_undroppable": false,
         "percent_owned": 24,
         "percent_owned_delta": 1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.9575",
         "player_name": "Lance McCullers Jr.",
         "ranks": {
@@ -5911,7 +5911,7 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_undroppable": false,
         "percent_owned": 92,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.8875",
         "player_name": "Bryce Harper",
         "ranks": {
@@ -6122,7 +6122,7 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_undroppable": false,
         "percent_owned": 1,
         "percent_owned_delta": 10,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.11417",
         "player_name": "Geraldo Perdomo",
         "ranks": {
@@ -6290,9 +6290,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_playing": true,
         "is_starting": 1,
         "is_undroppable": false,
-        "percent_owned": null,
+        "percent_owned": 0,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.9530",
         "player_name": "Christian Bethancourt",
         "ranks": {
@@ -6320,7 +6320,7 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_undroppable": false,
         "percent_owned": 1,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.9858",
         "player_name": "Manuel Margot",
         "ranks": {
@@ -6348,9 +6348,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_playing": true,
         "is_starting": 0,
         "is_undroppable": false,
-        "percent_owned": null,
+        "percent_owned": 0,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.11074",
         "player_name": "Bobby Dalbec",
         "ranks": {
@@ -6376,9 +6376,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_playing": true,
         "is_starting": 1,
         "is_undroppable": false,
-        "percent_owned": null,
+        "percent_owned": 0,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.11232",
         "player_name": "Edward Olivares",
         "ranks": {
@@ -6406,9 +6406,9 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_playing": true,
         "is_starting": 0,
         "is_undroppable": false,
-        "percent_owned": null,
+        "percent_owned": 0,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.8950",
         "player_name": "Josh Harrison",
         "ranks": {
@@ -6436,7 +6436,7 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_undroppable": false,
         "percent_owned": 1,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.9157",
         "player_name": "AJ Pollock",
         "ranks": {
@@ -6606,7 +6606,7 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_undroppable": false,
         "percent_owned": 3,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.11585",
         "player_name": "Jared Walsh",
         "ranks": {
@@ -6637,7 +6637,7 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_undroppable": false,
         "percent_owned": 1,
         "percent_owned_delta": -1,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.10532",
         "player_name": "Alex Kirilloff",
         "ranks": {
@@ -7526,7 +7526,7 @@ exports[`Test fetchRostersFromYahoo > MLB with pending waiver claim 1`] = `
         "is_undroppable": false,
         "percent_owned": 9,
         "percent_owned_delta": -2,
-        "percent_started": null,
+        "percent_started": 0,
         "player_key": "422.p.10570",
         "player_name": "Luis Urías",
         "ranks": {
