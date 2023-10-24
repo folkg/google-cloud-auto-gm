@@ -19,7 +19,10 @@ import { getActiveTeamsForUser } from "../../common/services/firebase/firestore.
 import { enrichTeamsWithFirestoreSettings } from "../../common/services/firebase/firestoreUtils.service.js";
 import { LineupOptimizer } from "../../dispatchSetLineup/classes/LineupOptimizer.js";
 import { LineupChanges } from "../../dispatchSetLineup/interfaces/LineupChanges.js";
-import { PlayerTransaction } from "../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import {
+  PlayerTransaction,
+  TransactionType,
+} from "../../dispatchSetLineup/interfaces/PlayerTransaction.js";
 import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
 import {
   TopAvailablePlayers,
@@ -338,10 +341,18 @@ export async function createPlayersTransactions(
       allLineupChanges.push(lc);
     }
 
+    // Add the already added and already dropped players to the top candidates list
     const { baseDropCandidates, baseAddCandidates } =
       lo.getBaseAddDropCandidates();
-    topAddCandidatesList[team.team_key] = baseAddCandidates;
-    topDropCandidatesList[team.team_key] = baseDropCandidates;
+
+    topAddCandidatesList[team.team_key] = baseAddCandidates.concat(
+      getPlayersFromTransactions("add", addSwapPlayerTransactions)
+    );
+    topDropCandidatesList[team.team_key] = baseDropCandidates.concat(
+      getPlayersFromTransactions("drop", dropPlayerTransactions),
+      getPlayersFromTransactions("drop", addSwapPlayerTransactions)
+    );
+
     playersAtPositionList[team.team_key] = lo.teamObject.positionCounts;
   }
 
@@ -355,6 +366,19 @@ export async function createPlayersTransactions(
     topDropCandidatesList,
     playersAtPositionList,
   };
+}
+
+function getPlayersFromTransactions(
+  transactionType: TransactionType,
+  playerTransactions: PlayerTransaction[][]
+): Player[] {
+  return playerTransactions.flatMap((transactions) =>
+    transactions.flatMap((transaction) =>
+      transaction.players
+        .filter((player) => player.transactionType === transactionType)
+        .map((player) => player.player)
+    )
+  );
 }
 
 async function postTransactionsHelper(

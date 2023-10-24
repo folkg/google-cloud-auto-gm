@@ -86,7 +86,7 @@ function getPercentObject(
     }
   });
 
-  return result;
+  return Number(result ?? 0);
 }
 
 /**
