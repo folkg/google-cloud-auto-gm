@@ -33,7 +33,7 @@
     "dotenv": "16.4.1",
     "fast-xml-parser": "4.3.4",
     "firebase-admin": "11.11.1",
-    "firebase-functions": "4.6.0",
+    "firebase-functions": "4.7.0",
     "js2xmlparser": "5.0.0",
     "spacetime": "7.5.0"
   },
