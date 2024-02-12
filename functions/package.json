@@ -35,7 +35,7 @@
     "firebase-admin": "11.11.1",
     "firebase-functions": "4.7.0",
     "js2xmlparser": "5.0.0",
-    "spacetime": "7.5.0"
+    "spacetime": "7.6.0"
   },
   "devDependencies": {
     "@types/nodemailer": "6.4.14",
