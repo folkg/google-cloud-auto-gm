@@ -30,7 +30,7 @@
     "@sendgrid/mail": "7.7.0",
     "axios": "1.6.7",
     "axios-retry": "4.0.0",
-    "dotenv": "16.4.3",
+    "dotenv": "16.4.4",
     "fast-xml-parser": "4.3.4",
     "firebase-admin": "11.11.1",
     "firebase-functions": "4.7.0",
