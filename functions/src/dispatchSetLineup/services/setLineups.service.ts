@@ -51,6 +51,13 @@ export async function setUsersLineup(
     return;
   }
 
+  const topAvailablePlayersPromise = getTopAvailablePlayers(
+    firestoreTeams,
+    uid
+  );
+  const initStartingPlayersPromise =
+    initializeGlobalStartingPlayers(firestoreTeams);
+
   const postponedTeams = await initializePostponedTeams();
   let usersTeams: readonly ITeamOptimizer[] = await fetchRostersFromYahoo(
     firestoreTeams.map((t) => t.team_key),
@@ -62,20 +69,19 @@ export async function setUsersLineup(
     return;
   }
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
-  patchTeamChangesInFirestore(usersTeams, firestoreTeams); // don't await
-
-  await initializeGlobalStartingPlayers(firestoreTeams);
+  patchTeamChangesInFirestore(usersTeams, firestoreTeams).catch(logger.error); // don't await
 
   const topAvailablePlayerCandidates: TopAvailablePlayers =
-    await getTopAvailablePlayers(firestoreTeams, uid);
-
+    await topAvailablePlayersPromise;
   usersTeams = await processTransactionsForIntradayTeams(
     usersTeams,
     firestoreTeams,
     topAvailablePlayerCandidates,
-    uid
+    uid,
+    postponedTeams
   );
 
+  await initStartingPlayersPromise;
   usersTeams = await processLineupChanges(usersTeams, uid);
 
   await processTransactionsForNextDayTeams(
