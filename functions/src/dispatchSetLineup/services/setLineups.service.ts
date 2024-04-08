@@ -29,6 +29,7 @@ import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
 import { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
+import { getTodaysPostponedTeams } from "../../common/services/firebase/firestore.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -50,11 +51,12 @@ export async function setUsersLineup(
     return;
   }
 
-  const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
-
+  const postponedTeams = await initializePostponedTeams();
   let usersTeams: readonly ITeamOptimizer[] = await fetchRostersFromYahoo(
-    teamKeys,
-    uid
+    firestoreTeams.map((t) => t.team_key),
+    uid,
+    "",
+    postponedTeams
   );
   if (usersTeams.length === 0) {
     return;
@@ -152,7 +154,8 @@ async function processTransactionsForIntradayTeams(
   originalTeams: readonly ITeamOptimizer[],
   firestoreTeams: readonly ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
-  uid: string
+  uid: string,
+  postponedTeams: Set<string>
 ): Promise<readonly ITeamOptimizer[]> {
   const teams = getTeamsWithSameDayTransactions(originalTeams);
 
@@ -168,7 +171,7 @@ async function processTransactionsForIntradayTeams(
 
   if (transactionsCompleted) {
     const teamKeys: string[] = originalTeams.map((t) => t.team_key);
-    result = await fetchRostersFromYahoo(teamKeys, uid);
+    result = await fetchRostersFromYahoo(teamKeys, uid, "", postponedTeams);
     result = enrichTeamsWithFirestoreSettings(result, firestoreTeams);
   }
 
@@ -329,6 +332,14 @@ async function initializeGlobalStartingPlayers(
   if (hasMLBTeam) {
     await initStartingPitchers();
   }
+}
+
+let _postponedTeams: Set<string>;
+async function initializePostponedTeams(): Promise<Set<string>> {
+  if (!_postponedTeams) {
+    _postponedTeams = (await getTodaysPostponedTeams()) ?? new Set();
+  }
+  return _postponedTeams;
 }
 
 function tomorrowsDateAsString(): string {

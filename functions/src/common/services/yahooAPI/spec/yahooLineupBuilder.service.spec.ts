@@ -125,4 +125,23 @@ describe("Test fetchRostersFromYahoo", function () {
 
     expect(result).toMatchSnapshot();
   });
+
+  test("With postponed games", async function () {
+    const teams = ["422.l.115494.t.4"];
+    const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2";
+    const yahooJSON = require("./testYahooLineupJSON/yahooJSON/MLB.json");
+
+    // mock the JSON result from yahooAPI getRostersByTeamID()
+    vi.spyOn(yahooAPIService, "getRostersByTeamID").mockReturnValue(yahooJSON);
+
+    const result = await fetchRostersFromYahoo(
+      teams,
+      uid,
+      "",
+      // mock the postponed games
+      new Set(["mlb.t.23", "mlb.t.26"])
+    );
+
+    expect(result).toMatchSnapshot();
+  });
 });
