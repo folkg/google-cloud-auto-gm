@@ -5,10 +5,13 @@ import { getChild, parseStringToInt } from "../utilities.service.js";
  * Deconstruct the players JSON object to get the required properties
  *
  * @param {*} playersJSON - The players JSON object
- * @param {*} emptyPositions - A map of positions and the number of players
+ * @param {Set<string>} [postponedTeams=new Set()] - A set of teams with postponed games today
  * @return {IPlayer[]} - An array of Player objects
  */
-export default function getPlayersFromRoster(playersJSON: any): IPlayer[] {
+export default function getPlayersFromRoster(
+  playersJSON: any,
+  postponedTeams: Set<string> = new Set()
+): IPlayer[] {
   const result: IPlayer[] = [];
 
   // eslint-disable-next-line guard-for-in
@@ -17,6 +20,7 @@ export default function getPlayersFromRoster(playersJSON: any): IPlayer[] {
       const player = playersJSON[key].player;
       const opponent = getChild(player, "opponent");
       const selectedPosition = getChild(player, "selected_position");
+      const teamId = getChild(player[0], "editorial_team_key");
 
       const playerObject: IPlayer = {
         player_key: getChild(player[0], "player_key"),
@@ -26,7 +30,8 @@ export default function getPlayersFromRoster(playersJSON: any): IPlayer[] {
         selected_position:
           selectedPosition && getChild(selectedPosition, "position"),
         is_editable: getChild(player, "is_editable") === 1,
-        is_playing: !(!opponent || opponent === "Bye"),
+        is_playing:
+          !!opponent && opponent !== "Bye" && !postponedTeams.has(teamId),
         injury_status: getChild(player[0], "status_full") || "Healthy",
         percent_started: getPercentObject(player, "percent_started"),
         percent_owned: getPercentObject(player, "percent_owned"),

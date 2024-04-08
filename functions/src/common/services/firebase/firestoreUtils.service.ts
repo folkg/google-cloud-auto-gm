@@ -3,8 +3,8 @@ import { ITeamFirestore, ITeamOptimizer } from "../../interfaces/ITeam.js";
 import { updateTeamFirestore } from "./firestore.service.js";
 
 export function enrichTeamsWithFirestoreSettings(
-  yahooTeams: ITeamOptimizer[],
-  firestoreTeams: ITeamFirestore[]
+  yahooTeams: readonly ITeamOptimizer[],
+  firestoreTeams: readonly ITeamFirestore[]
 ): ITeamOptimizer[] {
   return yahooTeams.map((yahooTeam) => {
     const firestoreTeam = firestoreTeams.find(
@@ -26,8 +26,8 @@ export function enrichTeamsWithFirestoreSettings(
 }
 
 export async function patchTeamChangesInFirestore(
-  yahooTeams: ITeamOptimizer[],
-  firestoreTeams: ITeamFirestore[]
+  yahooTeams: readonly ITeamOptimizer[],
+  firestoreTeams: readonly ITeamFirestore[]
 ): Promise<void> {
   const sharedKeys = Object.keys(firestoreTeams[0]).filter(
     (key) => key in yahooTeams[0]
