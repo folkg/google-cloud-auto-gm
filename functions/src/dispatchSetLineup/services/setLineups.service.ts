@@ -29,6 +29,7 @@ import { LineupChanges } from "../interfaces/LineupChanges.js";
 import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
 import { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
+import { getTodaysPostponedTeams } from "../../common/services/firebase/firestore.service.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -41,7 +42,7 @@ import { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvai
  */
 export async function setUsersLineup(
   uid: string,
-  firestoreTeams: ITeamFirestore[]
+  firestoreTeams: readonly ITeamFirestore[]
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -50,27 +51,37 @@ export async function setUsersLineup(
     return;
   }
 
-  const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
+  const topAvailablePlayersPromise = getTopAvailablePlayers(
+    firestoreTeams,
+    uid
+  );
+  const initStartingPlayersPromise =
+    initializeGlobalStartingPlayers(firestoreTeams);
 
-  let usersTeams: ITeamOptimizer[] = await fetchRostersFromYahoo(teamKeys, uid);
+  const postponedTeams = await initializePostponedTeams();
+  let usersTeams: readonly ITeamOptimizer[] = await fetchRostersFromYahoo(
+    firestoreTeams.map((t) => t.team_key),
+    uid,
+    "",
+    postponedTeams
+  );
   if (usersTeams.length === 0) {
     return;
   }
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
-  patchTeamChangesInFirestore(usersTeams, firestoreTeams); // don't await
-
-  await initializeGlobalStartingPlayers(firestoreTeams);
+  patchTeamChangesInFirestore(usersTeams, firestoreTeams).catch(logger.error); // don't await
 
   const topAvailablePlayerCandidates: TopAvailablePlayers =
-    await getTopAvailablePlayers(firestoreTeams, uid);
-
+    await topAvailablePlayersPromise;
   usersTeams = await processTransactionsForIntradayTeams(
     usersTeams,
     firestoreTeams,
     topAvailablePlayerCandidates,
-    uid
+    uid,
+    postponedTeams
   );
 
+  await initStartingPlayersPromise;
   usersTeams = await processLineupChanges(usersTeams, uid);
 
   await processTransactionsForNextDayTeams(
@@ -104,7 +115,7 @@ export async function performWeeklyLeagueTransactions(
 }
 
 async function processLineupChanges(
-  teams: ITeamOptimizer[],
+  teams: readonly ITeamOptimizer[],
   uid: string
 ): Promise<ITeamOptimizer[]> {
   const result: ITeamOptimizer[] = [];
@@ -146,16 +157,17 @@ async function processLineupChanges(
 }
 
 async function processTransactionsForIntradayTeams(
-  originalTeams: ITeamOptimizer[],
-  firestoreTeams: ITeamFirestore[],
+  originalTeams: readonly ITeamOptimizer[],
+  firestoreTeams: readonly ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
-  uid: string
-): Promise<ITeamOptimizer[]> {
+  uid: string,
+  postponedTeams: Set<string>
+): Promise<readonly ITeamOptimizer[]> {
   const teams = getTeamsWithSameDayTransactions(originalTeams);
 
   await processManualTransactions(teams, topAvailablePlayerCandidates, uid);
 
-  let result: ITeamOptimizer[] = originalTeams;
+  let result = originalTeams;
 
   const transactionsCompleted: boolean = await processAutomaticTransactions(
     teams,
@@ -165,7 +177,7 @@ async function processTransactionsForIntradayTeams(
 
   if (transactionsCompleted) {
     const teamKeys: string[] = originalTeams.map((t) => t.team_key);
-    result = await fetchRostersFromYahoo(teamKeys, uid);
+    result = await fetchRostersFromYahoo(teamKeys, uid, "", postponedTeams);
     result = enrichTeamsWithFirestoreSettings(result, firestoreTeams);
   }
 
@@ -173,8 +185,8 @@ async function processTransactionsForIntradayTeams(
 }
 
 async function processTransactionsForNextDayTeams(
-  originalTeams: ITeamOptimizer[],
-  firestoreTeams: ITeamFirestore[],
+  originalTeams: readonly ITeamOptimizer[],
+  firestoreTeams: readonly ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
 ): Promise<void> {
@@ -200,8 +212,8 @@ async function processTransactionsForNextDayTeams(
 }
 
 async function processTomorrowsTransactions(
-  teams: ITeamOptimizer[] | ITeamFirestore[],
-  firestoreTeams: ITeamFirestore[],
+  teams: readonly ITeamOptimizer[] | readonly ITeamFirestore[],
+  firestoreTeams: readonly ITeamFirestore[],
   uid: string,
   topAvailablePlayerCandidates: TopAvailablePlayers
 ) {
@@ -231,7 +243,7 @@ async function processTomorrowsTransactions(
 }
 
 async function processAutomaticTransactions(
-  teams: ITeamOptimizer[],
+  teams: readonly ITeamOptimizer[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
 ): Promise<boolean> {
@@ -266,7 +278,7 @@ async function processAutomaticTransactions(
 }
 
 async function processManualTransactions(
-  teams: ITeamOptimizer[],
+  teams: readonly ITeamOptimizer[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string
 ): Promise<void> {
@@ -294,7 +306,7 @@ async function processManualTransactions(
 }
 
 export function getTeamsWithSameDayTransactions(
-  teams: ITeamOptimizer[]
+  teams: readonly ITeamOptimizer[]
 ): ITeamOptimizer[] {
   return teams.filter(
     (team) =>
@@ -304,7 +316,7 @@ export function getTeamsWithSameDayTransactions(
 }
 
 export function getTeamsForNextDayTransactions(
-  teams: ITeamOptimizer[]
+  teams: readonly ITeamOptimizer[]
 ): ITeamOptimizer[] {
   return teams.filter(
     (team) =>
@@ -316,7 +328,7 @@ export function getTeamsForNextDayTransactions(
 }
 
 async function initializeGlobalStartingPlayers(
-  firestoreTeams: ITeamFirestore[]
+  firestoreTeams: readonly ITeamFirestore[]
 ) {
   const hasNHLTeam = firestoreTeams.some((team) => team.game_code === "nhl");
   if (hasNHLTeam) {
@@ -326,6 +338,14 @@ async function initializeGlobalStartingPlayers(
   if (hasMLBTeam) {
     await initStartingPitchers();
   }
+}
+
+let _postponedTeams: Set<string>;
+async function initializePostponedTeams(): Promise<Set<string>> {
+  if (!_postponedTeams) {
+    _postponedTeams = (await getTodaysPostponedTeams()) ?? new Set();
+  }
+  return _postponedTeams;
 }
 
 function tomorrowsDateAsString(): string {

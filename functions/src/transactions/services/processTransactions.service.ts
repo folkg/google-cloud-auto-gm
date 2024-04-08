@@ -226,7 +226,7 @@ export async function postTransactions(
 
 async function getPlayerTransactionsForDate(
   uid: string,
-  firestoreTeams: ITeamFirestore[],
+  firestoreTeams: readonly ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   date?: string
 ): Promise<TransactionsData> {
@@ -251,7 +251,7 @@ async function getPlayerTransactionsForDate(
 }
 
 export async function getTopAvailablePlayers(
-  firestoreTeams: ITeamFirestore[],
+  firestoreTeams: readonly ITeamFirestore[],
   uid: string
 ) {
   // TODO: Do we want to initiate the promises here, or earlier in the call stack before we know usersTeams.length > 0?
@@ -487,7 +487,7 @@ function tomorrowsDateAsString(): string {
 }
 
 export function generateTopAvailablePlayerPromises(
-  firestoreTeams: ITeamFirestore[],
+  firestoreTeams: readonly ITeamFirestore[],
   uid: string
 ) {
   const nflTeamKeysAddingPlayers: string[] = firestoreTeams

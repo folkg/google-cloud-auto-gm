@@ -61,6 +61,10 @@ export function getPacificTimeDateString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+export function todayPacific(): string {
+  return getPacificTimeDateString(new Date());
+}
+
 /**
  * get the start of the day in pacific time (00:00:00.000)
  *

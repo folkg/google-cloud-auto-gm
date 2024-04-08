@@ -30,6 +30,7 @@ const mockFunctionUrl = vi.fn(() => Promise.resolve("https://example.com"));
 vi.mock("../../common/services/utilities.service", () => ({
   getFunctionUrl: vi.fn(() => mockFunctionUrl),
   getCurrentPacificHour: vi.fn(() => 1),
+  todayPacific: vi.fn(() => "2024-04-08"),
 }));
 
 // mock the TaskQueue constructor

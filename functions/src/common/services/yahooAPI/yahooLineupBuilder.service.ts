@@ -23,12 +23,14 @@ import {
  * @param {string[]} teamKeys The team keys
  * @param {string} uid The firebase uid of the user
  * @param {string} [date=""] The date to get the roster for. If not provided, the default "" is today's date
+ * @param {Set<string>} [postponedTeams] A set of teams with postponed games today
  * @return {Promise<ITeamOptimizer[]>} The roster objects
  */
 export async function fetchRostersFromYahoo(
   teamKeys: string[],
   uid: string,
-  date = ""
+  date = "",
+  postponedTeams?: Set<string>
 ): Promise<ITeamOptimizer[]> {
   const result: ITeamOptimizer[] = [];
 
@@ -63,7 +65,8 @@ export async function fetchRostersFromYahoo(
       // save the position counts to a map
       const rosterPositions = getPositionCounts(leaguesJSON, leagueKey);
       const players: IPlayer[] = getPlayersFromRoster(
-        usersTeamRoster[0].players
+        usersTeamRoster[0].players,
+        postponedTeams
       );
       const gamesPlayedArray = getGamesPlayedArray(usersTeam);
       const inningsPitchedArray = getInningsPitchedArray(usersTeam);

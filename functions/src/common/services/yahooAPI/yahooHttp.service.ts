@@ -22,9 +22,9 @@ axiosRetry(axios, {
  * @param {?string} [uid] - the firebase uid of the user
  * @return {unknown} - the response from the API
  */
-export async function httpGetAxios(url: string, uid?: string) {
+export async function httpGetAxios<T>(url: string, uid?: string) {
   if (!uid) {
-    return axios.get(API_URL + url);
+    return axios.get<T>(API_URL + url);
   }
 
   const credential = await loadYahooAccessToken(uid);
@@ -46,19 +46,23 @@ export async function httpGetAxios(url: string, uid?: string) {
  * @param {*} body - the body of the post request
  * @return {unknown} - the response from the API
  */
-export function httpPostAxiosUnauth(url: string, body: any) {
-  return axios.post(url, body, {
+export function httpPostAxiosUnauth<T>(url: string, body: any) {
+  return axios.post<T>(url, body, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
 }
 
-export async function httpPostAxiosAuth(uid: string, url: string, body: any) {
+export async function httpPostAxiosAuth<T>(
+  uid: string,
+  url: string,
+  body: any
+) {
   const credential = await loadYahooAccessToken(uid);
   const accessToken = credential.accessToken;
 
-  return axios.post(API_URL + url, body, {
+  return axios.post<T>(API_URL + url, body, {
     headers: {
       "content-type": "application/xml; charset=UTF-8",
       Authorization: "Bearer " + accessToken,
@@ -76,11 +80,11 @@ export async function httpPostAxiosAuth(uid: string, url: string, body: any) {
  * @param {string} body - the body of the put request
  * @return {unknown} - the response from the API
  */
-export async function httpPutAxios(uid: string, url: string, body: string) {
+export async function httpPutAxios<T>(uid: string, url: string, body: string) {
   const credential = await loadYahooAccessToken(uid);
   const accessToken = credential.accessToken;
 
-  return axios.put(API_URL + url, body, {
+  return axios.put<T>(API_URL + url, body, {
     headers: {
       "content-type": "application/xml; charset=UTF-8",
       Authorization: "Bearer " + accessToken,

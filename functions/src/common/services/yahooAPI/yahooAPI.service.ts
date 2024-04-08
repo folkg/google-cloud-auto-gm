@@ -17,6 +17,7 @@ import {
   httpPostAxiosUnauth,
   httpPutAxios,
 } from "./yahooHttp.service.js";
+import { YahooAccessTokenResponse } from "./interfaces/YahooAccessTokenResponse.js";
 
 dotenv.config();
 
@@ -61,7 +62,10 @@ export async function refreshYahooAccessToken(
 
   try {
     const requestTime = Date.now();
-    const { data } = await httpPostAxiosUnauth(url, body);
+    const { data } = await httpPostAxiosUnauth<YahooAccessTokenResponse>(
+      url,
+      body
+    );
     // Get the token info from the response and save it to the database
     const accessToken = data.access_token;
     const tokenExpirationTime = data.expires_in * 1000 + requestTime;

@@ -11,6 +11,7 @@ import {
   enqueueUsersTeams,
   leaguesToSetLineupsFor,
   mapUsersToActiveTeams,
+  setTodaysPostponedTeams,
   setStartingPlayersForToday,
 } from "./scheduling.service.js";
 
@@ -23,15 +24,19 @@ export function isFirstRunOfTheDay(): boolean {
 }
 
 export async function scheduleSetLineup() {
+  const initializeGlobalDataPromises: Promise<void>[] = [];
+
   // We want the first run of the function to be at 1:55 AM Pacific Time
   // Waiver claims hadn't been fully proceseed at 0:55 AM
   if (getCurrentPacificHour() === 0) return;
 
-  const leagues: string[] = await leaguesToSetLineupsFor();
+  const leagues = await leaguesToSetLineupsFor();
   if (leagues.length === 0) {
     logger.log("No leagues to set lineups for.");
     return;
   }
+
+  initializeGlobalDataPromises.push(setTodaysPostponedTeams(leagues));
 
   let teamsSnapshot: QuerySnapshot<DocumentData>;
   try {
@@ -44,7 +49,7 @@ export async function scheduleSetLineup() {
     return;
   }
 
-  await setStartingPlayersForToday(teamsSnapshot);
+  initializeGlobalDataPromises.push(setStartingPlayersForToday(teamsSnapshot));
 
   const activeUsers: Map<string, DocumentData> =
     mapUsersToActiveTeams(teamsSnapshot);
@@ -64,6 +69,9 @@ export async function scheduleSetLineup() {
   }
 
   const enqueuedTasks = enqueueUsersTeams(activeUsers, queue, targetUri);
+
+  // Wait for all the global data to be initialized before enqueuing tasks
+  await Promise.all(initializeGlobalDataPromises);
 
   try {
     await Promise.all(enqueuedTasks);
