@@ -207,6 +207,49 @@ async function getGameTimesSportsnet(
   return { [league]: gameTimesArray };
 }
 
+/**
+ * Sets the postponed teams for the given leagues in the database
+ *
+ * @param {SportLeague[]} leagues - An array of SportLeague objects representing the leagues.
+ */
+export async function setTodaysPostponedTeams(
+  leagues: SportLeague[]
+): Promise<void> {
+  const today = todayPacific();
+  const postponedTeams: string[] = [];
+
+  for (const league of leagues) {
+    const teams = await getPostponedTeamsYahoo(league, today);
+    postponedTeams.push(...teams);
+  }
+
+  if (postponedTeams.length === 0) {
+    return;
+  }
+
+  await storeTodaysPostponedTeams(postponedTeams);
+}
+
+async function getPostponedTeamsYahoo(
+  league: string,
+  todayDate: string
+): Promise<string[]> {
+  const url = `https://api-secure.sports.yahoo.com/v1/editorial/league/${league}/games;date=${todayDate}?format=json`;
+  const { data } = await axios.get<YahooGamesReponse>(url);
+
+  const gamesJSON = data.league.games[0];
+  const postponedTeams: string[] = [];
+  gamesJSON.forEach((game) => {
+    if (game.game.game_status.type === "status.type.postponed") {
+      logger.info(`Postponed game found for ${league}`, game.game);
+      postponedTeams.push(game.game.team_ids[0].away_team_id);
+      postponedTeams.push(game.game.team_ids[1].home_team_id);
+    }
+  });
+
+  return postponedTeams;
+}
+
 export async function setStartingPlayersForToday(
   teamsSnapshot: QuerySnapshot<DocumentData>
 ) {

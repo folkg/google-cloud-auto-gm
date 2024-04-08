@@ -17,6 +17,7 @@ import { sendUserEmail } from "../email/email.service.js";
 import {
   getCurrentPacificNumDay,
   getPacificTimeDateString,
+  todayPacific,
 } from "../utilities.service.js";
 import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service.js";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service.js";
@@ -460,6 +461,45 @@ export async function updatePositionalScarcityOffset(
       error
     );
   }
+}
+
+export async function storeTodaysPostponedTeams(
+  teams: string[]
+): Promise<void> {
+  try {
+    await db.collection("postponedGames").doc("today").set({
+      date: todayPacific(),
+      teams,
+    });
+  } catch (error) {
+    logger.error("Error storing postponed games in Firestore", error);
+  }
+}
+
+export async function getTodaysPostponedTeams(): Promise<
+  Set<string> | undefined
+> {
+  try {
+    const postponedGamesSnapshot = await db
+      .collection("postponedGames")
+      .doc("today")
+      .get();
+
+    if (postponedGamesSnapshot.exists) {
+      // check if the postponed games were updated today
+      const date: string | undefined = postponedGamesSnapshot.data()?.date;
+
+      if (date === todayPacific()) {
+        const teams: string[] | undefined =
+          postponedGamesSnapshot.data()?.teams;
+        return new Set(teams);
+      }
+    }
+  } catch (error) {
+    logger.error("Error getting postponed games from Firestore", error);
+  }
+
+  return undefined;
 }
 
 export async function getRandomUID(): Promise<string> {
