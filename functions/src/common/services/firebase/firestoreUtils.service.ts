@@ -1,7 +1,8 @@
 import { logger } from "firebase-functions";
 import { ITeamFirestore, ITeamOptimizer } from "../../interfaces/ITeam.js";
 import { updateTeamFirestore } from "./firestore.service.js";
-import { isEqual } from "lodash";
+import lodash from "lodash";
+const { isEqual } = lodash;
 
 export function enrichTeamsWithFirestoreSettings(
   yahooTeams: readonly ITeamOptimizer[],
