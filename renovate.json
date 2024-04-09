@@ -2,8 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:js-app", ":automergeMinor"],
   "timezone": "America/Edmonton",
+  "schedule": ["before 7am every friday"],
   "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["before 5am every friday"]
+    "enabled": true
   }
 }
