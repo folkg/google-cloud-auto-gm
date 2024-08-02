@@ -36,7 +36,7 @@
     "firebase-functions": "4.9.0",
     "js2xmlparser": "5.0.0",
     "lodash": "4.17.21",
-    "spacetime": "7.6.0"
+    "spacetime": "7.6.1"
   },
   "devDependencies": {
     "@types/nodemailer": "6.4.15",
