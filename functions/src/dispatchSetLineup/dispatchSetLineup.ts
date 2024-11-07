@@ -3,7 +3,6 @@ import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { RevokedRefreshTokenError } from "../common/services/firebase/errors.js";
 import { setUsersLineup } from "./services/setLineups.service.js";
 
-// could increase maxConcurrentDispatches if we get more users.
 export const taskQueueConfig = {
   retryConfig: {
     maxAttempts: 5,
@@ -11,18 +10,16 @@ export const taskQueueConfig = {
     maxDoublings: 4,
   },
   rateLimits: {
-    maxConcurrentDispatches: 1000,
-    maxDispatchesPerSecond: 500,
+    // No problems with Yahoo API when we had 60 concurrent dispatches
+    // Problems when it jumped to 250 concurrent
+    maxConcurrentDispatches: 120,
+    maxDispatchesPerSecond: 60,
   },
 };
 
 export const dispatchsetlineup = onTaskDispatched(
   taskQueueConfig,
   async (req) => {
-    // const testUsers: string[] = [
-    //   "RLSrRcWN3lcYbxKQU1FKqditGDu1",
-    //   "xAyXmaHKO3aRm9J3fnj2rgZRPnX2",
-    // ]; // Graeme Folk, Jeff Barnes
     const uid: string = req.data.uid;
     const teams: any[] = req.data.teams;
     if (!uid) {

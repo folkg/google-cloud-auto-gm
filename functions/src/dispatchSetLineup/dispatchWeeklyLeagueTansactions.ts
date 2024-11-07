@@ -2,8 +2,6 @@ import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { performWeeklyLeagueTransactions } from "./services/setLineups.service.js";
 
-// we have lower maxConcurrentDispatches because we don't want to overload
-// Yahoo's API with a non-essential task
 export const taskQueueConfig = {
   retryConfig: {
     maxAttempts: 2,
@@ -12,7 +10,7 @@ export const taskQueueConfig = {
   },
   rateLimits: {
     maxConcurrentDispatches: 5,
-    maxDispatchesPerSecond: 500,
+    maxDispatchesPerSecond: 5,
   },
 };
 

@@ -68,12 +68,11 @@ export async function scheduleSetLineup() {
     return;
   }
 
-  const enqueuedTasks = enqueueUsersTeams(activeUsers, queue, targetUri);
-
   // Wait for all the global data to be initialized before enqueuing tasks
   await Promise.all(initializeGlobalDataPromises);
 
   try {
+    const enqueuedTasks = enqueueUsersTeams(activeUsers, queue, targetUri);
     await Promise.all(enqueuedTasks);
     logger.log("Successfully enqueued tasks");
   } catch (error) {
