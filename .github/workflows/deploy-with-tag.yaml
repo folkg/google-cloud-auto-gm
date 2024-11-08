@@ -3,7 +3,7 @@ name: Deploy with Tag
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 defaults:
   run:
@@ -14,28 +14,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@master
+      - name: Checkout Code
+        uses: actions/checkout@master
 
-    - name: Setup Node
-      uses: actions/setup-node@master
-      with:
-        node-version: 20.x
-        cache: "npm"
-        cache-dependency-path: functions/package-lock.json
+      - name: Install Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 22.x
 
-    - name: Install Dependencies
-      run: npm ci
+      - name: Cache npm dependencies
+        uses: actions/cache@master
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('functions/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-    - name: Run Tests
-      run: npm run test:once
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Build
-      run: npm run build
+      - name: Run Tests
+        run: npm run test:once
 
-    - name: Deploy to Firebase
-      uses: w9jds/firebase-action@master
-      with:
-        args: deploy --only functions:lineup,functions:email,functions:transactions
-      env:
-        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions:lineup,functions:email,functions:transactions
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
