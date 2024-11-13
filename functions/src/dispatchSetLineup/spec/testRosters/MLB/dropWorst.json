@@ -14,6 +14,7 @@
       "injury_status": "Healthy",
       "percent_started": 21,
       "percent_owned": 24,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 201,
@@ -35,6 +36,7 @@
       "injury_status": "Healthy",
       "percent_started": 19,
       "percent_owned": 37,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 748,
@@ -56,6 +58,7 @@
       "injury_status": "Healthy",
       "percent_started": 70,
       "percent_owned": 76,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 69,
@@ -77,6 +80,7 @@
       "injury_status": "Healthy",
       "percent_started": 62,
       "percent_owned": 80,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 179,
@@ -98,6 +102,7 @@
       "injury_status": "Healthy",
       "percent_started": 18,
       "percent_owned": 36,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 757,
@@ -120,6 +125,7 @@
       "injury_status": "Healthy",
       "percent_started": 87,
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 22,
@@ -142,6 +148,7 @@
       "injury_status": "Healthy",
       "percent_started": 80,
       "percent_owned": 96,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 391,
@@ -163,6 +170,7 @@
       "injury_status": "Healthy",
       "percent_started": 31,
       "percent_owned": 38,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 687,
@@ -184,6 +192,7 @@
       "injury_status": "Healthy",
       "percent_started": 96,
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 362,
@@ -206,6 +215,7 @@
       "injury_status": "Healthy",
       "percent_started": 72,
       "percent_owned": 88,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 382,
@@ -227,6 +237,7 @@
       "injury_status": "Healthy",
       "percent_started": 83,
       "percent_owned": 94,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 4,
@@ -248,6 +259,7 @@
       "injury_status": "Healthy",
       "percent_started": 41,
       "percent_owned": 60,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 432,
@@ -269,6 +281,7 @@
       "injury_status": "Healthy",
       "percent_started": 20,
       "percent_owned": 24,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 47,
@@ -290,6 +303,7 @@
       "injury_status": "Healthy",
       "percent_started": 59,
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 104,
@@ -311,6 +325,7 @@
       "injury_status": "Healthy",
       "percent_started": 71,
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 60,
@@ -332,6 +347,7 @@
       "injury_status": "Healthy",
       "percent_started": 96,
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 89,
@@ -353,6 +369,7 @@
       "injury_status": "Healthy",
       "percent_started": 88,
       "percent_owned": 93,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 129,
@@ -374,6 +391,7 @@
       "injury_status": "Healthy",
       "percent_started": 52,
       "percent_owned": 95,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 236,
@@ -395,6 +413,7 @@
       "injury_status": "Healthy",
       "percent_started": 38,
       "percent_owned": 50,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 714,
@@ -416,6 +435,7 @@
       "injury_status": "Healthy",
       "percent_started": 46,
       "percent_owned": 87,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 297,
@@ -437,6 +457,7 @@
       "injury_status": "Healthy",
       "percent_started": 20,
       "percent_owned": 25,
+      "percent_owned_delta": 0,
       "is_starting": 1,
       "ranks": {
         "last30Days": 308,
@@ -458,6 +479,7 @@
       "injury_status": "Healthy",
       "percent_started": 53,
       "percent_owned": 88,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 61,
@@ -479,6 +501,7 @@
       "injury_status": "Healthy",
       "percent_started": 36,
       "percent_owned": 65,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 406,
@@ -500,6 +523,7 @@
       "injury_status": "Healthy",
       "percent_started": 36,
       "percent_owned": 65,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "last30Days": 406,

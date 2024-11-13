@@ -22,7 +22,8 @@
       "eligible_positions": ["C", "Util"],
       "is_editable": true,
       "selected_position": "C",
-      "percent_owned": 96
+      "percent_owned": 96,
+      "percent_owned_delta": 0
     },
     {
       "injury_status": "Healthy",
@@ -41,6 +42,7 @@
       "is_undroppable": false,
       "selected_position": "C",
       "percent_owned": 12,
+      "percent_owned_delta": 0,
       "player_name": "Cal Raleigh",
       "is_editable": true,
       "player_key": "422.p.11531",
@@ -58,6 +60,7 @@
         "last4Weeks": -1
       },
       "percent_owned": 3,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "is_editable": true,
       "percent_started": 2,
@@ -77,6 +80,7 @@
       "is_playing": true,
       "selected_position": "2B",
       "percent_owned": 2,
+      "percent_owned_delta": 0,
       "ranks": {
         "next4Weeks": -1,
         "projectedWeek": -1,
@@ -115,6 +119,7 @@
     {
       "is_editable": true,
       "percent_owned": 2,
+      "percent_owned_delta": 0,
       "selected_position": "SS",
       "percent_started": 1,
       "ranks": {
@@ -136,6 +141,7 @@
     },
     {
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "percent_started": 94,
       "is_undroppable": true,
       "is_playing": false,
@@ -174,6 +180,7 @@
         "last30Days": 142
       },
       "percent_owned": 96,
+      "percent_owned_delta": 0,
       "injury_status": "Healthy",
       "player_key": "422.p.9111",
       "percent_started": 92
@@ -184,6 +191,7 @@
       "injury_status": "Healthy",
       "selected_position": "MI",
       "percent_owned": 38,
+      "percent_owned_delta": 0,
       "is_playing": false,
       "eligible_positions": ["2B", "3B", "CI", "MI", "Util"],
       "percent_started": 10,
@@ -209,6 +217,7 @@
       "percent_started": 1,
       "is_undroppable": false,
       "percent_owned": 3,
+      "percent_owned_delta": 0,
       "eligible_positions": ["1B", "2B", "3B", "CI", "MI", "Util"],
       "ranks": {
         "projectedWeek": -1,
@@ -225,6 +234,7 @@
     {
       "percent_started": 45,
       "percent_owned": 54,
+      "percent_owned_delta": 0,
       "ranks": {
         "last30Days": 45,
         "last4Weeks": -1,
@@ -250,6 +260,7 @@
       "is_playing": true,
       "is_editable": true,
       "percent_owned": 94,
+      "percent_owned_delta": 0,
       "percent_started": 88,
       "player_name": "Luis Robert Jr.",
       "player_key": "422.p.10765",
@@ -269,6 +280,7 @@
     {
       "player_key": "422.p.10505",
       "percent_owned": 71,
+      "percent_owned_delta": 0,
       "is_undroppable": false,
       "percent_started": 12,
       "is_starting": "N/A",
@@ -292,6 +304,7 @@
       "is_playing": true,
       "is_undroppable": false,
       "percent_owned": 36,
+      "percent_owned_delta": 0,
       "ranks": {
         "last14Days": 107,
         "projectedWeek": -1,
@@ -317,6 +330,7 @@
       "player_name": "Gary Sánchez",
       "is_undroppable": false,
       "percent_owned": 4,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "ranks": {
         "next7Days": 877,
@@ -373,6 +387,7 @@
       "is_playing": false,
       "eligible_positions": ["1B", "CI", "OF", "Util"],
       "percent_owned": 52,
+      "percent_owned_delta": 0,
       "player_name": "Cody Bellinger",
       "percent_started": 22
     },
@@ -392,6 +407,7 @@
         "last30Days": 796
       },
       "percent_owned": 2,
+      "percent_owned_delta": 0,
       "is_undroppable": false,
       "is_starting": "N/A",
       "is_playing": false,
@@ -403,6 +419,7 @@
       "is_editable": true,
       "is_playing": false,
       "percent_owned": 7,
+      "percent_owned_delta": 0,
       "player_key": "422.p.12449",
       "player_name": "Vinnie Pasquantino",
       "injury_status": "60-Day Injured List",
@@ -426,6 +443,7 @@
       "injury_status": "10-Day Injured List",
       "is_playing": false,
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "ranks": {
         "next7Days": 1257,
         "last4Weeks": -1,
@@ -451,6 +469,7 @@
       "player_name": "Jazz Chisholm Jr.",
       "selected_position": "BN",
       "percent_owned": 86,
+      "percent_owned_delta": 0,
       "ranks": {
         "next7Days": 1028,
         "last4Weeks": -1,
@@ -474,6 +493,7 @@
       "eligible_positions": ["SP", "P"],
       "is_playing": false,
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "ranks": {
         "projectedWeek": -1,
         "last4Weeks": -1,
@@ -491,6 +511,7 @@
       "eligible_positions": ["SP", "P"],
       "percent_started": 49,
       "percent_owned": 96,
+      "percent_owned_delta": 0,
       "player_key": "422.p.10514",
       "is_starting": 1,
       "is_playing": true,
@@ -511,6 +532,7 @@
     {
       "eligible_positions": ["SP", "P"],
       "percent_owned": 86,
+      "percent_owned_delta": 0,
       "is_undroppable": false,
       "percent_started": 40,
       "injury_status": "Healthy",
@@ -533,6 +555,7 @@
     {
       "is_editable": true,
       "percent_owned": 78,
+      "percent_owned_delta": 0,
       "percent_started": 77,
       "eligible_positions": ["RP", "P"],
       "is_playing": true,
@@ -554,6 +577,7 @@
     },
     {
       "percent_owned": 57,
+      "percent_owned_delta": 0,
       "injury_status": "Healthy",
       "percent_started": 54,
       "player_key": "422.p.11597",
@@ -591,6 +615,7 @@
       "eligible_positions": ["RP", "P"],
       "is_starting": "N/A",
       "percent_owned": 1,
+      "percent_owned_delta": 0,
       "is_editable": true,
       "player_name": "James Karinchak",
       "is_playing": false,
@@ -603,6 +628,7 @@
       "is_editable": true,
       "is_starting": "N/A",
       "percent_owned": 46,
+      "percent_owned_delta": 0,
       "percent_started": 45,
       "injury_status": "Healthy",
       "selected_position": "P",
@@ -620,6 +646,7 @@
     },
     {
       "percent_owned": 22,
+      "percent_owned_delta": 0,
       "eligible_positions": ["SP", "P"],
       "is_playing": true,
       "player_key": "422.p.8650",
@@ -647,6 +674,7 @@
       "eligible_positions": ["SP", "P", "IL"],
       "is_undroppable": false,
       "percent_owned": 42,
+      "percent_owned_delta": 0,
       "injury_status": "15-Day Injured List",
       "is_starting": "N/A",
       "selected_position": "BN",
@@ -675,6 +703,7 @@
       },
       "injury_status": "60-Day Injured List",
       "percent_owned": 1,
+      "percent_owned_delta": 0,
       "percent_started": null,
       "selected_position": "IL",
       "is_editable": true,
@@ -699,6 +728,7 @@
       "is_playing": false,
       "eligible_positions": ["SP", "P", "IL"],
       "percent_owned": 36,
+      "percent_owned_delta": 0,
       "is_editable": true,
       "player_name": "Alex Cobb",
       "is_undroppable": false,
@@ -708,6 +738,7 @@
     },
     {
       "percent_owned": 13,
+      "percent_owned_delta": 0,
       "selected_position": "IL",
       "percent_started": null,
       "is_editable": true,

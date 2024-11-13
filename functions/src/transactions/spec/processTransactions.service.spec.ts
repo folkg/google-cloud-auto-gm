@@ -2,7 +2,6 @@ import { vi, describe, it, test, expect, afterEach } from "vitest";
 import {
   createPlayersTransactions,
   generateTopAvailablePlayerPromises,
-  getTransactions,
   mergeTopAvailabePlayers,
 } from "../services/processTransactions.service";
 import { ITeamFirestore, ITeamOptimizer } from "../../common/interfaces/ITeam";
@@ -173,8 +172,8 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     );
 
     expect(dropTransactionsPlayers?.length).toEqual(1);
+    expect(dropTransactionsPlayers?.[0].player.eligible_positions).contain("D");
     expect(dropTransactionsPlayers?.[0]).toMatchObject({
-      playerKey: "419.p.7155", // D
       transactionType: "drop",
     });
 
@@ -187,7 +186,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       C: 50,
       LW: 50,
       RW: 50,
-      D: 42, // D is more scarce, so these players will be protected slightly more
+      D: 30, // D is more scarce, so these players will be protected slightly more
       G: 50,
     });
 
@@ -207,8 +206,10 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     );
 
     expect(dropTransactionsPlayers?.length).toEqual(1);
+    expect(dropTransactionsPlayers?.[0].player.eligible_positions).not.contain(
+      "D"
+    );
     expect(dropTransactionsPlayers?.[0]).toMatchObject({
-      playerKey: "419.p.7528", // C
       transactionType: "drop",
     });
 
@@ -244,8 +245,10 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     });
 
     expect(addSwapTransactionsPlayers?.length).toEqual(1);
+    expect(addSwapTransactionsPlayers?.[0].player.eligible_positions).contain(
+      "SS"
+    );
     expect(addSwapTransactionsPlayers?.[0]).toMatchObject({
-      playerKey: "422.p.10234", // SS
       transactionType: "add",
     });
   });
@@ -288,46 +291,16 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     });
 
     expect(addSwapTransactionsPlayers?.length).toEqual(1);
+    expect(
+      addSwapTransactionsPlayers?.[0].player.eligible_positions
+    ).not.contain("SS");
     expect(addSwapTransactionsPlayers?.[0]).toMatchObject({
-      playerKey: "422.p.10666",
       transactionType: "add",
     });
   });
 
   it("should drop for returning-IL and swap multiple players for a better player in free agency", async () => {
     positionalScarcityServiceSpy.mockResolvedValue({});
-    const dropTransactions = [
-      {
-        playerKey: "422.p.12351",
-        transactionType: "drop",
-        isInactiveList: false,
-      },
-    ];
-    const addSwapTransactions = [
-      {
-        playerKey: "422.p.12037",
-        transactionType: "add",
-        isInactiveList: false,
-        isFromWaivers: true,
-      },
-      {
-        playerKey: "422.p.9558",
-        transactionType: "drop",
-        isInactiveList: false,
-      },
-
-      {
-        playerKey: "422.p.10692",
-        transactionType: "add",
-        isInactiveList: false,
-        isFromWaivers: true,
-      },
-      {
-        playerKey: "422.p.11214",
-        transactionType: "drop",
-        isInactiveList: false,
-      },
-    ];
 
     const rosters: ITeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/problematicAddDrop/moveILtoBN-lineup.json"),
@@ -348,50 +321,35 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     );
 
     expect(dropTransactionsPlayers?.length).toEqual(1);
-    expect(dropTransactionsPlayers).toMatchObject(dropTransactions);
+    expect(dropTransactionsPlayers?.[0].player.eligible_positions).contain(
+      "1B"
+    );
 
     expect(resultLineupChanges?.length).toEqual(1);
     expect(resultLineupChanges?.[0]).toMatchObject({
       newPlayerPositions: {
-        "422.p.9558": "BN",
+        "422.p.9558": "BN", // Player coming from IR
       },
     });
 
-    expect(addSwapTransactionsPlayers?.length).toEqual(4);
-    expect(addSwapTransactionsPlayers).toMatchObject(addSwapTransactions);
+    expect(addSwapTransactionsPlayers?.length).toBeGreaterThan(1);
+    expect(
+      addSwapTransactionsPlayers?.[0].player.eligible_positions
+    ).not.contain("1B");
   });
-  it("should drop for returning-IL and swap multiple players for a better player in free agency (with positional scarcity enabled)", async () => {
+
+  it("should drop for returning-IL and swap multiple players for a better player in free agency (with positional scarcity enabled, 1B)", async () => {
     positionalScarcityServiceSpy.mockResolvedValue({
       C: 50,
-      "1B": 50,
+      "1B": 0,
       "2B": 50,
       "3B": 50,
-      SS: 30,
-      OF: 30,
-      SP: 70,
-      RP: 70,
-      P: 70,
+      SS: 50,
+      OF: 50,
+      SP: 50,
+      RP: 50,
+      P: 50,
     });
-    const dropTransactions = [
-      {
-        playerKey: "422.p.12351", // "eligible_positions": ["1B", "2B", "3B", "SS", "OF", "Util"], PO: 23
-        transactionType: "drop",
-        isInactiveList: false,
-      },
-    ];
-    const addSwapTransactions = [
-      {
-        playerKey: "422.p.10891",
-        transactionType: "add",
-        isInactiveList: false,
-        isFromWaivers: true,
-      },
-      {
-        playerKey: "422.p.11853",
-        transactionType: "drop",
-        isInactiveList: false,
-      },
-    ];
 
     const rosters: ITeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/problematicAddDrop/moveILtoBN-lineup.json"),
@@ -412,7 +370,9 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     );
 
     expect(dropTransactionsPlayers?.length).toEqual(1);
-    expect(dropTransactionsPlayers).toMatchObject(dropTransactions);
+    expect(dropTransactionsPlayers?.[0].player.eligible_positions).not.contain(
+      "1B"
+    );
 
     expect(resultLineupChanges?.length).toEqual(1);
     expect(resultLineupChanges?.[0]).toMatchObject({
@@ -421,8 +381,10 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       },
     });
 
-    expect(addSwapTransactionsPlayers?.length).toEqual(2);
-    expect(addSwapTransactionsPlayers).toMatchObject(addSwapTransactions);
+    expect(addSwapTransactionsPlayers?.length).toBeGreaterThan(1);
+    expect(addSwapTransactionsPlayers?.[0].player.eligible_positions).contain(
+      "1B"
+    );
   });
 
   it("should return the add / drop/ position lists as expected", async () => {

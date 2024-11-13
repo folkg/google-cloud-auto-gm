@@ -26,9 +26,9 @@ const mockLeaguesToSetLineupsFor = vi.spyOn(
 const mockQueue = {
   enqueue: vi.fn(() => Promise.resolve()),
 };
-const mockFunctionUrl = vi.fn(() => Promise.resolve("https://example.com"));
+const mockFunctionUrl = "example";
 vi.mock("../../common/services/utilities.service", () => ({
-  getFunctionUrl: vi.fn(() => mockFunctionUrl),
+  getFunctionUrl: vi.fn().mockResolvedValue("example"),
   getCurrentPacificHour: vi.fn(() => 1),
   todayPacific: vi.fn(() => "2024-04-08"),
 }));
