@@ -229,17 +229,18 @@ async function processTomorrowsTransactions(
     firestoreTeams
   );
 
-  await processManualTransactions(
-    tomorrowsTeams,
-    topAvailablePlayerCandidates,
-    uid
-  );
-
-  await processAutomaticTransactions(
-    tomorrowsTeams,
-    topAvailablePlayerCandidates,
-    uid
-  );
+  await Promise.all([
+    processManualTransactions(
+      tomorrowsTeams,
+      topAvailablePlayerCandidates,
+      uid
+    ),
+    processAutomaticTransactions(
+      tomorrowsTeams,
+      topAvailablePlayerCandidates,
+      uid
+    ),
+  ]);
 }
 
 async function processAutomaticTransactions(

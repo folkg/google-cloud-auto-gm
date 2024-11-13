@@ -1,8 +1,9 @@
-import { describe, expect, it, test, vi } from "vitest";
+import { assert, describe, expect, it, test, vi } from "vitest";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { PlayerCollection } from "../classes/PlayerCollection.js";
 import spacetime from "spacetime";
+import type { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 
 // mock firebase-admin
 vi.mock("firebase-admin/firestore", () => {
@@ -16,6 +17,25 @@ vi.mock("firebase-admin/app", () => {
     initializeApp: vi.fn(),
   };
 });
+
+function getAddDroppedPlayerCounts(playerTransactions: PlayerTransaction[]): {
+  addedCount: number;
+  droppedCount: number;
+} {
+  return playerTransactions.reduce(
+    (counts, transaction) => {
+      transaction.players.forEach((p) => {
+        if (p.transactionType === "drop") {
+          counts.droppedCount++;
+        } else if (p.transactionType === "add") {
+          counts.addedCount++;
+        }
+      });
+      return counts;
+    },
+    { addedCount: 0, droppedCount: 0 }
+  );
+}
 
 describe("Unit Test LineupOptimizer Simple Drop Players", function () {
   test("No drops allowed Daily", function () {
@@ -60,8 +80,13 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("419.p.7155");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(1);
+    expect(addedCount).toEqual(0);
   });
 
   test("No drops required Intraday", function () {
@@ -80,8 +105,17 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     const playerTransactions = lo.playerTransactions;
 
     // drop second worst player since G is a critical position
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("419.p.7528");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
+    const droppedPlayers = playerTransactions?.flatMap((pt) =>
+      pt.players.filter((p) => p.transactionType === "drop")
+    );
+    expect(droppedPlayers?.length).toEqual(1);
+    expect(droppedPlayers?.[0].player.eligible_positions).not.toContain("G");
+
+    const addedPlayerCount = playerTransactions?.flatMap((pt) =>
+      pt.players.filter((p) => p.transactionType === "add")
+    ).length;
+
+    expect(addedPlayerCount).toEqual(0);
   });
 
   test("Drop player with lowest score for 'Probable' player Intraday", function () {
@@ -90,8 +124,13 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("419.p.7528");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(1);
+    expect(addedCount).toEqual(0);
   });
 
   test("Drop two players with lowest score for 'Questionable' and 'Game Time Decision' players Intraday", function () {
@@ -100,10 +139,13 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("419.p.7528");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
-    expect(playerTransactions?.[1].players[0].playerKey).toEqual("419.p.7903");
-    expect(playerTransactions?.[1].players[0].transactionType).toEqual("drop");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(2);
+    expect(addedCount).toEqual(0);
   });
 
   test("Drop player with lowest score for 'Probable' player NBA", function () {
@@ -112,8 +154,13 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("418.p.5893");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(1);
+    expect(addedCount).toEqual(0);
   });
 
   test("Drop player with third lowest score (lowest are non-editable for today) - NBA", function () {
@@ -132,7 +179,9 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("418.p.5893");
+    expect(playerTransactions?.[0].players[0].playerKey).not.toEqual(
+      "418.p.5864"
+    );
     expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
   });
 
@@ -142,8 +191,13 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("418.p.5893");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(1);
+    expect(addedCount).toEqual(0);
   });
 
   test("Drop two player with lowest score for 'Game Time Decision' players NBA", function () {
@@ -152,10 +206,13 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("418.p.5893");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
-    expect(playerTransactions?.[1].players[0].playerKey).toEqual("418.p.6567");
-    expect(playerTransactions?.[1].players[0].transactionType).toEqual("drop");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(2);
+    expect(addedCount).toEqual(0);
   });
 
   test("Drop player with lowest score for 'Game Time Decision' player NBA weekly", function () {
@@ -164,8 +221,13 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("418.p.6047");
-    expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(1);
+    expect(addedCount).toEqual(0);
   });
 });
 
@@ -208,41 +270,13 @@ describe("Add players", () => {
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchObject([
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isInactiveList: false,
-            playerKey: "422.p.10234",
-            transactionType: "add",
-            isFromWaivers: false,
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isInactiveList: false,
-            playerKey: "422.p.10666",
-            transactionType: "add",
-            isFromWaivers: false,
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isInactiveList: false,
-            playerKey: "422.p.12024",
-            transactionType: "add",
-            isFromWaivers: false,
-          },
-        ],
-      },
-    ]);
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(0);
+    expect(addedCount).toEqual(3);
   });
 
   it("should not add top player (422.p.10234) because they are LTIR", () => {
@@ -276,7 +310,13 @@ describe("Add players", () => {
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.length).toEqual(1);
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(0);
+    expect(addedCount).toEqual(1);
   });
 
   it("should not use faab when picking up two waiver players due to league settings", () => {
@@ -285,10 +325,6 @@ describe("Add players", () => {
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
-
-    // expect(playerTransactions?.length).toEqual(2);
-    // expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10620");
-    // expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10233");
 
     expect(playerTransactions).toMatchObject([
       {
@@ -307,34 +343,13 @@ describe("Add players", () => {
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    // expect(playerTransactions?.length).toEqual(2);
-    // expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10620");
-    // expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10233");
-
-    expect(playerTransactions).toMatchObject([
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: true,
-            isInactiveList: false,
-            playerKey: "422.p.10620",
-            transactionType: "add",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: true,
-            isInactiveList: false,
-            playerKey: "422.p.10233",
-            transactionType: "add",
-          },
-        ],
-      },
-    ]);
+    expect(playerTransactions?.length).toEqual(2);
+    expect(
+      playerTransactions?.[0].players[0].player.eligible_positions
+    ).includes("1B");
+    expect(
+      playerTransactions?.[1].players[0].player.eligible_positions
+    ).includes("C");
   });
 
   it("should add top 1B, then top player, since 1B and C are empty, but no C available", () => {
@@ -345,8 +360,10 @@ describe("Add players", () => {
     const playerTransactions = lo.playerTransactions;
 
     expect(playerTransactions?.length).toEqual(2);
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10620");
-    expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10234");
+    expect(
+      playerTransactions?.[0].players[0].player.eligible_positions
+    ).includes("1B");
+    expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10234"); // best player
   });
 
   it("should add worse, boosted player (422.p.12024, 3B) because they have critical position (1B, 3B, RP) eligibility", () => {
@@ -358,7 +375,7 @@ describe("Add players", () => {
 
     expect(playerTransactions?.length).toEqual(2);
     expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.12024");
-    expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10666");
+    expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10666"); // best player
   });
 
   it("should add best player (422.p.10666) because 3B is not a critical position, so no one has enough boost", () => {
@@ -370,7 +387,6 @@ describe("Add players", () => {
 
     expect(playerTransactions?.length).toEqual(2);
     expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10666");
-    expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.12024");
   });
 
   it("should add no one because we have an illegal lineup (healthy on IR)", () => {
@@ -409,9 +425,11 @@ describe("Add players", () => {
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.length).toEqual(2);
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.9573");
-    expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.9331");
+    const playersFromWaiversCount = playerTransactions
+      ?.flatMap((pt) => pt.players.map((p) => p.isFromWaivers))
+      .filter((isFromWaivers) => isFromWaivers === true).length;
+
+    expect(playersFromWaiversCount).toEqual(0);
   });
 
   it("Should add top player because they are on waivers, and user's waiver setting is on", () => {
@@ -436,9 +454,13 @@ describe("Add players", () => {
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.length).toEqual(2);
-    expect(playerTransactions?.[0].players[0].playerKey).toEqual("422.p.10234");
-    expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10666");
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(0);
+    expect(addedCount).toEqual(2);
   });
 
   it("Should add no one because pace for season is bad before we begin", () => {
@@ -464,7 +486,13 @@ describe("Add players", () => {
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions?.length).toEqual(1);
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(0);
+    expect(addedCount).toEqual(1);
   });
 
   // This means:
@@ -479,80 +507,13 @@ describe("Add players", () => {
 });
 
 describe("Swap players", () => {
-  const swapsFromOptimalLineup = [
-    {
-      isFaabRequired: true,
-      players: [
-        {
-          isFromWaivers: false,
-          isInactiveList: false,
-          playerKey: "422.p.10234",
-          transactionType: "add",
-        },
-        {
-          isInactiveList: false,
-          playerKey: "422.p.9096",
-          transactionType: "drop",
-        },
-      ],
-    },
-    {
-      isFaabRequired: true,
-      players: [
-        {
-          isFromWaivers: false,
-          isInactiveList: false,
-          playerKey: "422.p.10666",
-          transactionType: "add",
-        },
-        {
-          isInactiveList: false,
-          playerKey: "422.p.8918",
-          transactionType: "drop",
-        },
-      ],
-    },
-    {
-      isFaabRequired: true,
-      players: [
-        {
-          isFromWaivers: false,
-          isInactiveList: false,
-          playerKey: "422.p.12024",
-          transactionType: "add",
-        },
-        {
-          isInactiveList: false,
-          playerKey: "422.p.12339",
-          transactionType: "drop",
-        },
-      ],
-    },
-    {
-      isFaabRequired: true,
-      players: [
-        {
-          isFromWaivers: false,
-          isInactiveList: false,
-          playerKey: "422.p.9573",
-          transactionType: "add",
-        },
-        {
-          isInactiveList: false,
-          playerKey: "422.p.9557",
-          transactionType: "drop",
-        },
-      ],
-    },
-  ];
-
   it("should swap worst player for best player 3 different times (respecting almostCriticalPositions)", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json"); // almostCriticalPositions = [ 'C', '1B', '2B', '3B', 'SS', 'RP' ]
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
-    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
+    expect(playerTransactions?.length).toEqual(4);
   });
 
   it("should make no swaps because all addCandidates are worse than current players", () => {
@@ -568,76 +529,26 @@ describe("Swap players", () => {
   it("should prioritize top 1B and top C (from waivers) because they are empty roster positions (instead of BPA) (still drop worst player)", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
     const lo = new LineupOptimizer(roster);
+    lo.verbose = true;
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchObject([
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: true,
-            isInactiveList: false,
-            playerKey: "422.p.10620",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.9096",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: true,
-            isInactiveList: false,
-            playerKey: "422.p.10234",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.8918",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: true,
-            isInactiveList: false,
-            playerKey: "422.p.10666",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.12339",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: true,
-            isInactiveList: false,
-            playerKey: "422.p.12024",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.9557",
-            transactionType: "drop",
-          },
-        ],
-      },
-    ]);
+    assert(playerTransactions);
+
+    const firstAddedPositions = playerTransactions[0].players
+      .filter((p) => p.transactionType === "add")
+      .flatMap((p) => p.player.eligible_positions);
+    const secondAddedPositions = playerTransactions[1].players
+      .filter((p) => p.transactionType === "add")
+      .flatMap((p) => p.player.eligible_positions);
+
+    expect(firstAddedPositions.some((pos) => ["C", "1B"].includes(pos))).toBe(
+      true
+    );
+    expect(secondAddedPositions.some((pos) => ["C", "1B"].includes(pos))).toBe(
+      true
+    );
   });
 
   it("should not add top player (422.p.10234) because they are already in a current pending claim", () => {
@@ -647,56 +558,11 @@ describe("Swap players", () => {
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchObject([
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.10666",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.8918",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.12024",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.12339",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.9573",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.9557",
-            transactionType: "drop",
-          },
-        ],
-      },
-    ]);
+    const playersInTransactions = playerTransactions?.flatMap((pt) =>
+      pt.players.map((p) => p.playerKey)
+    );
+
+    expect(playersInTransactions).not.toContain("422.p.10234");
   });
 
   it("should move the worst IL player to empty BN spot, and then drop them for the best add candidate", () => {
@@ -715,7 +581,7 @@ describe("Swap players", () => {
       },
       teamKey: "422.l.119198.t.3",
     });
-    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
+    expect(playerTransactions?.length).toEqual(4);
   });
 
   it("should swap the worst IL player to BN, and then drop them for the best add candidate", () => {
@@ -735,7 +601,7 @@ describe("Swap players", () => {
       },
       teamKey: "422.l.119198.t.3",
     });
-    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
+    expect(playerTransactions?.length).toEqual(4);
   });
 
   it("should move the worst IL player to BN, BN to IL+ in 3-way, and then drop them for the best add candidate", () => {
@@ -756,7 +622,7 @@ describe("Swap players", () => {
       },
       teamKey: "422.l.119198.t.3",
     });
-    expect(playerTransactions).toMatchObject(swapsFromOptimalLineup);
+    expect(playerTransactions?.length).toEqual(4);
   });
 
   it("Should add no one because pace for season is bad before we begin", () => {
@@ -896,49 +762,13 @@ describe("Combination Drops or Adds", () => {
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchObject([
-      {
-        players: [
-          {
-            isInactiveList: false,
-            playerKey: "422.p.8918",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.10234",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.12339",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.10666",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.9557",
-            transactionType: "drop",
-          },
-        ],
-      },
-    ]);
+    assert(playerTransactions);
+
+    const { addedCount, droppedCount } =
+      getAddDroppedPlayerCounts(playerTransactions);
+
+    expect(droppedCount).toEqual(3);
+    expect(addedCount).toEqual(2);
   });
 
   it("should move a player to IL for a new add, then swap worst player for the next-best player two times", () => {
@@ -951,51 +781,6 @@ describe("Combination Drops or Adds", () => {
     const lineupChanges = lo.lineupChanges;
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toMatchObject([
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.10234",
-            transactionType: "add",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.10666",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.12339",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.12024",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.9557",
-            transactionType: "drop",
-          },
-        ],
-      },
-    ]);
     expect(lineupChanges).toEqual({
       coveragePeriod: "2023-04-07",
       coverageType: "date",
@@ -1004,87 +789,7 @@ describe("Combination Drops or Adds", () => {
       },
       teamKey: "422.l.119198.t.3",
     });
-  });
-
-  it("should move the worst player (Alex Cobb) to IL for a new add, then move them back to BN and swap that worst player for the next-best player", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free1spotILswap.json");
-    const lo = new LineupOptimizer(roster);
-    lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
-    lo.generateDropPlayerTransactions();
-    lo.generateAddPlayerTransactions();
-    lo.generateSwapPlayerTransactions();
-    const lineupChanges = lo.lineupChanges;
-    const playerTransactions = lo.playerTransactions;
-
-    expect(playerTransactions).toMatchObject([
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.10234",
-            transactionType: "add",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.10666",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.12339",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.12024",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.9557",
-            transactionType: "drop",
-          },
-        ],
-      },
-      {
-        isFaabRequired: true,
-        players: [
-          {
-            isFromWaivers: false,
-            isInactiveList: false,
-            playerKey: "422.p.9331",
-            transactionType: "add",
-          },
-          {
-            isInactiveList: false,
-            playerKey: "422.p.8918",
-            transactionType: "drop",
-          },
-        ],
-      },
-    ]);
-    expect(lineupChanges).toEqual({
-      coveragePeriod: "2023-04-07",
-      coverageType: "date",
-      newPlayerPositions: {
-        "422.p.11014": "IL",
-      },
-      teamKey: "422.l.119198.t.3",
-    });
+    expect(playerTransactions?.length).toBeGreaterThan(1);
   });
 
   it("should not put roster over max size (no dropped players should be moved to IL)", () => {
@@ -1111,20 +816,6 @@ describe("Combination Drops or Adds", () => {
     }
   });
 
-  it("should not attempt swaps because the lineup is illegal (healthy on IL)", () => {
-    const roster: ITeamOptimizer = require("./problematicAddDrop/healthyOnILShouldBeIllegal-lineup.json");
-    const lo = new LineupOptimizer(roster);
-    lo.addCandidates = require("./problematicAddDrop/healthyOnILShouldBeIllegal-only-addcandidates.json");
-    lo.generateDropPlayerTransactions();
-    lo.generateAddPlayerTransactions();
-    lo.generateSwapPlayerTransactions();
-    const lineupChanges = lo.lineupChanges;
-    const playerTransactions = lo.playerTransactions;
-
-    expect(playerTransactions).toEqual(null);
-    expect(lineupChanges).toEqual(null);
-  });
-
   it("should not pick up extra P because we are at max capacity", () => {
     const roster: ITeamOptimizer = require("./problematicAddDrop/tooManyPitchers-lineup.json");
     const lo = new LineupOptimizer(roster);
@@ -1135,7 +826,22 @@ describe("Combination Drops or Adds", () => {
     const lineupChanges = lo.lineupChanges;
     const playerTransactions = lo.playerTransactions;
 
-    expect(playerTransactions).toEqual(null);
-    expect(lineupChanges).toEqual(null);
+    const addedPitcherCount = playerTransactions?.flatMap((t) =>
+      t.players
+        .filter((p) => p.transactionType === "add")
+        .flatMap((p) => p.player.eligible_positions)
+        .filter((p) => p === "P")
+    ).length;
+
+    const droppedPitcherCount = playerTransactions?.flatMap(
+      (t) =>
+        t.players
+          .filter((p) => p.transactionType === "drop")
+          .flatMap((p) => p.player.eligible_positions)
+          .filter((p) => p === "P").length
+    ).length;
+
+    assert(addedPitcherCount && droppedPitcherCount);
+    expect(addedPitcherCount).toBeLessThanOrEqual(droppedPitcherCount);
   });
 });

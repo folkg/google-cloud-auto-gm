@@ -1,15 +1,19 @@
 import { LeagueSpecificScarcityOffsets } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import { Player } from "../../classes/Player.js";
+import type { PlayerRanks } from "../../interfaces/IPlayer.js";
 
-const scoreComponentLimit = {
-  PERCENT_OWNED_DELTA_UPPER_LIMIT: 3, // Applies to all sports
-  RANK_LAST_30_DAYS_LIMIT: 6, // Applies to NHL, MLB, NBA only
-  RANK_LAST_14_DAYS_LIMIT: 6,
-  RANK_NEXT_7_DAYS_LIMIT: 4,
-  RANK_REST_OF_SEASON_LIMIT: 4,
-  RANK_LAST_4_WEEKS_LIMIT: 8, // Applies to NFL only
-  RANK_PROJECTED_WEEK_LIMIT: 7,
-  RANK_NEXT_4_WEEKS_LIMIT: 5,
+const OWNERSHIP_FACTOR = 0.5;
+const OWNERSHIP_DELTA_ADJUSTMENT_BOUND = 4;
+const RANK_WEIGHTS: Record<keyof PlayerRanks, number> = {
+  // Applies to NHL, MLB, NBA only - totals 100
+  last30Days: 40,
+  last14Days: 30,
+  next7Days: 10,
+  restOfSeason: 20,
+  // Applies to NFL only - totals 100
+  last4Weeks: 40,
+  projectedWeek: 35,
+  next4Weeks: 25,
 };
 
 /**
@@ -25,68 +29,56 @@ export function ownershipScoreFunctionFactory(
   positionalScarcityOffsets?: LeagueSpecificScarcityOffsets
 ): (player: Player) => number {
   return (player: Player) => {
-    const percentOwnedDelta = player.percent_owned_delta
-      ? Math.min(
-          player.percent_owned_delta,
-          scoreComponentLimit.PERCENT_OWNED_DELTA_UPPER_LIMIT
-        )
-      : 0;
-
-    let positionalScarcityOffset = 0;
-    const matchingPositions = player.eligible_positions.filter(
-      (pos) => pos in (positionalScarcityOffsets ?? {})
+    const positionalScarcityOffset = calculatePositionalScarcityOffset(
+      player,
+      positionalScarcityOffsets
     );
-    if (matchingPositions.length > 0) {
-      positionalScarcityOffset = Math.max(
-        Math.min(
-          ...matchingPositions.map(
-            (pos) => positionalScarcityOffsets![pos] ?? Infinity
-          )
-        ),
-        0
-      );
-    }
+    const ownershipScore = player.percent_owned - positionalScarcityOffset;
+    const rankScore = calculateRankScore(numPlayersInLeague, player);
+    const ownershipDeltaAdjustment = calculateOwnershipDelta(player);
 
     return (
-      player.percent_owned +
-      percentOwnedDelta +
-      Math.min(
-        numPlayersInLeague / resolveRank(player.ranks.last30Days),
-        scoreComponentLimit.RANK_LAST_30_DAYS_LIMIT
-      ) +
-      Math.min(
-        numPlayersInLeague / resolveRank(player.ranks.last14Days),
-        scoreComponentLimit.RANK_LAST_14_DAYS_LIMIT
-      ) +
-      Math.min(
-        numPlayersInLeague / resolveRank(player.ranks.next7Days),
-        scoreComponentLimit.RANK_NEXT_7_DAYS_LIMIT
-      ) +
-      Math.min(
-        numPlayersInLeague / resolveRank(player.ranks.restOfSeason),
-        scoreComponentLimit.RANK_REST_OF_SEASON_LIMIT
-      ) +
-      Math.min(
-        numPlayersInLeague / resolveRank(player.ranks.last4Weeks),
-        scoreComponentLimit.RANK_LAST_4_WEEKS_LIMIT
-      ) +
-      Math.min(
-        numPlayersInLeague / resolveRank(player.ranks.projectedWeek),
-        scoreComponentLimit.RANK_PROJECTED_WEEK_LIMIT
-      ) +
-      Math.min(
-        numPlayersInLeague / resolveRank(player.ranks.next4Weeks),
-        scoreComponentLimit.RANK_NEXT_4_WEEKS_LIMIT
-      ) -
-      positionalScarcityOffset
+      ownershipScore * OWNERSHIP_FACTOR +
+      rankScore * (1 - OWNERSHIP_FACTOR) +
+      ownershipDeltaAdjustment
     );
-
-    function resolveRank(rank: number): number {
-      if (rank === -1) {
-        return Infinity;
-      } else {
-        return rank;
-      }
-    }
   };
+}
+
+export function calculatePositionalScarcityOffset(
+  player: Player,
+  positionalScarcityOffsets: LeagueSpecificScarcityOffsets | undefined
+) {
+  if (!positionalScarcityOffsets) {
+    return 0;
+  }
+
+  const eligibleOffsets = player.eligible_positions
+    .filter((pos) => pos in positionalScarcityOffsets)
+    .map((pos) => positionalScarcityOffsets[pos]);
+
+  return eligibleOffsets.length === 0 ? 0 : Math.min(...eligibleOffsets);
+}
+
+function calculateOwnershipDelta(player: Player): number {
+  return Math.min(player.percent_owned_delta, OWNERSHIP_DELTA_ADJUSTMENT_BOUND);
+}
+
+function calculateRankScore(
+  numPlayersInLeague: number,
+  player: Player
+): number {
+  const scoreOutOfTwenty = Object.entries(player.ranks).reduce(
+    (acc, [rankType, rank]) =>
+      rank === -1
+        ? acc
+        : acc +
+          Math.min(
+            numPlayersInLeague / rank,
+            RANK_WEIGHTS[rankType as keyof PlayerRanks] / 5
+          ),
+    0
+  );
+
+  return 5 * scoreOutOfTwenty;
 }

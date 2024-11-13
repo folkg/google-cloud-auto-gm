@@ -101,7 +101,8 @@
       "is_playing": true,
       "injury_status": "Healthy",
       "is_undroppable": false,
-      "percent_owned": 82
+      "percent_owned": 82,
+      "percent_owned_delta": 0
     },
     {
       "is_starting": 1,
@@ -110,6 +111,7 @@
       "is_playing": true,
       "player_key": "422.p.10621",
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "injury_status": "Healthy",
       "percent_started": 97,
       "ranks": {
@@ -131,6 +133,7 @@
       "percent_started": 48,
       "player_key": "422.p.10175",
       "percent_owned": 62,
+      "percent_owned_delta": 0,
       "eligible_positions": ["2B", "3B", "Util"],
       "injury_status": "Healthy",
       "selected_position": "2B",
@@ -173,6 +176,7 @@
       "percent_started": 97,
       "injury_status": "Healthy",
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "selected_position": "SS",
       "is_starting": 1,
       "eligible_positions": ["2B", "SS", "Util"],
@@ -227,6 +231,7 @@
       "percent_started": 54,
       "is_starting": 1,
       "percent_owned": 59,
+      "percent_owned_delta": 0,
       "eligible_positions": ["1B", "OF", "Util"],
       "injury_status": "Healthy",
       "is_undroppable": false,
@@ -249,6 +254,7 @@
       },
       "selected_position": "OF",
       "percent_owned": 24,
+      "percent_owned_delta": 0,
       "percent_started": 19,
       "is_editable": true,
       "player_name": "Jake McCarthy",
@@ -261,6 +267,7 @@
       "eligible_positions": ["SS", "Util"],
       "is_starting": 1,
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "ranks": {
         "next7Days": 60,
         "restOfSeason": 21,
@@ -306,6 +313,7 @@
       "is_editable": false,
       "injury_status": "Healthy",
       "percent_owned": 5,
+      "percent_owned_delta": 0,
       "is_undroppable": false,
       "player_key": "422.p.11853",
       "eligible_positions": ["C", "Util"],
@@ -342,6 +350,7 @@
       "is_undroppable": false,
       "is_editable": false,
       "percent_owned": 22,
+      "percent_owned_delta": 0,
       "player_name": "Brendan Donovan",
       "injury_status": "Day-to-Day"
     },
@@ -385,12 +394,14 @@
       "is_playing": true,
       "eligible_positions": ["SP", "P"],
       "percent_owned": 92,
+      "percent_owned_delta": 0,
       "injury_status": "Healthy",
       "percent_started": 72,
       "is_starting": 1
     },
     {
       "percent_owned": 34,
+      "percent_owned_delta": 0,
       "injury_status": "Healthy",
       "is_starting": "N/A",
       "selected_position": "SP",
@@ -431,6 +442,7 @@
       "player_key": "422.p.10860",
       "injury_status": "Healthy",
       "percent_owned": 35,
+      "percent_owned_delta": 0,
       "percent_started": 34
     },
     {
@@ -453,6 +465,7 @@
       "player_name": "Josh Sborz",
       "is_editable": false,
       "percent_owned": 5,
+      "percent_owned_delta": 0,
       "percent_started": 4
     },
     {
@@ -469,6 +482,7 @@
       "injury_status": "Healthy",
       "player_name": "Freddy Peralta",
       "percent_owned": 59,
+      "percent_owned_delta": 0,
       "is_editable": false,
       "is_undroppable": false,
       "percent_started": 45,
@@ -496,11 +510,13 @@
       "injury_status": "Healthy",
       "player_name": "Lucas Giolito",
       "percent_owned": 88,
+      "percent_owned_delta": 0,
       "selected_position": "P",
       "is_starting": "N/A"
     },
     {
       "percent_owned": 39,
+      "percent_owned_delta": 0,
       "eligible_positions": ["SP", "P"],
       "player_key": "422.p.10660",
       "is_starting": "N/A",
@@ -524,6 +540,7 @@
     {
       "percent_started": 76,
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "player_name": "Shane McClanahan",
       "is_starting": "N/A",
       "is_undroppable": false,
@@ -548,6 +565,7 @@
       "is_starting": "N/A",
       "percent_started": null,
       "percent_owned": 2,
+      "percent_owned_delta": 0,
       "ranks": {
         "next4Weeks": -1,
         "next7Days": 2348,
@@ -583,6 +601,7 @@
       "is_starting": "N/A",
       "is_undroppable": false,
       "percent_owned": 16,
+      "percent_owned_delta": 0,
       "player_key": "422.p.9140",
       "eligible_positions": ["SP", "P"],
       "percent_started": 7
@@ -596,6 +615,7 @@
       "player_key": "422.p.9558",
       "is_editable": true,
       "percent_owned": 26,
+      "percent_owned_delta": 0,
       "selected_position": "IL",
       "ranks": {
         "next7Days": 277,
@@ -628,6 +648,7 @@
       "is_editable": false,
       "is_undroppable": false,
       "percent_owned": 32,
+      "percent_owned_delta": 0,
       "selected_position": "IL",
       "percent_started": null
     },
@@ -635,6 +656,7 @@
       "eligible_positions": ["SP", "P"],
       "player_key": "422.p.9585",
       "percent_owned": 94,
+      "percent_owned_delta": 0,
       "selected_position": "IL",
       "injury_status": "Healthy",
       "is_playing": true,
@@ -658,6 +680,7 @@
       "selected_position": "IL",
       "injury_status": "Healthy",
       "percent_owned": 41,
+      "percent_owned_delta": 0,
       "percent_started": 20,
       "is_editable": false,
       "eligible_positions": ["SP", "P"],

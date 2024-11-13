@@ -12,6 +12,7 @@
       "selected_position": "C",
       "player_key": "422.p.11662",
       "percent_owned": 82,
+      "percent_owned_delta": 0,
       "player_name": "Jonah Heim",
       "ranks": {
         "next7Days": 907,
@@ -48,6 +49,7 @@
       "percent_started": 97,
       "injury_status": "Healthy",
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "is_undroppable": true
     },
     {
@@ -104,6 +106,7 @@
       "is_starting": 1,
       "player_key": "422.p.9517",
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "ranks": {
         "last30Days": 211,
         "projectedWeek": -1,
@@ -134,6 +137,7 @@
       "eligible_positions": ["OF", "Util"],
       "is_playing": true,
       "percent_owned": 29,
+      "percent_owned_delta": 0,
       "percent_started": 26,
       "player_name": "Ian Happ",
       "is_starting": 1
@@ -155,6 +159,7 @@
         "next7Days": 156
       },
       "percent_owned": 60,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "is_editable": true,
       "player_key": "422.p.11866",
@@ -162,6 +167,7 @@
     },
     {
       "percent_owned": 25,
+      "percent_owned_delta": 0,
       "player_name": "Jake McCarthy",
       "selected_position": "OF",
       "injury_status": "Healthy",
@@ -184,6 +190,7 @@
     },
     {
       "percent_owned": 98,
+      "percent_owned_delta": 0,
       "is_playing": true,
       "ranks": {
         "next4Weeks": -1,
@@ -211,6 +218,7 @@
       "player_name": "Carlos Correa",
       "is_editable": true,
       "percent_owned": 37,
+      "percent_owned_delta": 0,
       "is_undroppable": false,
       "selected_position": "Util",
       "injury_status": "Healthy",
@@ -252,6 +260,7 @@
       "is_undroppable": false,
       "player_key": "422.p.12351",
       "percent_owned": 23,
+      "percent_owned_delta": 0,
       "selected_position": "BN",
       "ranks": {
         "last4Weeks": -1,
@@ -282,6 +291,7 @@
       "injury_status": "Healthy",
       "is_undroppable": false,
       "percent_owned": 21,
+      "percent_owned_delta": 0,
       "ranks": {
         "last30Days": 353,
         "projectedWeek": -1,
@@ -305,6 +315,7 @@
       "eligible_positions": ["SP", "P"],
       "is_editable": true,
       "percent_owned": 92,
+      "percent_owned_delta": 0,
       "is_playing": true,
       "injury_status": "Healthy",
       "player_name": "Dylan Cease",
@@ -323,6 +334,7 @@
       "selected_position": "SP",
       "player_name": "Brayan Bello",
       "percent_owned": 34,
+      "percent_owned_delta": 0,
       "ranks": {
         "restOfSeason": 474,
         "next7Days": 155,
@@ -356,6 +368,7 @@
       "player_key": "422.p.10860",
       "injury_status": "Healthy",
       "percent_owned": 37,
+      "percent_owned_delta": 0,
       "percent_started": 37
     },
     {
@@ -377,6 +390,7 @@
       "is_playing": true,
       "is_undroppable": false,
       "percent_owned": 4,
+      "percent_owned_delta": 0,
       "percent_started": 4,
       "is_starting": "N/A"
     },
@@ -394,6 +408,7 @@
       },
       "player_key": "422.p.11014",
       "percent_owned": 60,
+      "percent_owned_delta": 0,
       "is_undroppable": false,
       "is_editable": true,
       "injury_status": "Healthy",
@@ -405,6 +420,7 @@
     {
       "eligible_positions": ["SP", "P"],
       "percent_owned": 88,
+      "percent_owned_delta": 0,
       "ranks": {
         "restOfSeason": 125,
         "next7Days": 195,
@@ -426,6 +442,7 @@
     },
     {
       "percent_owned": 38,
+      "percent_owned_delta": 0,
       "ranks": {
         "last30Days": 30,
         "projectedWeek": -1,
@@ -464,6 +481,7 @@
       "player_name": "Shane McClanahan",
       "is_editable": true,
       "percent_owned": 97,
+      "percent_owned_delta": 0,
       "is_undroppable": false,
       "selected_position": "P",
       "percent_started": 73
@@ -474,6 +492,7 @@
       "is_playing": true,
       "is_editable": false,
       "percent_owned": 2,
+      "percent_owned_delta": 0,
       "eligible_positions": ["SP", "RP", "P", "IL"],
       "ranks": {
         "next7Days": 2358,
@@ -509,6 +528,7 @@
       "is_undroppable": false,
       "selected_position": "BN",
       "percent_owned": 18,
+      "percent_owned_delta": 0,
       "is_starting": "N/A",
       "percent_started": 12
     },
@@ -517,6 +537,7 @@
       "is_undroppable": false,
       "is_starting": 1,
       "percent_owned": 27,
+      "percent_owned_delta": 0,
       "player_key": "422.p.9558",
       "selected_position": "IL",
       "ranks": {
@@ -539,6 +560,7 @@
       "is_editable": true,
       "is_undroppable": false,
       "percent_owned": 32,
+      "percent_owned_delta": 0,
       "is_playing": true,
       "player_name": "Oneil Cruz",
       "player_key": "422.p.11370",
@@ -563,6 +585,7 @@
       "player_key": "422.p.9585",
       "is_starting": "N/A",
       "percent_owned": 94,
+      "percent_owned_delta": 0,
       "eligible_positions": ["SP", "P", "IL"],
       "is_undroppable": false,
       "ranks": {
@@ -582,6 +605,7 @@
       "injury_status": "15-Day Injured List",
       "is_playing": true,
       "percent_owned": 40,
+      "percent_owned_delta": 0,
       "player_key": "422.p.8918",
       "is_editable": true,
       "eligible_positions": ["SP", "P", "IL"],

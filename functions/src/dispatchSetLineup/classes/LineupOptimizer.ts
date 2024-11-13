@@ -16,13 +16,13 @@ const SCORE_THRESHOLD = 6;
 
 export class LineupOptimizer {
   private team: Team;
-  private originalPlayerPositions: { [key: string]: string };
-  private deltaPlayerPositions: { [key: string]: string };
+  private originalPlayerPositions: { [position: string]: string };
+  private deltaPlayerPositions: { [position: string]: string };
   private _playerTransactions: PlayerTransactions;
   private _addCandidates: PlayerCollection | undefined;
 
   public verbose = false;
-  private logInfo(...args: any[]) {
+  private logInfo(...args: unknown[]) {
     if (this.verbose) logger.info(...args);
   }
 
@@ -122,32 +122,30 @@ export class LineupOptimizer {
     return null;
   }
 
-  public set addCandidates(addCandidates: IPlayer[]) {
+  public set addCandidates(candidates: IPlayer[]) {
     assert(
-      addCandidates.length > 0,
+      candidates.length > 0,
       "addCandidates must have at least one player"
     );
 
-    const pendingAddKeys: string[] = this.team.pendingAddPlayerKeys;
-    const filteredCandidates = addCandidates.filter(
-      (player) => !pendingAddKeys.includes(player.player_key)
-    );
+    const addCandidates = new PlayerCollection(candidates);
 
-    this._addCandidates = new PlayerCollection(filteredCandidates);
-    this._addCandidates.ownershipScoreFunction =
-      this.team.ownershipScoreFunction;
+    addCandidates.ownershipScoreFunction = this.team.ownershipScoreFunction;
 
-    this._addCandidates.filterPlayers(
+    addCandidates.filterPlayers(
       (player) =>
-        !pendingAddKeys.includes(player.player_key) && !player.isLTIR()
+        !this.team.pendingAddPlayerKeys.includes(player.player_key) &&
+        !player.isLTIR()
     );
     if (this.team.allow_waiver_adds === false) {
-      this._addCandidates.filterPlayers(
+      addCandidates.filterPlayers(
         (player) => player.ownership?.ownership_type !== "waivers"
       );
     }
 
-    this._addCandidates.sortDescByOwnershipScoreAndRemoveDuplicates();
+    addCandidates.sortDescByOwnershipScoreAndRemoveDuplicates();
+
+    this._addCandidates = addCandidates;
   }
 
   public get addCandidates(): PlayerCollection | undefined {
@@ -353,8 +351,8 @@ export class LineupOptimizer {
     );
 
     return {
-      baseDropCandidates: [...baseDropCandidates],
-      baseAddCandidates: [...baseAddCandidates],
+      baseDropCandidates,
+      baseAddCandidates,
     };
   }
 
@@ -378,6 +376,7 @@ export class LineupOptimizer {
       );
     let areCriticalPositionsReplaced: boolean;
 
+    this.logInfo("Team critical positions", teamCriticalPositions);
     this.logInfo(`Current add candidate ${playerToAdd.player_name}`);
     this.logInfo("addPlayerCriticalPositions", addPlayerCriticalPositions);
 
