@@ -11,6 +11,7 @@ import {
 import {
   getCurrentPacificNumDay,
   getPacificTimeDateString,
+  isTodayPacific,
 } from "../../common/services/utilities.service.js";
 import { putLineupChanges } from "../../common/services/yahooAPI/yahooAPI.service.js";
 import {
@@ -46,21 +47,27 @@ export async function setUsersLineup(
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
-  if (firestoreTeams.length === 0) {
+
+  const isNotPaused = (team: ITeamFirestore) =>
+    !isTodayPacific(team.lineup_paused_at);
+
+  const firestoreTeamsToSet = firestoreTeams.filter(isNotPaused);
+
+  if (firestoreTeamsToSet.length === 0) {
     logger.log(`No teams for user ${uid}`);
     return;
   }
 
   const topAvailablePlayersPromise = getTopAvailablePlayers(
-    firestoreTeams,
+    firestoreTeamsToSet,
     uid
   );
   const initStartingPlayersPromise =
-    initializeGlobalStartingPlayers(firestoreTeams);
+    initializeGlobalStartingPlayers(firestoreTeamsToSet);
 
   const postponedTeams = await initializePostponedTeams();
   let usersTeams: readonly ITeamOptimizer[] = await fetchRostersFromYahoo(
-    firestoreTeams.map((t) => t.team_key),
+    firestoreTeamsToSet.map((t) => t.team_key),
     uid,
     "",
     postponedTeams
@@ -68,14 +75,19 @@ export async function setUsersLineup(
   if (usersTeams.length === 0) {
     return;
   }
-  usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
-  patchTeamChangesInFirestore(usersTeams, firestoreTeams).catch(logger.error); // don't await
+  usersTeams = enrichTeamsWithFirestoreSettings(
+    usersTeams,
+    firestoreTeamsToSet
+  );
+  patchTeamChangesInFirestore(usersTeams, firestoreTeamsToSet).catch(
+    logger.error
+  ); // don't await
 
   const topAvailablePlayerCandidates: TopAvailablePlayers =
     await topAvailablePlayersPromise;
   usersTeams = await processTransactionsForIntradayTeams(
     usersTeams,
-    firestoreTeams,
+    firestoreTeamsToSet,
     topAvailablePlayerCandidates,
     uid,
     postponedTeams
@@ -86,7 +98,7 @@ export async function setUsersLineup(
 
   await processTransactionsForNextDayTeams(
     usersTeams,
-    firestoreTeams,
+    firestoreTeamsToSet,
     topAvailablePlayerCandidates,
     uid
   );

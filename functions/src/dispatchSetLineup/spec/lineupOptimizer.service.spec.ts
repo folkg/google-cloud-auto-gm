@@ -15,6 +15,7 @@ import * as LineupBuilderService from "../../common/services/yahooAPI/yahooLineu
 import * as TopAvailablePlayersService from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 import * as ScheduleSetLineupService from "../../scheduleSetLineup/services/scheduleSetLineup.service.js";
 import * as positionalScarcityService from "../../calcPositionalScarcity/services/positionalScarcity.service";
+import spacetime from "spacetime";
 
 // mock firebase-admin
 vi.mock("firebase-admin/firestore", () => {
@@ -1436,5 +1437,132 @@ describe("Test Errors thrown in LineupBuilderService by API service", () => {
     );
 
     expect(spyPostRosterAddDropTransaction).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe("Paused teams", () => {
+  it("sets the lineup if paused is off", async () => {
+    const uid = "testUID";
+    const teams = [
+      { team_key: "419.l.28340.t.1", lineup_paused_at: -1 },
+      { team_key: "418.l.201581.t.1" },
+    ];
+
+    const spyFetchRostersFromYahoo = vi
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockResolvedValue([]);
+    vi.spyOn(yahooAPI, "getTopAvailablePlayers").mockResolvedValue({});
+
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledWith(
+      [teams[0].team_key, teams[1].team_key],
+      uid,
+      "",
+      new Set()
+    );
+  });
+
+  it("does not set any lineups if paused is today for all", async () => {
+    const uid = "testUID";
+    const noonToday = spacetime
+      .now("Canada/Pacific")
+      .hour(12)
+      .minute(0)
+      .second(0).epoch;
+
+    const teams = [
+      { team_key: "419.l.28340.t.1", lineup_paused_at: noonToday },
+      { team_key: "418.l.201581.t.1", lineup_paused_at: noonToday },
+    ];
+
+    const spyFetchRostersFromYahoo = vi
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockResolvedValue([]);
+
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).not.toHaveBeenCalled();
+  });
+
+  it("sets only the lineups that are not paused", async () => {
+    const uid = "testUID";
+    const noonToday = spacetime
+      .now("Canada/Pacific")
+      .hour(12)
+      .minute(0)
+      .second(0).epoch;
+
+    const teams = [
+      { team_key: "419.l.28340.t.1", lineup_paused_at: noonToday },
+      { team_key: "418.l.201581.t.1", lineup_paused_at: -1 },
+    ];
+    const spyFetchRostersFromYahoo = vi
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockResolvedValue([]);
+
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledWith(
+      [teams[1].team_key],
+      uid,
+      "",
+      new Set()
+    );
+  });
+
+  it("sets only the lineups that have not specified a paused date", async () => {
+    const uid = "testUID";
+    const noonToday = spacetime
+      .now("Canada/Pacific")
+      .hour(12)
+      .minute(0)
+      .second(0).epoch;
+
+    const teams = [
+      { team_key: "419.l.28340.t.1" },
+      { team_key: "418.l.201581.t.1", lineup_paused_at: noonToday },
+    ];
+    const spyFetchRostersFromYahoo = vi
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockResolvedValue([]);
+
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledWith(
+      [teams[0].team_key],
+      uid,
+      "",
+      new Set()
+    );
+  });
+
+  it("sets the lineups if paused was yesterday", async () => {
+    const uid = "testUID";
+    const noonToday = spacetime
+      .now("Canada/Pacific")
+      .hour(12)
+      .minute(0)
+      .second(0).epoch;
+
+    const yesterday = spacetime
+      .now("Canada/Pacific")
+      .subtract(1, "day")
+      .hour(12)
+      .minute(0)
+      .second(0).epoch;
+
+    const teams = [
+      { team_key: "419.l.28340.t.1", lineup_paused_at: noonToday },
+      { team_key: "418.l.201581.t.1", lineup_paused_at: yesterday },
+    ];
+
+    const spyFetchRostersFromYahoo = vi
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockResolvedValue([]);
+
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledWith(
+      [teams[1].team_key],
+      uid,
+      "",
+      new Set()
+    );
   });
 });
