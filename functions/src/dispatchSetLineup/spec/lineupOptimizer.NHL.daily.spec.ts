@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { assert, describe, expect, test, vi } from "vitest";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import * as yahooStartingPlayerService from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
@@ -39,10 +39,11 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(rosterModification?.newPlayerPositions).toEqual({
+    assert(rosterModification?.newPlayerPositions, "No roster modification");
+    expect(rosterModification.newPlayerPositions).toEqual({
       "419.p.3737": "C",
     });
-    expect(Object.values(rosterModification?.newPlayerPositions)).not.toContain(
+    expect(Object.values(rosterModification.newPlayerPositions)).not.toContain(
       "BN"
     );
   });
@@ -131,39 +132,40 @@ describe("Test LineupOptimizer Class NHL Daily", function () {
     const rosterModification = lo.lineupChanges;
     const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
     expect(isSuccessfullyOptimized).toEqual(true);
-    expect(Object.values(rosterModification?.newPlayerPositions)).not.toContain(
+    assert(rosterModification?.newPlayerPositions, "No roster modification");
+    expect(Object.values(rosterModification.newPlayerPositions)).not.toContain(
       "BN"
     );
     expect(
-      rosterModification?.newPlayerPositions["419.p.6370"]
+      rosterModification.newPlayerPositions["419.p.6370"]
     ).not.toBeDefined(); // on IR+, should not be moved
     expect(
-      Object.values(rosterModification?.newPlayerPositions).filter(
+      Object.values(rosterModification.newPlayerPositions).filter(
         (v) => v === "C"
       ).length
     ).toEqual(2);
     expect(
-      Object.values(rosterModification?.newPlayerPositions).filter(
+      Object.values(rosterModification.newPlayerPositions).filter(
         (v) => v === "LW"
       ).length
     ).toEqual(2);
     expect(
-      Object.values(rosterModification?.newPlayerPositions).filter(
+      Object.values(rosterModification.newPlayerPositions).filter(
         (v) => v === "RW"
       ).length
     ).toEqual(2);
     expect(
-      Object.values(rosterModification?.newPlayerPositions).filter(
+      Object.values(rosterModification.newPlayerPositions).filter(
         (v) => v === "D"
       ).length
     ).toEqual(4);
     expect(
-      Object.values(rosterModification?.newPlayerPositions).filter(
+      Object.values(rosterModification.newPlayerPositions).filter(
         (v) => v === "Util"
       ).length
     ).toEqual(3);
     expect(
-      Object.values(rosterModification?.newPlayerPositions).filter(
+      Object.values(rosterModification.newPlayerPositions).filter(
         (v) => v === "G"
       ).length
     ).toEqual(2);
