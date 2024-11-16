@@ -11,7 +11,7 @@ import {
   union,
   literal,
 } from "superstruct";
-import { Player } from "./Player";
+import { Player } from "./Player.js";
 
 export const Leagues = union([
   literal("mlb"),
