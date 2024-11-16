@@ -24,6 +24,8 @@ import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service.js
 import { RevokedRefreshTokenError } from "./errors.js";
 import { revokeRefreshToken } from "./revokeRefreshToken.service.js";
 import { ScarcityOffsetsCollection } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import { FirestoreTeam } from "../../interfaces/Team.js";
+import { assert } from "superstruct";
 
 if (getApps().length === 0) {
   initializeApp();
@@ -145,9 +147,11 @@ export async function fetchTeamsFirestore(
       .where("end_date", ">=", Date.now())
       .get();
 
-    return teamsSnapshot.docs.map(
-      (doc) => ({ team_key: doc.id, ...doc.data() } as ITeamFirestore)
-    );
+    return teamsSnapshot.docs.map((doc) => {
+      const team = doc.data();
+      assert(team, FirestoreTeam);
+      return team;
+    });
   } catch (error) {
     logger.error(`Error in fetchTeamsFirestore for User: ${uid}`, error);
     throw new Error(`Error fetching teams from Firebase. User: ${uid}`);

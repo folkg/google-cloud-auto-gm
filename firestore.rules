@@ -8,9 +8,9 @@ service cloud.firestore {
       	allow read: if request.auth.uid == userId;
         // creating and deleting can still be done by asmin SDK
         allow create, delete: if false;
-        // users can only update a single field on their team, and only if their team is_approved (paid)
+        // users can only update specific fields on their team, and only if their team is_approved (paid)
         function isUpdateToSettingField() {
-    			return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_setting_lineups']);
+    			return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_setting_lineups', 'lineup_paused_at']);
 				}
     		allow update: if isUpdateToSettingField() && resource.data.is_subscribed == true && request.auth.uid == userId;
     	}

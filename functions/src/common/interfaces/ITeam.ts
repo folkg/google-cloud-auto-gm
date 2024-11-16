@@ -31,6 +31,7 @@ interface OptionsTeam {
   allow_waiver_adds: boolean;
   automated_transaction_processing?: boolean;
   last_updated: number;
+  lineup_paused_at?: number;
 }
 
 export interface ITeamFirestore extends CommonTeam, OptionsTeam {
@@ -109,6 +110,7 @@ export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
     allow_waiver_adds: false,
     automated_transaction_processing: false,
     last_updated: -1,
+    lineup_paused_at: undefined,
   };
 
   return {

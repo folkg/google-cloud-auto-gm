@@ -8,7 +8,7 @@ import {
 import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service.js";
 
 export const fetchuserteams = onCall(
-  async (request): Promise<ITeamAngular[]> => {
+  async (request): Promise<ITeamAngular[] & Partial<ITeamFirestore>[]> => {
     const uid = request.auth?.uid;
     if (!uid) {
       throw new HttpsError(

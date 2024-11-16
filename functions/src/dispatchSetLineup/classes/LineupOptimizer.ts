@@ -15,10 +15,10 @@ import { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/serv
 const SCORE_THRESHOLD = 6;
 
 export class LineupOptimizer {
-  private team: Team;
-  private originalPlayerPositions: { [position: string]: string };
-  private deltaPlayerPositions: { [position: string]: string };
-  private _playerTransactions: PlayerTransactions;
+  private readonly team: Team;
+  private readonly originalPlayerPositions: { [playerKey: string]: string };
+  private deltaPlayerPositions: { [playerKey: string]: string };
+  private readonly _playerTransactions: PlayerTransactions;
   private _addCandidates: PlayerCollection | undefined;
 
   public verbose = false;
@@ -51,6 +51,7 @@ export class LineupOptimizer {
       this.logInfo(`no players to optimize for team ${this.team.team_key}`);
       return;
     }
+
     this.logInfo("optimizing starting lineup for team", this.team.team_key);
 
     this.resolveOverfilledPositions();
@@ -67,10 +68,10 @@ export class LineupOptimizer {
     );
 
     function diffPlayerPositionDictionary(
-      originalPlayerPositions: { [key: string]: string },
-      finalPlayerPositions: { [key: string]: string }
+      originalPlayerPositions: { [playerKey: string]: string },
+      finalPlayerPositions: { [playerKey: string]: string }
     ) {
-      const result: { [key: string]: string } = {};
+      const result: { [playerKey: string]: string } = {};
       Object.keys(originalPlayerPositions).forEach((playerKey) => {
         if (
           originalPlayerPositions[playerKey] !== finalPlayerPositions[playerKey]
@@ -83,7 +84,7 @@ export class LineupOptimizer {
   }
 
   private createPlayerPositionDictionary(players: Player[]) {
-    const result: { [key: string]: string } = {};
+    const result: { [playerKey: string]: string } = {};
     players.forEach((player) => {
       result[player.player_key] = player.selected_position;
     });
@@ -106,7 +107,7 @@ export class LineupOptimizer {
     const overfilledPositions = this.team.overfilledPositions;
     for (const position of overfilledPositions) {
       // this.team.unfilledPositionCounter is recalculated on each call based on changes within loop
-      while (this.team.unfilledPositionCounter?.[position] < 0) {
+      while ((this.team.unfilledPositionCounter[position] ?? 0) < 0) {
         const worstPlayerAtPosition = Team.sortAscendingByStartScore(
           this.team.getPlayersAt(position)
         )[0];

@@ -107,6 +107,15 @@ export function getCurrentPacificNumDay(): number {
   return spacetime.now("Canada/Pacific").day();
 }
 
+export function isTodayPacific(timestamp: number | undefined): boolean {
+  if (timestamp === undefined || timestamp === -1) {
+    return false;
+  }
+  const now = spacetime.now("Canada/Pacific");
+  const date = spacetime(timestamp, "Canada/Pacific");
+  return now.isSame(date, "day");
+}
+
 /**
  * Return now() as an epoch number.
  *
