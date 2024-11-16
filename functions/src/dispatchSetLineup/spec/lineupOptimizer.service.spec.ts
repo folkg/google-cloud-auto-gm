@@ -1533,6 +1533,53 @@ describe("Paused teams", () => {
     );
   });
 
+  it("doesn't set the linup if paused late in another timezone", async () => {
+    const uid = "testUID";
+    const noonEastern = spacetime
+      .now("Canada/Eastern")
+      .hour(12)
+      .minute(0)
+      .second(0);
+    const midnightEastern = noonEastern.add(14, "hours");
+
+    const teams = [
+      { team_key: "419.l.28340.t.1", lineup_paused_at: noonEastern.epoch },
+      { team_key: "418.l.201581.t.1", lineup_paused_at: midnightEastern.epoch },
+    ];
+    const spyFetchRostersFromYahoo = vi
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockResolvedValue([]);
+
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).not.toHaveBeenCalled();
+  });
+
+  it("sets the lineup if it was paused early in another timezone", async () => {
+    const uid = "testUID";
+    const noonEastern = spacetime
+      .now("Canada/Eastern")
+      .hour(12)
+      .minute(0)
+      .second(0);
+    const twoAmEastern = noonEastern.subtract(10, "hours");
+
+    const teams = [
+      { team_key: "419.l.28340.t.1", lineup_paused_at: twoAmEastern.epoch },
+      { team_key: "418.l.201581.t.1", lineup_paused_at: noonEastern.epoch },
+    ];
+    const spyFetchRostersFromYahoo = vi
+      .spyOn(LineupBuilderService, "fetchRostersFromYahoo")
+      .mockResolvedValue([]);
+
+    await setUsersLineup(uid, teams as ITeamFirestore[]);
+    expect(spyFetchRostersFromYahoo).toHaveBeenCalledWith(
+      [teams[0].team_key],
+      uid,
+      "",
+      new Set()
+    );
+  });
+
   it("sets the lineups if paused was yesterday", async () => {
     const uid = "testUID";
     const noonToday = spacetime
