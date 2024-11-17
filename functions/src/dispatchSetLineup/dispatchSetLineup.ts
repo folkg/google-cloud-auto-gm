@@ -10,10 +10,8 @@ export const taskQueueConfig = {
     maxDoublings: 4,
   },
   rateLimits: {
-    // No problems with Yahoo API when we had 60 concurrent dispatches
-    // Problems when it jumped to 250 concurrent
-    maxConcurrentDispatches: 120,
-    maxDispatchesPerSecond: 60,
+    maxDispatchesPerSecond: 5,
+    maxConcurrentDispatches: 40,
   },
 };
 
