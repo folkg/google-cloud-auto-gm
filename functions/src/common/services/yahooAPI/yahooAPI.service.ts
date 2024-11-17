@@ -18,6 +18,7 @@ import {
   httpPutAxios,
 } from "./yahooHttp.service.js";
 import { YahooAccessTokenResponse } from "./interfaces/YahooAccessTokenResponse.js";
+import pLimit from "p-limit";
 
 dotenv.config();
 
@@ -273,6 +274,9 @@ export async function putLineupChanges(
   lineupChanges: LineupChanges[],
   uid: string
 ): Promise<void> {
+  const maxConcurrentAPICalls = 6;
+  const limit = pLimit(maxConcurrentAPICalls);
+
   const promises: Promise<void>[] = [];
 
   for (const lineupChange of lineupChanges) {
@@ -296,7 +300,7 @@ export async function putLineupChanges(
 
       const XML_NAMESPACE = "fantasy_content";
       const xmlBody = js2xmlparser.parse(XML_NAMESPACE, data);
-      promises.push(putRosterChangePromise(uid, teamKey, xmlBody));
+      promises.push(limit(() => putRosterChangePromise(uid, teamKey, xmlBody)));
     }
   }
 
