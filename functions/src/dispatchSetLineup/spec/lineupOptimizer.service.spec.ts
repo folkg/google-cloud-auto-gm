@@ -18,17 +18,14 @@ import * as positionalScarcityService from "../../calcPositionalScarcity/service
 import spacetime from "spacetime";
 
 // mock firebase-admin
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
 
 // mock initialize starting goalies/pitchers
 vi.mock("../../common/services/yahooAPI/yahooStartingPlayer.service", () => ({

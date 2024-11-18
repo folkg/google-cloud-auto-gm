@@ -4,18 +4,14 @@ import * as firestoreService from "../../common/services/firebase/firestore.serv
 import { scheduleSetLineup } from "../services/scheduleSetLineup.service.js";
 import * as schedulingService from "../services/scheduling.service.js";
 
-// mock firebase-admin
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
 
 // set up mocks
 const mockLeaguesToSetLineupsFor = vi.spyOn(

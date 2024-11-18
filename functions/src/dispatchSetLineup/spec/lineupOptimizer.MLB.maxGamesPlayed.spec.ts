@@ -2,18 +2,14 @@ import { describe, expect, it, test, vi } from "vitest";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 
-// mock firebase-admin
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
 
 describe("Test LineupOptimizer Class MLB with Max Games Played limits all positions above 0.9 threshold", function () {
   test("Already optimal", function () {

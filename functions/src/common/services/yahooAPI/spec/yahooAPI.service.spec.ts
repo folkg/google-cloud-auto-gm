@@ -6,17 +6,14 @@ import { describe, expect, it, vi } from "vitest";
 import { TPlayer } from "../../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
 import { AxiosError } from "axios";
 
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
 
 describe("YahooAPI Service", () => {
   it("should call API to drop players", async () => {

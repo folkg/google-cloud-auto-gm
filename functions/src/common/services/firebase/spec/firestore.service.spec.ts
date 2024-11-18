@@ -3,8 +3,8 @@ import { RevokedRefreshTokenError } from "../errors.js";
 import { loadYahooAccessToken } from "../firestore.service.js";
 
 // Mock the necessary dependencies
-vi.mock("firebase-admin/firestore", () => {
-  const getFirestore = vi.fn(() => ({
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({
     collection: vi.fn(() => ({
       doc: vi.fn(() => ({
         get: vi.fn().mockResolvedValue({
@@ -15,19 +15,14 @@ vi.mock("firebase-admin/firestore", () => {
         }),
       })),
     })),
-  }));
+    settings: vi.fn(),
+  })),
+}));
 
-  return {
-    getFirestore,
-  };
-});
-
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
 
 describe("loadYahooAccessToken", () => {
   it('should throw RevokedRefreshTokenError when refresh token is "-1"', async () => {

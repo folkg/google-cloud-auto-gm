@@ -9,17 +9,14 @@ import * as yahooTopAvailablePlayersBuilder from "../../common/services/yahooAPI
 import { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service";
 import * as positionalScarcityService from "../../calcPositionalScarcity/services/positionalScarcity.service";
 
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
 
 describe.todo("test getTransactions and postTransactions functions", () => {});
 
