@@ -31,6 +31,7 @@ if (getApps().length === 0) {
   initializeApp();
 }
 export const db = getFirestore();
+db.settings({ ignoreUndefinedProperties: true });
 
 /**
  * Load the access token from DB, or refresh from Yahoo if expired

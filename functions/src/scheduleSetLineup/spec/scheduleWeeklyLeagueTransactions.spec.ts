@@ -5,17 +5,14 @@ import * as firestoreService from "../../common/services/firebase/firestore.serv
 import { scheduleWeeklyLeagueTransactions } from "../services/scheduleWeeklyLeagueTansactions.service.js";
 
 // mock firebase-admin
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
 
 const mockQueue = {
   enqueue: vi.fn(() => Promise.resolve()),

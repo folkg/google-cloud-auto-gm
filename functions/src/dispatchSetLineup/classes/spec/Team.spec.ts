@@ -2,17 +2,15 @@ import { describe, expect, it, test, vi } from "vitest";
 import { Team } from "../Team.js";
 import spacetime from "spacetime";
 
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
-vi.mock("firebase-admin/app", () => {
-  return {
-    getApps: vi.fn(() => ["null"]),
-    initializeApp: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
+vi.mock("firebase-admin/app", () => ({
+  getApps: vi.fn(() => ["null"]),
+  initializeApp: vi.fn(),
+}));
+
 describe("Test Team Class", () => {
   it("should remove IL eligible position from players in pending transactions", () => {
     const teamJSON = require("./MLBpendingTransactions.json");

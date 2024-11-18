@@ -3,11 +3,10 @@ import * as yahooAPIService from "../yahooAPI.service.js";
 import { fetchTopAvailablePlayersFromYahoo } from "../yahooTopAvailablePlayersBuilder.service.js";
 
 // mock firebase-admin
-vi.mock("firebase-admin/firestore", () => {
-  return {
-    getFirestore: vi.fn(),
-  };
-});
+vi.mock("firebase-admin/firestore", () => ({
+  getFirestore: vi.fn(() => ({ settings: vi.fn() })),
+}));
+
 vi.mock("firebase-admin/app", () => {
   return {
     getApps: vi.fn(() => ["null"]),
