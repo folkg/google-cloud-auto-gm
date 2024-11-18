@@ -24,7 +24,7 @@ import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service.js
 import { RevokedRefreshTokenError } from "./errors.js";
 import { revokeRefreshToken } from "./revokeRefreshToken.service.js";
 import { ScarcityOffsetsCollection } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
-import { FirestoreTeam } from "../../interfaces/Team.js";
+import { FirestoreTeam, type ClientTeam } from "../../interfaces/Team.js";
 import { assert } from "superstruct";
 
 if (getApps().length === 0) {
@@ -243,24 +243,30 @@ export async function getTomorrowsActiveWeeklyTeams() {
  * @param {ITeamAngular[]} missingTeams - Teams that are in Yahoo but not in Firestore
  * @param {ITeamFirestore[]} extraTeams - Teams that are in Firestore but not in Yahoo
  * @param {string} uid - The user id
+ * @return {Promise<ClientTeam[]>} - The teams that were synced
  */
-export async function syncTeamsInFirebase(
+export async function syncTeamsInFirestore(
   missingTeams: ITeamAngular[],
   extraTeams: ITeamFirestore[],
   uid: string
-) {
-  const batch = db.batch();
+): Promise<ClientTeam[]> {
+  const result: ClientTeam[] = [];
 
   const collectionPath = `users/${uid}/teams`;
-  for (const mTeam of missingTeams) {
-    if (mTeam.end_date < Date.now()) continue;
+  const batch = db.batch();
 
-    mTeam.uid = uid; // uid is not present in TeamAngular
-    const data: ITeamFirestore = yahooToFirestore(mTeam);
+  for (const mTeam of missingTeams) {
+    if (mTeam.end_date < Date.now()) {
+      continue;
+    }
+
+    const firestoreTeam = yahooToFirestore(mTeam, uid);
 
     const docId = String(mTeam.team_key);
     const docRef = db.collection(collectionPath).doc(docId);
-    batch.set(docRef, data);
+    batch.set(docRef, firestoreTeam);
+
+    result.push({ ...mTeam, ...firestoreTeam });
   }
 
   for (const eTeam of extraTeams) {
@@ -276,6 +282,8 @@ export async function syncTeamsInFirebase(
     logger.info("extraTeams: ", extraTeams);
     throw new Error("Error syncing teams in Firebase.");
   }
+
+  return result;
 }
 
 /**

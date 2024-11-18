@@ -22,10 +22,10 @@ export const Leagues = union([
 
 const CommonTeam = object({
   team_key: string(),
-  game_code: Leagues,
+  game_code: string(), // TODO: Change to Leagues
   start_date: number(),
   end_date: number(),
-  weekly_deadline: string(),
+  weekly_deadline: string(), // TODO: Is this string() | number()?
   roster_positions: record(string(), number()),
   num_teams: number(),
 });
@@ -78,6 +78,8 @@ export const InningsPitched = object({
   projected: number(),
 });
 
+// TODO: Better naming / functions for AngularTeam / ClientTeam.
+// Angular Teams never actually make it to Angular, it is the client team. This is some sort of DTO.
 export const AngularTeam = object({
   ...YahooTeam.schema,
   uid: optional(string()),
@@ -85,10 +87,11 @@ export const AngularTeam = object({
   max_innings_pitched: number(),
   game_name: string(),
   game_season: string(),
-  game_is_over: boolean(),
+  game_is_over: boolean(), // TODO: Is this boolean() | string()?
   team_url: string(),
   team_logo: string(),
   rank: union([string(), number()]),
+  // TODO: I think the below are all nullable?
   points_for: union([string(), number()]),
   points_against: union([string(), number()]),
   points_back: union([string(), number()]),
@@ -98,6 +101,11 @@ export const AngularTeam = object({
     ties: union([string(), number()]),
     percentage: union([string(), number()]),
   }),
+});
+
+export const ClientTeam = object({
+  ...AngularTeam.schema,
+  ...FirestoreTeam.schema,
 });
 
 export const OptimizerTeam = object({
@@ -115,6 +123,7 @@ export type CommonTeam = Infer<typeof CommonTeam>;
 export type FirestoreTeam = Infer<typeof FirestoreTeam>;
 export type YahooTeam = Infer<typeof YahooTeam>;
 export type AngularTeam = Infer<typeof AngularTeam>;
+export type ClientTeam = Infer<typeof ClientTeam>;
 export type OptimizerTeam = Infer<typeof OptimizerTeam>;
 
 export type GamesPlayed = Infer<typeof GamesPlayed>;
