@@ -81,6 +81,6 @@ describe("clientToFirestore", () => {
   };
 
   it("should convert a teamclient object to a teamFirestore object", () => {
-    expect(yahooToFirestore(mockTeam)).toEqual(expectedOutput);
+    expect(yahooToFirestore(mockTeam, "test_uid")).toEqual(expectedOutput);
   });
 });

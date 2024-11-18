@@ -90,9 +90,13 @@ export interface InningsPitched {
  *
  * @export
  * @param {ITeamAngular} team - The team to convert
+ * @param {string} uid - The user id
  * @return {ITeamFirestore} - The converted team
  */
-export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
+export function yahooToFirestore(
+  team: ITeamAngular,
+  uid: string
+): ITeamFirestore {
   const commonTeam: CommonTeam = {
     team_key: team.team_key,
     game_code: team.game_code,
@@ -114,7 +118,7 @@ export function yahooToFirestore(team: ITeamAngular): ITeamFirestore {
   };
 
   return {
-    uid: team.uid ?? "",
+    uid,
     is_subscribed: true,
     is_setting_lineups: false,
     ...commonTeam,
