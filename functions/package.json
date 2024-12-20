@@ -36,7 +36,7 @@
     "firebase-functions": "4.9.0",
     "js2xmlparser": "5.0.0",
     "lodash": "4.17.21",
-    "p-limit": "6.1.0",
+    "p-limit": "6.2.0",
     "spacetime": "7.7.0",
     "superstruct": "2.0.2"
   },
