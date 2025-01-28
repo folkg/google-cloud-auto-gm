@@ -261,6 +261,8 @@ export async function getStartingPlayers(
   }
 }
 
+const MAX_CONCURRENT_PUT_CALLS = 2;
+
 /**
  * Post the roster changes to Yahoo
  *
@@ -274,8 +276,7 @@ export async function putLineupChanges(
   lineupChanges: LineupChanges[],
   uid: string
 ): Promise<void> {
-  const maxConcurrentAPICalls = 6;
-  const limit = pLimit(maxConcurrentAPICalls);
+  const limit = pLimit(MAX_CONCURRENT_PUT_CALLS);
 
   const promises: Promise<void>[] = [];
 
