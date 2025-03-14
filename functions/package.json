@@ -28,7 +28,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "@sendgrid/mail": "8.1.4",
-    "axios": "1.8.2",
+    "axios": "1.8.3",
     "axios-retry": "4.5.0",
     "dotenv": "16.4.7",
     "fast-xml-parser": "4.5.3",
