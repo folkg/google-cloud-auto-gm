@@ -101,9 +101,9 @@ export async function getRostersByTeamID(
   date = "",
 ): Promise<any> {
   const leagueKeysArray: string[] = [];
-  teamKeys.forEach((teamKey) => {
+  for (const teamKey of teamKeys) {
     leagueKeysArray.push(teamKey.split(".t")[0]);
-  });
+  }
   const leagueKeys = leagueKeysArray.join(",");
 
   const url = `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKeys};out=settings/teams;out=transactions,games_played;transactions.types=waiver,pending_trade/roster;date=${date}/players;out=percent_started,percent_owned,ranks,opponent,starting_status;ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks;percent_started.cut_types=diamond;percent_owned.cut_types=diamond?format=json`;
@@ -136,9 +136,9 @@ export async function getTopAvailablePlayers(
   sort: PlayerSort = "sort=R_PO",
 ): Promise<any> {
   const leagueKeysArray: string[] = [];
-  teamKeys.forEach((teamKey) => {
+  for (const teamKey of teamKeys) {
     leagueKeysArray.push(teamKey.split(".t")[0]);
-  });
+  }
 
   const leagueKeys = leagueKeysArray.join(",");
   const url = `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKeys}/players;status=${availabilityStatus};${sort};out=ownership,percent_started,percent_owned,ranks,opponent,starting_status;ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks;percent_started.cut_types=diamond;percent_owned.cut_types=diamond?format=json`;

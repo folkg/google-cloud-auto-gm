@@ -80,9 +80,9 @@ export class PlayerCollection {
 
     const ownershipScoreFunction = this._ownershipScoreFunction;
 
-    this.players.forEach((player) => {
+    for (const player of this.players) {
       player.ownership_score = ownershipScoreFunction(player);
-    });
+    }
   }
 
   public sortDescByOwnershipScoreAndRemoveDuplicates() {

@@ -44,13 +44,13 @@ export async function patchTeamChangesInFirestore(
     }
 
     const differences: { [key: string]: any } = {};
-    sharedKeys.forEach((key) => {
+    for (const key of sharedKeys) {
       const yahooValue = yahooTeam[key as keyof ITeamOptimizer];
       const firestoreValue = firestoreTeam[key as keyof ITeamFirestore];
       if (!isEqual(yahooValue, firestoreValue)) {
         differences[key] = yahooValue;
       }
-    });
+    }
 
     if (Object.keys(differences).length > 0) {
       logger.info(

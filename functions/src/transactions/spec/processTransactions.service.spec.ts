@@ -38,9 +38,9 @@ describe("test mergeTopAvailabePlayers function", () => {
 
     expect(result).toEqual(expectedOutput);
 
-    Object.keys(result).forEach((team) => {
+    for (const team in result) {
       expect(result[team].length).toEqual(50);
-    });
+    }
   });
 
   test("no teams adding players", async () => {

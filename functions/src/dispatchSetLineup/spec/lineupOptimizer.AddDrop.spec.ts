@@ -20,13 +20,13 @@ function getAddDroppedPlayerCounts(playerTransactions: PlayerTransaction[]): {
 } {
   return playerTransactions.reduce(
     (counts, transaction) => {
-      transaction.players.forEach((p) => {
-        if (p.transactionType === "drop") {
+      for (const player of transaction.players) {
+        if (player.transactionType === "drop") {
           counts.droppedCount++;
-        } else if (p.transactionType === "add") {
+        } else if (player.transactionType === "add") {
           counts.addedCount++;
         }
-      });
+      }
       return counts;
     },
     { addedCount: 0, droppedCount: 0 },

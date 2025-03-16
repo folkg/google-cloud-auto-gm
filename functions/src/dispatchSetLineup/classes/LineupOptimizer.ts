@@ -74,22 +74,22 @@ export class LineupOptimizer {
       finalPlayerPositions: { [playerKey: string]: string },
     ) {
       const result: { [playerKey: string]: string } = {};
-      Object.keys(originalPlayerPositions).forEach((playerKey) => {
+      for (const playerKey in originalPlayerPositions) {
         if (
           originalPlayerPositions[playerKey] !== finalPlayerPositions[playerKey]
         ) {
           result[playerKey] = finalPlayerPositions[playerKey];
         }
-      });
+      }
       return result;
     }
   }
 
   private createPlayerPositionDictionary(players: Player[]) {
     const result: { [playerKey: string]: string } = {};
-    players.forEach((player) => {
+    for (const player of players) {
       result[player.player_key] = player.selected_position;
-    });
+    }
     return result;
   }
 
@@ -339,11 +339,11 @@ export class LineupOptimizer {
     );
 
     this.logInfo("Base drop candidates:");
-    baseDropCandidates.forEach((player) =>
+    for (const player of baseDropCandidates) {
       this.logInfo(
         `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`,
-      ),
-    );
+      );
+    }
     const worstDropCandidate: Player | undefined = baseDropCandidates?.[0];
     if (!worstDropCandidate) {
       return { baseDropCandidates: [], baseAddCandidates: [] };
@@ -355,11 +355,11 @@ export class LineupOptimizer {
     );
 
     this.logInfo("Base add candidates:");
-    baseAddCandidates.forEach((player) =>
+    for (const player of baseAddCandidates) {
       this.logInfo(
         `${player.player_name} ${player.ownership_score} ${player.eligible_positions}`,
-      ),
-    );
+      );
+    }
 
     return {
       baseDropCandidates,

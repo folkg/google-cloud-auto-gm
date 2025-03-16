@@ -36,10 +36,10 @@ export async function fetchTopAvailablePlayersFromYahoo(
 
   // create a map of leagueKeys to teamKeys
   const mapLeagueToTeam: { [key: string]: string } = {};
-  teamKeys.forEach((teamKey) => {
+  for (const teamKey of teamKeys) {
     const leagueKey = teamKey.split(".t")[0];
     mapLeagueToTeam[leagueKey] = teamKey;
-  });
+  }
 
   const yahooJSON = await getTopAvailablePlayers(
     teamKeys,

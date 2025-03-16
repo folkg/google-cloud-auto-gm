@@ -395,7 +395,7 @@ async function postTransactionsHelper(
   const results = await Promise.allSettled(allTransactionsPromises);
 
   let error = false;
-  results.forEach((result) => {
+  for (const result of results) {
     if (result.status === "fulfilled") {
       const transaction = result.value;
       transaction && postedTransactions.push(transaction);
@@ -409,7 +409,7 @@ async function postTransactionsHelper(
       );
       failedReasons.push(reason);
     }
-  });
+  }
 
   if (error) {
     throw new Error("Error in postAllTransactions()");
@@ -453,15 +453,15 @@ function stringifyTransactions(transactions: PlayerTransaction[]): string[] {
 
   const groupedTransactions = groupTransactionsByTeam(transactions);
 
-  Object.keys(groupedTransactions).forEach((teamKey) => {
+  for (const teamKey of Object.keys(groupedTransactions)) {
     const teamTransactions = groupedTransactions[teamKey];
     result.push(
       `<strong>${teamTransactions[0].teamName} (${teamTransactions[0].leagueName}):</strong>`,
     );
-    teamTransactions.forEach((t) => {
-      result.push(t.description);
-    });
-  });
+    for (const transaction of teamTransactions) {
+      result.push(transaction.description);
+    }
+  }
 
   return result;
 }
@@ -469,13 +469,13 @@ function stringifyTransactions(transactions: PlayerTransaction[]): string[] {
 function groupTransactionsByTeam(transactions: PlayerTransaction[]) {
   const result: { [key: string]: PlayerTransaction[] } = {};
 
-  transactions.forEach((t) => {
-    if (result[t.teamKey]) {
-      result[t.teamKey].push(t);
+  for (const transaction of transactions) {
+    if (result[transaction.teamKey]) {
+      result[transaction.teamKey].push(transaction);
     } else {
-      result[t.teamKey] = [t];
+      result[transaction.teamKey] = [transaction];
     }
-  });
+  }
 
   return result;
 }
@@ -562,15 +562,15 @@ export async function mergeTopAvailabePlayers(
     restTopAvailablePlayersPromise,
   ]);
 
-  resolvedPlayers.forEach((resolvedPromise: TopAvailablePlayers) => {
-    Object.keys(resolvedPromise).forEach((teamKey) => {
+  for (const resolvedPromise of resolvedPlayers) {
+    for (const teamKey in resolvedPromise) {
       if (Array.isArray(result[teamKey])) {
         result[teamKey].push(...resolvedPromise[teamKey]);
       } else {
         result[teamKey] = resolvedPromise[teamKey];
       }
-    });
-  });
+    }
+  }
 
   return result;
 }

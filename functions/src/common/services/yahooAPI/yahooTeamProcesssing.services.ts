@@ -7,11 +7,11 @@ export function createTransactionArray(transactions: any): any[] {
     return result;
   }
 
-  Object.keys(transactions).forEach((key) => {
+  for (const key in transactions) {
     if (key !== "count") {
       result.push(transactions[key].transaction);
     }
-  });
+  }
   return result;
 }
 
@@ -45,13 +45,12 @@ export function getInningsPitchedArray(
 export function getPositionCounts(leaguesJSON: any, key: string) {
   const result: { [key: string]: number } = {};
 
-  getChild(leaguesJSON[key].league, "settings")[0].roster_positions.forEach(
-    (position: any) => {
-      result[position.roster_position.position] = Number.parseInt(
-        position.roster_position.count,
-      );
-    },
-  );
+  for (const position of getChild(leaguesJSON[key].league, "settings")[0]
+    .roster_positions) {
+    result[position.roster_position.position] = Number.parseInt(
+      position.roster_position.count,
+    );
+  }
 
   return result;
 }

@@ -59,9 +59,9 @@ export default function getPlayersFromRoster(
 
 function getEligiblePositions(player: any) {
   const eligiblePositions: string[] = [];
-  getChild(player[0], "eligible_positions").forEach((position: any) => {
+  for (const position of getChild(player[0], "eligible_positions")) {
     eligiblePositions.push(position.position);
-  });
+  }
   return eligiblePositions;
 }
 
@@ -84,12 +84,12 @@ function getPercentObject(
 
   // if we can get the cut type, then we will return that instead of the general value
   const percentCuts = getChild(percentObject, `${percentType}_cut_types`);
-  percentCuts.forEach((cutType: any) => {
+  for (const cutType of percentCuts) {
     const cutTypeObject = cutType[`${percentType}_cut_type`];
     if (getChild(cutTypeObject, "cut_type") === cut) {
       result = getChild(cutTypeObject, "value");
     }
-  });
+  }
 
   return Number(result ?? 0);
 }

@@ -169,10 +169,10 @@ async function getGameTimesYahoo(
   // get the game timestamp for each game in the response
   const gamesJSON = data.league.games[0];
   const gameTimesSet: number[] = [];
-  gamesJSON.forEach((game) => {
+  for (const game of gamesJSON) {
     const gameStart = Date.parse(game.game.start_time);
     gameTimesSet.push(gameStart);
-  });
+  }
 
   const gameTimesArray = Array.from(new Set(gameTimesSet));
   // use the league as the key for the object
@@ -197,10 +197,11 @@ async function getGameTimesSportsnet(
   const gamesJSON = data.data[0].games;
 
   const gameTimesSet: number[] = [];
-  gamesJSON.forEach((game) => {
+
+  for (const game of gamesJSON) {
     const gameStart = game.details.timestamp * 1000;
     gameTimesSet.push(gameStart);
-  });
+  }
 
   const gameTimesArray = Array.from(new Set(gameTimesSet));
   return { [league]: gameTimesArray };
@@ -238,13 +239,14 @@ async function getPostponedTeamsYahoo(
 
   const gamesJSON = data.league.games[0];
   const postponedTeams: string[] = [];
-  gamesJSON.forEach((game) => {
+
+  for (const game of gamesJSON) {
     if (game.game.game_status.type === "status.type.postponed") {
       logger.info(`Postponed game found for ${league}`, game.game);
       postponedTeams.push(game.game.team_ids[0].away_team_id);
       postponedTeams.push(game.game.team_ids[1].home_team_id);
     }
-  });
+  }
 
   return postponedTeams;
 }
@@ -279,7 +281,7 @@ export function mapUsersToActiveTeams(
   }
 
   const result: Map<string, DocumentData> = new Map();
-  teamsSnapshot?.docs?.forEach((doc) => {
+  for (const doc of teamsSnapshot?.docs ?? []) {
     const team = doc.data();
     const uid = team.uid;
     team.team_key = doc.id;
@@ -294,7 +296,7 @@ export function mapUsersToActiveTeams(
         userTeams.push(team);
       }
     }
-  });
+  }
 
   return result;
 }
@@ -306,7 +308,7 @@ export function enqueueUsersTeams(
 ) {
   const result: any[] = [];
 
-  activeUsers.forEach((teams, uid) => {
+  for (const [uid, teams] of activeUsers) {
     result.push(
       queue.enqueue(
         { uid, teams },
@@ -316,7 +318,7 @@ export function enqueueUsersTeams(
         },
       ),
     );
-  });
+  }
 
   return result;
 }

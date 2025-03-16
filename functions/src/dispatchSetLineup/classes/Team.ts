@@ -55,9 +55,10 @@ export class Team extends PlayerCollection implements Team {
       gamesPlayed: this.games_played,
       inningsPitched: this.innings_pitched,
     });
-    this.players.forEach((player) => {
+
+    for (const player of this.players) {
       player.start_score = playerStartScoreFunction(player);
-    });
+    }
 
     if (this.games_played) {
       this.artificiallyReduceRosterSpots();
@@ -105,7 +106,7 @@ export class Team extends PlayerCollection implements Team {
   }
 
   private processPendingTransactions(): void {
-    this.transactions?.forEach((transaction) => {
+    for (const transaction of this.transactions ?? []) {
       const playersObject = getChild(transaction, "players");
       const isPendingTransaction =
         getChild(transaction, "status") === "pending";
@@ -117,7 +118,7 @@ export class Team extends PlayerCollection implements Team {
           this.changePendingAddDrops(isPendingTransaction, playerInTransaction);
         }
       }
-    });
+    }
   }
 
   private makeTransactionPlayerInelligible(playerInTransaction: any) {
@@ -287,11 +288,11 @@ export class Team extends PlayerCollection implements Team {
 
   public get unfilledPositionCounter(): { [key: string]: number } {
     const result = { ...this.roster_positions };
-    this.players.forEach((player) => {
+    for (const player of this.players) {
       if (result[player.selected_position] !== undefined) {
         result[player.selected_position]--;
       }
-    });
+    }
     return result;
   }
 
@@ -462,9 +463,9 @@ export class Team extends PlayerCollection implements Team {
           Object.keys(compoundPositions).includes(position);
         if (isCompoundPosition) {
           const childPositions: string[] = compoundPositions[position];
-          childPositions.forEach((childPosition) => {
+          for (const childPosition of childPositions) {
             acc[position] += this.roster_positions[childPosition] ?? 0;
-          });
+          }
         }
         return acc;
       },

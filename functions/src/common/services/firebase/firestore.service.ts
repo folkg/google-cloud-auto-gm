@@ -441,9 +441,9 @@ export async function getPositionalScarcityOffsets() {
     }
 
     const offsets: ScarcityOffsetsCollection = {};
-    scarcityOffsetsSnapshot.forEach((doc) => {
+    for (const doc of scarcityOffsetsSnapshot.docs) {
       offsets[doc.id] = doc.data();
-    });
+    }
     return offsets;
   } catch (error) {
     logger.error("Error getting scarcity offsets from Firestore", error);
