@@ -1,7 +1,7 @@
-import { it, describe, expect, beforeEach } from "vitest";
-import { LeagueSpecificScarcityOffsets } from "../../../../calcPositionalScarcity/services/positionalScarcity.service";
+import { beforeEach, describe, expect, it } from "vitest";
+import type { LeagueSpecificScarcityOffsets } from "../../../../calcPositionalScarcity/services/positionalScarcity.service";
 import { calculatePositionalScarcityOffset } from "../../../../common/services/playerScoreFunctions/playerOwnershipScoreFunctions.service";
-import { Player } from "../../../classes/Player";
+import type { Player } from "../../../classes/Player";
 
 describe("playerOwnershipScoreFunctions", () => {
   describe("calculatePositionalScarcityOffset", () => {
@@ -35,7 +35,7 @@ describe("playerOwnershipScoreFunctions", () => {
     it("should not apply a positional scarcity offset if the player is not eligible at any position", () => {
       const resultA = calculatePositionalScarcityOffset(
         player,
-        positionalScarcityOffsets
+        positionalScarcityOffsets,
       );
       expect(resultA).toEqual(0);
     });
@@ -44,7 +44,7 @@ describe("playerOwnershipScoreFunctions", () => {
       player.eligible_positions = ["RB", "BN"];
       const resultA = calculatePositionalScarcityOffset(
         player,
-        positionalScarcityOffsets
+        positionalScarcityOffsets,
       );
       expect(resultA).toEqual(50);
     });
@@ -53,7 +53,7 @@ describe("playerOwnershipScoreFunctions", () => {
       player.eligible_positions = ["RB", "WR", "RB/WR/TE", "BN"];
       const resultA = calculatePositionalScarcityOffset(
         player,
-        positionalScarcityOffsets
+        positionalScarcityOffsets,
       );
       expect(resultA).toEqual(40);
     });

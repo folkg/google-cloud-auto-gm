@@ -1,4 +1,4 @@
-import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
+import type { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 
 export class PlayerTransactions {
   private _transactions: PlayerTransaction[] = [];

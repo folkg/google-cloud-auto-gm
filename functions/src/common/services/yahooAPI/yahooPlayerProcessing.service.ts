@@ -1,4 +1,4 @@
-import { IPlayer, PlayerRanks } from "../../interfaces/IPlayer.js";
+import type { IPlayer, PlayerRanks } from "../../interfaces/IPlayer.js";
 import { getChild, parseStringToInt } from "../utilities.service.js";
 
 /**
@@ -10,7 +10,7 @@ import { getChild, parseStringToInt } from "../utilities.service.js";
  */
 export default function getPlayersFromRoster(
   playersJSON: any,
-  postponedTeams: Set<string> = new Set()
+  postponedTeams: Set<string> = new Set(),
 ): IPlayer[] {
   const result: IPlayer[] = [];
 
@@ -36,7 +36,7 @@ export default function getPlayersFromRoster(
         percent_started: getPercentObject(player, "percent_started"),
         percent_owned: getPercentObject(player, "percent_owned"),
         percent_owned_delta: parseStringToInt(
-          getChild(getChild(player, "percent_owned"), "delta")
+          getChild(getChild(player, "percent_owned"), "delta"),
         ),
         is_starting: getChild(player, "starting_status")
           ? getChild(getChild(player, "starting_status"), "is_starting")
@@ -77,7 +77,7 @@ function getEligiblePositions(player: any) {
 function getPercentObject(
   player: any,
   percentType: string,
-  cut = "diamond"
+  cut = "diamond",
 ): number {
   const percentObject = getChild(player, percentType);
   let result = getChild(percentObject, "value");

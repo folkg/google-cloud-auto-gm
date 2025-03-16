@@ -40,8 +40,8 @@ export function createMock<T>(partial?: Partial<T>): T {
 
         throw new Error(
           `'${String(
-            prop
-          )}' was accessed on a mock object, but the mock implementation is not defined.`
+            prop,
+          )}' was accessed on a mock object, but the mock implementation is not defined.`,
         );
       }
 
@@ -51,7 +51,7 @@ export function createMock<T>(partial?: Partial<T>): T {
 
   return new Proxy(
     (partial ?? {}) as T & { [key: PropertyKey]: unknown },
-    handler
+    handler,
   );
 }
 

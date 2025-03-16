@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 
 vi.mock("firebase-admin/firestore", () => ({
@@ -11,8 +11,8 @@ vi.mock("firebase-admin/app", () => ({
   initializeApp: vi.fn(),
 }));
 
-describe("Test LineupOptimizer Class NFL", function () {
-  it.todo("Optimal Lineup", async function () {
+describe("Test LineupOptimizer Class NFL", () => {
+  it.todo("Optimal Lineup", async () => {
     const roster: ITeamOptimizer = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();

@@ -1,6 +1,6 @@
 import { getApps, initializeApp } from "firebase-admin/app";
-import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
-import { TaskQueue, getFunctions } from "firebase-admin/functions";
+import type { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
+import { type TaskQueue, getFunctions } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { getActiveTeamsForLeagues } from "../../common/services/firebase/firestore.service.js";
 import {
@@ -11,8 +11,8 @@ import {
   enqueueUsersTeams,
   leaguesToSetLineupsFor,
   mapUsersToActiveTeams,
-  setTodaysPostponedTeams,
   setStartingPlayersForToday,
+  setTodaysPostponedTeams,
 } from "./scheduling.service.js";
 
 if (getApps().length === 0) {
@@ -44,7 +44,7 @@ export async function scheduleSetLineup() {
   } catch (error) {
     logger.error(
       `Error fetching teams from Firebase for Leagues: ${leagues.join(", ")}`,
-      error
+      error,
     );
     return;
   }

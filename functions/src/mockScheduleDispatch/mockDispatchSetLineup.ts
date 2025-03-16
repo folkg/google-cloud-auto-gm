@@ -24,7 +24,7 @@ export const mockdispatchsetlineup = onTaskDispatched(
     // approximate the time it takes to process a task (~3200ms from cloud logs, give or take)
     await new Promise((resolve) => setTimeout(resolve, 3500));
     logger.log(
-      `Successfully processed mock task for uid: ${uid} and teams: ${teams}`
+      `Successfully processed mock task for uid: ${uid} and teams: ${teams}`,
     );
-  }
+  },
 );

@@ -1,5 +1,5 @@
 import { getApps, initializeApp } from "firebase-admin/app";
-import { getFunctions, TaskQueue } from "firebase-admin/functions";
+import { type TaskQueue, getFunctions } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { onRequest } from "firebase-functions/v2/https";
 import { getFunctionUrl } from "../common/services/utilities.service.js";
@@ -20,7 +20,7 @@ export const addmocktaskstoqueue = onRequest(async (req, res) => {
   }
 
   // Start enqueuing mock tasks
-  const numTasks = parseInt(req.query.numTasks as string) || 10;
+  const numTasks = Number.parseInt(req.query.numTasks as string) || 10;
   const mockEnqueues: any[] = [];
   for (let i = 0; i < numTasks; i++) {
     const uid = `user_${i}`;

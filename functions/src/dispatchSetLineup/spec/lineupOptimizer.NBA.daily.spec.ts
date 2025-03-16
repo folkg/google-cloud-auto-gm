@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 
 vi.mock("firebase-admin/firestore", () => ({
@@ -11,9 +11,9 @@ vi.mock("firebase-admin/app", () => ({
   initializeApp: vi.fn(),
 }));
 
-describe("Test LineupOptimizer Class NBA Daily", function () {
+describe("Test LineupOptimizer Class NBA Daily", () => {
   // NBA should be very similar to NHL, so we'll just test a few things
-  it("One healthy on IL, one IL on IL, one injured on roster", async function () {
+  it("One healthy on IL, one IL on IL, one injured on roster", async () => {
     const roster: ITeamOptimizer = require("./testRosters/NBA/Daily/1HonIL+1ILonRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
@@ -22,12 +22,12 @@ describe("Test LineupOptimizer Class NBA Daily", function () {
     expect(isSuccessfullyOptimized).toEqual(true);
 
     expect(
-      rosterModification?.newPlayerPositions["419.p.6370"]
+      rosterModification?.newPlayerPositions["419.p.6370"],
     ).not.toBeDefined(); // on IR+, should not be moved
 
     expect(rosterModification?.newPlayerPositions["418.p.5482"]).toBeDefined();
     expect(["IL", "IL+", "BN"]).not.toContain(
-      rosterModification?.newPlayerPositions["418.p.5482"]
+      rosterModification?.newPlayerPositions["418.p.5482"],
     );
     expect(rosterModification?.newPlayerPositions["418.p.5864"]).toBeDefined();
     expect(rosterModification?.newPlayerPositions["418.p.5864"]).toEqual("IL");

@@ -1,11 +1,11 @@
 import assert from "assert";
-import { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
+import type { Player } from "../../classes/Player.js";
+import { HEALTHY_STATUS_LIST } from "../../helpers/constants.js";
+import type { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
 import {
   getMLBStartingPitchers,
   getNHLStartingGoalies,
 } from "../yahooAPI/yahooStartingPlayer.service.js";
-import { Player } from "../../classes/Player.js";
-import { HEALTHY_STATUS_LIST } from "../../helpers/constants.js";
 
 const NOT_PLAYING_FACTOR = 1e-7; // 0.0000001
 const INJURY_FACTOR = 1e-3; // 0.001
@@ -37,7 +37,7 @@ export function playerStartScoreFunctionFactory(args: FactoryArgs) {
       args.seasonTimeProgress,
       args.ownershipScoreFunction,
       gamesPlayed,
-      args.inningsPitched
+      args.inningsPitched,
     );
   } else if (gameCode === "nfl") {
     return scoreFunctionNFL();
@@ -66,7 +66,7 @@ export function scoreFunctionMaxGamesPlayed(
   seasonTimeProgress: number,
   ownershipScoreFunction: (player: Player) => number,
   gamesPlayed: GamesPlayed[],
-  inningsPitched?: InningsPitched
+  inningsPitched?: InningsPitched,
 ): (player: Player) => number {
   // if projected games played is less than churnThreshold, then churn players more freely
   // churnThreshold will be between 0.9 and 1.0 depending on the season time progress
@@ -74,7 +74,7 @@ export function scoreFunctionMaxGamesPlayed(
   return (player: Player) => {
     assert(
       gamesPlayed !== undefined,
-      "gamesPlayed should never be undefined if scoreFunctionMaxGamesPlayed() is called"
+      "gamesPlayed should never be undefined if scoreFunctionMaxGamesPlayed() is called",
     );
 
     const paceKeeper = getPaceKeeper(player);
@@ -124,7 +124,7 @@ export function scoreFunctionMaxGamesPlayed(
               projected: Number.POSITIVE_INFINITY,
               max: 1,
             },
-          }
+          },
         );
     }
 
@@ -216,7 +216,7 @@ export function scoreFunctionMLB(): (player: Player) => number {
 
     const isStartingPitcher =
       player.eligible_positions.some((pos) =>
-        ["P", "SP", "RP"].includes(pos)
+        ["P", "SP", "RP"].includes(pos),
       ) && isStartingPlayer(player, startingPitchers);
 
     const isNonStartingSP =
@@ -270,7 +270,7 @@ function getInitialScore(player: Player): number {
 function applyScoreFactors(
   score: number,
   player: Player,
-  isStartingPlayer = false
+  isStartingPlayer = false,
 ): number {
   let result = applyInjuryScoreFactors(score, player);
   if (!player.is_playing) {

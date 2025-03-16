@@ -1,5 +1,5 @@
-import { IPlayer } from "../../interfaces/IPlayer.js";
-import { ITeamOptimizer } from "../../interfaces/ITeam.js";
+import type { IPlayer } from "../../interfaces/IPlayer.js";
+import type { ITeamOptimizer } from "../../interfaces/ITeam.js";
 import {
   getChild,
   getPacificEndOfDay,
@@ -30,7 +30,7 @@ export async function fetchRostersFromYahoo(
   teamKeys: string[],
   uid: string,
   date = "",
-  postponedTeams?: Set<string>
+  postponedTeams?: Set<string>,
 ): Promise<ITeamOptimizer[]> {
   const result: ITeamOptimizer[] = [];
 
@@ -43,14 +43,14 @@ export async function fetchRostersFromYahoo(
 
   // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const gameKey of Object.keys(gamesJSON).filter(
-    (key) => key !== "count"
+    (key) => key !== "count",
   )) {
     const gameJSON = gamesJSON[gameKey].game;
     const leaguesJSON = getChild(gameJSON, "leagues");
 
     // Loop through each league within the game
     for (const leagueKey of Object.keys(leaguesJSON).filter(
-      (key) => key !== "count"
+      (key) => key !== "count",
     )) {
       const league = leaguesJSON[leagueKey].league;
       const leagueSettings = getChild(league, "settings");
@@ -66,7 +66,7 @@ export async function fetchRostersFromYahoo(
       const rosterPositions = getPositionCounts(leaguesJSON, leagueKey);
       const players: IPlayer[] = getPlayersFromRoster(
         usersTeamRoster[0].players,
-        postponedTeams
+        postponedTeams,
       );
       const gamesPlayedArray = getGamesPlayedArray(usersTeam);
       const inningsPitchedArray = getInningsPitchedArray(usersTeam);
@@ -87,14 +87,14 @@ export async function fetchRostersFromYahoo(
         scoring_type: getChild(usersTeam[0], "scoring_type"),
         current_weekly_adds: parseStringToInt(
           getChild(usersTeam[0], "roster_adds").value,
-          0
+          0,
         ),
         current_season_adds: parseStringToInt(
           getChild(usersTeam[0], "number_of_moves"),
-          0
+          0,
         ),
         max_weekly_adds: parseStringToInt(
-          getChild(leagueSettings, "max_weekly_adds")
+          getChild(leagueSettings, "max_weekly_adds"),
         ),
         max_season_adds: parseStringToInt(getChild(leagueSettings, "max_adds")),
         start_date: getPacificStartOfDay(getChild(league, "start_date")),
@@ -102,7 +102,7 @@ export async function fetchRostersFromYahoo(
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
         waiver_rule: getChild(leagueSettings, "waiver_rule"),
         transactions: createTransactionArray(
-          getChild(usersTeam, "transactions")
+          getChild(usersTeam, "transactions"),
         ),
         ...(gamesPlayedArray && { games_played: gamesPlayedArray }),
         ...(inningsPitchedArray && { innings_pitched: inningsPitchedArray }),

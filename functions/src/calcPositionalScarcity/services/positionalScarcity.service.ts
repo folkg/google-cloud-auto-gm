@@ -4,8 +4,8 @@ import {
   INACTIVE_POSITION_LIST,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants.js";
-import { IPlayer } from "../../common/interfaces/IPlayer.js";
-import { CommonTeam } from "../../common/interfaces/ITeam.js";
+import type { IPlayer } from "../../common/interfaces/IPlayer.js";
+import type { CommonTeam } from "../../common/interfaces/ITeam.js";
 import * as Firestore from "../../common/services/firebase/firestore.service.js";
 import { getChild } from "../../common/services/utilities.service.js";
 import { getTopPlayersGeneral } from "../../common/services/yahooAPI/yahooAPI.service.js";
@@ -34,12 +34,12 @@ export function clearScarcityOffsets() {
 }
 
 export async function getScarcityOffsetsForTeam(
-  team: CommonTeam
+  team: CommonTeam,
 ): Promise<LeagueSpecificScarcityOffsets> {
   const replacementLevels = getReplacementLevels(team);
   return await getLeagueSpecificScarcityOffsets(
     team.game_code,
-    replacementLevels
+    replacementLevels,
   );
 }
 
@@ -49,7 +49,7 @@ export function getScarcityOffsetsForGame(gameCode: string) {
 
 export async function getLeagueSpecificScarcityOffsets(
   gameCode: string,
-  replacementLevels: ReplacementLevels
+  replacementLevels: ReplacementLevels,
 ): Promise<LeagueSpecificScarcityOffsets> {
   if (!SCARCITY_OFFSETS) {
     await loadScarcityOffsets();
@@ -61,7 +61,7 @@ export async function getLeagueSpecificScarcityOffsets(
     if (Object.hasOwn(replacementLevels, position)) {
       const replacementIndex = Math.max(
         Math.floor(replacementLevels[position] - 1),
-        0
+        0,
       );
 
       let offset =
@@ -71,7 +71,7 @@ export async function getLeagueSpecificScarcityOffsets(
         await calculateOffsetForPosition(
           position,
           gameCode,
-          replacementIndex + 1
+          replacementIndex + 1,
         );
 
         // Refresh the offsets
@@ -80,7 +80,7 @@ export async function getLeagueSpecificScarcityOffsets(
 
         if (offset === undefined) {
           logger.error(
-            `No offsets found for position ${position} and replacement level ${replacementIndex}. Returning empty object. No offsets will be applied to team.`
+            `No offsets found for position ${position} and replacement level ${replacementIndex}. Returning empty object. No offsets will be applied to team.`,
           );
           logger.info("SCARCITY_OFFSETS:", SCARCITY_OFFSETS);
           logger.info("replacementLevels:", replacementLevels);
@@ -114,7 +114,7 @@ export async function recalculateScarcityOffsetsForAll() {
             position,
             league,
             leagueScarcityOffsets[position].length,
-            uid
+            uid,
           );
           promises.push(calcPromise);
         }
@@ -130,7 +130,7 @@ export async function calculateOffsetForPosition(
   position: string,
   league: string,
   count: number,
-  uid?: string
+  uid?: string,
 ): Promise<void> {
   if (!uid) {
     uid = await Firestore.getRandomUID();
@@ -146,7 +146,7 @@ export function generateFetchPlayerPromises(
   uid: string,
   position: string,
   gameCode: string,
-  count: number
+  count: number,
 ): Promise<any>[] {
   const result: Promise<any>[] = [];
 
@@ -183,7 +183,7 @@ async function fetchYahooPlayers(fetchPlayersPromises: Promise<any>[]) {
 function updateOffsetArray(
   league: string,
   position: string,
-  players: IPlayer[]
+  players: IPlayer[],
 ) {
   const array: number[] = [];
   for (const player of players) {
@@ -214,16 +214,16 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
   const result: Record<string, number> = {};
 
   const positionsList = Object.keys(rosterPositions).filter(
-    (position) => INACTIVE_POSITION_LIST.includes(position) === false
+    (position) => INACTIVE_POSITION_LIST.includes(position) === false,
   );
   const standardPositions = positionsList.filter(
     (position) =>
       !compoundPositionCompositions[position]?.some((subPosition) =>
-        positionsList.includes(subPosition)
-      ) && position !== "BN"
+        positionsList.includes(subPosition),
+      ) && position !== "BN",
   );
   const compoundPositions = positionsList.filter(
-    (position) => !standardPositions.includes(position) && position !== "BN"
+    (position) => !standardPositions.includes(position) && position !== "BN",
   );
 
   assignStandardPositions();
@@ -249,13 +249,13 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
 
       const numStarters = subPositions.reduce(
         (acc, subPosition) => acc + rosterPositions[subPosition],
-        0
+        0,
       );
 
       distributeExtraPositions(
         subPositions,
         numStarters,
-        numPlayersAtCompoundPosition
+        numPlayersAtCompoundPosition,
       );
     }
   }
@@ -267,7 +267,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
       const numBenchPlayers = numBenchPositions;
       const numStarters = Object.keys(result).reduce(
         (acc, position) => acc + rosterPositions[position],
-        0
+        0,
       );
 
       const sortedList = Object.keys(result);
@@ -285,7 +285,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
 
       result[compoundPosition] = subPositions.reduce(
         (acc, subPosition) => acc + result[subPosition],
-        0
+        0,
       );
     }
   }
@@ -293,13 +293,14 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
   function distributeExtraPositions(
     positionList: string[],
     numTotalStartingSpots: number,
-    numSpotsToDistribute: number
+    numSpotsToDistribute: number,
   ) {
     let numPlayersToDistribute = numSpotsToDistribute * numTeams;
 
     positionList.sort(
       (a, b) =>
-        (maxExtraPlayers[a] ?? Infinity) - (maxExtraPlayers[b] ?? Infinity)
+        (maxExtraPlayers[a] ?? Number.POSITIVE_INFINITY) -
+        (maxExtraPlayers[b] ?? Number.POSITIVE_INFINITY),
     );
 
     for (const position of positionList) {
@@ -312,7 +313,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
       const totalAllowed: number =
         extraAllowed !== undefined
           ? (numStartersAtPosition + extraAllowed) * numTeams
-          : Infinity;
+          : Number.POSITIVE_INFINITY;
 
       const newTotal = Math.min(newShare + result[position], totalAllowed);
       const numAdded = newTotal - result[position];

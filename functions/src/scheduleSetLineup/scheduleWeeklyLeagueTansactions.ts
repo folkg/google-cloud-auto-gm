@@ -6,5 +6,5 @@ export const scheduleweeklyleaguetransactions = onSchedule(
   "0 03 * * *",
   async () => {
     await scheduleWeeklyLeagueTransactions();
-  }
+  },
 );

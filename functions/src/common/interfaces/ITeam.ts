@@ -1,4 +1,4 @@
-import { IPlayer } from "./IPlayer.js";
+import type { IPlayer } from "./IPlayer.js";
 
 export interface CommonTeam {
   team_key: string;
@@ -95,7 +95,7 @@ export interface InningsPitched {
  */
 export function yahooToFirestore(
   team: ITeamAngular,
-  uid: string
+  uid: string,
 ): ITeamFirestore {
   const commonTeam: CommonTeam = {
     team_key: team.team_key,

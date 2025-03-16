@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { ITeamAngular, yahooToFirestore } from "../../../interfaces/ITeam.js";
+import {
+  type ITeamAngular,
+  yahooToFirestore,
+} from "../../../interfaces/ITeam.js";
 
 vi.mock("firebase-admin/firestore", () => {
   return {

@@ -1,4 +1,4 @@
-import { Player } from "../../common/classes/Player";
+import type { Player } from "../../common/classes/Player";
 
 export interface PlayerTransaction {
   teamName: string;

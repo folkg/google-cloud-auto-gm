@@ -6,5 +6,5 @@ export const schedulecalcpositionalscarcity = onSchedule(
   { schedule: "30 0 * * 0", timeZone: "America/Los_Angeles" },
   async () => {
     await recalculateScarcityOffsetsForAll();
-  }
+  },
 );

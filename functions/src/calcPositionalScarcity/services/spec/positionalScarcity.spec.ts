@@ -8,7 +8,7 @@ import {
   vi,
 } from "vitest";
 import * as constants from "../../../common/helpers/constants";
-import { ITeamFirestore } from "../../../common/interfaces/ITeam";
+import type { ITeamFirestore } from "../../../common/interfaces/ITeam";
 import * as firestoreService from "../../../common/services/firebase/firestore.service";
 import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
 import {
@@ -42,7 +42,7 @@ const getTopPlayersGeneralSpy = vi.spyOn(yahooAPI, "getTopPlayersGeneral");
 vi.spyOn(firestoreService, "getRandomUID").mockResolvedValue("1");
 const getPositionalScarcityOffsetsSpy = vi.spyOn(
   firestoreService,
-  "getPositionalScarcityOffsets"
+  "getPositionalScarcityOffsets",
 );
 const updatePositionalScarcityOffsetSpy = vi
   .spyOn(firestoreService, "updatePositionalScarcityOffset")
@@ -80,7 +80,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
   it("should return the correct replacement level for a team with compound positions", () => {
@@ -114,7 +114,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
   it("should return the correct replacement level for a team with compound positions and BN positions", () => {
@@ -149,7 +149,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
   it("should return the correct replacement level for a team with compound positions, BN positions, and max extra players (NFL)", () => {
@@ -191,7 +191,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
   it("should return the correct replacement level for a team with compound positions (with no subs listed) and BN positions (NHL)", () => {
@@ -216,7 +216,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
   it("should return the correct replacement level for a team with compound positions (subs and no subs), BN positions, and max extra players (NHL)", () => {
@@ -248,7 +248,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
   it("should return the correct replacement level for a team with compound positions (with no subs listed), BN positions, and max extra players (MLB)", () => {
@@ -289,7 +289,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
 
@@ -339,7 +339,7 @@ describe("getReplacementLevel", () => {
       expect(result[position]).toBeCloseTo(expectedOutput[position], 2);
     }
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
 });
@@ -427,17 +427,17 @@ describe("recalculateScarcityOffsetsForAll", () => {
     expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
       league,
       "F",
-      expect.arrayContaining([expect.any(Number)])
+      expect.arrayContaining([expect.any(Number)]),
     );
     expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
       league,
       "D",
-      expect.arrayContaining([expect.any(Number)])
+      expect.arrayContaining([expect.any(Number)]),
     );
     expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
       league,
       "G",
-      expect.arrayContaining([expect.any(Number)])
+      expect.arrayContaining([expect.any(Number)]),
     );
   });
 
@@ -467,7 +467,7 @@ describe("recalculateScarcityOffsetsForAll", () => {
     expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
       league,
       "D",
-      expect.arrayContaining([expect.any(Number)])
+      expect.arrayContaining([expect.any(Number)]),
     );
   });
 });
@@ -508,7 +508,7 @@ describe("getScarcityOffsetsForLeague", () => {
   it("should return the correct offsets for team with 3 positions", async () => {
     const result = await getLeagueSpecificScarcityOffsets(
       league,
-      replacementLevels
+      replacementLevels,
     );
     // replacement level for F is 72, D is 48, G is 24. Get the ownership at each index.
     expect(result).toEqual({
@@ -524,7 +524,7 @@ describe("getScarcityOffsetsForLeague", () => {
     const replacementLevels = { F: 72.2, D: 48.5, G: 24.9 };
     const result = await getLeagueSpecificScarcityOffsets(
       league,
-      replacementLevels
+      replacementLevels,
     );
     // replacement level for F is 72, D is 48, G is 24. Get the ownership at each index.
     expect(result).toEqual({
@@ -540,7 +540,7 @@ describe("getScarcityOffsetsForLeague", () => {
     const replacementLevels = { F: 0, D: -1, G: -1.5 };
     const result = await getLeagueSpecificScarcityOffsets(
       league,
-      replacementLevels
+      replacementLevels,
     );
     // replacement level for F is 72, D is 48, G is 24. Get the ownership at each index.
     expect(result).toEqual({
@@ -559,7 +559,7 @@ describe("getScarcityOffsetsForLeague", () => {
 
     const result = await getLeagueSpecificScarcityOffsets(
       league,
-      replacementLevels
+      replacementLevels,
     );
 
     expect(result).toEqual({});
@@ -582,7 +582,7 @@ describe("getScarcityOffsetsForLeague", () => {
     expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
       league,
       "RW",
-      expect.arrayContaining([expect.any(Number)])
+      expect.arrayContaining([expect.any(Number)]),
     );
   });
 
@@ -602,19 +602,19 @@ describe("getScarcityOffsetsForLeague", () => {
       "1",
       league,
       position,
-      0
+      0,
     );
     expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(
       "1",
       league,
       position,
-      100
+      100,
     );
     expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledTimes(1);
     expect(updatePositionalScarcityOffsetSpy).toHaveBeenCalledWith(
       league,
       "F",
-      expect.arrayContaining([expect.any(Number)])
+      expect.arrayContaining([expect.any(Number)]),
     );
   });
 
@@ -691,7 +691,7 @@ describe("getScarcityOffsetsForTeam", () => {
     expect(result).toEqual(expectedOutput);
 
     expect(Object.keys(result).length).toEqual(
-      Object.keys(expectedOutput).length
+      Object.keys(expectedOutput).length,
     );
   });
 });
@@ -725,7 +725,7 @@ describe("generateFetchPlayerPromises", () => {
       uid,
       gameCode,
       position,
-      0
+      0,
     );
   });
   it("should return an array of 2 promises if count is 26", async () => {
@@ -740,13 +740,13 @@ describe("generateFetchPlayerPromises", () => {
       uid,
       gameCode,
       position,
-      0
+      0,
     );
     expect(getTopPlayersGeneralSpy).toHaveBeenCalledWith(
       uid,
       gameCode,
       position,
-      25
+      25,
     );
   });
   it("should return an empty array if count is 0", async () => {

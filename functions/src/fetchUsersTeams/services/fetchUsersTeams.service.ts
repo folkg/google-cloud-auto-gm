@@ -1,4 +1,4 @@
-import { ITeamAngular } from "../../common/interfaces/ITeam.js";
+import type { ITeamAngular } from "../../common/interfaces/ITeam.js";
 import {
   getChild,
   getPacificEndOfDay,
@@ -24,14 +24,14 @@ export async function fetchTeamsYahoo(uid: string): Promise<ITeamAngular[]> {
 
   // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const gameKey of Object.keys(gamesJSON).filter(
-    (key) => key !== "count"
+    (key) => key !== "count",
   )) {
     const gameJSON = gamesJSON[gameKey].game;
     const leaguesJSON = getChild(gameJSON, "leagues");
 
     // Loop through each league within the game
     for (const leagueKey of Object.keys(leaguesJSON).filter(
-      (key) => key !== "count"
+      (key) => key !== "count",
     )) {
       const league = leaguesJSON[leagueKey].league;
       const leagueSettings = getChild(league, "settings");
@@ -63,21 +63,21 @@ export async function fetchTeamsYahoo(uid: string): Promise<ITeamAngular[]> {
         faab_balance: parseStringToInt(getChild(usersTeam[0], "faab_balance")),
         current_weekly_adds: parseStringToInt(
           getChild(usersTeam[0], "roster_adds").value,
-          0
+          0,
         ),
         current_season_adds: parseStringToInt(
           getChild(usersTeam[0], "number_of_moves"),
-          0
+          0,
         ),
         max_weekly_adds: parseStringToInt(
-          getChild(leagueSettings, "max_weekly_adds")
+          getChild(leagueSettings, "max_weekly_adds"),
         ),
         max_season_adds: parseStringToInt(getChild(leagueSettings, "max_adds")),
         max_games_played: parseStringToInt(
-          getChild(leagueSettings, "max_games_played")
+          getChild(leagueSettings, "max_games_played"),
         ),
         max_innings_pitched: parseStringToInt(
-          getChild(leagueSettings, "max_innings_pitched")
+          getChild(leagueSettings, "max_innings_pitched"),
         ),
         edit_key: getChild(league, "edit_key"),
         roster_positions: rosterPositions,

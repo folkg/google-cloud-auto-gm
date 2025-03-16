@@ -7,7 +7,7 @@ export const sendfeedbackemail = onCall(async (request) => {
   if (!uid) {
     throw new HttpsError(
       "unauthenticated",
-      "User must be logged in to send feedback email"
+      "User must be logged in to send feedback email",
     );
   }
 
@@ -15,7 +15,7 @@ export const sendfeedbackemail = onCall(async (request) => {
   if (!data) {
     throw new HttpsError(
       "invalid-argument",
-      "Data must be provided to send feedback email"
+      "Data must be provided to send feedback email",
     );
   }
 
@@ -23,7 +23,7 @@ export const sendfeedbackemail = onCall(async (request) => {
   if (!userEmail || !feedbackType || !title || !message) {
     throw new HttpsError(
       "invalid-argument",
-      "All fields must be provided to send feedback email"
+      "All fields must be provided to send feedback email",
     );
   }
 

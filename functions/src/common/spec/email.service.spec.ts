@@ -1,10 +1,10 @@
+import type { UserRecord } from "firebase-admin/auth";
 import { describe, expect, it, vi } from "vitest";
 import {
   sendCustomVerificationEmail,
   sendFeedbackEmail,
   sendUserEmail,
 } from "../services/email/email.service.js";
-import { UserRecord } from "firebase-admin/auth";
 
 vi.mock("firebase-admin/auth", () => {
   return {
@@ -32,7 +32,7 @@ describe.skip("Integration test EmailService", () => {
       "test@email.com",
       "Bug Report",
       "More Features",
-      "I like the app, but I want more features."
+      "I like the app, but I want more features.",
     );
     expect(result).toBeTruthy();
   });
@@ -50,7 +50,7 @@ describe.skip("Integration test EmailService", () => {
           "apologize for the inconvenience.",
       ],
       "Sign In",
-      "https://fantasyautocoach.com/"
+      "https://fantasyautocoach.com/",
     );
     expect(result).toBeTruthy();
   });

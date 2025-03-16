@@ -1,7 +1,7 @@
 import sgMail from "@sendgrid/mail";
 import dotenv from "dotenv";
 import { getApps, initializeApp } from "firebase-admin/app";
-import { UserRecord, getAuth } from "firebase-admin/auth";
+import { type UserRecord, getAuth } from "firebase-admin/auth";
 import { logger } from "firebase-functions";
 
 dotenv.config();
@@ -26,7 +26,7 @@ export async function sendFeedbackEmail(
   userEmail: string,
   feedbackType: string,
   title: string,
-  message: string
+  message: string,
 ): Promise<boolean> {
   const templateData = {
     feedbackType,
@@ -68,7 +68,7 @@ export async function sendUserEmail(
   subject: string,
   body: unknown[],
   buttonText = "",
-  buttonUrl = ""
+  buttonUrl = "",
 ): Promise<boolean> {
   const user = await getAuth().getUser(uid);
   if (!user) {
@@ -102,7 +102,7 @@ export async function sendUserEmail(
 }
 
 export async function sendCustomVerificationEmail(
-  user: UserRecord
+  user: UserRecord,
 ): Promise<boolean> {
   const userEmailAddress = user?.email;
   if (!userEmailAddress) {
@@ -111,9 +111,8 @@ export async function sendCustomVerificationEmail(
 
   let verificationLink: string;
   try {
-    verificationLink = await getAuth().generateEmailVerificationLink(
-      userEmailAddress
-    );
+    verificationLink =
+      await getAuth().generateEmailVerificationLink(userEmailAddress);
   } catch (error) {
     throw new Error(`Failed to generate email verification link ${error}`);
   }

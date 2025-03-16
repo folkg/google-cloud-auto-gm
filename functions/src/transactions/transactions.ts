@@ -9,7 +9,7 @@ export const gettransactions = onCall(async (request) => {
   if (!uid) {
     throw new HttpsError(
       "unauthenticated",
-      "You must be logged in to get an access token"
+      "You must be logged in to get an access token",
     );
   }
   return await getTransactions(uid);
@@ -20,7 +20,7 @@ export const posttransactions = onCall(async (request) => {
   if (!uid) {
     throw new HttpsError(
       "unauthenticated",
-      "You must be logged in to get an access token"
+      "You must be logged in to get an access token",
     );
   }
 
@@ -28,7 +28,7 @@ export const posttransactions = onCall(async (request) => {
   if (!transactions) {
     throw new HttpsError(
       "invalid-argument",
-      "You must provide dropPlayerTransactions, lineupChanges, and addSwapTransactions"
+      "You must provide dropPlayerTransactions, lineupChanges, and addSwapTransactions",
     );
   }
 

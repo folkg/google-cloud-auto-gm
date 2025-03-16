@@ -1,4 +1,4 @@
-import { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
+import type { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as firestoreService from "../../common/services/firebase/firestore.service.js";
@@ -43,7 +43,7 @@ describe("scheduleWeeklyLeagueTransactions", () => {
 
   const mockGetActiveWeeklyTeams = vi.spyOn(
     firestoreService,
-    "getTomorrowsActiveWeeklyTeams"
+    "getTomorrowsActiveWeeklyTeams",
   );
 
   function mockTeamsSnapshot(teams: any) {
@@ -78,7 +78,7 @@ describe("scheduleWeeklyLeagueTransactions", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
     mockGetActiveWeeklyTeams.mockReturnValue(
-      Promise.resolve(teamsSnapshot as unknown as QuerySnapshot<DocumentData>)
+      Promise.resolve(teamsSnapshot as unknown as QuerySnapshot<DocumentData>),
     );
 
     await scheduleWeeklyLeagueTransactions();
@@ -90,7 +90,7 @@ describe("scheduleWeeklyLeagueTransactions", () => {
       {
         dispatchDeadlineSeconds: 60 * 5,
         uri: mockFunctionUrl,
-      }
+      },
     );
     expect(mockQueue.enqueue).toHaveBeenCalledWith(
       // check if the enqueue method was called with the correct arguments for the second user
@@ -98,13 +98,13 @@ describe("scheduleWeeklyLeagueTransactions", () => {
       {
         dispatchDeadlineSeconds: 60 * 5,
         uri: mockFunctionUrl,
-      }
+      },
     );
   });
 
   it("should not execute if there are no active users / teams", async () => {
     mockGetActiveWeeklyTeams.mockReturnValue(
-      Promise.resolve({ docs: [] } as unknown as QuerySnapshot<DocumentData>)
+      Promise.resolve({ docs: [] } as unknown as QuerySnapshot<DocumentData>),
     );
     const logSpy = vi.spyOn(logger, "log");
 

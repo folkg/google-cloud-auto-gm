@@ -2,7 +2,7 @@ import { logger } from "firebase-functions";
 import * as functionsV1 from "firebase-functions/v1";
 import { sendCustomVerificationEmail } from "../common/services/email/email.service.js";
 import { db } from "../common/services/firebase/firestore.service.js";
-import { FirestoreUser } from "./interfaces/FirestoreUser.js";
+import type { FirestoreUser } from "./interfaces/FirestoreUser.js";
 
 export const beforeSignInV1 = functionsV1.auth
   .user()
@@ -23,7 +23,7 @@ export const beforeSignInV1 = functionsV1.auth
       } catch (error) {
         logger.error(
           `Error saving login token credentials in Firestore for user ${uid}`,
-          error
+          error,
         );
       }
     }

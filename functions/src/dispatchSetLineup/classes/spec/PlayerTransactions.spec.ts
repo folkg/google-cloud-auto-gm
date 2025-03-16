@@ -1,6 +1,6 @@
-import { describe, expect, it, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import type { PlayerTransaction } from "../../interfaces/PlayerTransaction";
 import { PlayerTransactions } from "../PlayerTransactions";
-import { PlayerTransaction } from "../../interfaces/PlayerTransaction";
 
 describe("PlayerTransactions", () => {
   let playerTransactions: PlayerTransactions;

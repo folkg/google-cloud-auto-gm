@@ -1,18 +1,18 @@
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
+import type { ClientTeam } from "../common/interfaces/Team.js";
 import {
   fetchTeamsFirestore,
   syncTeamsInFirestore,
 } from "../common/services/firebase/firestore.service.js";
 import { fetchTeamsYahoo } from "./services/fetchUsersTeams.service.js";
-import type { ClientTeam } from "../common/interfaces/Team.js";
 
 export const fetchuserteams = onCall(async (request): Promise<ClientTeam[]> => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new HttpsError(
       "unauthenticated",
-      "You must be logged in to get an access token"
+      "You must be logged in to get an access token",
     );
   }
 
@@ -26,7 +26,7 @@ export const fetchuserteams = onCall(async (request): Promise<ClientTeam[]> => {
   if (yahooTeams.length === 0) {
     throw new HttpsError(
       "internal",
-      "No teams were returned from Yahoo. Please try again later."
+      "No teams were returned from Yahoo. Please try again later.",
     );
   }
 
@@ -42,12 +42,12 @@ export const fetchuserteams = onCall(async (request): Promise<ClientTeam[]> => {
   try {
     // find all teams that are in yahoo but not in firestore
     const missingTeams = yahooTeams.filter(
-      (y) => !firestoreTeams.some((f) => f.team_key === y.team_key)
+      (y) => !firestoreTeams.some((f) => f.team_key === y.team_key),
     );
 
     // find all teams that are in firestore but not in yahoo
     const extraTeams = firestoreTeams.filter(
-      (f) => !yahooTeams.some((y) => y.team_key === f.team_key)
+      (f) => !yahooTeams.some((y) => y.team_key === f.team_key),
     );
 
     newPatchedTeams = await syncTeamsInFirestore(missingTeams, extraTeams, uid);

@@ -32,7 +32,7 @@ describe("loadYahooAccessToken", () => {
     } catch (error: any) {
       expect(error).toBeInstanceOf(RevokedRefreshTokenError);
       expect(error.message).toEqual(
-        "RevokedRefreshTokenError: User 123 has revoked access. Stopping all actions for this user."
+        "RevokedRefreshTokenError: User 123 has revoked access. Stopping all actions for this user.",
       );
     }
   });

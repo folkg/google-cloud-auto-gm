@@ -1,15 +1,15 @@
 import {
+  type Infer,
   any,
   array,
   boolean,
-  Infer,
+  literal,
   number,
   object,
   optional,
   record,
   string,
   union,
-  literal,
 } from "superstruct";
 import { Player } from "./Player.js";
 

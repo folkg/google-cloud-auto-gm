@@ -1,11 +1,12 @@
 import assert from "assert";
-import { Player } from "../../common/classes/Player.js";
+import type { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import type { Player } from "../../common/classes/Player.js";
 import {
   COMPOUND_POSITION_COMPOSITIONS,
   INACTIVE_POSITION_LIST,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants.js";
-import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
 import { ownershipScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerOwnershipScoreFunctions.service.js";
 import { playerStartScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerStartScoreFunctions.service.js";
 import {
@@ -15,7 +16,6 @@ import {
   getWeeklyProgressPacific,
 } from "../../common/services/utilities.service.js";
 import { PlayerCollection } from "./PlayerCollection.js";
-import { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 
 // use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
 export interface Team extends ITeamOptimizer {
@@ -31,7 +31,7 @@ export class Team extends PlayerCollection implements Team {
 
   constructor(
     team: ITeamOptimizer,
-    positionalScarcityOffsets?: LeagueSpecificScarcityOffsets
+    positionalScarcityOffsets?: LeagueSpecificScarcityOffsets,
   ) {
     super(team.players);
 
@@ -43,7 +43,7 @@ export class Team extends PlayerCollection implements Team {
 
     this.ownershipScoreFunction = ownershipScoreFunctionFactory(
       this.num_teams * this.numStandardRosterSpots,
-      positionalScarcityOffsets
+      positionalScarcityOffsets,
     );
 
     const playerStartScoreFunction = playerStartScoreFunctionFactory({
@@ -123,7 +123,7 @@ export class Team extends PlayerCollection implements Team {
   private makeTransactionPlayerInelligible(playerInTransaction: any) {
     const matchingTeamPlayer = this.players.find(
       (player) =>
-        player.player_key === getChild(playerInTransaction[0], "player_key")
+        player.player_key === getChild(playerInTransaction[0], "player_key"),
     );
 
     if (!matchingTeamPlayer?.isInactiveList()) {
@@ -133,12 +133,12 @@ export class Team extends PlayerCollection implements Team {
 
   private changePendingAddDrops(
     isPendingTransaction: boolean,
-    playerInTransaction: any
+    playerInTransaction: any,
   ) {
     const playerKey = getChild(playerInTransaction[0], "player_key");
     const eligiblePositions = getChild(
       playerInTransaction[0],
-      "display_position"
+      "display_position",
     ).split(",");
     // sometimes transaction_data is an array of size 1, sometimes just the object. Why, Yahoo?
     let transactionData = getChild(playerInTransaction, "transaction_data");
@@ -226,20 +226,20 @@ export class Team extends PlayerCollection implements Team {
 
   public get droppablePlayers(): Player[] {
     return this.droppablePlayersInclIL.filter(
-      (player) => !player.isInactiveList()
+      (player) => !player.isInactiveList(),
     );
   }
 
   public get droppablePlayersInclIL(): Player[] {
     return this.players.filter(
       (player) =>
-        !player.is_undroppable && !this._lockedPlayers.has(player.player_key)
+        !player.is_undroppable && !this._lockedPlayers.has(player.player_key),
     );
   }
 
   public get illegalPlayers(): Player[] {
     return this._editablePlayers.filter(
-      (player) => !player.eligible_positions.includes(player.selected_position)
+      (player) => !player.eligible_positions.includes(player.selected_position),
     );
   }
 
@@ -247,7 +247,7 @@ export class Team extends PlayerCollection implements Team {
     return this._editablePlayers.filter(
       (player) =>
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
-        player.selected_position !== "BN"
+        player.selected_position !== "BN",
     );
   }
 
@@ -265,7 +265,7 @@ export class Team extends PlayerCollection implements Team {
 
   public get inactiveListEligiblePlayers(): Player[] {
     return this._editablePlayers.filter((player) =>
-      player.isInactiveListEligible()
+      player.isInactiveListEligible(),
     );
   }
 
@@ -274,14 +274,14 @@ export class Team extends PlayerCollection implements Team {
       (player) =>
         player.isActiveRoster() &&
         player.eligible_positions.some((position) =>
-          INACTIVE_POSITION_LIST.includes(position)
-        )
+          INACTIVE_POSITION_LIST.includes(position),
+        ),
     );
   }
 
   public get healthyOnIL(): Player[] {
     return this._editablePlayers.filter(
-      (player) => player.isHealthy() && player.isInactiveList()
+      (player) => player.isHealthy() && player.isInactiveList(),
     );
   }
 
@@ -297,7 +297,7 @@ export class Team extends PlayerCollection implements Team {
 
   public get unfilledAllPositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
-      (position) => this.unfilledPositionCounter[position] > 0
+      (position) => this.unfilledPositionCounter[position] > 0,
     );
   }
 
@@ -306,7 +306,7 @@ export class Team extends PlayerCollection implements Team {
       (position) =>
         position !== "BN" &&
         !INACTIVE_POSITION_LIST.includes(position) &&
-        this.unfilledPositionCounter[position] > 0
+        this.unfilledPositionCounter[position] > 0,
     );
   }
 
@@ -314,14 +314,14 @@ export class Team extends PlayerCollection implements Team {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
         INACTIVE_POSITION_LIST.includes(position) &&
-        this.unfilledPositionCounter[position] > 0
+        this.unfilledPositionCounter[position] > 0,
     );
   }
 
   public get overfilledPositions(): string[] {
     return Object.keys(this.unfilledPositionCounter).filter(
       (position) =>
-        position !== "BN" && this.unfilledPositionCounter[position] < 0
+        position !== "BN" && this.unfilledPositionCounter[position] < 0,
     );
   }
 
@@ -394,12 +394,12 @@ export class Team extends PlayerCollection implements Team {
     return this.getPositionsHelper(
       (count, capacity, position) =>
         count >=
-        capacity + POSITIONAL_MAX_EXTRA_PLAYERS[this.game_code][position]
+        capacity + POSITIONAL_MAX_EXTRA_PLAYERS[this.game_code][position],
     );
   }
 
   private getPositionsHelper(
-    compareFn: (count: number, capacity: number, position: string) => boolean
+    compareFn: (count: number, capacity: number, position: string) => boolean,
   ): string[] {
     const result: string[] = [];
 
@@ -413,13 +413,13 @@ export class Team extends PlayerCollection implements Team {
     for (const position in positionPlayerCapacity) {
       if (Object.hasOwn(positionPlayerCapacity, position)) {
         const playerKeysAtPosition = validPlayerKeysWithPositions.filter(
-          (eligiblePositions) => eligiblePositions.includes(position)
+          (eligiblePositions) => eligiblePositions.includes(position),
         );
         if (
           compareFn(
             playerKeysAtPosition.length,
             positionPlayerCapacity[position],
-            position
+            position,
           )
         ) {
           result.push(position);
@@ -434,7 +434,7 @@ export class Team extends PlayerCollection implements Team {
     return this.players
       .filter(
         (player) =>
-          !player.isLTIR() && !this._pendingDropPlayers.has(player.player_key)
+          !player.isLTIR() && !this._pendingDropPlayers.has(player.player_key),
       )
       .map((player) => {
         const {
@@ -450,7 +450,7 @@ export class Team extends PlayerCollection implements Team {
     const compoundPositions = COMPOUND_POSITION_COMPOSITIONS[this.game_code];
 
     const positions = Object.keys(this.roster_positions).filter(
-      (position) => !INACTIVE_POSITION_LIST.includes(position)
+      (position) => !INACTIVE_POSITION_LIST.includes(position),
     );
 
     const result = positions.reduce(
@@ -466,7 +466,7 @@ export class Team extends PlayerCollection implements Team {
         }
         return acc;
       },
-      {}
+      {},
     );
 
     // Limit the capacity of specific sub-positions to the max capacity of the parent compound positions
@@ -474,13 +474,13 @@ export class Team extends PlayerCollection implements Team {
     // Example: A league with one QB/WR/RB/TE spot but zero QB spots, we still want to limit the number of QBs
     // as defined by the POSITIONAL_MAX_EXTRA_PLAYERS["QB"] value
     const extraPositionsToCheck = Object.keys(
-      POSITIONAL_MAX_EXTRA_PLAYERS[this.game_code]
+      POSITIONAL_MAX_EXTRA_PLAYERS[this.game_code],
     ).filter((position) => !Object.keys(result).includes(position));
 
     for (const extraPosition of extraPositionsToCheck) {
       const parentPositions = Object.keys(compoundPositions).filter(
         (parentPosition) =>
-          compoundPositions[parentPosition].includes(extraPosition)
+          compoundPositions[parentPosition].includes(extraPosition),
       );
 
       if (parentPositions.length === 0) {
@@ -498,7 +498,7 @@ export class Team extends PlayerCollection implements Team {
 
   public getPlayersAt(position: string): Player[] {
     return this._editablePlayers.filter(
-      (player) => player.selected_position === position
+      (player) => player.selected_position === position,
     );
   }
 
@@ -520,7 +520,7 @@ export class Team extends PlayerCollection implements Team {
       weeklyPaceExceeded = isToleranceExceeded(
         currrentWeeklyAdds + newAdds,
         maxWeeklyAdds,
-        getWeeklyProgressPacific()
+        getWeeklyProgressPacific(),
       );
     }
 
@@ -528,7 +528,7 @@ export class Team extends PlayerCollection implements Team {
       seasonPaceExceeded = isToleranceExceeded(
         currentSeasonAdds + newAdds,
         maxSeasonAdds,
-        getProgressBetween(startDate, endDate)
+        getProgressBetween(startDate, endDate),
       );
     }
 
@@ -537,7 +537,7 @@ export class Team extends PlayerCollection implements Team {
     function isToleranceExceeded(
       currentAdds: number,
       maxAdds: number,
-      progress: number
+      progress: number,
     ) {
       const TOLERANCE = 0.1;
 

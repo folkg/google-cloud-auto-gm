@@ -39,5 +39,5 @@ export const dispatchsetlineup = onTaskDispatched(
         logger.error("User's teams: ", teams);
       }
     }
-  }
+  },
 );

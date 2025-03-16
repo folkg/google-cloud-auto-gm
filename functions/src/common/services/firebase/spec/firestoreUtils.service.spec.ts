@@ -1,8 +1,8 @@
-import { assert, describe, expect, it, vi } from "vitest";
-import { patchTeamChangesInFirestore } from "../firestoreUtils.service";
+import { describe, expect, it, vi } from "vitest";
+import type { ITeamFirestore, ITeamOptimizer } from "../../../interfaces/ITeam";
 import { createMock } from "../../../spec/createMock";
 import * as firestoreService from "../firestore.service";
-import type { ITeamFirestore, ITeamOptimizer } from "../../../interfaces/ITeam";
+import { patchTeamChangesInFirestore } from "../firestoreUtils.service";
 
 vi.mock("../firestore.service", () => {
   return {
@@ -93,7 +93,7 @@ describe("patchTeamChangesInFirestore", () => {
 
     const updateTeamFirestoreSpy = vi.spyOn(
       firestoreService,
-      "updateTeamFirestore"
+      "updateTeamFirestore",
     );
 
     await patchTeamChangesInFirestore(yahooTeams, firestoreTeams);

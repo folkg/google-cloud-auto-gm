@@ -3,22 +3,25 @@ import dotenv from "dotenv";
 import { XMLParser } from "fast-xml-parser";
 import { logger } from "firebase-functions";
 import js2xmlparser from "js2xmlparser";
-import { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges.js";
-import {
+import pLimit from "p-limit";
+import type { LineupChanges } from "../../../dispatchSetLineup/interfaces/LineupChanges.js";
+import type {
   PlayerTransaction,
   TransactionType,
 } from "../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
-import { Token, YahooRefreshRequestBody } from "../../interfaces/credential.js";
+import type {
+  Token,
+  YahooRefreshRequestBody,
+} from "../../interfaces/credential.js";
 import { RevokedRefreshTokenError } from "../firebase/errors.js";
 import { updateFirestoreTimestamp } from "../firebase/firestore.service.js";
+import type { YahooAccessTokenResponse } from "./interfaces/YahooAccessTokenResponse.js";
 import {
   httpGetAxios,
   httpPostAxiosAuth,
   httpPostAxiosUnauth,
   httpPutAxios,
 } from "./yahooHttp.service.js";
-import { YahooAccessTokenResponse } from "./interfaces/YahooAccessTokenResponse.js";
-import pLimit from "p-limit";
 
 dotenv.config();
 
@@ -42,7 +45,7 @@ const POSITION_EXPANSION: Record<string, string> = {
  * @return {Promise<Token>} The new credential
  */
 export async function refreshYahooAccessToken(
-  refreshToken: string
+  refreshToken: string,
 ): Promise<Token> {
   const url = "https://api.login.yahoo.com/oauth2/get_token";
   const requestBody: YahooRefreshRequestBody = {
@@ -57,7 +60,7 @@ export async function refreshYahooAccessToken(
       (key) =>
         encodeURIComponent(key) +
         "=" +
-        encodeURIComponent(requestBody[key as keyof YahooRefreshRequestBody])
+        encodeURIComponent(requestBody[key as keyof YahooRefreshRequestBody]),
     )
     .join("&");
 
@@ -65,7 +68,7 @@ export async function refreshYahooAccessToken(
     const requestTime = Date.now();
     const { data } = await httpPostAxiosUnauth<YahooAccessTokenResponse>(
       url,
-      body
+      body,
     );
     // Get the token info from the response and save it to the database
     const accessToken = data.access_token;
@@ -97,7 +100,7 @@ export async function refreshYahooAccessToken(
 export async function getRostersByTeamID(
   teamKeys: string[],
   uid: string,
-  date = ""
+  date = "",
 ): Promise<any> {
   const leagueKeysArray: string[] = [];
   teamKeys.forEach((teamKey) => {
@@ -140,7 +143,7 @@ export async function getTopAvailablePlayers(
   teamKeys: string[],
   uid: string,
   availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
-  sort: PlayerSort = "sort=R_PO"
+  sort: PlayerSort = "sort=R_PO",
 ): Promise<any> {
   const leagueKeysArray: string[] = [];
   teamKeys.forEach((teamKey) => {
@@ -171,13 +174,13 @@ export async function getTopPlayersGeneral(
   uid: string,
   gameKey: string,
   position: string,
-  start: number = 0,
+  start = 0,
   availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
-  sort: PlayerSort = "sort=R_PO"
+  sort: PlayerSort = "sort=R_PO",
 ): Promise<any> {
   const positionArray = position.split(",");
   const expandedPositions = positionArray.map(
-    (pos) => POSITION_EXPANSION[pos] ?? pos
+    (pos) => POSITION_EXPANSION[pos] ?? pos,
   );
   const positions = expandedPositions.join(",");
 
@@ -214,7 +217,7 @@ export async function getUsersTeams(uid: string): Promise<any> {
   try {
     const { data } = await httpGetAxios(
       "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues;out=settings/teams;out=standings?format=json",
-      uid
+      uid,
     );
     return data;
   } catch (err: unknown) {
@@ -237,7 +240,7 @@ export async function getUsersTeams(uid: string): Promise<any> {
 export async function getStartingPlayers(
   league: string,
   uid: string,
-  leagueKey: string
+  leagueKey: string,
 ) {
   const starterPositions: { [key: string]: string } = {
     nhl: "S_G",
@@ -274,7 +277,7 @@ const MAX_CONCURRENT_PUT_CALLS = 2;
  */
 export async function putLineupChanges(
   lineupChanges: LineupChanges[],
-  uid: string
+  uid: string,
 ): Promise<void> {
   const limit = pLimit(MAX_CONCURRENT_PUT_CALLS);
 
@@ -319,11 +322,11 @@ export async function putLineupChanges(
 async function putRosterChangePromise(
   uid: string,
   teamKey: string,
-  xmlBody: any
+  xmlBody: any,
 ) {
   await httpPutAxios(uid, `team/${teamKey}/roster?format=json`, xmlBody);
   logger.log(
-    `Successfully put roster changes for team: ${teamKey} for user: ${uid}`
+    `Successfully put roster changes for team: ${teamKey} for user: ${uid}`,
   );
   await updateFirestoreTimestamp(uid, teamKey);
 }
@@ -339,14 +342,14 @@ async function putRosterChangePromise(
  */
 export async function postRosterAddDropTransaction(
   transaction: PlayerTransaction,
-  uid: string
+  uid: string,
 ): Promise<PlayerTransaction | null> {
   const { teamKey, players } = transaction;
 
   const validPlayerCount = [1, 2].includes(players.length);
   if (!validPlayerCount) {
     logger.warn(
-      `Transaction was not processed. Invalid number of players to move: ${players.length} for team: ${teamKey} for user: ${uid}. Must be 1 or 2.`
+      `Transaction was not processed. Invalid number of players to move: ${players.length} for team: ${teamKey} for user: ${uid}. Must be 1 or 2.`,
     );
     return null;
   }
@@ -360,7 +363,7 @@ export async function postRosterAddDropTransaction(
     },
   }));
   XMLPlayers.sort((a, b) =>
-    a.transaction_data.type > b.transaction_data.type ? 1 : -1
+    a.transaction_data.type > b.transaction_data.type ? 1 : -1,
   ); // sorts "add' before "drop" alphabetically, as required by Yahoo
 
   const transactionType: TransactionType =
@@ -374,7 +377,7 @@ export async function postRosterAddDropTransaction(
 
   const isWaiverClaim =
     players.filter(
-      (player) => player.transactionType === "add" && player.isFromWaivers
+      (player) => player.transactionType === "add" && player.isFromWaivers,
     ).length === 1;
   if (isWaiverClaim && transaction.isFaabRequired) {
     data.transaction.faab_bid = 0;
@@ -393,13 +396,13 @@ export async function postRosterAddDropTransaction(
   try {
     await httpPostAxiosAuth(uid, `league/${leagueKey}/transactions`, xmlBody);
     logger.log(
-      `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}.`
+      `Successfully posted ${transactionType} transaction for team: ${teamKey} for user: ${uid}.`,
     );
     logger.log("Transaction data:", { data });
     return transaction;
   } catch (err: unknown) {
     const errMessage = `There was a problem posting one transaction. Here are the error details: User: ${uid} Team: ${teamKey} Transaction: ${JSON.stringify(
-      transaction
+      transaction,
     )}`;
     let throwError = true;
     if (isAxiosError(err)) {
@@ -452,7 +455,7 @@ function handleAxiosError(err: unknown, message: string | null): never {
     logger.error(
       errMessage,
       JSON.stringify(err),
-      JSON.stringify(err.response.data, null, 2)
+      JSON.stringify(err.response.data, null, 2),
     );
     const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
     enrichedError.response = err.response;
@@ -485,7 +488,7 @@ function checkYahooErrorDescription(err: AxiosError, errMsg: string): boolean {
       "You cannot add a player you dropped until the waiver period ends."
     ) {
       console.info(
-        `You cannot add a player you dropped until the waiver period ends. ${errMsg}`
+        `You cannot add a player you dropped until the waiver period ends. ${errMsg}`,
       );
       result = false;
     }

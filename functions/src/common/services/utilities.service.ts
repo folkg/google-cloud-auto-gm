@@ -15,7 +15,7 @@ export function getChild(array: any[], key: string) {
 }
 
 export function parseStringToInt(value: string, defaultValue = -1): number {
-  return parseInt(value) || defaultValue;
+  return Number.parseInt(value) || defaultValue;
 }
 
 let auth: GoogleAuth<any>;
@@ -162,7 +162,7 @@ export function getProgressBetween(startDate: number, endDate: number): number {
  */
 export function partitionArray<T>(
   arr: T[],
-  predicate: (item: T) => boolean
+  predicate: (item: T) => boolean,
 ): T[][] {
   return arr.reduce(
     (acc, item) => {
@@ -173,7 +173,7 @@ export function partitionArray<T>(
       }
       return acc;
     },
-    [[], []] as T[][]
+    [[], []] as T[][],
   );
 }
 

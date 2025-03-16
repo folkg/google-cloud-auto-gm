@@ -1,9 +1,9 @@
-import { IPlayer } from "../interfaces/IPlayer.js";
 import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,
   LONG_TERM_IL_POSITIONS_LIST,
 } from "../helpers/constants.js";
+import type { IPlayer } from "../interfaces/IPlayer.js";
 
 export interface Player extends IPlayer {
   start_score: number;
@@ -59,13 +59,13 @@ export class Player implements Player {
 
   isInactiveListEligible(): boolean {
     return this.eligible_positions.some((position) =>
-      INACTIVE_POSITION_LIST.includes(position)
+      INACTIVE_POSITION_LIST.includes(position),
     );
   }
 
   isLTIR(): boolean {
     return this.eligible_positions.some((position) =>
-      LONG_TERM_IL_POSITIONS_LIST.includes(position)
+      LONG_TERM_IL_POSITIONS_LIST.includes(position),
     );
   }
 
@@ -116,26 +116,26 @@ export class Player implements Player {
       (targetPlayer) =>
         targetPlayer !== this &&
         targetPlayer.selected_position !== this.selected_position &&
-        this.eligible_positions.includes(targetPlayer.selected_position)
+        this.eligible_positions.includes(targetPlayer.selected_position),
     );
   }
 
   findEligiblePositionIn(positionsList: string[]): string | undefined {
     return this.eligible_positions.find(
       (position) =>
-        position !== this.selected_position && positionsList.includes(position)
+        position !== this.selected_position && positionsList.includes(position),
     );
   }
 
   isEligibleForAnyPositionIn(positionsList: string[]): boolean {
     return positionsList.some((position) =>
-      this.eligible_positions.includes(position)
+      this.eligible_positions.includes(position),
     );
   }
 
   hasDisplayPositionIn(positionsList: string[]): boolean {
     return positionsList.some((position) =>
-      this.display_positions?.includes(position)
+      this.display_positions?.includes(position),
     );
   }
 
@@ -145,13 +145,13 @@ export class Player implements Player {
 
   hasLowerOwnershipScoreThanAll(playersList: Player[]): boolean {
     return playersList.every(
-      (player) => this.compareOwnershipScore(player) <= 0
+      (player) => this.compareOwnershipScore(player) <= 0,
     );
   }
 
   makeInelliglbeForIL(): void {
     this.eligible_positions = this.eligible_positions.filter(
-      (position) => !INACTIVE_POSITION_LIST.includes(position)
+      (position) => !INACTIVE_POSITION_LIST.includes(position),
     );
   }
 }

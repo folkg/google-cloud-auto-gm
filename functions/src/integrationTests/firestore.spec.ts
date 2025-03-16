@@ -1,6 +1,6 @@
 import { describeIfIntegrationTesting } from "./setupTests";
 
-import { it, expect } from "vitest";
+import { expect, it } from "vitest";
 import {
   getPositionalScarcityOffsets,
   getRandomUID,

@@ -1,8 +1,8 @@
-import { assert, describe, expect, it, test, vi } from "vitest";
-import { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
-import { LineupOptimizer } from "../classes/LineupOptimizer.js";
-import { PlayerCollection } from "../classes/PlayerCollection.js";
 import spacetime from "spacetime";
+import { assert, describe, expect, it, test, vi } from "vitest";
+import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import { LineupOptimizer } from "../classes/LineupOptimizer.js";
+import type { PlayerCollection } from "../classes/PlayerCollection.js";
 import type { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 
 vi.mock("firebase-admin/firestore", () => ({
@@ -29,12 +29,12 @@ function getAddDroppedPlayerCounts(playerTransactions: PlayerTransaction[]): {
       });
       return counts;
     },
-    { addedCount: 0, droppedCount: 0 }
+    { addedCount: 0, droppedCount: 0 },
   );
 }
 
-describe("Unit Test LineupOptimizer Simple Drop Players", function () {
-  test("No drops allowed Daily", function () {
+describe("Unit Test LineupOptimizer Simple Drop Players", () => {
+  test("No drops allowed Daily", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -43,7 +43,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(playerTransactions).toEqual(null);
   });
 
-  test("No drops allowed Daily", function () {
+  test("No drops allowed Daily", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/noAllowDroppingPropertyOnTeam.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -52,7 +52,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(playerTransactions).toEqual(null);
   });
 
-  test("No drops required Daily", function () {
+  test("No drops required Daily", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/noDropsRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -61,7 +61,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(playerTransactions).toEqual(null);
   });
 
-  test("Injured player illegally on IR, don't drop anyone", function () {
+  test("Injured player illegally on IR, don't drop anyone", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/injuredPlayerIllegallyOnIR.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -70,7 +70,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(playerTransactions).toEqual(null);
   });
 
-  test("Drop player with lowest score for 'Probable' player Daily", function () {
+  test("Drop player with lowest score for 'Probable' player Daily", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -85,7 +85,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(addedCount).toEqual(0);
   });
 
-  test("No drops required Intraday", function () {
+  test("No drops required Intraday", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/noDropsRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -94,7 +94,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(playerTransactions).toEqual(null);
   });
 
-  test("Try dropping critical position G", function () {
+  test("Try dropping critical position G", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/tryDropCriticalPositionG.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -102,19 +102,19 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
 
     // drop second worst player since G is a critical position
     const droppedPlayers = playerTransactions?.flatMap((pt) =>
-      pt.players.filter((p) => p.transactionType === "drop")
+      pt.players.filter((p) => p.transactionType === "drop"),
     );
     expect(droppedPlayers?.length).toEqual(1);
     expect(droppedPlayers?.[0].player.eligible_positions).not.toContain("G");
 
     const addedPlayerCount = playerTransactions?.flatMap((pt) =>
-      pt.players.filter((p) => p.transactionType === "add")
+      pt.players.filter((p) => p.transactionType === "add"),
     ).length;
 
     expect(addedPlayerCount).toEqual(0);
   });
 
-  test("Drop player with lowest score for 'Probable' player Intraday", function () {
+  test("Drop player with lowest score for 'Probable' player Intraday", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/dropPlayerWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -129,7 +129,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(addedCount).toEqual(0);
   });
 
-  test("Drop two players with lowest score for 'Questionable' and 'Game Time Decision' players Intraday", function () {
+  test("Drop two players with lowest score for 'Questionable' and 'Game Time Decision' players Intraday", () => {
     const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -144,7 +144,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(addedCount).toEqual(0);
   });
 
-  test("Drop player with lowest score for 'Probable' player NBA", function () {
+  test("Drop player with lowest score for 'Probable' player NBA", () => {
     const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -159,7 +159,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(addedCount).toEqual(0);
   });
 
-  test("Drop player with third lowest score (lowest are non-editable for today) - NBA", function () {
+  test("Drop player with third lowest score (lowest are non-editable for today) - NBA", () => {
     const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredThirdLowest.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -169,19 +169,19 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
   });
 
-  test("Drop player with lowest score - same as above but roster is now daily change - NBA", function () {
+  test("Drop player with lowest score - same as above but roster is now daily change - NBA", () => {
     const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredLowest.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
 
     expect(playerTransactions?.[0].players[0].playerKey).not.toEqual(
-      "418.p.5864"
+      "418.p.5864",
     );
     expect(playerTransactions?.[0].players[0].transactionType).toEqual("drop");
   });
 
-  test("Drop player with lowest score for 'Game Time Decision' player NBA", function () {
+  test("Drop player with lowest score for 'Game Time Decision' player NBA", () => {
     const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -196,7 +196,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(addedCount).toEqual(0);
   });
 
-  test("Drop two player with lowest score for 'Game Time Decision' players NBA", function () {
+  test("Drop two player with lowest score for 'Game Time Decision' players NBA", () => {
     const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/twoDropsRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -211,7 +211,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", function () {
     expect(addedCount).toEqual(0);
   });
 
-  test("Drop player with lowest score for 'Game Time Decision' player NBA weekly", function () {
+  test("Drop player with lowest score for 'Game Time Decision' player NBA weekly", () => {
     const roster: ITeamOptimizer = require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
@@ -341,10 +341,10 @@ describe("Add players", () => {
 
     expect(playerTransactions?.length).toEqual(2);
     expect(
-      playerTransactions?.[0].players[0].player.eligible_positions
+      playerTransactions?.[0].players[0].player.eligible_positions,
     ).includes("1B");
     expect(
-      playerTransactions?.[1].players[0].player.eligible_positions
+      playerTransactions?.[1].players[0].player.eligible_positions,
     ).includes("C");
   });
 
@@ -357,7 +357,7 @@ describe("Add players", () => {
 
     expect(playerTransactions?.length).toEqual(2);
     expect(
-      playerTransactions?.[0].players[0].player.eligible_positions
+      playerTransactions?.[0].players[0].player.eligible_positions,
     ).includes("1B");
     expect(playerTransactions?.[1].players[0].playerKey).toEqual("422.p.10234"); // best player
   });
@@ -540,10 +540,10 @@ describe("Swap players", () => {
       .flatMap((p) => p.player.eligible_positions);
 
     expect(firstAddedPositions.some((pos) => ["C", "1B"].includes(pos))).toBe(
-      true
+      true,
     );
     expect(secondAddedPositions.some((pos) => ["C", "1B"].includes(pos))).toBe(
-      true
+      true,
     );
   });
 
@@ -555,7 +555,7 @@ describe("Swap players", () => {
     const playerTransactions = lo.playerTransactions;
 
     const playersInTransactions = playerTransactions?.flatMap((pt) =>
-      pt.players.map((p) => p.playerKey)
+      pt.players.map((p) => p.playerKey),
     );
 
     expect(playersInTransactions).not.toContain("422.p.10234");
@@ -679,7 +679,7 @@ describe("Combination Drops or Adds", () => {
     const rosterModifications = lo2.lineupChanges;
 
     expect(rosterModifications?.newPlayerPositions["422.p.10660"]).toEqual(
-      "BN"
+      "BN",
     );
   });
   it("should add / drop no one because we can swap IL player with injured on roster", () => {
@@ -699,10 +699,10 @@ describe("Combination Drops or Adds", () => {
     const rosterModifications = lo2.lineupChanges;
 
     expect(rosterModifications?.newPlayerPositions["422.p.10660"]).toEqual(
-      "BN"
+      "BN",
     );
     expect(rosterModifications?.newPlayerPositions["422.p.106602"]).toEqual(
-      "IL"
+      "IL",
     );
   });
 
@@ -716,7 +716,7 @@ describe("Combination Drops or Adds", () => {
     const lineupChanges = lo.lineupChanges;
 
     expect(playerTransactions?.[0].players[0].playerKey).toEqual(
-      "422.p.106602"
+      "422.p.106602",
     );
     expect(lineupChanges).toEqual(null);
 
@@ -726,7 +726,7 @@ describe("Combination Drops or Adds", () => {
     const rosterModifications = lo2.lineupChanges;
 
     expect(rosterModifications?.newPlayerPositions["422.p.10660"]).toEqual(
-      "BN"
+      "BN",
     );
   });
 
@@ -799,14 +799,14 @@ describe("Combination Drops or Adds", () => {
     const playerTransactions = lo.playerTransactions;
 
     const droppedPlayers = playerTransactions?.map(
-      (t) => t.players.find((p) => p.transactionType === "drop")?.playerKey
+      (t) => t.players.find((p) => p.transactionType === "drop")?.playerKey,
     );
 
     if (droppedPlayers) {
       for (const playerKey of droppedPlayers) {
         playerKey &&
           expect(lineupChanges?.newPlayerPositions[playerKey]).not.toEqual(
-            "IL"
+            "IL",
           );
       }
     }
@@ -826,7 +826,7 @@ describe("Combination Drops or Adds", () => {
       t.players
         .filter((p) => p.transactionType === "add")
         .flatMap((p) => p.player.eligible_positions)
-        .filter((p) => p === "P")
+        .filter((p) => p === "P"),
     ).length;
 
     const droppedPitcherCount = playerTransactions?.flatMap(
@@ -834,7 +834,7 @@ describe("Combination Drops or Adds", () => {
         t.players
           .filter((p) => p.transactionType === "drop")
           .flatMap((p) => p.player.eligible_positions)
-          .filter((p) => p === "P").length
+          .filter((p) => p === "P").length,
     ).length;
 
     assert(addedPitcherCount && droppedPitcherCount);

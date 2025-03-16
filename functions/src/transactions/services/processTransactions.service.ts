@@ -1,7 +1,7 @@
 import assert from "assert";
 import { logger } from "firebase-functions";
-import { IPlayer } from "../../common/interfaces/IPlayer.js";
-import {
+import type { IPlayer } from "../../common/interfaces/IPlayer.js";
+import type {
   ITeamFirestore,
   ITeamOptimizer,
 } from "../../common/interfaces/ITeam.js";
@@ -14,22 +14,22 @@ import {
   putLineupChanges,
 } from "../../common/services/yahooAPI/yahooAPI.service.js";
 
+import { getScarcityOffsetsForTeam } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import type { Player } from "../../common/classes/Player.js";
 import { sendUserEmail } from "../../common/services/email/email.service.js";
 import { getActiveTeamsForUser } from "../../common/services/firebase/firestore.service.js";
 import { enrichTeamsWithFirestoreSettings } from "../../common/services/firebase/firestoreUtils.service.js";
-import { LineupOptimizer } from "../../dispatchSetLineup/classes/LineupOptimizer.js";
-import { LineupChanges } from "../../dispatchSetLineup/interfaces/LineupChanges.js";
+import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
 import {
+  type TopAvailablePlayers,
+  fetchTopAvailablePlayersFromYahoo,
+} from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
+import { LineupOptimizer } from "../../dispatchSetLineup/classes/LineupOptimizer.js";
+import type { LineupChanges } from "../../dispatchSetLineup/interfaces/LineupChanges.js";
+import type {
   PlayerTransaction,
   TransactionType,
 } from "../../dispatchSetLineup/interfaces/PlayerTransaction.js";
-import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
-import {
-  TopAvailablePlayers,
-  fetchTopAvailablePlayersFromYahoo,
-} from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
-import { getScarcityOffsetsForTeam } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
-import { Player } from "../../common/classes/Player.js";
 
 type TransactionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
@@ -89,13 +89,13 @@ export async function getTransactions(uid: string): Promise<TransactionsData> {
   });
 
   const intradayTeams = firestoreTeams.filter(
-    (team) => team.weekly_deadline === "intraday" || team.game_code === "nfl"
+    (team) => team.weekly_deadline === "intraday" || team.game_code === "nfl",
   );
   const nextDayTeams = firestoreTeams.filter(
     (team) =>
       (team.weekly_deadline === "" ||
         team.weekly_deadline === (getCurrentPacificNumDay() + 1).toString()) &&
-      team.game_code !== "nfl"
+      team.game_code !== "nfl",
   );
 
   const topAvailablePlayerCandidates: TopAvailablePlayers =
@@ -105,26 +105,26 @@ export async function getTransactions(uid: string): Promise<TransactionsData> {
     getPlayerTransactionsForDate(
       uid,
       intradayTeams,
-      topAvailablePlayerCandidates
+      topAvailablePlayerCandidates,
     ),
     getPlayerTransactionsForDate(
       uid,
       nextDayTeams,
       topAvailablePlayerCandidates,
-      tomorrowsDateAsString()
+      tomorrowsDateAsString(),
     ),
   ]);
 
   const dropPlayerTransactions = (todays.dropPlayerTransactions ?? []).concat(
-    tomorrows.dropPlayerTransactions ?? []
+    tomorrows.dropPlayerTransactions ?? [],
   );
 
   const lineupChanges = (todays.lineupChanges ?? []).concat(
-    tomorrows.lineupChanges ?? []
+    tomorrows.lineupChanges ?? [],
   );
 
   const addSwapTransactions = (todays.addSwapTransactions ?? []).concat(
-    tomorrows.addSwapTransactions ?? []
+    tomorrows.addSwapTransactions ?? [],
   );
 
   const topAddCandidatesList = {
@@ -152,7 +152,7 @@ export async function getTransactions(uid: string): Promise<TransactionsData> {
 
 export async function postTransactions(
   transactionData: TransactionsData,
-  uid: string
+  uid: string,
 ): Promise<PostTransactionsResult> {
   let success = false;
   let allPostedTransactions: PlayerTransaction[] = [];
@@ -164,7 +164,7 @@ export async function postTransactions(
   if (dropPlayerTransactions) {
     // any dropped players need to be processed before healthy players on IL are moved to BN with lineupChanges
     const { postedTransactions, failedReasons } = await postSomeTransactions(
-      dropPlayerTransactions
+      dropPlayerTransactions,
     );
 
     success = true;
@@ -180,9 +180,8 @@ export async function postTransactions(
   }
 
   if (addSwapTransactions) {
-    const { postedTransactions, failedReasons } = await postSomeTransactions(
-      addSwapTransactions
-    );
+    const { postedTransactions, failedReasons } =
+      await postSomeTransactions(addSwapTransactions);
 
     allPostedTransactions = allPostedTransactions.concat(postedTransactions);
     allFailedReasons = allFailedReasons.concat(failedReasons);
@@ -202,7 +201,7 @@ export async function postTransactions(
   };
 
   async function postSomeTransactions(
-    transactions: PlayerTransaction[][]
+    transactions: PlayerTransaction[][],
   ): Promise<TransactionResults> {
     try {
       return await postTransactionsHelper(transactions, uid);
@@ -228,7 +227,7 @@ async function getPlayerTransactionsForDate(
   uid: string,
   firestoreTeams: readonly ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
-  date?: string
+  date?: string,
 ): Promise<TransactionsData> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -246,13 +245,13 @@ async function getPlayerTransactionsForDate(
 
   return await createPlayersTransactions(
     usersTeams,
-    topAvailablePlayerCandidates
+    topAvailablePlayerCandidates,
   );
 }
 
 export async function getTopAvailablePlayers(
   firestoreTeams: readonly ITeamFirestore[],
-  uid: string
+  uid: string,
 ) {
   // TODO: Do we want to initiate the promises here, or earlier in the call stack before we know usersTeams.length > 0?
   // Pro: We can get the top available players while we wait for the usersTeamsPromise to resolve
@@ -270,14 +269,14 @@ export async function getTopAvailablePlayers(
     await mergeTopAvailabePlayers(
       topAvailablePlayersPromise,
       nflTopAvailablePlayersPromise,
-      restTopAvailablePlayersPromise
+      restTopAvailablePlayersPromise,
     );
   return topAvailablePlayerCandidates;
 }
 
 export async function createPlayersTransactions(
   teams: ITeamOptimizer[],
-  allAddCandidates: TopAvailablePlayers
+  allAddCandidates: TopAvailablePlayers,
 ): Promise<TransactionsData> {
   const dropPlayerTransactions: PlayerTransaction[][] = [];
   const addSwapPlayerTransactions: PlayerTransaction[][] = [];
@@ -301,7 +300,7 @@ export async function createPlayersTransactions(
         logger.log(
           `positionalScarcityOffsets for team ${
             team.team_key
-          }: ${JSON.stringify(positionalScarcityOffsets)}`
+          }: ${JSON.stringify(positionalScarcityOffsets)}`,
         );
         logger.log(`dropPlayerTransactions: ${JSON.stringify(dpt)}`);
       }
@@ -322,7 +321,7 @@ export async function createPlayersTransactions(
       // filter out any add transactions that are already in drop transactions by comparing the reason field
       const aspt: PlayerTransaction[] | undefined =
         lo.playerTransactions?.filter(
-          (pt) => !dpt?.some((dpt) => dpt.description === pt.description)
+          (pt) => !dpt?.some((dpt) => dpt.description === pt.description),
         );
       if (aspt) {
         addSwapPlayerTransactions.push(aspt);
@@ -330,7 +329,7 @@ export async function createPlayersTransactions(
         logger.log(
           `positionalScarcityOffsets for team ${
             team.team_key
-          }: ${JSON.stringify(positionalScarcityOffsets)}`
+          }: ${JSON.stringify(positionalScarcityOffsets)}`,
         );
         logger.log(`addSwapPlayerTransactions: ${JSON.stringify(aspt)}`);
       }
@@ -346,11 +345,11 @@ export async function createPlayersTransactions(
       lo.getBaseAddDropCandidates();
 
     topAddCandidatesList[team.team_key] = baseAddCandidates.concat(
-      getPlayersFromTransactions("add", addSwapPlayerTransactions)
+      getPlayersFromTransactions("add", addSwapPlayerTransactions),
     );
     topDropCandidatesList[team.team_key] = baseDropCandidates.concat(
       getPlayersFromTransactions("drop", dropPlayerTransactions),
-      getPlayersFromTransactions("drop", addSwapPlayerTransactions)
+      getPlayersFromTransactions("drop", addSwapPlayerTransactions),
     );
 
     playersAtPositionList[team.team_key] = lo.teamObject.positionCounts;
@@ -370,20 +369,20 @@ export async function createPlayersTransactions(
 
 function getPlayersFromTransactions(
   transactionType: TransactionType,
-  playerTransactions: PlayerTransaction[][]
+  playerTransactions: PlayerTransaction[][],
 ): Player[] {
   return playerTransactions.flatMap((transactions) =>
     transactions.flatMap((transaction) =>
       transaction.players
         .filter((player) => player.transactionType === transactionType)
-        .map((player) => player.player)
-    )
+        .map((player) => player.player),
+    ),
   );
 }
 
 async function postTransactionsHelper(
   playerTransactions: PlayerTransaction[][],
-  uid: string
+  uid: string,
 ): Promise<TransactionResults> {
   const postedTransactions: PlayerTransaction[] = [];
   const failedReasons: string[] = [];
@@ -404,8 +403,8 @@ async function postTransactionsHelper(
       const { reason } = result;
       logger.error(
         `Error in postAllTransactions() for User: ${uid}: ${JSON.stringify(
-          reason
-        )}`
+          reason,
+        )}`,
       );
       failedReasons.push(reason);
     }
@@ -420,21 +419,21 @@ async function postTransactionsHelper(
 
 export function sendSuccessfulTransactionEmail(
   transactionsPosted: PlayerTransaction[],
-  uid: string
+  uid: string,
 ) {
   const body = ["The following transactions were processed:"].concat(
-    stringifyTransactions(transactionsPosted)
+    stringifyTransactions(transactionsPosted),
   );
   sendUserEmail(
     uid,
     "Transactions were Automatically Processed for your Teams",
-    body
+    body,
   );
 }
 
 export function sendPotentialTransactionEmail(
   transactionsProposed: PlayerTransaction[],
-  uid: string
+  uid: string,
 ) {
   const body = [
     "The following transactions have been proposed for your teams:",
@@ -444,7 +443,7 @@ export function sendPotentialTransactionEmail(
     "New Transactions Available for your Teams",
     body,
     "Go to Transactions",
-    "https://fantasyautocoach.com/transactions"
+    "https://fantasyautocoach.com/transactions",
   );
 }
 
@@ -456,7 +455,7 @@ function stringifyTransactions(transactions: PlayerTransaction[]): string[] {
   Object.keys(groupedTransactions).forEach((teamKey) => {
     const teamTransactions = groupedTransactions[teamKey];
     result.push(
-      `<strong>${teamTransactions[0].teamName} (${teamTransactions[0].leagueName}):</strong>`
+      `<strong>${teamTransactions[0].teamName} (${teamTransactions[0].leagueName}):</strong>`,
     );
     teamTransactions.forEach((t) => {
       result.push(t.description);
@@ -488,22 +487,22 @@ function tomorrowsDateAsString(): string {
 
 export function generateTopAvailablePlayerPromises(
   firestoreTeams: readonly ITeamFirestore[],
-  uid: string
+  uid: string,
 ) {
   const nflTeamKeysAddingPlayers: string[] = firestoreTeams
     .filter(
       (team) =>
-        (team.allow_adding || team.allow_add_drops) && team.game_code === "nfl"
+        (team.allow_adding || team.allow_add_drops) && team.game_code === "nfl",
     )
     .map((team) => team.team_key);
   const restTeamKeysAddingPlayers: string[] = firestoreTeams
     .filter(
       (team) =>
-        (team.allow_adding || team.allow_add_drops) && team.game_code !== "nfl"
+        (team.allow_adding || team.allow_add_drops) && team.game_code !== "nfl",
     )
     .map((team) => team.team_key);
   const allTeamKeysAddingPlayers: string[] = nflTeamKeysAddingPlayers.concat(
-    restTeamKeysAddingPlayers
+    restTeamKeysAddingPlayers,
   );
 
   if (allTeamKeysAddingPlayers.length === 0) {
@@ -515,7 +514,7 @@ export function generateTopAvailablePlayerPromises(
       allTeamKeysAddingPlayers,
       uid,
       "A",
-      "sort=R_PO"
+      "sort=R_PO",
     );
 
   let nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>;
@@ -524,7 +523,7 @@ export function generateTopAvailablePlayerPromises(
       nflTeamKeysAddingPlayers,
       uid,
       "A",
-      "sort=AR_L4W;sort_type=last4weeks"
+      "sort=AR_L4W;sort_type=last4weeks",
     );
   } else {
     nflTopAvailablePlayersPromise = Promise.resolve({});
@@ -536,7 +535,7 @@ export function generateTopAvailablePlayerPromises(
       restTeamKeysAddingPlayers,
       uid,
       "A",
-      "sort=AR_L14;sort_type=biweekly"
+      "sort=AR_L14;sort_type=biweekly",
     );
   } else {
     restTopAvailablePlayersPromise = Promise.resolve({});
@@ -552,7 +551,7 @@ export function generateTopAvailablePlayerPromises(
 export async function mergeTopAvailabePlayers(
   topAvailablePlayersPromise: Promise<TopAvailablePlayers>,
   nflTopAvailablePlayersPromise: Promise<TopAvailablePlayers>,
-  restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>
+  restTopAvailablePlayersPromise: Promise<TopAvailablePlayers>,
 ): Promise<TopAvailablePlayers> {
   const result: TopAvailablePlayers = {};
 

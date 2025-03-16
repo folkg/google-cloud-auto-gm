@@ -13,7 +13,7 @@ vi.mock("firebase-admin/app", () => ({
   initializeApp: vi.fn(),
 }));
 
-describe("Test setStartingPlayers()", function () {
+describe("Test setStartingPlayers()", () => {
   const intradayTeamsObject = {
     docs: [
       {
@@ -64,17 +64,17 @@ describe("Test setStartingPlayers()", function () {
   const spyGetIntradayTeams = vi.spyOn(firestoreService, "getIntradayTeams");
   const spyStoreStartingPlayersInFirestore = vi.spyOn(
     firestoreService,
-    "storeStartingPlayersInFirestore"
+    "storeStartingPlayersInFirestore",
   );
 
   spyGetIntradayTeams.mockImplementation(() =>
-    Promise.resolve(intradayTeamsObject as any)
+    Promise.resolve(intradayTeamsObject as any),
   );
   spyStoreStartingPlayersInFirestore.mockImplementation(() =>
-    Promise.resolve()
+    Promise.resolve(),
   );
   vi.spyOn(yahooAPI, "getStartingPlayers").mockImplementation(() =>
-    Promise.resolve(startingPlayersObject)
+    Promise.resolve(startingPlayersObject),
   );
 
   afterEach(() => {
@@ -83,27 +83,27 @@ describe("Test setStartingPlayers()", function () {
     spyStoreStartingPlayersInFirestore.mockClear();
   });
 
-  test("test NHL setStartingPlayers", async function () {
+  test("test NHL setStartingPlayers", async () => {
     const league = "nhl";
     await fetchStartingPlayers(league);
     expect(spyGetIntradayTeams).toHaveBeenCalledWith(league);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledTimes(1);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledWith(
       startingPlayersArray,
-      league
+      league,
     );
   });
-  test("test MLB setStartingPlayers", async function () {
+  test("test MLB setStartingPlayers", async () => {
     const league = "mlb";
     await fetchStartingPlayers(league);
     expect(spyGetIntradayTeams).toHaveBeenCalledWith(league);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledTimes(1);
     expect(spyStoreStartingPlayersInFirestore).toHaveBeenCalledWith(
       startingPlayersArray,
-      league
+      league,
     );
   });
-  test("test NBA setStartingPlayers", async function () {
+  test("test NBA setStartingPlayers", async () => {
     const league = "nba";
     await fetchStartingPlayers(league);
     expect(spyGetIntradayTeams).toHaveBeenCalledWith(league);

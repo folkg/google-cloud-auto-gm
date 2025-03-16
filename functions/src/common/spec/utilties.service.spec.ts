@@ -20,18 +20,18 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe("Utilities test", function () {
-  test("single digit month, day ", function () {
+describe("Utilities test", () => {
+  test("single digit month, day ", () => {
     const date = new Date(Date.UTC(2020, 0, 3, 1, 1, 1));
     const result = getPacificTimeDateString(date);
     expect(result).toEqual("2020-01-02");
   });
-  test("double digit month, day ", function () {
+  test("double digit month, day ", () => {
     const date = new Date(Date.UTC(2023, 10, 13, 1, 1, 1));
     const result = getPacificTimeDateString(date);
     expect(result).toEqual("2023-11-12");
   });
-  test("today", function () {
+  test("today", () => {
     const date = new Date();
     const result = getPacificTimeDateString(date);
     // allow for a one day difference
@@ -41,18 +41,18 @@ describe("Utilities test", function () {
       .slice(0, 10);
     expect(result).toEqual(expect.stringMatching(today + "|" + yesterday));
   });
-  test("getPacificStartOfDay", function () {
+  test("getPacificStartOfDay", () => {
     const date = new Date(2020, 0, 3, 1, 1, 1).toISOString();
     const result = getPacificStartOfDay(date);
     expect(result).toEqual(1578009600000);
   });
-  test("getPacificEndOfDay", function () {
+  test("getPacificEndOfDay", () => {
     const date = new Date(2020, 0, 3, 1, 1, 1).toISOString();
     const result = getPacificEndOfDay(date);
     expect(result).toEqual(1578095999999);
   });
 
-  test("getWeeklyProgressPacific", function () {
+  test("getWeeklyProgressPacific", () => {
     // mock spacetime.now() to return a specific date
     const mockSpacetime = spacetime("June 15, 2023", "Canada/Pacific");
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
@@ -63,7 +63,7 @@ describe("Utilities test", function () {
     expect(result).toBeCloseTo(expected, 2);
   });
 
-  test("getProgressBetween", function () {
+  test("getProgressBetween", () => {
     const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific");
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
     const startDate = spacetime("June 21, 2023", "Canada/Pacific").epoch;
@@ -74,7 +74,7 @@ describe("Utilities test", function () {
     expect(result).toEqual(0.5);
   });
 
-  test("getProgressBetween again", function () {
+  test("getProgressBetween again", () => {
     const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific");
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
     const startDate = spacetime("June 21, 2023", "Canada/Pacific").epoch;

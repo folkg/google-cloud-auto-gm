@@ -16,7 +16,7 @@ vi.mock("firebase-admin/app", () => ({
 // set up mocks
 const mockLeaguesToSetLineupsFor = vi.spyOn(
   schedulingService,
-  "leaguesToSetLineupsFor"
+  "leaguesToSetLineupsFor",
 );
 
 const mockQueue = {
@@ -46,7 +46,7 @@ vi.mock("firebase-admin/functions", () => {
 describe("scheduleSetLineup", () => {
   beforeEach(() => {
     mockLeaguesToSetLineupsFor.mockReturnValue(
-      Promise.resolve(["nhl", "mlb", "nba"])
+      Promise.resolve(["nhl", "mlb", "nba"]),
     );
   });
 
@@ -56,7 +56,7 @@ describe("scheduleSetLineup", () => {
 
   const mockGetActiveTeamsForLeagues = vi.spyOn(
     firestoreService,
-    "getActiveTeamsForLeagues"
+    "getActiveTeamsForLeagues",
   );
 
   function mockTeamsSnapshot(teams: any) {
@@ -91,7 +91,7 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot as any)
+      Promise.resolve(teamsSnapshot as any),
     );
 
     await scheduleSetLineup();
@@ -103,7 +103,7 @@ describe("scheduleSetLineup", () => {
       {
         dispatchDeadlineSeconds: 60 * 5,
         uri: mockFunctionUrl,
-      }
+      },
     );
     expect(mockQueue.enqueue).toHaveBeenCalledWith(
       // check if the enqueue method was called with the correct arguments for the second user
@@ -111,7 +111,7 @@ describe("scheduleSetLineup", () => {
       {
         dispatchDeadlineSeconds: 60 * 5,
         uri: mockFunctionUrl,
-      }
+      },
     );
   });
 
@@ -141,13 +141,13 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
     console.log(JSON.stringify(teamsSnapshot.docs.map((t: any) => t.data())));
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot as any)
+      Promise.resolve(teamsSnapshot as any),
     );
 
     const spyFetchStartingPlayers = vi
       .spyOn(
         require("../../common/services/yahooAPI/yahooStartingPlayer.service"),
-        "fetchStartingPlayers"
+        "fetchStartingPlayers",
       )
       .mockImplementation(() => {
         console.log("test");
@@ -184,7 +184,7 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot as any)
+      Promise.resolve(teamsSnapshot as any),
     );
 
     await scheduleSetLineup();
@@ -196,7 +196,7 @@ describe("scheduleSetLineup", () => {
       {
         dispatchDeadlineSeconds: 60 * 5,
         uri: mockFunctionUrl,
-      }
+      },
     );
   });
 

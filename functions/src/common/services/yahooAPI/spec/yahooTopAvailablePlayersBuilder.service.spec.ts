@@ -14,14 +14,14 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe("Test fetchTopAvailablePlayersFromYahoo", function () {
-  test("Test Players", async function () {
+describe("Test fetchTopAvailablePlayersFromYahoo", () => {
+  test("Test Players", async () => {
     const teamKeys = ["422.l.90351.t.1"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/free-agents.json");
 
     vi.spyOn(yahooAPIService, "getTopAvailablePlayers").mockReturnValue(
-      yahooJSON
+      yahooJSON,
     );
 
     const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);
@@ -29,13 +29,13 @@ describe("Test fetchTopAvailablePlayersFromYahoo", function () {
     expect(result).toMatchSnapshot();
   });
 
-  test("With waivers and freeagents", async function () {
+  test("With waivers and freeagents", async () => {
     const teamKeys = ["422.l.115494.t.4", "422.l.16955.t.10"];
     const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/yahooJSONWaivers.json");
 
     vi.spyOn(yahooAPIService, "getTopAvailablePlayers").mockReturnValue(
-      yahooJSON
+      yahooJSON,
     );
 
     const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);
@@ -43,13 +43,13 @@ describe("Test fetchTopAvailablePlayersFromYahoo", function () {
     expect(result).toMatchSnapshot();
   });
 
-  test("NFL", async function () {
+  test("NFL", async () => {
     const teamKeys = ["423.l.784843.t.12"];
     const uid = "test";
     const yahooJSON = require("./testYahooPlayersJSON/yahooJSON/NFL.json");
 
     vi.spyOn(yahooAPIService, "getTopAvailablePlayers").mockReturnValue(
-      yahooJSON
+      yahooJSON,
     );
 
     const result = await fetchTopAvailablePlayersFromYahoo(teamKeys, uid);

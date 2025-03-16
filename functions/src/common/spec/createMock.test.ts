@@ -12,7 +12,10 @@ class TestClass {
 
   private _property = 0;
 
-  constructor(public name: string, public age: number) {
+  constructor(
+    public name: string,
+    public age: number,
+  ) {
     TestClass.zero = 1;
   }
 
@@ -69,7 +72,7 @@ describe("createMock", () => {
 
     expect(testWrapper(() => mock.name)).not.toThrow();
     expect(testWrapper(() => mock.age)).toThrowError(
-      "'age' was accessed on a mock object, but the mock implementation is not defined."
+      "'age' was accessed on a mock object, but the mock implementation is not defined.",
     );
   });
 
@@ -78,13 +81,13 @@ describe("createMock", () => {
 
     expect(testWrapper(() => mock.name)).not.toThrow();
     expect(testWrapper(() => mock.age)).toThrowError(
-      "'age' was accessed on a mock object, but the mock implementation is not defined."
+      "'age' was accessed on a mock object, but the mock implementation is not defined.",
     );
     expect(testWrapper(() => mock.method())).toThrowError(
-      "'method' was accessed on a mock object, but the mock implementation is not defined."
+      "'method' was accessed on a mock object, but the mock implementation is not defined.",
     );
     expect(testWrapper(() => mock.property)).toThrowError(
-      "'property' was accessed on a mock object, but the mock implementation is not defined."
+      "'property' was accessed on a mock object, but the mock implementation is not defined.",
     );
 
     // Test construcor wasn't called along with static properties

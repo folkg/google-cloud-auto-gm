@@ -2,9 +2,9 @@ import js2xmlparser from "js2xmlparser";
 import { postRosterAddDropTransaction } from "../yahooAPI.service.js";
 import * as yahooHttpService from "../yahooHttp.service.js";
 
-import { describe, expect, it, vi } from "vitest";
-import { TPlayer } from "../../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
 import { AxiosError } from "axios";
+import { describe, expect, it, vi } from "vitest";
+import type { TPlayer } from "../../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
 
 vi.mock("firebase-admin/firestore", () => ({
   getFirestore: vi.fn(() => ({ settings: vi.fn() })),
@@ -49,7 +49,7 @@ describe("YahooAPI Service", () => {
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
-      "httpPostAxiosAuth"
+      "httpPostAxiosAuth",
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
       return Promise.resolve() as any;
@@ -59,7 +59,7 @@ describe("YahooAPI Service", () => {
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
       uid,
       "league/418.l.201581/transactions",
-      expectedXML
+      expectedXML,
     );
   });
 
@@ -96,7 +96,7 @@ describe("YahooAPI Service", () => {
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
-      "httpPostAxiosAuth"
+      "httpPostAxiosAuth",
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
       return Promise.resolve() as any;
@@ -106,7 +106,7 @@ describe("YahooAPI Service", () => {
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
       uid,
       "league/418.l.201581/transactions",
-      expectedXML
+      expectedXML,
     );
   });
 
@@ -145,7 +145,7 @@ describe("YahooAPI Service", () => {
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
-      "httpPostAxiosAuth"
+      "httpPostAxiosAuth",
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
       return Promise.resolve() as any;
@@ -155,7 +155,7 @@ describe("YahooAPI Service", () => {
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
       uid,
       "league/418.l.201581/transactions",
-      expectedXML
+      expectedXML,
     );
   });
 
@@ -210,7 +210,7 @@ describe("YahooAPI Service", () => {
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
-      "httpPostAxiosAuth"
+      "httpPostAxiosAuth",
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
       return Promise.resolve() as any;
@@ -220,7 +220,7 @@ describe("YahooAPI Service", () => {
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
       uid,
       "league/418.l.201581/transactions",
-      expectedXML
+      expectedXML,
     );
   });
   it("should swallow the error for picking up a player on waivers that we recently dropped", async () => {
@@ -236,7 +236,7 @@ describe("YahooAPI Service", () => {
           " <description>You cannot add a player you dropped until the waiver period ends.</description>\n" +
           " <detail/>\n" +
           "</error>",
-      } as any
+      } as any,
     );
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
     const teamKey = "418.l.201581.t.1";
@@ -254,11 +254,11 @@ describe("YahooAPI Service", () => {
       ],
     };
     const errMessage = `There was a problem posting one transaction. Here are the error details: User: ${uid} Team: ${teamKey} Transaction: ${JSON.stringify(
-      transaction
+      transaction,
     )}`;
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
-      "httpPostAxiosAuth"
+      "httpPostAxiosAuth",
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
       return Promise.reject(axiosError) as any;
@@ -269,7 +269,7 @@ describe("YahooAPI Service", () => {
     });
     const result = await postRosterAddDropTransaction(transaction, uid);
     expect(spyConsoleError).toHaveBeenCalledWith(
-      `You cannot add a player you dropped until the waiver period ends. ${errMessage}`
+      `You cannot add a player you dropped until the waiver period ends. ${errMessage}`,
     );
     expect(result).toEqual(null);
   });

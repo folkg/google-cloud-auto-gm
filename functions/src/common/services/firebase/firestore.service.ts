@@ -1,18 +1,21 @@
 import { isAxiosError } from "axios";
 import { getApps, initializeApp } from "firebase-admin/app";
 import {
-  DocumentData,
-  DocumentSnapshot,
-  QuerySnapshot,
+  type DocumentData,
+  type DocumentSnapshot,
+  type QuerySnapshot,
   getFirestore,
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
+import { assert } from "superstruct";
+import type { ScarcityOffsetsCollection } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import {
-  ITeamAngular,
-  ITeamFirestore,
+  type ITeamAngular,
+  type ITeamFirestore,
   yahooToFirestore,
 } from "../../interfaces/ITeam.js";
-import { ReturnCredential, Token } from "../../interfaces/credential.js";
+import { type ClientTeam, FirestoreTeam } from "../../interfaces/Team.js";
+import type { ReturnCredential, Token } from "../../interfaces/credential.js";
 import { sendUserEmail } from "../email/email.service.js";
 import {
   getCurrentPacificNumDay,
@@ -23,9 +26,6 @@ import { refreshYahooAccessToken } from "../yahooAPI/yahooAPI.service.js";
 import { fetchStartingPlayers } from "../yahooAPI/yahooStartingPlayer.service.js";
 import { RevokedRefreshTokenError } from "./errors.js";
 import { revokeRefreshToken } from "./revokeRefreshToken.service.js";
-import { ScarcityOffsetsCollection } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
-import { FirestoreTeam, type ClientTeam } from "../../interfaces/Team.js";
-import { assert } from "superstruct";
 
 if (getApps().length === 0) {
   initializeApp();
@@ -39,7 +39,7 @@ db.settings({ ignoreUndefinedProperties: true });
  * @return {Promise<ReturnCredential>} The credential with token and expiry
  */
 export async function loadYahooAccessToken(
-  uid: string
+  uid: string,
 ): Promise<ReturnCredential> {
   // fetch the current token from the database
   const doc = await db.collection("users").doc(uid).get();
@@ -49,7 +49,7 @@ export async function loadYahooAccessToken(
   }
   if (docData.refreshToken === "-1") {
     throw new RevokedRefreshTokenError(
-      `User ${uid} has revoked access. Stopping all actions for this user.`
+      `User ${uid} has revoked access. Stopping all actions for this user.`,
     );
   }
 
@@ -81,15 +81,15 @@ export async function loadYahooAccessToken(
                 "apologize for the inconvenience.",
             ],
             "Sign In",
-            "https://fantasyautocoach.com/"
+            "https://fantasyautocoach.com/",
           );
         }
         throw new Error(
-          `Could not refresh access token for user: ${uid} : ${error.response?.data.error} ${error.response?.data.error_description}`
+          `Could not refresh access token for user: ${uid} : ${error.response?.data.error} ${error.response?.data.error_description}`,
         );
       } else {
         throw new Error(
-          `Could not refresh access token for user: ${uid} : ${error}`
+          `Could not refresh access token for user: ${uid} : ${error}`,
         );
       }
     }
@@ -139,7 +139,7 @@ export async function flagRefreshToken(uid: string) {
  * @return {Promise<ITeamFirestore[]>} - An array of teams
  */
 export async function fetchTeamsFirestore(
-  uid: string
+  uid: string,
 ): Promise<ITeamFirestore[]> {
   try {
     // get all teams for the user that have not ended
@@ -226,7 +226,7 @@ export async function getTomorrowsActiveWeeklyTeams() {
       .where(
         "weekly_deadline",
         "==",
-        (getCurrentPacificNumDay() + 1).toString()
+        (getCurrentPacificNumDay() + 1).toString(),
       )
       .get();
   } catch (error) {
@@ -249,7 +249,7 @@ export async function getTomorrowsActiveWeeklyTeams() {
 export async function syncTeamsInFirestore(
   missingTeams: ITeamAngular[],
   extraTeams: ITeamFirestore[],
-  uid: string
+  uid: string,
 ): Promise<ClientTeam[]> {
   const result: ClientTeam[] = [];
 
@@ -303,7 +303,7 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
   } catch (error) {
     logger.error(
       `Error in updateFirestoreTimestamp for User: ${uid} and team: ${teamKey}`,
-      error
+      error,
     );
   }
 }
@@ -311,7 +311,7 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
 export async function updateTeamFirestore(
   uid: string,
   teamKey: string,
-  data: Partial<ITeamFirestore>
+  data: Partial<ITeamFirestore>,
 ) {
   const teamRef = db.collection(`users/${uid}/teams`).doc(teamKey);
   try {
@@ -320,7 +320,7 @@ export async function updateTeamFirestore(
   } catch (error) {
     logger.error(
       `Error in updateTeamFirestore for User: ${uid} and team: ${teamKey}`,
-      error
+      error,
     );
   }
 }
@@ -332,7 +332,7 @@ export async function updateTeamFirestore(
  * @return {Promise<QuerySnapshot<DocumentData>>} the team
  */
 export async function getIntradayTeams(
-  league: string
+  league: string,
 ): Promise<QuerySnapshot<DocumentData>> {
   const teamsRef = db.collectionGroup("teams");
   try {
@@ -345,10 +345,10 @@ export async function getIntradayTeams(
   } catch (error) {
     logger.error(
       `Error fetching Intraday ${league.toUpperCase()} teams from firestore`,
-      error
+      error,
     );
     throw new Error(
-      `Error fetching Intraday ${league.toUpperCase()} teams from firestore`
+      `Error fetching Intraday ${league.toUpperCase()} teams from firestore`,
     );
   }
 }
@@ -365,7 +365,7 @@ export async function getIntradayTeams(
  */
 export async function storeStartingPlayersInFirestore(
   startingPlayers: string[],
-  league: string
+  league: string,
 ): Promise<void> {
   const startingPlayersRef = db.collection("startingPlayers");
   try {
@@ -376,10 +376,10 @@ export async function storeStartingPlayersInFirestore(
   } catch (error) {
     logger.error(
       `Error storing starting ${league.toUpperCase()} players in Firestore`,
-      error
+      error,
     );
     throw new Error(
-      `Error storing starting ${league.toUpperCase()} players in Firestore`
+      `Error storing starting ${league.toUpperCase()} players in Firestore`,
     );
   }
 }
@@ -394,7 +394,7 @@ export async function storeStartingPlayersInFirestore(
  * @return {Promise<string[]>} - the starting players
  */
 export async function getStartingPlayersFromFirestore(
-  league: string
+  league: string,
 ): Promise<string[]> {
   const startingPlayersRef = db.collection("startingPlayers");
   try {
@@ -422,7 +422,7 @@ export async function getStartingPlayersFromFirestore(
   } catch (error) {
     logger.error(
       `Error getting starting ${league.toUpperCase()} players from Firestore`,
-      error
+      error,
     );
   }
 
@@ -455,7 +455,7 @@ export async function getPositionalScarcityOffsets() {
 export async function updatePositionalScarcityOffset(
   league: string,
   position: string,
-  offsets: number[]
+  offsets: number[],
 ) {
   const scarcityOffsetsRef = db.collection("positionalScarcityOffsets");
   try {
@@ -463,21 +463,21 @@ export async function updatePositionalScarcityOffset(
       {
         [position]: offsets,
       },
-      { merge: true }
+      { merge: true },
     );
     logger.info(
-      `Updated positional scarcity offsets for ${league.toUpperCase()} ${position} in Firestore`
+      `Updated positional scarcity offsets for ${league.toUpperCase()} ${position} in Firestore`,
     );
   } catch (error) {
     logger.error(
       `Error storing positional scarcity offsets for ${league.toUpperCase()} ${position} in Firestore`,
-      error
+      error,
     );
   }
 }
 
 export async function storeTodaysPostponedTeams(
-  teams: string[]
+  teams: string[],
 ): Promise<void> {
   try {
     await db.collection("postponedGames").doc("today").set({

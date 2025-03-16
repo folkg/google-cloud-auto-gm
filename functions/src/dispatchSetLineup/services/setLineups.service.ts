@@ -1,9 +1,10 @@
 import assert from "assert";
 import { logger } from "firebase-functions";
-import {
+import type {
   ITeamFirestore,
   ITeamOptimizer,
 } from "../../common/interfaces/ITeam.js";
+import { getTodaysPostponedTeams } from "../../common/services/firebase/firestore.service.js";
 import {
   enrichTeamsWithFirestoreSettings,
   patchTeamChangesInFirestore,
@@ -14,10 +15,12 @@ import {
   isTodayPacific,
 } from "../../common/services/utilities.service.js";
 import { putLineupChanges } from "../../common/services/yahooAPI/yahooAPI.service.js";
+import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
 import {
   initStartingGoalies,
   initStartingPitchers,
 } from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
+import type { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
 import { isFirstRunOfTheDay } from "../../scheduleSetLineup/services/scheduleSetLineup.service.js";
 import {
   createPlayersTransactions,
@@ -26,11 +29,8 @@ import {
   sendPotentialTransactionEmail,
 } from "../../transactions/services/processTransactions.service.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
-import { LineupChanges } from "../interfaces/LineupChanges.js";
-import { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
-import { fetchRostersFromYahoo } from "../../common/services/yahooAPI/yahooLineupBuilder.service.js";
-import { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service.js";
-import { getTodaysPostponedTeams } from "../../common/services/firebase/firestore.service.js";
+import type { LineupChanges } from "../interfaces/LineupChanges.js";
+import type { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 
 /**
  * Will optimize the starting lineup for a specific users teams
@@ -43,7 +43,7 @@ import { getTodaysPostponedTeams } from "../../common/services/firebase/firestor
  */
 export async function setUsersLineup(
   uid: string,
-  firestoreTeams: readonly ITeamFirestore[]
+  firestoreTeams: readonly ITeamFirestore[],
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -60,7 +60,7 @@ export async function setUsersLineup(
 
   const topAvailablePlayersPromise = getTopAvailablePlayers(
     firestoreTeamsToSet,
-    uid
+    uid,
   );
   const initStartingPlayersPromise =
     initializeGlobalStartingPlayers(firestoreTeamsToSet);
@@ -70,17 +70,17 @@ export async function setUsersLineup(
     firestoreTeamsToSet.map((t) => t.team_key),
     uid,
     "",
-    postponedTeams
+    postponedTeams,
   );
   if (usersTeams.length === 0) {
     return;
   }
   usersTeams = enrichTeamsWithFirestoreSettings(
     usersTeams,
-    firestoreTeamsToSet
+    firestoreTeamsToSet,
   );
   patchTeamChangesInFirestore(usersTeams, firestoreTeamsToSet).catch(
-    logger.error
+    logger.error,
   ); // don't await
 
   const topAvailablePlayerCandidates: TopAvailablePlayers =
@@ -90,7 +90,7 @@ export async function setUsersLineup(
     firestoreTeamsToSet,
     topAvailablePlayerCandidates,
     uid,
-    postponedTeams
+    postponedTeams,
   );
 
   await initStartingPlayersPromise;
@@ -100,13 +100,13 @@ export async function setUsersLineup(
     usersTeams,
     firestoreTeamsToSet,
     topAvailablePlayerCandidates,
-    uid
+    uid,
   );
 }
 
 export async function performWeeklyLeagueTransactions(
   uid: string,
-  firestoreTeams: ITeamFirestore[]
+  firestoreTeams: ITeamFirestore[],
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -122,13 +122,13 @@ export async function performWeeklyLeagueTransactions(
     firestoreTeams,
     firestoreTeams,
     uid,
-    topAvailablePlayerCandidates
+    topAvailablePlayerCandidates,
   );
 }
 
 async function processLineupChanges(
   teams: readonly ITeamOptimizer[],
-  uid: string
+  uid: string,
 ): Promise<ITeamOptimizer[]> {
   const result: ITeamOptimizer[] = [];
 
@@ -149,7 +149,7 @@ async function processLineupChanges(
     if (!isOptimalLineup) {
       logger.error(
         `Original roster for problematic team ${team.team_key}`,
-        team
+        team,
       );
     }
   }
@@ -173,7 +173,7 @@ async function processTransactionsForIntradayTeams(
   firestoreTeams: readonly ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string,
-  postponedTeams: Set<string>
+  postponedTeams: Set<string>,
 ): Promise<readonly ITeamOptimizer[]> {
   const teams = getTeamsWithSameDayTransactions(originalTeams);
 
@@ -184,7 +184,7 @@ async function processTransactionsForIntradayTeams(
   const transactionsCompleted: boolean = await processAutomaticTransactions(
     teams,
     topAvailablePlayerCandidates,
-    uid
+    uid,
   );
 
   if (transactionsCompleted) {
@@ -200,7 +200,7 @@ async function processTransactionsForNextDayTeams(
   originalTeams: readonly ITeamOptimizer[],
   firestoreTeams: readonly ITeamFirestore[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
-  uid: string
+  uid: string,
 ): Promise<void> {
   const teams = getTeamsForNextDayTransactions(originalTeams);
 
@@ -219,7 +219,7 @@ async function processTransactionsForNextDayTeams(
     teams,
     firestoreTeams,
     uid,
-    topAvailablePlayerCandidates
+    topAvailablePlayerCandidates,
   );
 }
 
@@ -227,30 +227,30 @@ async function processTomorrowsTransactions(
   teams: readonly ITeamOptimizer[] | readonly ITeamFirestore[],
   firestoreTeams: readonly ITeamFirestore[],
   uid: string,
-  topAvailablePlayerCandidates: TopAvailablePlayers
+  topAvailablePlayerCandidates: TopAvailablePlayers,
 ) {
   const teamKeys: string[] = teams.map((t) => t.team_key);
   let tomorrowsTeams = await fetchRostersFromYahoo(
     teamKeys,
     uid,
-    tomorrowsDateAsString()
+    tomorrowsDateAsString(),
   );
 
   tomorrowsTeams = enrichTeamsWithFirestoreSettings(
     tomorrowsTeams,
-    firestoreTeams
+    firestoreTeams,
   );
 
   await Promise.all([
     processManualTransactions(
       tomorrowsTeams,
       topAvailablePlayerCandidates,
-      uid
+      uid,
     ),
     processAutomaticTransactions(
       tomorrowsTeams,
       topAvailablePlayerCandidates,
-      uid
+      uid,
     ),
   ]);
 }
@@ -258,10 +258,10 @@ async function processTomorrowsTransactions(
 async function processAutomaticTransactions(
   teams: readonly ITeamOptimizer[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
-  uid: string
+  uid: string,
 ): Promise<boolean> {
   const teamsWithAutoTransactions = teams.filter(
-    (t) => t.automated_transaction_processing
+    (t) => t.automated_transaction_processing,
   );
 
   if (teamsWithAutoTransactions.length === 0) {
@@ -271,7 +271,7 @@ async function processAutomaticTransactions(
   const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
     await createPlayersTransactions(
       teamsWithAutoTransactions,
-      topAvailablePlayerCandidates
+      topAvailablePlayerCandidates,
     );
 
   const transactionData = {
@@ -293,11 +293,11 @@ async function processAutomaticTransactions(
 async function processManualTransactions(
   teams: readonly ITeamOptimizer[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
-  uid: string
+  uid: string,
 ): Promise<void> {
   // Only process teams on the first run of the day. Only propose changes once per day.
   const teamsToCheck = teams.filter(
-    (t) => !t.automated_transaction_processing && isFirstRunOfTheDay()
+    (t) => !t.automated_transaction_processing && isFirstRunOfTheDay(),
   );
 
   if (teamsToCheck.length === 0) {
@@ -319,29 +319,29 @@ async function processManualTransactions(
 }
 
 export function getTeamsWithSameDayTransactions(
-  teams: readonly ITeamOptimizer[]
+  teams: readonly ITeamOptimizer[],
 ): ITeamOptimizer[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
-      (team.weekly_deadline === "intraday" || team.game_code === "nfl")
+      (team.weekly_deadline === "intraday" || team.game_code === "nfl"),
   );
 }
 
 export function getTeamsForNextDayTransactions(
-  teams: readonly ITeamOptimizer[]
+  teams: readonly ITeamOptimizer[],
 ): ITeamOptimizer[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
       (team.weekly_deadline === "" ||
         team.weekly_deadline === (getCurrentPacificNumDay() + 1).toString()) &&
-      team.game_code !== "nfl"
+      team.game_code !== "nfl",
   );
 }
 
 async function initializeGlobalStartingPlayers(
-  firestoreTeams: readonly ITeamFirestore[]
+  firestoreTeams: readonly ITeamFirestore[],
 ) {
   const hasNHLTeam = firestoreTeams.some((team) => team.game_code === "nhl");
   if (hasNHLTeam) {

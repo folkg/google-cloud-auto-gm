@@ -1,6 +1,6 @@
+import spacetime from "spacetime";
 import { describe, expect, it, test, vi } from "vitest";
 import { Team } from "../Team.js";
-import spacetime from "spacetime";
 
 vi.mock("firebase-admin/firestore", () => ({
   getFirestore: vi.fn(() => ({ settings: vi.fn() })),
@@ -17,7 +17,7 @@ describe("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
-      (p) => p.player_key === "422.p.8616"
+      (p) => p.player_key === "422.p.8616",
     );
     expect(testPlayer?.eligible_positions).toEqual(["RP", "P", "BN"]);
   });
@@ -27,7 +27,7 @@ describe("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
-      (p) => p.player_key === "422.p.8616"
+      (p) => p.player_key === "422.p.8616",
     );
     expect(testPlayer?.eligible_positions).toEqual(["RP", "P", "BN"]);
   });
@@ -37,11 +37,11 @@ describe("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
-      (p) => p.player_key === "422.p.12120"
+      (p) => p.player_key === "422.p.12120",
     );
     expect(testPlayer?.eligible_positions).toEqual(["SP", "P", "BN"]);
     const testPlayer2 = team.allPlayers.find(
-      (p) => p.player_key === "422.p.11121"
+      (p) => p.player_key === "422.p.11121",
     );
     expect(testPlayer2?.eligible_positions).toEqual(["SP", "RP", "P", "BN"]);
   });
@@ -51,11 +51,11 @@ describe("Test Team Class", () => {
     const team = new Team(teamJSON[0]);
 
     const testPlayer = team.allPlayers.find(
-      (p) => p.player_key === "422.p.12120"
+      (p) => p.player_key === "422.p.12120",
     );
     expect(testPlayer?.eligible_positions).toEqual(["SP", "P", "IL", "BN"]);
     const testPlayer2 = team.allPlayers.find(
-      (p) => p.player_key === "422.p.11121"
+      (p) => p.player_key === "422.p.11121",
     );
     expect(testPlayer2?.eligible_positions).toEqual(["SP", "RP", "P", "BN"]);
   });
@@ -191,7 +191,7 @@ describe("Test Team Class", () => {
     const team = new Team(teamJSON[1]);
 
     expect(team.atMaxCapPositions).toEqual(
-      expect.arrayContaining(["QB", "K", "DEF"])
+      expect.arrayContaining(["QB", "K", "DEF"]),
     );
   });
 
@@ -210,25 +210,25 @@ describe("Test Team Class", () => {
 
     expect(team.positionCounts["BN"]).toEqual(players.length);
     expect(team.positionCounts["DEF"]).toEqual(
-      players.filter((p) => p.eligible_positions.includes("DEF")).length
+      players.filter((p) => p.eligible_positions.includes("DEF")).length,
     );
     expect(team.positionCounts["K"]).toEqual(
-      players.filter((p) => p.eligible_positions.includes("K")).length
+      players.filter((p) => p.eligible_positions.includes("K")).length,
     );
     expect(team.positionCounts["QB"]).toEqual(
-      players.filter((p) => p.eligible_positions.includes("QB")).length
+      players.filter((p) => p.eligible_positions.includes("QB")).length,
     );
     expect(team.positionCounts["RB"]).toEqual(
-      players.filter((p) => p.eligible_positions.includes("RB")).length
+      players.filter((p) => p.eligible_positions.includes("RB")).length,
     );
     expect(team.positionCounts["TE"]).toEqual(
-      players.filter((p) => p.eligible_positions.includes("TE")).length
+      players.filter((p) => p.eligible_positions.includes("TE")).length,
     );
     expect(team.positionCounts["W/R/T"]).toEqual(
-      players.filter((p) => p.eligible_positions.includes("W/R/T")).length
+      players.filter((p) => p.eligible_positions.includes("W/R/T")).length,
     );
     expect(team.positionCounts["WR"]).toEqual(
-      players.filter((p) => p.eligible_positions.includes("WR")).length
+      players.filter((p) => p.eligible_positions.includes("WR")).length,
     );
   });
 });

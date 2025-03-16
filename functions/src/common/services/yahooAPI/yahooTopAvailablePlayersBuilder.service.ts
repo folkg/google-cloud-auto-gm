@@ -1,8 +1,8 @@
-import { IPlayer } from "../../interfaces/IPlayer.js";
+import type { IPlayer } from "../../interfaces/IPlayer.js";
 import { getChild } from "../utilities.service.js";
 import {
-  AvailabilityStatus,
-  PlayerSort,
+  type AvailabilityStatus,
+  type PlayerSort,
   getTopAvailablePlayers,
 } from "./yahooAPI.service.js";
 import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
@@ -26,7 +26,7 @@ export async function fetchTopAvailablePlayersFromYahoo(
   teamKeys: string[],
   uid: string,
   availabilityStatus: AvailabilityStatus = "A",
-  sort: PlayerSort = "sort=R_PO"
+  sort: PlayerSort = "sort=R_PO",
 ): Promise<TopAvailablePlayers> {
   if (teamKeys.length === 0) {
     return {};
@@ -45,7 +45,7 @@ export async function fetchTopAvailablePlayersFromYahoo(
     teamKeys,
     uid,
     availabilityStatus,
-    sort
+    sort,
   );
   if (!yahooJSON) {
     return result; // return empty result if yahooJSON is null, this is primarily for testing
@@ -54,18 +54,18 @@ export async function fetchTopAvailablePlayersFromYahoo(
 
   // Loop through each "game" (nfl, nhl, nba, mlb)
   for (const gameKey of Object.keys(gamesJSON).filter(
-    (key) => key !== "count"
+    (key) => key !== "count",
   )) {
     const gameJSON = gamesJSON[gameKey].game;
     const leaguesJSON = getChild(gameJSON, "leagues");
 
     // Loop through each league within the game
     for (const leagueKey of Object.keys(leaguesJSON).filter(
-      (key) => key !== "count"
+      (key) => key !== "count",
     )) {
       const yahooLeagueKey = getChild(
         leaguesJSON[leagueKey].league,
-        "league_key"
+        "league_key",
       );
       const teamKey = mapLeagueToTeam[yahooLeagueKey];
       const league = leaguesJSON[leagueKey].league;

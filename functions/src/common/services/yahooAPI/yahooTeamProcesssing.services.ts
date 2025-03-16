@@ -1,4 +1,4 @@
-import { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
+import type { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
 import { getChild } from "../utilities.service.js";
 
 export function createTransactionArray(transactions: any): any[] {
@@ -17,19 +17,19 @@ export function getGamesPlayedArray(usersTeam: any): GamesPlayed[] | undefined {
   return getChild(usersTeam, "games_played")
     ?.find(
       (element: any) =>
-        element.games_played_by_position_type.position_type !== "P"
+        element.games_played_by_position_type.position_type !== "P",
     )
     ?.games_played_by_position_type.games_played?.map(
-      (element: any) => element.games_played_by_position
+      (element: any) => element.games_played_by_position,
     );
 }
 
 export function getInningsPitchedArray(
-  usersTeam: any
+  usersTeam: any,
 ): InningsPitched | undefined {
   return getChild(usersTeam, "games_played")?.find(
     (element: any) =>
-      element.games_played_by_position_type.position_type === "P"
+      element.games_played_by_position_type.position_type === "P",
   )?.games_played_by_position_type.innings_pitched;
 }
 
@@ -45,10 +45,10 @@ export function getPositionCounts(leaguesJSON: any, key: string) {
 
   getChild(leaguesJSON[key].league, "settings")[0].roster_positions.forEach(
     (position: any) => {
-      result[position.roster_position.position] = parseInt(
-        position.roster_position.count
+      result[position.roster_position.position] = Number.parseInt(
+        position.roster_position.count,
       );
-    }
+    },
   );
 
   return result;

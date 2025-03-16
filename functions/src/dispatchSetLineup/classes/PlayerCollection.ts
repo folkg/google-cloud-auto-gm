@@ -1,6 +1,6 @@
 import assert from "assert";
-import { IPlayer } from "../../common/interfaces/IPlayer.js";
 import { Player } from "../../common/classes/Player.js";
+import type { IPlayer } from "../../common/interfaces/IPlayer.js";
 
 export class PlayerCollection {
   players: Player[];
@@ -75,7 +75,7 @@ export class PlayerCollection {
   protected assignOwnershipScores() {
     assert(
       this._ownershipScoreFunction,
-      "ownershipScoreFunction should always be defined before calling assignOwnershipScores"
+      "ownershipScoreFunction should always be defined before calling assignOwnershipScores",
     );
 
     const ownershipScoreFunction = this._ownershipScoreFunction;
@@ -87,16 +87,16 @@ export class PlayerCollection {
 
   public sortDescByOwnershipScoreAndRemoveDuplicates() {
     this.players.sort(
-      (a: Player, b: Player) => b.ownership_score - a.ownership_score
+      (a: Player, b: Player) => b.ownership_score - a.ownership_score,
     );
     this.players = this.players.filter(
-      (player, i, all) => player.player_key !== all[i - 1]?.player_key
+      (player, i, all) => player.player_key !== all[i - 1]?.player_key,
     );
   }
 
   public removePlayer(playerToRemove: Player) {
     this.players = this.players.filter(
-      (player) => player.player_key !== playerToRemove.player_key
+      (player) => player.player_key !== playerToRemove.player_key,
     );
   }
 }

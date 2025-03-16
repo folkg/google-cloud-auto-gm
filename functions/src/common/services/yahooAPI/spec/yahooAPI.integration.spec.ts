@@ -12,7 +12,7 @@ describe.skip("Playground", () => {
     const yahooJSON = await getRostersByTeamID(
       ["418.l.16955.t.10"],
       uid,
-      "2023-08-13"
+      "2023-08-13",
     );
   });
 });
@@ -96,7 +96,7 @@ describe.skip("Yahoo API Live Integration Tests", () => {
     const JSONresponse = await getTopAvailablePlayers(
       ["422.l.90351.t.2"],
       uid,
-      "FA"
+      "FA",
     );
     // const fs = require("fs");
     // fs.writeFileSync("./free-agents.json", JSON.stringify(JSONresponse));

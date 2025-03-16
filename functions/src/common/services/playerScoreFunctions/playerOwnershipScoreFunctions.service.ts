@@ -1,5 +1,5 @@
-import { LeagueSpecificScarcityOffsets } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
-import { Player } from "../../classes/Player.js";
+import type { LeagueSpecificScarcityOffsets } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import type { Player } from "../../classes/Player.js";
 import type { PlayerRanks } from "../../interfaces/IPlayer.js";
 
 const OWNERSHIP_FACTOR = 0.5;
@@ -26,12 +26,12 @@ const RANK_WEIGHTS: Record<keyof PlayerRanks, number> = {
  */
 export function ownershipScoreFunctionFactory(
   numPlayersInLeague: number,
-  positionalScarcityOffsets?: LeagueSpecificScarcityOffsets
+  positionalScarcityOffsets?: LeagueSpecificScarcityOffsets,
 ): (player: Player) => number {
   return (player: Player) => {
     const positionalScarcityOffset = calculatePositionalScarcityOffset(
       player,
-      positionalScarcityOffsets
+      positionalScarcityOffsets,
     );
     const ownershipScore = player.percent_owned - positionalScarcityOffset;
     const rankScore = calculateRankScore(numPlayersInLeague, player);
@@ -47,7 +47,7 @@ export function ownershipScoreFunctionFactory(
 
 export function calculatePositionalScarcityOffset(
   player: Player,
-  positionalScarcityOffsets: LeagueSpecificScarcityOffsets | undefined
+  positionalScarcityOffsets: LeagueSpecificScarcityOffsets | undefined,
 ) {
   if (!positionalScarcityOffsets) {
     return 0;
@@ -66,7 +66,7 @@ function calculateOwnershipDelta(player: Player): number {
 
 function calculateRankScore(
   numPlayersInLeague: number,
-  player: Player
+  player: Player,
 ): number {
   const scoreOutOfTwenty = Object.entries(player.ranks).reduce(
     (acc, [rankType, rank]) =>
@@ -75,9 +75,9 @@ function calculateRankScore(
         : acc +
           Math.min(
             numPlayersInLeague / rank,
-            RANK_WEIGHTS[rankType as keyof PlayerRanks] / 5
+            RANK_WEIGHTS[rankType as keyof PlayerRanks] / 5,
           ),
-    0
+    0,
   );
 
   return 5 * scoreOutOfTwenty;

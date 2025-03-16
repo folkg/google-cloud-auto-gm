@@ -1,13 +1,13 @@
 import {
+  type Infer,
   array,
   boolean,
-  Infer,
+  literal,
   number,
   object,
   optional,
   string,
   union,
-  literal,
 } from "superstruct";
 
 export const PlayerOwnershipType = union([
