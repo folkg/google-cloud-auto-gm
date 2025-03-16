@@ -44,7 +44,7 @@ export async function loadYahooAccessToken(
   // fetch the current token from the database
   const doc = await db.collection("users").doc(uid).get();
   const docData = doc.data();
-  if (!doc.exists || !docData) {
+  if (!(doc.exists && docData)) {
     throw new Error(`No access token found for user ${uid}`);
   }
   if (docData.refreshToken === "-1") {
@@ -87,11 +87,10 @@ export async function loadYahooAccessToken(
         throw new Error(
           `Could not refresh access token for user: ${uid} : ${error.response?.data.error} ${error.response?.data.error_description}`,
         );
-      } else {
-        throw new Error(
-          `Could not refresh access token for user: ${uid} : ${error}`,
-        );
       }
+      throw new Error(
+        `Could not refresh access token for user: ${uid} : ${error}`,
+      );
     }
     try {
       await db

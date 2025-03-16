@@ -83,9 +83,9 @@ function getPercentObject(
   let result = getChild(percentObject, "value");
 
   // if we can get the cut type, then we will return that instead of the general value
-  const percentCuts = getChild(percentObject, percentType + "_cut_types");
+  const percentCuts = getChild(percentObject, `${percentType}_cut_types`);
   percentCuts.forEach((cutType: any) => {
-    const cutTypeObject = cutType[percentType + "_cut_type"];
+    const cutTypeObject = cutType[`${percentType}_cut_type`];
     if (getChild(cutTypeObject, "cut_type") === cut) {
       result = getChild(cutTypeObject, "value");
     }

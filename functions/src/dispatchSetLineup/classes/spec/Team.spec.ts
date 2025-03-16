@@ -208,26 +208,26 @@ describe("Test Team Class", () => {
 
     const players = team.players;
 
-    expect(team.positionCounts["BN"]).toEqual(players.length);
-    expect(team.positionCounts["DEF"]).toEqual(
+    expect(team.positionCounts.BN).toEqual(players.length);
+    expect(team.positionCounts.DEF).toEqual(
       players.filter((p) => p.eligible_positions.includes("DEF")).length,
     );
-    expect(team.positionCounts["K"]).toEqual(
+    expect(team.positionCounts.K).toEqual(
       players.filter((p) => p.eligible_positions.includes("K")).length,
     );
-    expect(team.positionCounts["QB"]).toEqual(
+    expect(team.positionCounts.QB).toEqual(
       players.filter((p) => p.eligible_positions.includes("QB")).length,
     );
-    expect(team.positionCounts["RB"]).toEqual(
+    expect(team.positionCounts.RB).toEqual(
       players.filter((p) => p.eligible_positions.includes("RB")).length,
     );
-    expect(team.positionCounts["TE"]).toEqual(
+    expect(team.positionCounts.TE).toEqual(
       players.filter((p) => p.eligible_positions.includes("TE")).length,
     );
     expect(team.positionCounts["W/R/T"]).toEqual(
       players.filter((p) => p.eligible_positions.includes("W/R/T")).length,
     );
-    expect(team.positionCounts["WR"]).toEqual(
+    expect(team.positionCounts.WR).toEqual(
       players.filter((p) => p.eligible_positions.includes("WR")).length,
     );
   });

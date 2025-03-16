@@ -58,9 +58,7 @@ export async function refreshYahooAccessToken(
   const body = Object.keys(requestBody)
     .map(
       (key) =>
-        encodeURIComponent(key) +
-        "=" +
-        encodeURIComponent(requestBody[key as keyof YahooRefreshRequestBody]),
+        `${encodeURIComponent(key)}=${encodeURIComponent(requestBody[key as keyof YahooRefreshRequestBody])}`,
     )
     .join("&");
 
@@ -108,15 +106,7 @@ export async function getRostersByTeamID(
   });
   const leagueKeys = leagueKeysArray.join(",");
 
-  const url =
-    "users;use_login=1/games;game_keys=nhl,nfl,nba,mlb" +
-    `/leagues;league_keys=${leagueKeys};out=settings` +
-    `/teams;out=transactions,games_played;transactions.types=waiver,pending_trade/roster;date=${date}` +
-    "/players;out=percent_started,percent_owned,ranks,opponent,starting_status" +
-    ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
-    ";percent_started.cut_types=diamond" +
-    ";percent_owned.cut_types=diamond" +
-    "?format=json";
+  const url = `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKeys};out=settings/teams;out=transactions,games_played;transactions.types=waiver,pending_trade/roster;date=${date}/players;out=percent_started,percent_owned,ranks,opponent,starting_status;ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks;percent_started.cut_types=diamond;percent_owned.cut_types=diamond?format=json`;
 
   try {
     const { data } = await httpGetAxios(url, uid);
@@ -151,15 +141,7 @@ export async function getTopAvailablePlayers(
   });
 
   const leagueKeys = leagueKeysArray.join(",");
-  const url =
-    `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKeys}` +
-    `/players;status=${availabilityStatus}` +
-    `;${sort}` +
-    ";out=ownership,percent_started,percent_owned,ranks,opponent,starting_status" +
-    ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
-    ";percent_started.cut_types=diamond" +
-    ";percent_owned.cut_types=diamond" +
-    "?format=json";
+  const url = `users;use_login=1/games;game_keys=nhl,nfl,nba,mlb/leagues;league_keys=${leagueKeys}/players;status=${availabilityStatus};${sort};out=ownership,percent_started,percent_owned,ranks,opponent,starting_status;ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks;percent_started.cut_types=diamond;percent_owned.cut_types=diamond?format=json`;
 
   try {
     const { data } = await httpGetAxios(url, uid);
@@ -184,17 +166,7 @@ export async function getTopPlayersGeneral(
   );
   const positions = expandedPositions.join(",");
 
-  const url =
-    `/games;game_keys=${gameKey}` +
-    `/players;status=${availabilityStatus}` +
-    `;position=${positions}` +
-    `;${sort}` +
-    `;count=25;start=${start}` +
-    ";out=ownership,percent_started,percent_owned,ranks,opponent,starting_status" +
-    ";ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks" +
-    ";percent_started.cut_types=diamond" +
-    ";percent_owned.cut_types=diamond" +
-    "?format=json";
+  const url = `/games;game_keys=${gameKey}/players;status=${availabilityStatus};position=${positions};${sort};count=25;start=${start};out=ownership,percent_started,percent_owned,ranks,opponent,starting_status;ranks=last30days,last14days,projected_next7days,projected_season_remaining,last4weeks,projected_week,projected_next4weeks;percent_started.cut_types=diamond;percent_owned.cut_types=diamond?format=json`;
 
   try {
     const { data } = await httpGetAxios(url, uid);
@@ -247,7 +219,9 @@ export async function getStartingPlayers(
     mlb: "S_P",
   };
   const positions = starterPositions[league];
-  if (!positions) return [];
+  if (!positions) {
+    return [];
+  }
 
   try {
     // There could be up to 32 starting players, so we need to make 2 calls
@@ -451,7 +425,8 @@ function handleAxiosError(err: unknown, message: string | null): never {
   const errMessage = message ? `${message}. ` : "";
   if (err instanceof RevokedRefreshTokenError) {
     throw err;
-  } else if (isAxiosError(err) && err.response) {
+  }
+  if (isAxiosError(err) && err.response) {
     logger.error(
       errMessage,
       JSON.stringify(err),
@@ -460,14 +435,14 @@ function handleAxiosError(err: unknown, message: string | null): never {
     const enrichedError = new AxiosError(`${errMessage}. ${err.message}`);
     enrichedError.response = err.response;
     throw enrichedError;
-  } else if (isAxiosError(err) && err.request) {
+  }
+  if (isAxiosError(err) && err.request) {
     logger.error(errMessage, JSON.stringify(err.request));
     throw new Error(`${errMessage}${err.request}`);
-  } else {
-    const error = err as Error;
-    logger.error(errMessage, error.message);
-    throw new Error(`${errMessage}${error.message}`);
   }
+  const error = err as Error;
+  logger.error(errMessage, error.message);
+  throw new Error(`${errMessage}${error.message}`);
 }
 /**
  * Check the Yahoo error description to see if it is a known error that we can handle

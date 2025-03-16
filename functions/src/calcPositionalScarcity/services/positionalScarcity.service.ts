@@ -261,7 +261,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
   }
 
   function distributeBenchPositions() {
-    const numBenchPositions = rosterPositions["BN"];
+    const numBenchPositions = rosterPositions.BN;
 
     if (numBenchPositions > 0) {
       const numBenchPlayers = numBenchPositions;

@@ -89,8 +89,7 @@ async function loadTodaysGames(todayDate: string) {
   const scheduleDoc = await db.collection("schedule").doc("today").get();
   const scheduleDocData = scheduleDoc.data();
   if (
-    !scheduleDoc.exists ||
-    !scheduleDocData ||
+    !(scheduleDoc.exists && scheduleDocData) ||
     scheduleDocData.date !== todayDate
   ) {
     logger.log("No games in database, fetching from internet");

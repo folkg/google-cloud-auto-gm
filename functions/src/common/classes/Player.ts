@@ -48,9 +48,8 @@ export class Player implements Player {
     const scoreDiff = num1 - num2;
     if (Math.abs(scoreDiff) < FLOAT_EQUALITY_TOLERANCE) {
       return 0;
-    } else {
-      return scoreDiff;
     }
+    return scoreDiff;
   }
 
   isInactiveList(): boolean {

@@ -103,11 +103,11 @@ describe("getReplacementLevel", () => {
       D: 67.2,
       G: 24,
     };
-    expectedOutput["Util"] =
-      expectedOutput["C"] +
-      expectedOutput["LW"] +
-      expectedOutput["RW"] +
-      expectedOutput["D"];
+    expectedOutput.Util =
+      expectedOutput.C +
+      expectedOutput.LW +
+      expectedOutput.RW +
+      expectedOutput.D;
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
@@ -138,11 +138,11 @@ describe("getReplacementLevel", () => {
       D: 87.2,
       G: 34,
     };
-    expectedOutput["Util"] =
-      expectedOutput["C"] +
-      expectedOutput["LW"] +
-      expectedOutput["RW"] +
-      expectedOutput["D"];
+    expectedOutput.Util =
+      expectedOutput.C +
+      expectedOutput.LW +
+      expectedOutput.RW +
+      expectedOutput.D;
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
@@ -179,12 +179,12 @@ describe("getReplacementLevel", () => {
       DEF: 12,
     };
     expectedOutput["W/R/T"] =
-      expectedOutput["RB"] + expectedOutput["WR"] + expectedOutput["TE"];
+      expectedOutput.RB + expectedOutput.WR + expectedOutput.TE;
     expectedOutput["Q/W/R/T"] =
-      expectedOutput["QB"] +
-      expectedOutput["RB"] +
-      expectedOutput["WR"] +
-      expectedOutput["TE"];
+      expectedOutput.QB +
+      expectedOutput.RB +
+      expectedOutput.WR +
+      expectedOutput.TE;
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
@@ -241,7 +241,7 @@ describe("getReplacementLevel", () => {
       G: 36, // 24 + (72 - 9.6) * (2/8) = 39.6 ! Too much. Should cap at 36, then allocate elsewhere.
       F: 144, // 72 + 21.6 (from Util) = 93.6 + the rest = 144
     };
-    expectedOutput["Util"] = expectedOutput["F"] + expectedOutput["D"];
+    expectedOutput.Util = expectedOutput.F + expectedOutput.D;
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {
@@ -327,12 +327,12 @@ describe("getReplacementLevel", () => {
         2 * (2 / 10) * NUM_TEAMS +
         1 * (2 / 4) * NUM_TEAMS,
     };
-    expectedOutput["W"] = expectedOutput["LW"] + expectedOutput["RW"];
-    expectedOutput["Util"] =
-      expectedOutput["C"] +
-      expectedOutput["D"] +
-      expectedOutput["LW"] +
-      expectedOutput["RW"];
+    expectedOutput.W = expectedOutput.LW + expectedOutput.RW;
+    expectedOutput.Util =
+      expectedOutput.C +
+      expectedOutput.D +
+      expectedOutput.LW +
+      expectedOutput.RW;
 
     const result = getReplacementLevels(team);
     for (const position in expectedOutput) {

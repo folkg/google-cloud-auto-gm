@@ -412,7 +412,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
     );
 
     // Expect all players on the roster to be counted as BN eligible
-    expect(playersAtPositionList?.[teamKey]["BN"]).toEqual(
+    expect(playersAtPositionList?.[teamKey].BN).toEqual(
       rosters[0].players.length,
     );
   });

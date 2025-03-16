@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 import { logger } from "firebase-functions";
 import type { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import { Player } from "../../common/classes/Player.js";
@@ -23,7 +23,9 @@ export class LineupOptimizer {
 
   public verbose = false;
   private logInfo(...args: unknown[]) {
-    if (this.verbose) logger.info(...args);
+    if (this.verbose) {
+      logger.info(...args);
+    }
   }
 
   constructor(
@@ -135,8 +137,10 @@ export class LineupOptimizer {
 
     addCandidates.filterPlayers(
       (player) =>
-        !this.team.pendingAddPlayerKeys.includes(player.player_key) &&
-        !player.isLTIR(),
+        !(
+          this.team.pendingAddPlayerKeys.includes(player.player_key) ||
+          player.isLTIR()
+        ),
     );
     if (this.team.allow_waiver_adds === false) {
       addCandidates.filterPlayers(
@@ -157,7 +161,9 @@ export class LineupOptimizer {
     // find drops by attempting to move healthy players off IL unsuccessfully
     this.logInfo("generateDropPlayerTransactions for team", this.team.team_key);
     const healthyPlayersOnIL = this.team.healthyOnIL;
-    if (healthyPlayersOnIL.length === 0) return;
+    if (healthyPlayersOnIL.length === 0) {
+      return;
+    }
 
     Team.sortDescendingByStartScore(healthyPlayersOnIL);
     for (const player of healthyPlayersOnIL) {
@@ -173,9 +179,11 @@ export class LineupOptimizer {
 
   private isAddingAllowed(): boolean {
     if (
-      !this._addCandidates ||
-      !this.isRosterLegal() ||
-      !this.team.isCurrentTransactionPaceOK()
+      !(
+        this._addCandidates &&
+        this.isRosterLegal() &&
+        this.team.isCurrentTransactionPaceOK()
+      )
     ) {
       return false;
     }
@@ -209,7 +217,9 @@ export class LineupOptimizer {
       );
     }
 
-    if (this.team.getPendingEmptyRosterSpots() === 0) return;
+    if (this.team.getPendingEmptyRosterSpots() === 0) {
+      return;
+    }
 
     while (
       this.team.getPendingEmptyRosterSpots() > 0 &&
@@ -304,10 +314,9 @@ export class LineupOptimizer {
       );
       if (!result) {
         break;
-      } else {
-        baseAddCandidates = result[0];
-        baseDropCandidates = result[1];
       }
+      baseAddCandidates = result[0];
+      baseDropCandidates = result[1];
     }
 
     this.generateDeltaPlayerPositions();
@@ -516,8 +525,10 @@ export class LineupOptimizer {
     const overMaxCapPositions: string[] = this.team.atMaxCapPositions;
     const filtered = addCandidates.filter(
       (player) =>
-        !player.isEligibleForAnyPositionIn(overMaxCapPositions) &&
-        !player.hasDisplayPositionIn(overMaxCapPositions),
+        !(
+          player.isEligibleForAnyPositionIn(overMaxCapPositions) ||
+          player.hasDisplayPositionIn(overMaxCapPositions)
+        ),
     );
 
     return filtered;
@@ -535,15 +546,16 @@ export class LineupOptimizer {
         const playerCopy = new Player(player);
         playerCopy.ownership_score += 5;
         return playerCopy;
-      } else {
-        return player;
       }
+      return player;
     });
   }
 
   private resolveAllIllegalPlayers(): void {
     const illegalPlayers = this.team.illegalPlayers;
-    if (illegalPlayers.length === 0) return;
+    if (illegalPlayers.length === 0) {
+      return;
+    }
 
     Team.sortDescendingByStartScore(illegalPlayers);
     this.logInfo(
@@ -559,14 +571,18 @@ export class LineupOptimizer {
   private resolveIllegalPlayer(player: Player): boolean {
     this.logInfo(`Resolving illegal player: ${player.player_name}`);
     // an illegalPlayer may have been resolved in a previous swap
-    if (!player.isIllegalPosition()) return true;
+    if (!player.isIllegalPosition()) {
+      return true;
+    }
 
     let success;
     let unfilledPositionTargetList;
 
     if (player.isInactiveList()) {
       success = this.moveILPlayerToUnfilledALPosition(player);
-      if (success) return true;
+      if (success) {
+        return true;
+      }
 
       unfilledPositionTargetList = this.team.unfilledInactivePositions;
     } else {
@@ -577,10 +593,14 @@ export class LineupOptimizer {
       player,
       unfilledPositionTargetList,
     );
-    if (success) return true;
+    if (success) {
+      return true;
+    }
 
     success = this.attemptIllegalPlayerSwaps(player);
-    if (success) return true;
+    if (success) {
+      return true;
+    }
 
     return false;
   }
@@ -592,10 +612,14 @@ export class LineupOptimizer {
     );
     Team.sortAscendingByStartScore(eligibleSwapPlayers);
 
-    if (eligibleSwapPlayers.length === 0) return false;
+    if (eligibleSwapPlayers.length === 0) {
+      return false;
+    }
 
     for (const playerB of eligibleSwapPlayers) {
-      if (playerA === playerB) continue;
+      if (playerA === playerB) {
+        continue;
+      }
       this.logInfo(
         `comparing ${playerA.player_name} to ${playerB.player_name}`,
       );
@@ -603,16 +627,17 @@ export class LineupOptimizer {
       if (playerA.isEligibleToSwapWith(playerB)) {
         this.swapPlayers(playerA, playerB);
         return true;
-      } else {
-        const success = this.threeWaySwapIllegalPlayer(
-          playerA,
-          playerB,
-          eligibleSwapPlayers,
-        );
-        if (success) return true;
-
-        this.threeWayMoveIllegalToUnfilledPosition(playerA, playerB);
       }
+      const success = this.threeWaySwapIllegalPlayer(
+        playerA,
+        playerB,
+        eligibleSwapPlayers,
+      );
+      if (success) {
+        return true;
+      }
+
+      this.threeWayMoveIllegalToUnfilledPosition(playerA, playerB);
     }
     this.logInfo(`no swaps found for ${playerA.player_name}`);
     return false;
@@ -626,7 +651,9 @@ export class LineupOptimizer {
       ? "BN"
       : playerB.selected_position;
 
-    if (!playerA.eligible_positions.includes(potentialPlayerAPosition)) return;
+    if (!playerA.eligible_positions.includes(potentialPlayerAPosition)) {
+      return;
+    }
 
     this.logInfo(
       `attempting to move playerB ${playerB.player_name} to unfilled position`,
@@ -677,8 +704,12 @@ export class LineupOptimizer {
 
     while (reservePlayers.length > 0) {
       const playerA: Player | undefined = reservePlayers.pop();
-      if (!playerA) break;
-      if (playerA.isStartingRosterPlayer()) continue;
+      if (!playerA) {
+        break;
+      }
+      if (playerA.isStartingRosterPlayer()) {
+        continue;
+      }
       this.logInfo(`playerA: ${playerA.player_name}`);
 
       let proceedToLookForUnfilledPositionInStarters = true;
@@ -710,24 +741,30 @@ export class LineupOptimizer {
 
   private swapWithStartingPlayers(playerA: Player): Player | undefined {
     const eligibleTargetPlayers = this.getEliglibleStartingPlayers(playerA);
-    if (!eligibleTargetPlayers || eligibleTargetPlayers.length === 0)
+    if (!eligibleTargetPlayers || eligibleTargetPlayers.length === 0) {
       return undefined;
+    }
 
     for (const playerB of eligibleTargetPlayers) {
       if (playerA.isEligibleAndHigherScoreThan(playerB)) {
         this.swapPlayers(playerA, playerB);
         return playerB;
-      } else {
-        let playerMovedToReserve = this.threeWaySwap(playerA, playerB);
-        if (playerMovedToReserve) return playerMovedToReserve;
+      }
+      let playerMovedToReserve = this.threeWaySwap(playerA, playerB);
+      if (playerMovedToReserve) {
+        return playerMovedToReserve;
+      }
 
-        playerMovedToReserve = this.threeWayMoveToUnfilledPosition(
-          playerA,
-          playerB,
-        );
-        // only return playerB to go back into the reserve list if it was moved to the IL
-        if (playerMovedToReserve?.isInactiveList()) return playerMovedToReserve;
-        if (playerMovedToReserve?.isStartingRosterPlayer()) return undefined;
+      playerMovedToReserve = this.threeWayMoveToUnfilledPosition(
+        playerA,
+        playerB,
+      );
+      // only return playerB to go back into the reserve list if it was moved to the IL
+      if (playerMovedToReserve?.isInactiveList()) {
+        return playerMovedToReserve;
+      }
+      if (playerMovedToReserve?.isStartingRosterPlayer()) {
+        return undefined;
       }
     }
     return undefined;
@@ -766,7 +803,9 @@ export class LineupOptimizer {
     );
     let unfilledPositionTargetList: string[];
     if (playerA.isInactiveList()) {
-      if (playerA.compareStartScore(playerB) === 0) return undefined;
+      if (playerA.compareStartScore(playerB) === 0) {
+        return undefined;
+      }
       unfilledPositionTargetList = this.team.unfilledInactivePositions;
     } else {
       unfilledPositionTargetList = this.team.unfilledStartingPositions;
@@ -820,7 +859,9 @@ export class LineupOptimizer {
   private openOneRosterSpot(playerToOpenSpotFor?: Player): Player | null {
     const unfilledInactivePositions: string[] =
       this.team.unfilledInactivePositions;
-    if (unfilledInactivePositions.length === 0) return null;
+    if (unfilledInactivePositions.length === 0) {
+      return null;
+    }
 
     let inactivePlayersOnRoster: Player[] = this.team.inactiveOnRosterPlayers;
     if (playerToOpenSpotFor) {
@@ -861,8 +902,12 @@ export class LineupOptimizer {
     const playerToDrop = this.getPlayerToDrop(playerToOpenSpotFor);
     this.logInfo(`playerToDrop: ${playerToDrop.player_name}`);
 
-    if (playerToDrop === playerToOpenSpotFor) return;
-    if (!playerToDrop.ownership_score) return; // in case of Yahoo API error
+    if (playerToDrop === playerToOpenSpotFor) {
+      return;
+    }
+    if (!playerToDrop.ownership_score) {
+      return; // in case of Yahoo API error
+    }
 
     const reason = `${
       playerToOpenSpotFor.player_name
@@ -907,9 +952,11 @@ export class LineupOptimizer {
     return this.team.droppablePlayers
       .filter(
         (player) =>
-          !this.isTooLateToDrop(player) &&
-          !player.eligible_positions.some((position) =>
-            this.team.almostCriticalPositions.includes(position),
+          !(
+            this.isTooLateToDrop(player) ||
+            player.eligible_positions.some((position) =>
+              this.team.almostCriticalPositions.includes(position),
+            )
           ),
       )
       .reduce(
@@ -934,7 +981,9 @@ export class LineupOptimizer {
     );
     this.logInfo(`unfilledPosition: ${unfilledPosition}`);
 
-    if (!unfilledPosition) return false;
+    if (!unfilledPosition) {
+      return false;
+    }
 
     this.movePlayerToPosition(player, unfilledPosition);
     return true;
@@ -949,7 +998,9 @@ export class LineupOptimizer {
 
     if (this.team.getPendingEmptyRosterSpots() <= 0) {
       const success = this.openOneRosterSpot(player);
-      if (!success) return false;
+      if (!success) {
+        return false;
+      }
     }
     this.movePlayerToPosition(player, "BN");
     return true;

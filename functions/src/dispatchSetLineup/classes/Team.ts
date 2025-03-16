@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 import type { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import type { Player } from "../../common/classes/Player.js";
 import {
@@ -98,7 +98,7 @@ export class Team extends PlayerCollection implements Team {
     ) {
       const reduction = Math.min(quantity, this.roster_positions[position]);
       this.roster_positions[position] -= reduction;
-      this.roster_positions["BN"] += reduction;
+      this.roster_positions.BN += reduction;
       return true;
     }
     return false;
@@ -233,7 +233,7 @@ export class Team extends PlayerCollection implements Team {
   public get droppablePlayersInclIL(): Player[] {
     return this.players.filter(
       (player) =>
-        !player.is_undroppable && !this._lockedPlayers.has(player.player_key),
+        !(player.is_undroppable || this._lockedPlayers.has(player.player_key)),
     );
   }
 
@@ -336,16 +336,18 @@ export class Team extends PlayerCollection implements Team {
   private emptyRosterSpotCounter(): number {
     const unfilledPositions = this.unfilledPositionCounter;
     return Object.keys(unfilledPositions).reduce((acc, position) => {
-      if (!INACTIVE_POSITION_LIST.includes(position))
+      if (!INACTIVE_POSITION_LIST.includes(position)) {
         acc += unfilledPositions[position];
+      }
       return acc;
     }, 0);
   }
 
   public get numStandardRosterSpots(): number {
     return Object.keys(this.roster_positions).reduce((acc, position) => {
-      if (!INACTIVE_POSITION_LIST.includes(position))
+      if (!INACTIVE_POSITION_LIST.includes(position)) {
         acc += this.roster_positions[position];
+      }
       return acc;
     }, 0);
   }
@@ -434,7 +436,7 @@ export class Team extends PlayerCollection implements Team {
     return this.players
       .filter(
         (player) =>
-          !player.isLTIR() && !this._pendingDropPlayers.has(player.player_key),
+          !(player.isLTIR() || this._pendingDropPlayers.has(player.player_key)),
       )
       .map((player) => {
         const {

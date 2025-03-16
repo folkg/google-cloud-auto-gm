@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 import type { Player } from "../../classes/Player.js";
 import { HEALTHY_STATUS_LIST } from "../../helpers/constants.js";
 import type { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
@@ -39,14 +39,18 @@ export function playerStartScoreFunctionFactory(args: FactoryArgs) {
       gamesPlayed,
       args.inningsPitched,
     );
-  } else if (gameCode === "nfl") {
+  }
+  if (gameCode === "nfl") {
     return scoreFunctionNFL();
-  } else if (weeklyDeadline && weeklyDeadline !== "intraday") {
+  }
+  if (weeklyDeadline && weeklyDeadline !== "intraday") {
     // weeklyDeadline will be something like "1" to represent Monday
     return scoreFunctionWeeklyLineup();
-  } else if (gameCode === "nhl") {
+  }
+  if (gameCode === "nhl") {
     return scoreFunctionNHL();
-  } else if (gameCode === "mlb") {
+  }
+  if (gameCode === "mlb") {
     return scoreFunctionMLB();
   }
   return scoreFunctionNBA();
@@ -144,7 +148,9 @@ export function scoreFunctionMaxGamesPlayed(
    * @return {number} - a score boost between 0 and 10
    */
   function getScoreBoost(player: Player, currentPace: number): number {
-    if (player.isReservePlayer()) return 0;
+    if (player.isReservePlayer()) {
+      return 0;
+    }
 
     return ((currentPace - churnThreshold) / (1 - churnThreshold)) * 10;
   }

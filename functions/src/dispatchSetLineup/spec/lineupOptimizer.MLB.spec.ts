@@ -242,19 +242,22 @@ describe("Test LineupOptimizer Class MLB Daily", () => {
     expect(isSuccessfullyOptimized).toEqual(true);
   });
 
-  it.skip("should move player to IL if they are only in a proposed trade", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsTradeWIL.json");
-    const lo = new LineupOptimizer(roster);
-    lo.optimizeStartingLineup();
-    const rosterModification = lo.lineupChanges;
-    const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
+  it.todo(
+    "should move player to IL if they are only in a proposed trade",
+    () => {
+      const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsTradeWIL.json");
+      const lo = new LineupOptimizer(roster);
+      lo.optimizeStartingLineup();
+      const rosterModification = lo.lineupChanges;
+      const isSuccessfullyOptimized = lo.isSuccessfullyOptimized();
 
-    expect(rosterModification?.newPlayerPositions).toEqual({
-      "422.p.10660": "IL",
-      "422.p.106602": "BN",
-    });
-    expect(isSuccessfullyOptimized).toEqual(true);
-  });
+      expect(rosterModification?.newPlayerPositions).toEqual({
+        "422.p.10660": "IL",
+        "422.p.106602": "BN",
+      });
+      expect(isSuccessfullyOptimized).toEqual(true);
+    },
+  );
 
   it("should NOT move player to IL if they are only in a proposed trade", () => {
     const roster: ITeamOptimizer = require("./testRosters/MLB/bug_player_pending_trade.json");

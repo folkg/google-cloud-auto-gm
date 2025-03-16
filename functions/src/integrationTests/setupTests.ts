@@ -7,7 +7,7 @@ if (process.env.INTEGRATION_TEST_ENABLED === "true") {
   let firebaseConfig;
   try {
     firebaseConfig = require("./firebaseConfig.json");
-  } catch (e) {
+  } catch (_e) {
     firebaseConfig = {};
   }
   initializeApp(firebaseConfig);

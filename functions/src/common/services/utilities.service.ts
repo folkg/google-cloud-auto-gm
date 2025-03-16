@@ -34,9 +34,7 @@ export async function getFunctionUrl(name: string, location = "us-central1") {
     });
   }
   const projectId = await auth.getProjectId();
-  const url =
-    "https://cloudfunctions.googleapis.com/v2beta/" +
-    `projects/${projectId}/locations/${location}/functions/${name}`;
+  const url = `https://cloudfunctions.googleapis.com/v2beta/projects/${projectId}/locations/${location}/functions/${name}`;
 
   const client = await auth.getClient();
   const res = await client.request({ url });

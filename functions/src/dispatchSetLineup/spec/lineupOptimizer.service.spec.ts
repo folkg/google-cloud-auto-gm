@@ -335,7 +335,7 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
       require("./testRosters/NHL/DailyDrops/RefetchedRosters/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
 
-    const transaction1 = {
+    const _transaction1 = {
       players: [
         {
           isInactiveList: false,

@@ -32,7 +32,7 @@ export async function httpGetAxios<T>(url: string, uid?: string) {
 
   return axios.get(API_URL + url, {
     headers: {
-      Authorization: "Bearer " + accessToken,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 }
@@ -65,7 +65,7 @@ export async function httpPostAxiosAuth<T>(
   return axios.post<T>(API_URL + url, body, {
     headers: {
       "content-type": "application/xml; charset=UTF-8",
-      Authorization: "Bearer " + accessToken,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 }
@@ -87,7 +87,7 @@ export async function httpPutAxios<T>(uid: string, url: string, body: string) {
   return axios.put<T>(API_URL + url, body, {
     headers: {
       "content-type": "application/xml; charset=UTF-8",
-      Authorization: "Bearer " + accessToken,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 }

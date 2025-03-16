@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 import { logger } from "firebase-functions";
 import type {
   ITeamFirestore,
@@ -211,7 +211,7 @@ async function processTransactionsForNextDayTeams(
     addSwapTransactions: potentialAddSwaps,
   } = await createPlayersTransactions(teams, topAvailablePlayerCandidates);
 
-  if (!potentialDrops && !potentialAddSwaps) {
+  if (!(potentialDrops || potentialAddSwaps)) {
     return;
   }
 

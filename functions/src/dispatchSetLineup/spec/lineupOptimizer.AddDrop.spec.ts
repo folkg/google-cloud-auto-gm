@@ -819,7 +819,7 @@ describe("Combination Drops or Adds", () => {
     lo.generateDropPlayerTransactions();
     lo.generateAddPlayerTransactions();
     lo.generateSwapPlayerTransactions();
-    const lineupChanges = lo.lineupChanges;
+    const _lineupChanges = lo.lineupChanges;
     const playerTransactions = lo.playerTransactions;
 
     const addedPitcherCount = playerTransactions?.flatMap((t) =>

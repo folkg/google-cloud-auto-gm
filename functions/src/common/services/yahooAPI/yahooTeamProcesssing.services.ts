@@ -3,7 +3,9 @@ import { getChild } from "../utilities.service.js";
 
 export function createTransactionArray(transactions: any): any[] {
   const result: any[] = [];
-  if (!transactions) return result;
+  if (!transactions) {
+    return result;
+  }
 
   Object.keys(transactions).forEach((key) => {
     if (key !== "count") {

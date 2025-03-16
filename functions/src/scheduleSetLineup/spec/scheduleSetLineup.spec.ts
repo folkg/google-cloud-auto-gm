@@ -115,7 +115,7 @@ describe("scheduleSetLineup", () => {
     );
   });
 
-  it.skip("should fetch starting players for NHL and MLB", async () => {
+  it.todo("should fetch starting players for NHL and MLB", async () => {
     const teams = [
       {
         uid: "RLSrRcWN3lcYbxKQU1FKqditGDu1",

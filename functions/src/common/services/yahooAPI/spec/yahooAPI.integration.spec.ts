@@ -7,9 +7,9 @@ import {
 } from "../yahooAPI.service.js";
 
 describe.skip("Playground", () => {
-  it.only("will get the roster for a specific team and day", async () => {
+  it("will get the roster for a specific team and day", async () => {
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
-    const yahooJSON = await getRostersByTeamID(
+    const _yahooJSON = await getRostersByTeamID(
       ["418.l.16955.t.10"],
       uid,
       "2023-08-13",
@@ -49,7 +49,7 @@ describe.skip("Yahoo API Live Integration Tests", () => {
     let result = false;
     try {
       result = await postRosterAddDropTransaction(transaction, uid);
-      console.log("result: " + result);
+      console.log(`result: ${result}`);
     } catch (error) {
       console.error(error);
       expect(error).toBeDefined();

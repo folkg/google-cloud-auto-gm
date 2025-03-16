@@ -39,7 +39,9 @@ export async function patchTeamChangesInFirestore(
     const yahooTeam = yahooTeams.find(
       (yahooTeam) => firestoreTeam.team_key === yahooTeam.team_key,
     );
-    if (!yahooTeam) return;
+    if (!yahooTeam) {
+      return;
+    }
 
     const differences: { [key: string]: any } = {};
     sharedKeys.forEach((key) => {

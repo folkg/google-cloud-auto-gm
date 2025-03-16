@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 import { Player } from "../../common/classes/Player.js";
 import type { IPlayer } from "../../common/interfaces/IPlayer.js";
 

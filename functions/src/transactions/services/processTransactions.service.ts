@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 import { logger } from "firebase-functions";
 import type { IPlayer } from "../../common/interfaces/IPlayer.js";
 import type {
@@ -234,12 +234,13 @@ async function getPlayerTransactionsForDate(
 
   const teamKeys: string[] = firestoreTeams.map((t) => t.team_key);
   let usersTeams = await fetchRostersFromYahoo(teamKeys, uid, date);
-  if (usersTeams.length === 0)
+  if (usersTeams.length === 0) {
     return {
       dropPlayerTransactions: null,
       lineupChanges: null,
       addSwapTransactions: null,
     };
+  }
 
   usersTeams = enrichTeamsWithFirestoreSettings(usersTeams, firestoreTeams);
 

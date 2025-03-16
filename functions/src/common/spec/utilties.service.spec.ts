@@ -39,7 +39,7 @@ describe("Utilities test", () => {
     const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
-    expect(result).toEqual(expect.stringMatching(today + "|" + yesterday));
+    expect(result).toEqual(expect.stringMatching(`${today}|${yesterday}`));
   });
   test("getPacificStartOfDay", () => {
     const date = new Date(2020, 0, 3, 1, 1, 1).toISOString();
