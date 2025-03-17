@@ -9,7 +9,7 @@ if (getApps().length === 0) {
 }
 
 export const addmocktaskstoqueue = onRequest(async (req, res) => {
-  let queue: TaskQueue<Record<string, any>>;
+  let queue: TaskQueue<Record<string, unknown>>;
   let targetUri: string;
   try {
     queue = getFunctions().taskQueue("lineup-mockdispatchsetlineup");
@@ -21,7 +21,7 @@ export const addmocktaskstoqueue = onRequest(async (req, res) => {
 
   // Start enqueuing mock tasks
   const numTasks = Number.parseInt(req.query.numTasks as string) || 10;
-  const mockEnqueues: any[] = [];
+  const mockEnqueues: unknown[] = [];
   for (let i = 0; i < numTasks; i++) {
     const uid = `user_${i}`;
     const teams = [`team_${i}_1`, `team_${i}_2`];

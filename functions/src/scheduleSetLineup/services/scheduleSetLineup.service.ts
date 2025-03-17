@@ -60,7 +60,7 @@ export async function scheduleSetLineup() {
     return;
   }
 
-  let queue: TaskQueue<Record<string, any>>;
+  let queue: TaskQueue<Record<string, unknown>>;
   let targetUri: string;
   try {
     queue = getFunctions().taskQueue("lineup-dispatchsetlineup");

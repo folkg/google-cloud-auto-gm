@@ -30,7 +30,7 @@ class TestClass {
     return 0;
   }
 
-  async asyncMethod() {
+  asyncMethod() {
     return Promise.resolve(0);
   }
 }

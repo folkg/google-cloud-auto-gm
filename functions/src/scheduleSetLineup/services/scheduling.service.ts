@@ -303,10 +303,10 @@ export function mapUsersToActiveTeams(
 
 export function enqueueUsersTeams(
   activeUsers: Map<string, DocumentData>,
-  queue: TaskQueue<Record<string, any>>,
+  queue: TaskQueue<Record<string, unknown>>,
   targetFunctionUri: string,
-) {
-  const result: any[] = [];
+): Promise<void>[] {
+  const result = [];
 
   for (const [uid, teams] of activeUsers) {
     result.push(

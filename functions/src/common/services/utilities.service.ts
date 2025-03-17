@@ -5,11 +5,14 @@ import spacetime from "spacetime";
  * The properties of the Player object are not consistent.
  * This function will find the property by name.
  *
- * @param {any[]} array - The array to search
+ * @param {Record<string, unknown>[]} array - The array to search
  * @param {string} key - The property name to search for
- * @return {*} - The value of the property
+ * @return {unknown} - The value of the property
  */
-export function getChild(array: any[], key: string) {
+export function getChild(
+  array: Record<string, unknown>[],
+  key: string,
+): unknown {
   const element = array.find((o) => o[key] !== undefined);
   return element ? element[key] : null;
 }
@@ -18,7 +21,7 @@ export function parseStringToInt(value: string, defaultValue = -1): number {
   return Number.parseInt(value) || defaultValue;
 }
 
-let auth: GoogleAuth<any>;
+let auth: GoogleAuth;
 /**
  * Get the URL of a given v2 cloud function.
  *
@@ -38,6 +41,7 @@ export async function getFunctionUrl(name: string, location = "us-central1") {
 
   const client = await auth.getClient();
   const res = await client.request({ url });
+  // TODO: ArkType
   const uri = res.data?.serviceConfig?.uri;
   if (!uri) {
     throw new Error(`Unable to retreive uri for function at ${url}`);

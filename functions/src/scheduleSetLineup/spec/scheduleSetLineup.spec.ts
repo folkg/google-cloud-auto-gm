@@ -1,6 +1,11 @@
+import type {
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+} from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as firestoreService from "../../common/services/firebase/firestore.service.js";
+import { createMock } from "../../common/spec/createMock.js";
 import { scheduleSetLineup } from "../services/scheduleSetLineup.service.js";
 import * as schedulingService from "../services/scheduling.service.js";
 
@@ -59,13 +64,16 @@ describe("scheduleSetLineup", () => {
     "getActiveTeamsForLeagues",
   );
 
-  function mockTeamsSnapshot(teams: any) {
-    return {
-      docs: teams.map((team: any) => ({
-        id: team.team_key,
-        data: () => team,
-      })),
-    };
+  function mockTeamsSnapshot(teams: { team_key: string }[]) {
+    return createMock<QuerySnapshot>({
+      docs: teams.map((team) =>
+        createMock<QueryDocumentSnapshot>({
+          id: team.team_key,
+          data: () => team,
+        }),
+      ),
+      size: teams.length,
+    });
   }
 
   it("should enqueue tasks for each active user with playing teams", async () => {
@@ -91,7 +99,7 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot as any),
+      Promise.resolve(teamsSnapshot),
     );
 
     await scheduleSetLineup();
@@ -139,9 +147,8 @@ describe("scheduleSetLineup", () => {
 
     // mock the querySnapshot object
     const teamsSnapshot = mockTeamsSnapshot(teams);
-    console.log(JSON.stringify(teamsSnapshot.docs.map((t: any) => t.data())));
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot as any),
+      Promise.resolve(teamsSnapshot),
     );
 
     const spyFetchStartingPlayers = vi
@@ -184,7 +191,7 @@ describe("scheduleSetLineup", () => {
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
     mockGetActiveTeamsForLeagues.mockReturnValue(
-      Promise.resolve(teamsSnapshot as any),
+      Promise.resolve(teamsSnapshot),
     );
 
     await scheduleSetLineup();
@@ -211,7 +218,9 @@ describe("scheduleSetLineup", () => {
   });
 
   it("should not execute if there are no active users / teams", async () => {
-    mockGetActiveTeamsForLeagues.mockReturnValue(Promise.resolve([] as any));
+    mockGetActiveTeamsForLeagues.mockResolvedValue(
+      createMock<QuerySnapshot>({ docs: [], size: 0 }),
+    );
     const logSpy = vi.spyOn(logger, "log");
 
     await scheduleSetLineup();

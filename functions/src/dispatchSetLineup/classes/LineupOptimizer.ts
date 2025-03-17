@@ -204,8 +204,8 @@ export class LineupOptimizer {
     }
 
     // free up as many roster spots as possible
-    let playerMovedToIL: Player | null;
-    while ((playerMovedToIL = this.openOneRosterSpot()) !== null) {
+    let playerMovedToIL: Player | null = this.openOneRosterSpot();
+    while (playerMovedToIL !== null) {
       reasonsList.push(
         `Moving ${
           playerMovedToIL.player_name
@@ -215,6 +215,8 @@ export class LineupOptimizer {
           2,
         )}] to the inactive list. A new player can be added.`,
       );
+
+      playerMovedToIL = this.openOneRosterSpot();
     }
 
     if (this.team.getPendingEmptyRosterSpots() === 0) {
@@ -247,16 +249,17 @@ export class LineupOptimizer {
     }
 
     const underfilledPositions: string[] = this.team.underfilledPositions;
+    let transactionReason = reason;
     if (underfilledPositions.length > 0) {
-      reason = `There are empty ${underfilledPositions.join(
+      transactionReason = `There are empty ${underfilledPositions.join(
         ", ",
-      )} positions on the roster. ${reason}`;
+      )} positions on the roster. ${transactionReason}`;
     }
 
     const pt: PlayerTransaction = {
       teamKey: this.team.team_key,
       sameDayTransactions: this.team.sameDayTransactions,
-      description: `${reason ?? ""} Adding ${
+      description: `${transactionReason ?? ""} Adding ${
         playerToAdd.player_name
       } (${playerToAdd.eligible_positions.join(
         ", ",
@@ -265,7 +268,7 @@ export class LineupOptimizer {
           ? "(Waiver Claim)"
           : "(Free Agent Pickup)"
       }`,
-      reason: reason,
+      reason: transactionReason,
       isFaabRequired: this.team.faab_balance !== -1,
       players: [
         {
@@ -575,8 +578,8 @@ export class LineupOptimizer {
       return true;
     }
 
-    let success;
-    let unfilledPositionTargetList;
+    let success: boolean;
+    let unfilledPositionTargetList: string[];
 
     if (player.isInactiveList()) {
       success = this.moveILPlayerToUnfilledALPosition(player);

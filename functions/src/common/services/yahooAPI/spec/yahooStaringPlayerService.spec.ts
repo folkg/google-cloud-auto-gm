@@ -1,4 +1,9 @@
+import type {
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+} from "firebase-admin/firestore";
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { createMock } from "../../../spec/createMock.js";
 import * as firestoreService from "../../firebase/firestore.service.js";
 import * as yahooAPI from "../../yahooAPI/yahooAPI.service.js";
 import { fetchStartingPlayers } from "../yahooStartingPlayer.service.js";
@@ -14,18 +19,19 @@ vi.mock("firebase-admin/app", () => ({
 }));
 
 describe("Test setStartingPlayers()", () => {
-  const intradayTeamsObject = {
+  const intradayTeamsObject = createMock<QuerySnapshot>({
     docs: [
-      {
+      createMock<QueryDocumentSnapshot>({
         id: "nhl.l.123.t.1",
         data: () => ({
           uid: "123",
           weekly_deadline: "intraday",
           game: "nhl",
         }),
-      },
+      }),
     ],
-  };
+    empty: false,
+  });
 
   const startingPlayersArray = [
     "422.p.8590",
@@ -68,7 +74,7 @@ describe("Test setStartingPlayers()", () => {
   );
 
   spyGetIntradayTeams.mockImplementation(() =>
-    Promise.resolve(intradayTeamsObject as any),
+    Promise.resolve(intradayTeamsObject),
   );
   spyStoreStartingPlayersInFirestore.mockImplementation(() =>
     Promise.resolve(),

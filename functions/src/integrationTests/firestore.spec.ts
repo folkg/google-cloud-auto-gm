@@ -1,12 +1,12 @@
-import { describeIfIntegrationTesting } from "./setupTests";
-
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   getPositionalScarcityOffsets,
   getRandomUID,
 } from "../common/services/firebase/firestore.service";
 
-describeIfIntegrationTesting("Firestore Integration", () => {
+const integrationTestsEnabled = process.env.INTEGRATION_TEST_ENABLED === "true";
+
+describe.runIf(integrationTestsEnabled)("Firestore Integration", () => {
   it("should return uid", async () => {
     const result = await getRandomUID();
     console.log(result);
@@ -18,9 +18,9 @@ describeIfIntegrationTesting("Firestore Integration", () => {
     console.log(result);
     expect(result).toBeDefined();
     for (const league in result) {
-      if (result.hasOwnProperty(league)) {
+      if (Object.hasOwn(result, league)) {
         for (const position in result[league]) {
-          if (result[league].hasOwnProperty(position)) {
+          if (Object.hasOwn(result[league], position)) {
             expect(Array.isArray(result[league][position])).toBe(true);
           }
         }

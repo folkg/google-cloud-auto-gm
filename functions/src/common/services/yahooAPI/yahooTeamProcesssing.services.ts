@@ -1,8 +1,9 @@
 import type { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
 import { getChild } from "../utilities.service.js";
 
-export function createTransactionArray(transactions: any): any[] {
-  const result: any[] = [];
+// TOOD: ArkType
+export function createTransactionArray(transactions: unknown): unknown[] {
+  const result: unknown[] = [];
   if (!transactions) {
     return result;
   }
@@ -15,23 +16,25 @@ export function createTransactionArray(transactions: any): any[] {
   return result;
 }
 
-export function getGamesPlayedArray(usersTeam: any): GamesPlayed[] | undefined {
+// TOOD: ArkType
+export function getGamesPlayedArray(
+  usersTeam: unknown,
+): GamesPlayed[] | undefined {
   return getChild(usersTeam, "games_played")
     ?.find(
-      (element: any) =>
-        element.games_played_by_position_type.position_type !== "P",
+      (element) => element.games_played_by_position_type.position_type !== "P",
     )
     ?.games_played_by_position_type.games_played?.map(
-      (element: any) => element.games_played_by_position,
+      (element) => element.games_played_by_position,
     );
 }
 
+// TOOD: ArkType
 export function getInningsPitchedArray(
-  usersTeam: any,
+  usersTeam: unknown,
 ): InningsPitched | undefined {
   return getChild(usersTeam, "games_played")?.find(
-    (element: any) =>
-      element.games_played_by_position_type.position_type === "P",
+    (element) => element.games_played_by_position_type.position_type === "P",
   )?.games_played_by_position_type.innings_pitched;
 }
 
@@ -42,9 +45,10 @@ export function getInningsPitchedArray(
  * @param {string} key - The key of the league
  * @return {*} - A map of positions and the number of players
  */
-export function getPositionCounts(leaguesJSON: any, key: string) {
+export function getPositionCounts(leaguesJSON: unknown, key: string) {
   const result: { [key: string]: number } = {};
 
+  // TOOD: ArkType
   for (const position of getChild(leaguesJSON[key].league, "settings")[0]
     .roster_positions) {
     result[position.roster_position.position] = Number.parseInt(

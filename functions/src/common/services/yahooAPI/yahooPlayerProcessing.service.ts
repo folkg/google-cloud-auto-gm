@@ -9,12 +9,12 @@ import { getChild, parseStringToInt } from "../utilities.service.js";
  * @return {IPlayer[]} - An array of Player objects
  */
 export default function getPlayersFromRoster(
-  playersJSON: any,
+  playersJSON: unknown,
   postponedTeams: Set<string> = new Set(),
 ): IPlayer[] {
   const result: IPlayer[] = [];
 
-  // eslint-disable-next-line guard-for-in
+  // TODO: ArkType
   for (const key in playersJSON) {
     if (key !== "count") {
       const player = playersJSON[key].player;
@@ -57,8 +57,9 @@ export default function getPlayersFromRoster(
   return result;
 }
 
-function getEligiblePositions(player: any) {
+function getEligiblePositions(player: unknown) {
   const eligiblePositions: string[] = [];
+  // TODO: ArkType
   for (const position of getChild(player[0], "eligible_positions")) {
     eligiblePositions.push(position.position);
   }
@@ -75,10 +76,11 @@ function getEligiblePositions(player: any) {
  * @return {number} - The diamond cut value
  */
 function getPercentObject(
-  player: any,
+  player: unknown,
   percentType: string,
   cut = "diamond",
 ): number {
+  // TODO: ArkType
   const percentObject = getChild(player, percentType);
   let result = getChild(percentObject, "value");
 
@@ -100,7 +102,7 @@ function getPercentObject(
  * @param {*} player - The player JSON object
  * @return {*} - The player ranks
  */
-function getPlayerRanks(player: any): PlayerRanks {
+function getPlayerRanks(player: unknown): PlayerRanks {
   const rankTypeMap: { [key: string]: keyof PlayerRanks } = {
     L30: "last30Days",
     L14: "last14Days",
@@ -120,6 +122,7 @@ function getPlayerRanks(player: any): PlayerRanks {
     next4Weeks: -1,
   };
 
+  // TODO: ArkType
   const ranks = getChild(player, "player_ranks");
   for (const rank of ranks) {
     const rankType = rank.player_rank.rank_type;

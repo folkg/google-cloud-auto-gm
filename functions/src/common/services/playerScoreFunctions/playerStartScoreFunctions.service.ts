@@ -288,14 +288,17 @@ function applyScoreFactors(
 }
 
 function applyInjuryScoreFactors(score: number, player: Player): number {
+  let result = score;
+
   const isPlayerInjured = !HEALTHY_STATUS_LIST.includes(player.injury_status);
   if (isPlayerInjured) {
-    score *= INJURY_FACTOR;
+    result *= INJURY_FACTOR;
     if (player.isLTIR()) {
-      score *= LTIR_FACTOR;
+      result *= LTIR_FACTOR;
     }
   }
-  return score;
+
+  return result;
 }
 
 function isStartingPlayer(player: Player, starters: string[]): boolean {

@@ -1,8 +1,7 @@
 import { logger } from "firebase-functions";
-import lodash from "lodash";
+import { isEqual } from "lodash";
 import type { ITeamFirestore, ITeamOptimizer } from "../../interfaces/ITeam.js";
 import { updateTeamFirestore } from "./firestore.service.js";
-const { isEqual } = lodash;
 
 export function enrichTeamsWithFirestoreSettings(
   yahooTeams: readonly ITeamOptimizer[],
@@ -43,7 +42,7 @@ export async function patchTeamChangesInFirestore(
       return;
     }
 
-    const differences: { [key: string]: any } = {};
+    const differences: { [key: string]: unknown } = {};
     for (const key of sharedKeys) {
       const yahooValue = yahooTeam[key as keyof ITeamOptimizer];
       const firestoreValue = firestoreTeam[key as keyof ITeamFirestore];

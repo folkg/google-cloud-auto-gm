@@ -1118,7 +1118,7 @@ describe("Full Stack Add Drop Tests in setUsersLineup()", () => {
 });
 
 describe("Full stack performTransactionsForWeeklyLeagues()", () => {
-  function mapFirestoreTeams(team: any): ITeamFirestore {
+  function mapFirestoreTeams(team): ITeamFirestore {
     return {
       uid: "testUID",
       team_key: team.team_key,
@@ -1239,7 +1239,7 @@ describe("Full stack performTransactionsForWeeklyLeagues()", () => {
 
   it("should exit early with an empty teams array", async () => {
     const uid = "testUID";
-    const teams: any[] = [];
+    const teams = [];
 
     // Set up spies and mocks
     const spyFetchRostersFromYahoo = vi.spyOn(

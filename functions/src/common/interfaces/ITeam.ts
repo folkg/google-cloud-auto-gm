@@ -65,7 +65,7 @@ export interface ITeamOptimizer extends YahooTeam, Partial<OptionsTeam> {
   players: IPlayer[];
   coverage_type: string;
   coverage_period: string;
-  transactions: any[];
+  transactions: unknown[]; // TODO: What? Why don't we have a type for this? It is the yahooJSON probably.
   games_played?: GamesPlayed[];
   innings_pitched?: InningsPitched;
 }

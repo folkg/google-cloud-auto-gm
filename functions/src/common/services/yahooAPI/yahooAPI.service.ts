@@ -99,7 +99,7 @@ export async function getRostersByTeamID(
   teamKeys: string[],
   uid: string,
   date = "",
-): Promise<any> {
+): Promise<unknown> {
   const leagueKeysArray: string[] = [];
   for (const teamKey of teamKeys) {
     leagueKeysArray.push(teamKey.split(".t")[0]);
@@ -111,7 +111,7 @@ export async function getRostersByTeamID(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (err: unknown) {
+  } catch (err) {
     const errMessage = `Error in getRostersByTeamID. User: ${uid} Teams: ${teamKeys}`;
     handleAxiosError(err, errMessage);
   }
@@ -134,7 +134,7 @@ export async function getTopAvailablePlayers(
   uid: string,
   availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
   sort: PlayerSort = "sort=R_PO",
-): Promise<any> {
+): Promise<unknown> {
   const leagueKeysArray: string[] = [];
   for (const teamKey of teamKeys) {
     leagueKeysArray.push(teamKey.split(".t")[0]);
@@ -146,7 +146,7 @@ export async function getTopAvailablePlayers(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (err: unknown) {
+  } catch (err) {
     const errMessage = `Error in getTopAvailablePlayers. User: ${uid} League: ${teamKeys}`;
     handleAxiosError(err, errMessage);
   }
@@ -159,7 +159,7 @@ export async function getTopPlayersGeneral(
   start = 0,
   availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
   sort: PlayerSort = "sort=R_PO",
-): Promise<any> {
+): Promise<unknown> {
   const positionArray = position.split(",");
   const expandedPositions = positionArray.map(
     (pos) => POSITION_EXPANSION[pos] ?? pos,
@@ -171,7 +171,7 @@ export async function getTopPlayersGeneral(
   try {
     const { data } = await httpGetAxios(url, uid);
     return data;
-  } catch (err: unknown) {
+  } catch (err) {
     const errMessage = "Error in getTopPlayersGeneral.";
     handleAxiosError(err, errMessage);
   }
@@ -185,14 +185,14 @@ export async function getTopPlayersGeneral(
  * @param {string} uid - The firebase uid
  * @return {Promise<any>} The Yahoo JSON object containing team's standings data and settings
  */
-export async function getUsersTeams(uid: string): Promise<any> {
+export async function getUsersTeams(uid: string): Promise<unknown> {
   try {
     const { data } = await httpGetAxios(
       "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues;out=settings/teams;out=standings?format=json",
       uid,
     );
     return data;
-  } catch (err: unknown) {
+  } catch (err) {
     const errMessage = `Error in getUserStandings. User: ${uid}`;
     handleAxiosError(err, errMessage);
   }
@@ -213,7 +213,7 @@ export async function getStartingPlayers(
   league: string,
   uid: string,
   leagueKey: string,
-) {
+): Promise<unknown> {
   const starterPositions: { [key: string]: string } = {
     nhl: "S_G",
     mlb: "S_P",
@@ -296,7 +296,7 @@ export async function putLineupChanges(
 async function putRosterChangePromise(
   uid: string,
   teamKey: string,
-  xmlBody: any,
+  xmlBody: string,
 ) {
   await httpPutAxios(uid, `team/${teamKey}/roster?format=json`, xmlBody);
   logger.log(

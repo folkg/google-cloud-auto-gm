@@ -6,7 +6,11 @@ import {
   INACTIVE_POSITION_LIST,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants.js";
-import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import type {
+  GamesPlayed,
+  ITeamOptimizer,
+  InningsPitched,
+} from "../../common/interfaces/ITeam.js";
 import { ownershipScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerOwnershipScoreFunctions.service.js";
 import { playerStartScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerStartScoreFunctions.service.js";
 import {
@@ -17,11 +21,38 @@ import {
 } from "../../common/services/utilities.service.js";
 import { PlayerCollection } from "./PlayerCollection.js";
 
-// use declaration merging to add the players property as a Player object to the ITeam interface and the Team class
-export interface Team extends ITeamOptimizer {
-  players: Player[];
-}
-export class Team extends PlayerCollection implements Team {
+export class Team extends PlayerCollection implements ITeamOptimizer {
+  coverage_type: string;
+  coverage_period: string;
+  transactions: unknown[];
+  games_played?: GamesPlayed[] | undefined;
+  innings_pitched?: InningsPitched | undefined;
+  edit_key: string;
+  faab_balance: number;
+  current_weekly_adds: number;
+  current_season_adds: number;
+  scoring_type: string;
+  team_name: string;
+  league_name: string;
+  max_weekly_adds: number;
+  max_season_adds: number;
+  waiver_rule: string;
+  team_key: string;
+  game_code: string;
+  start_date: number;
+  end_date: number;
+  weekly_deadline: string;
+  roster_positions: { [position: string]: number };
+  num_teams: number;
+  allow_transactions?: boolean | undefined;
+  allow_dropping?: boolean | undefined;
+  allow_adding?: boolean | undefined;
+  allow_add_drops?: boolean | undefined;
+  allow_waiver_adds?: boolean | undefined;
+  automated_transaction_processing?: boolean | undefined;
+  last_updated?: number | undefined;
+  lineup_paused_at?: number | undefined;
+
   private _editablePlayers: Player[];
   private _submittedAddDropDifferential = 0;
   private _pendingAddPlayers: Map<string, string[]> = new Map();
@@ -35,7 +66,7 @@ export class Team extends PlayerCollection implements Team {
   ) {
     super(team.players);
 
-    const teamCopy: Team = structuredClone(team) as Team;
+    const teamCopy = structuredClone(team);
     teamCopy.players = this.players;
     Object.assign(this, teamCopy);
 
@@ -121,7 +152,8 @@ export class Team extends PlayerCollection implements Team {
     }
   }
 
-  private makeTransactionPlayerInelligible(playerInTransaction: any) {
+  private makeTransactionPlayerInelligible(playerInTransaction: unknown) {
+    // TODO: ArkType
     const matchingTeamPlayer = this.players.find(
       (player) =>
         player.player_key === getChild(playerInTransaction[0], "player_key"),
@@ -134,8 +166,9 @@ export class Team extends PlayerCollection implements Team {
 
   private changePendingAddDrops(
     isPendingTransaction: boolean,
-    playerInTransaction: any,
+    playerInTransaction: unknown,
   ) {
+    // TODO: ArkType
     const playerKey = getChild(playerInTransaction[0], "player_key");
     const eligiblePositions = getChild(
       playerInTransaction[0],
@@ -336,21 +369,23 @@ export class Team extends PlayerCollection implements Team {
 
   private emptyRosterSpotCounter(): number {
     const unfilledPositions = this.unfilledPositionCounter;
-    return Object.keys(unfilledPositions).reduce((acc, position) => {
-      if (!INACTIVE_POSITION_LIST.includes(position)) {
-        acc += unfilledPositions[position];
-      }
-      return acc;
-    }, 0);
+    return Object.keys(unfilledPositions).reduce(
+      (acc, position) =>
+        !INACTIVE_POSITION_LIST.includes(position)
+          ? acc + unfilledPositions[position]
+          : acc,
+      0,
+    );
   }
 
   public get numStandardRosterSpots(): number {
-    return Object.keys(this.roster_positions).reduce((acc, position) => {
-      if (!INACTIVE_POSITION_LIST.includes(position)) {
-        acc += this.roster_positions[position];
-      }
-      return acc;
-    }, 0);
+    return Object.keys(this.roster_positions).reduce(
+      (acc, position) =>
+        !INACTIVE_POSITION_LIST.includes(position)
+          ? acc + this.roster_positions[position]
+          : acc,
+      0,
+    );
   }
 
   /**

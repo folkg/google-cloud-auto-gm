@@ -132,10 +132,13 @@ export async function calculateOffsetForPosition(
   count: number,
   uid?: string,
 ): Promise<void> {
-  if (!uid) {
-    uid = await Firestore.getRandomUID();
-  }
-  const promises = generateFetchPlayerPromises(uid, position, league, count);
+  const localUid = uid ?? (await Firestore.getRandomUID());
+  const promises = generateFetchPlayerPromises(
+    localUid,
+    position,
+    league,
+    count,
+  );
   const players = await fetchYahooPlayers(promises);
   if (players) {
     updateOffsetArray(league, position, players);
@@ -147,8 +150,8 @@ export function generateFetchPlayerPromises(
   position: string,
   gameCode: string,
   count: number,
-): Promise<any>[] {
-  const result: Promise<any>[] = [];
+): Promise<unknown>[] {
+  const result: Promise<unknown>[] = [];
 
   if (count < 1) {
     return result;
@@ -163,18 +166,19 @@ export function generateFetchPlayerPromises(
   return result;
 }
 
-async function fetchYahooPlayers(fetchPlayersPromises: Promise<any>[]) {
+async function fetchYahooPlayers(fetchPlayersPromises: Promise<unknown>[]) {
   try {
-    const yahooJSONs: any[] = await Promise.all(fetchPlayersPromises);
+    const yahooJSONs = await Promise.all(fetchPlayersPromises);
     const players: IPlayer[] = yahooJSONs
       .flatMap((yahooJSON) => {
+        // TODO: ArkType
         const gameJSON = yahooJSON.fantasy_content.games[0].game;
         const playersJSON = getChild(gameJSON, "players");
         return getPlayersFromRoster(playersJSON);
       })
       .sort((a, b) => a.percent_owned - b.percent_owned);
     return players;
-  } catch (e: any) {
+  } catch (e) {
     logger.error("Error in fetchPlayersFromYahoo:", e);
     return null;
   }
@@ -297,16 +301,18 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
   ) {
     let numPlayersToDistribute = numSpotsToDistribute * numTeams;
 
-    positionList.sort(
+    const sortedPositionList = [...positionList].sort(
       (a, b) =>
         (maxExtraPlayers[a] ?? Number.POSITIVE_INFINITY) -
         (maxExtraPlayers[b] ?? Number.POSITIVE_INFINITY),
     );
 
-    for (const position of positionList) {
+    let remainingStartingSpots = numTotalStartingSpots;
+
+    for (const position of sortedPositionList) {
       const numStartersAtPosition = rosterPositions[position];
       const newShare =
-        (numStartersAtPosition / numTotalStartingSpots) *
+        (numStartersAtPosition / remainingStartingSpots) *
         numPlayersToDistribute;
 
       const extraAllowed: number | undefined = maxExtraPlayers[position];
@@ -319,7 +325,7 @@ export function getReplacementLevels(team: CommonTeam): ReplacementLevels {
       const numAdded = newTotal - result[position];
 
       numPlayersToDistribute -= numAdded;
-      numTotalStartingSpots -= rosterPositions[position];
+      remainingStartingSpots -= rosterPositions[position];
 
       result[position] = newTotal;
     }

@@ -29,7 +29,7 @@ describe("loadYahooAccessToken", () => {
     try {
       await loadYahooAccessToken("123"); // Replace '123' with the actual user ID
       assert(false, "Expected RevokedRefreshTokenError to be thrown.");
-    } catch (error: any) {
+    } catch (error) {
       expect(error).toBeInstanceOf(RevokedRefreshTokenError);
       expect(error.message).toEqual(
         "RevokedRefreshTokenError: User 123 has revoked access. Stopping all actions for this user.",

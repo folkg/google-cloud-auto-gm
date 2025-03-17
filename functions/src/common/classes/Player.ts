@@ -3,12 +3,11 @@ import {
   INACTIVE_POSITION_LIST,
   LONG_TERM_IL_POSITIONS_LIST,
 } from "../helpers/constants.js";
-import type { IPlayer } from "../interfaces/IPlayer.js";
-
-export interface Player extends IPlayer {
-  start_score: number;
-  ownership_score: number;
-}
+import type {
+  IPlayer,
+  PlayerOwnership,
+  PlayerRanks,
+} from "../interfaces/IPlayer.js";
 
 /**
  * A class that extends the Player interface to add useful methods for
@@ -19,7 +18,26 @@ export interface Player extends IPlayer {
  * @typedef {Player}
  * @implements {IPlayer}
  */
-export class Player implements Player {
+export class Player implements IPlayer {
+  player_key: string;
+  player_name: string;
+  eligible_positions: string[];
+  display_positions: string[];
+  selected_position: string;
+  is_editable: boolean;
+  is_playing: boolean;
+  injury_status: string;
+  percent_started: number;
+  percent_owned: number;
+  percent_owned_delta: number;
+  is_starting: string | number;
+  is_undroppable: boolean;
+  ranks: PlayerRanks;
+  ownership?: PlayerOwnership | undefined;
+
+  start_score: number;
+  ownership_score: number;
+
   constructor(player: IPlayer) {
     const playerCopy = structuredClone(player);
     Object.assign(this, playerCopy);

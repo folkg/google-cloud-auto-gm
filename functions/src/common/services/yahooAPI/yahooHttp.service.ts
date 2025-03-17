@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import axiosRetry, { isNetworkError, isRetryableError } from "axios-retry";
 import { loadYahooAccessToken } from "../firebase/firestore.service.js";
 
 const API_URL = "https://fantasysports.yahooapis.com/fantasy/v2/";
-const shouldRetry = (error: any) =>
+const shouldRetry = (error: AxiosError) =>
   isNetworkError(error) ||
   isRetryableError(error) ||
   error.code === "ECONNABORTED" ||
@@ -46,7 +46,7 @@ export async function httpGetAxios<T>(url: string, uid?: string) {
  * @param {*} body - the body of the post request
  * @return {unknown} - the response from the API
  */
-export function httpPostAxiosUnauth<T>(url: string, body: any) {
+export function httpPostAxiosUnauth<T>(url: string, body: unknown) {
   return axios.post<T>(url, body, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -57,7 +57,7 @@ export function httpPostAxiosUnauth<T>(url: string, body: any) {
 export async function httpPostAxiosAuth<T>(
   uid: string,
   url: string,
-  body: any,
+  body: unknown,
 ) {
   const credential = await loadYahooAccessToken(uid);
   const accessToken = credential.accessToken;

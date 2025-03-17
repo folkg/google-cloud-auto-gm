@@ -21,7 +21,7 @@ vi.mock("firebase-admin/app", () => ({
   initializeApp: vi.fn(),
 }));
 
-describe.todo("test getTransactions and postTransactions functions", () => {});
+describe.todo("test getTransactions and postTransactions functions");
 
 describe("test mergeTopAvailabePlayers function", () => {
   test("four MLB teams", async () => {

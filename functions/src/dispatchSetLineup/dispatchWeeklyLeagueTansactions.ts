@@ -17,8 +17,8 @@ export const taskQueueConfig = {
 export const dispatchweeklyleaguetransactions = onTaskDispatched(
   taskQueueConfig,
   async (req) => {
-    const uid: string = req.data.uid;
-    const teams: any[] = req.data.teams;
+    const uid: unknown = req.data.uid;
+    const teams: unknown[] = req.data.teams;
     if (!uid) {
       logger.log("No uid provided");
       return;
@@ -29,6 +29,7 @@ export const dispatchweeklyleaguetransactions = onTaskDispatched(
     }
 
     try {
+      // TODO: ArkType
       return await performWeeklyLeagueTransactions(uid, teams);
     } catch (error) {
       logger.error(

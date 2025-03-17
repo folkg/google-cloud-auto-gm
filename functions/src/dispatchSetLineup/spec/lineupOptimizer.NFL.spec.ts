@@ -12,7 +12,7 @@ vi.mock("firebase-admin/app", () => ({
 }));
 
 describe("Test LineupOptimizer Class NFL", () => {
-  it.todo("Optimal Lineup", async () => {
+  it.todo("Optimal Lineup", () => {
     const roster: ITeamOptimizer = require("./testRosters/NFL/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();

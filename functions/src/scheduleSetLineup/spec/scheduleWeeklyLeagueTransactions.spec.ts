@@ -46,9 +46,9 @@ describe("scheduleWeeklyLeagueTransactions", () => {
     "getTomorrowsActiveWeeklyTeams",
   );
 
-  function mockTeamsSnapshot(teams: any) {
+  function mockTeamsSnapshot(teams) {
     return {
-      docs: teams.map((team: any) => ({
+      docs: teams.map((team) => ({
         id: team.team_key,
         data: () => team,
       })),

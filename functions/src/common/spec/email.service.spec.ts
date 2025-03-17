@@ -6,6 +6,8 @@ import {
   sendUserEmail,
 } from "../services/email/email.service.js";
 
+const integrationTestsEnabled = process.env.INTEGRATION_TEST_ENABLED === "true";
+
 vi.mock("firebase-admin/auth", () => {
   return {
     getAuth: vi.fn(() => ({
@@ -26,7 +28,7 @@ vi.mock("firebase-admin/app", () => {
   };
 });
 
-describe.skip("Integration test EmailService", () => {
+describe.runIf(integrationTestsEnabled)("Integration test EmailService", () => {
   it("should actually send email via SendGrid", async () => {
     const result = await sendFeedbackEmail(
       "test@email.com",

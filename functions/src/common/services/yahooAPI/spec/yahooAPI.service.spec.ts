@@ -1,10 +1,14 @@
-import js2xmlparser from "js2xmlparser";
+import { parse } from "js2xmlparser";
 import { postRosterAddDropTransaction } from "../yahooAPI.service.js";
 import * as yahooHttpService from "../yahooHttp.service.js";
 
-import { AxiosError } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { describe, expect, it, vi } from "vitest";
-import type { TPlayer } from "../../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import type {
+  PlayerTransaction,
+  TPlayer,
+} from "../../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import { createMock } from "../../../spec/createMock.js";
 
 vi.mock("firebase-admin/firestore", () => ({
   getFirestore: vi.fn(() => ({ settings: vi.fn() })),
@@ -31,29 +35,31 @@ describe("YahooAPI Service", () => {
         },
       },
     };
-    const expectedXML = js2xmlparser.parse("fantasy_content", expectedJSON);
+    const expectedXML = parse("fantasy_content", expectedJSON);
 
-    const transaction = {
+    const transaction = createMock<PlayerTransaction>({
       sameDayTransactions: true,
       teamKey: "418.l.201581.t.1",
       reason: "",
       players: [
-        {
+        createMock<TPlayer>({
           playerKey: "418.p.6047",
           transactionType: "drop",
           isInactiveList: false,
           isFromWaivers: false,
-        } as TPlayer,
+        }),
       ],
-    };
+    });
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
       "httpPostAxiosAuth",
     );
-    spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.resolve() as any;
-    });
+    spyHttpPostAxiosAuth.mockImplementation(
+      createMock(() => {
+        return Promise.resolve();
+      }),
+    );
 
     await postRosterAddDropTransaction(transaction, uid);
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
@@ -78,29 +84,31 @@ describe("YahooAPI Service", () => {
         },
       },
     };
-    const expectedXML = js2xmlparser.parse("fantasy_content", expectedJSON);
+    const expectedXML = parse("fantasy_content", expectedJSON);
 
-    const transaction = {
+    const transaction = createMock<PlayerTransaction>({
       sameDayTransactions: true,
       teamKey: "418.l.201581.t.1",
       reason: "",
       players: [
-        {
+        createMock<TPlayer>({
           playerKey: "418.p.6047",
           transactionType: "add",
           isInactiveList: false,
           isFromWaivers: false,
-        } as TPlayer,
+        }),
       ],
-    };
+    });
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
       "httpPostAxiosAuth",
     );
-    spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.resolve() as any;
-    });
+    spyHttpPostAxiosAuth.mockImplementation(
+      createMock(() => {
+        return Promise.resolve();
+      }),
+    );
 
     await postRosterAddDropTransaction(transaction, uid);
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
@@ -126,30 +134,32 @@ describe("YahooAPI Service", () => {
         },
       },
     };
-    const expectedXML = js2xmlparser.parse("fantasy_content", expectedJSON);
+    const expectedXML = parse("fantasy_content", expectedJSON);
 
-    const transaction = {
+    const transaction = createMock<PlayerTransaction>({
       sameDayTransactions: true,
       teamKey: "418.l.201581.t.1",
       reason: "",
       isFaabRequired: true,
       players: [
-        {
+        createMock<TPlayer>({
           playerKey: "418.p.6047",
           transactionType: "add",
           isInactiveList: false,
           isFromWaivers: true,
-        } as TPlayer,
+        }),
       ],
-    };
+    });
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
       "httpPostAxiosAuth",
     );
-    spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.resolve() as any;
-    });
+    spyHttpPostAxiosAuth.mockImplementation(
+      createMock(() => {
+        return Promise.resolve();
+      }),
+    );
 
     await postRosterAddDropTransaction(transaction, uid);
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
@@ -185,36 +195,38 @@ describe("YahooAPI Service", () => {
         },
       },
     };
-    const expectedXML = js2xmlparser.parse("fantasy_content", expectedJSON);
+    const expectedXML = parse("fantasy_content", expectedJSON);
 
     // drop and add are reversed to test that the order doesn't matter
-    const transaction = {
+    const transaction = createMock<PlayerTransaction>({
       sameDayTransactions: true,
       teamKey: "418.l.201581.t.1",
       reason: "",
       players: [
-        {
+        createMock<TPlayer>({
           playerKey: "418.p.6048",
           transactionType: "drop",
           isInactiveList: false,
           isFromWaivers: false,
-        } as TPlayer,
-        {
+        }),
+        createMock<TPlayer>({
           playerKey: "418.p.6047",
           transactionType: "add",
           isInactiveList: false,
           isFromWaivers: false,
-        } as TPlayer,
+        }),
       ],
-    };
+    });
 
     const spyHttpPostAxiosAuth = vi.spyOn(
       yahooHttpService,
       "httpPostAxiosAuth",
     );
-    spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.resolve() as any;
-    });
+    spyHttpPostAxiosAuth.mockImplementation(
+      createMock(() => {
+        return Promise.resolve();
+      }),
+    );
 
     await postRosterAddDropTransaction(transaction, uid);
     expect(spyHttpPostAxiosAuth).toHaveBeenCalledWith(
@@ -224,35 +236,32 @@ describe("YahooAPI Service", () => {
     );
   });
   it("should swallow the error for picking up a player on waivers that we recently dropped", async () => {
-    const axiosError = new AxiosError(
-      "test",
-      "400",
-      {} as any,
-      {} as any,
-      {
+    const axiosError = createMock<AxiosError>({
+      isAxiosError: true,
+      response: createMock<AxiosResponse>({
         data:
           '<?xml version="1.0" encoding="UTF-8"?>\n' +
           '<error xml:lang="en-us" yahoo:uri="http://fantasysports.yahooapis.com/fantasy/v2/league/422.l.58716/transactions" xmlns:yahoo="http://www.yahooapis.com/v1/base.rng" xmlns="http://www.yahooapis.com/v1/base.rng">\n' +
           " <description>You cannot add a player you dropped until the waiver period ends.</description>\n" +
           " <detail/>\n" +
           "</error>",
-      } as any,
-    );
+      }),
+    });
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
     const teamKey = "418.l.201581.t.1";
-    const transaction = {
+    const transaction = createMock<PlayerTransaction>({
       sameDayTransactions: true,
       teamKey: teamKey,
       reason: "",
       players: [
-        {
+        createMock<TPlayer>({
           playerKey: "418.p.6048",
           transactionType: "drop",
           isInactiveList: false,
           isFromWaivers: false,
-        } as TPlayer,
+        }),
       ],
-    };
+    });
     const errMessage = `There was a problem posting one transaction. Here are the error details: User: ${uid} Team: ${teamKey} Transaction: ${JSON.stringify(
       transaction,
     )}`;
@@ -261,7 +270,7 @@ describe("YahooAPI Service", () => {
       "httpPostAxiosAuth",
     );
     spyHttpPostAxiosAuth.mockImplementation(() => {
-      return Promise.reject(axiosError) as any;
+      return Promise.reject(axiosError);
     });
     const spyConsoleError = vi.spyOn(console, "info");
     spyConsoleError.mockImplementation(() => {
