@@ -17,6 +17,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@master
 
+      - name: Setup Biome CLI
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: Run Biome
+        run: biome ci
+
       - name: Setup Bun CLI
         uses: oven-sh/setup-bun@v2
         with:
@@ -26,7 +34,7 @@ jobs:
         run: bun install
 
       - name: Run Tests
-        run: bun run test:once
+        run: bun run test:ci
 
       - name: Build
         run: bun run build

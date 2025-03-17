@@ -1,7 +1,7 @@
 {
   "name": "functions",
   "scripts": {
-    "build": "bun run checks && tsc --outDir lib",
+    "build": "tsc --outDir lib",
     "build:watch": "tsc --watch",
     "serve": "bun run build:watch & firebase emulators:start --only functions",
     "shell": "bun run build:watch & firebase functions:shell",
@@ -13,7 +13,7 @@
     "deploy:email": "bun run pp && firebase deploy --only functions:email",
     "deploy:tx": "bun run pp && firebase deploy --only functions:transactions",
     "deploy:notblock": "bun run pp && firebase deploy --only functions:lineup,functions:email,functions:transactions",
-    "pp": "bun run test:ci && bun run build",
+    "pp": "bun run all-checks && bun run build",
     "logs": "firebase functions:log",
     "test:debug": "vitest --test-timeout=999999999 --silent",
     "test": "bun run vitest",
