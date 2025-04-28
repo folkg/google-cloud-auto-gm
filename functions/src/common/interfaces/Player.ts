@@ -1,53 +1,42 @@
-import {
-  type Infer,
-  array,
-  boolean,
-  literal,
-  number,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
+import { type } from "arktype";
 
-export const PlayerOwnershipType = union([
-  literal("waivers"),
-  literal("freeagents"),
-]);
+export const PlayerRanks = type({
+  last30Days: "number",
+  last14Days: "number",
+  next7Days: "number",
+  restOfSeason: "number",
+  last4Weeks: "number",
+  projectedWeek: "number",
+  next4Weeks: "number",
+});
 
-export const PlayerOwnership = object({
+const PlayerOwnershipType = type("'waivers'|'freeagents'");
+
+export const PlayerOwnership = type({
   ownership_type: PlayerOwnershipType,
-  waiver_date: optional(string()),
+  "waiver_date?": "string",
 });
 
-export const PlayerRanks = object({
-  last30Days: number(),
-  last14Days: number(),
-  next7Days: number(),
-  restOfSeason: number(),
-  last4Weeks: number(),
-  projectedWeek: number(),
-  next4Weeks: number(),
-});
-
-export const Player = object({
-  player_key: string(),
-  player_name: string(),
-  eligible_positions: array(string()),
-  display_positions: array(string()),
-  selected_position: string(),
-  is_editable: boolean(),
-  is_playing: boolean(),
-  injury_status: string(),
-  percent_started: number(),
-  percent_owned: number(),
-  percent_owned_delta: number(),
-  is_starting: union([number(), string()]),
-  is_undroppable: boolean(),
+export const PlayerSchema = type({
+  player_key: "string",
+  player_name: "string",
+  eligible_positions: "string[]",
+  display_positions: "string[]",
+  selected_position: "string | null",
+  is_editable: "boolean",
+  is_playing: "boolean",
+  injury_status: "string",
+  percent_started: "number",
+  percent_owned: "number",
+  percent_owned_delta: "number",
+  is_starting: "string|number",
+  is_undroppable: "boolean",
   ranks: PlayerRanks,
-  ownership: optional(PlayerOwnership),
+  ownership: PlayerOwnership.or("null"),
+  "start_score?": "number",
+  "ownership_score?": "number",
 });
 
-export type PlayerOwnership = Infer<typeof PlayerOwnership>;
-export type PlayerRanks = Infer<typeof PlayerRanks>;
-export type Player = Infer<typeof Player>;
+export type IPlayer = typeof PlayerSchema.infer;
+export type PlayerRanks = typeof PlayerRanks.infer;
+export type PlayerOwnership = typeof PlayerOwnership.infer;

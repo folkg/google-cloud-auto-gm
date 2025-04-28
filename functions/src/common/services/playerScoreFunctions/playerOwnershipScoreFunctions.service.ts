@@ -1,6 +1,6 @@
 import type { LeagueSpecificScarcityOffsets } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import type { Player } from "../../classes/Player.js";
-import type { PlayerRanks } from "../../interfaces/IPlayer.js";
+import type { PlayerRanks } from "../../interfaces/Player.js";
 
 const OWNERSHIP_FACTOR = 0.5;
 const OWNERSHIP_DELTA_ADJUSTMENT_BOUND = 4;

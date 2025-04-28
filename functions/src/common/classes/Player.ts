@@ -1,3 +1,4 @@
+import { isDefined } from "../helpers/checks.js";
 import {
   HEALTHY_STATUS_LIST,
   INACTIVE_POSITION_LIST,
@@ -7,7 +8,7 @@ import type {
   IPlayer,
   PlayerOwnership,
   PlayerRanks,
-} from "../interfaces/IPlayer.js";
+} from "../interfaces/Player.js";
 
 /**
  * A class that extends the Player interface to add useful methods for
@@ -15,15 +16,14 @@ import type {
  *
  * @export
  * @class OptimizationPlayer
- * @typedef {Player}
- * @implements {IPlayer}
+ * @implements {Player}
  */
 export class Player implements IPlayer {
   player_key: string;
   player_name: string;
   eligible_positions: string[];
   display_positions: string[];
-  selected_position: string;
+  selected_position: string | null;
   is_editable: boolean;
   is_playing: boolean;
   injury_status: string;
@@ -33,17 +33,32 @@ export class Player implements IPlayer {
   is_starting: string | number;
   is_undroppable: boolean;
   ranks: PlayerRanks;
-  ownership?: PlayerOwnership | undefined;
+  ownership: PlayerOwnership | null;
 
   start_score: number;
   ownership_score: number;
 
   constructor(player: IPlayer) {
     const playerCopy = structuredClone(player);
-    Object.assign(this, playerCopy);
 
-    this.start_score = this.start_score ?? 0;
-    this.ownership_score = this.ownership_score ?? 0;
+    this.player_key = playerCopy.player_key;
+    this.player_name = playerCopy.player_name;
+    this.eligible_positions = playerCopy.eligible_positions;
+    this.display_positions = playerCopy.display_positions;
+    this.selected_position = playerCopy.selected_position;
+    this.is_editable = playerCopy.is_editable;
+    this.is_playing = playerCopy.is_playing;
+    this.injury_status = playerCopy.injury_status;
+    this.percent_started = playerCopy.percent_started;
+    this.percent_owned = playerCopy.percent_owned;
+    this.percent_owned_delta = playerCopy.percent_owned_delta;
+    this.is_starting = playerCopy.is_starting;
+    this.is_undroppable = playerCopy.is_undroppable;
+    this.ranks = playerCopy.ranks;
+    this.ownership = playerCopy.ownership;
+
+    this.start_score = playerCopy.start_score ?? 0;
+    this.ownership_score = playerCopy.ownership_score ?? 0;
     if (!this.eligible_positions.includes("BN")) {
       this.eligible_positions.push("BN"); // not included by default in Yahoo
     }
@@ -71,7 +86,10 @@ export class Player implements IPlayer {
   }
 
   isInactiveList(): boolean {
-    return INACTIVE_POSITION_LIST.includes(this.selected_position);
+    return (
+      isDefined(this.selected_position) &&
+      INACTIVE_POSITION_LIST.includes(this.selected_position)
+    );
   }
 
   isInactiveListEligible(): boolean {
@@ -87,12 +105,16 @@ export class Player implements IPlayer {
   }
 
   isActiveRoster(): boolean {
-    return !INACTIVE_POSITION_LIST.includes(this.selected_position);
+    return (
+      isDefined(this.selected_position) &&
+      !INACTIVE_POSITION_LIST.includes(this.selected_position)
+    );
   }
 
   isStartingRosterPlayer(): boolean {
     return (
       this.selected_position !== "BN" &&
+      isDefined(this.selected_position) &&
       !INACTIVE_POSITION_LIST.includes(this.selected_position)
     );
   }
@@ -102,7 +124,10 @@ export class Player implements IPlayer {
   }
 
   isIllegalPosition(): boolean {
-    return !this.eligible_positions.includes(this.selected_position);
+    return (
+      this.selected_position === null ||
+      !this.eligible_positions.includes(this.selected_position)
+    );
   }
 
   isHealthy(): boolean {
@@ -117,7 +142,9 @@ export class Player implements IPlayer {
     return (
       playerB !== this &&
       playerB.selected_position !== this.selected_position &&
+      isDefined(playerB.selected_position) &&
       this.eligible_positions.includes(playerB.selected_position) &&
+      isDefined(this.selected_position) &&
       playerB.eligible_positions.includes(this.selected_position)
     );
   }
@@ -133,6 +160,7 @@ export class Player implements IPlayer {
       (targetPlayer) =>
         targetPlayer !== this &&
         targetPlayer.selected_position !== this.selected_position &&
+        isDefined(targetPlayer.selected_position) &&
         this.eligible_positions.includes(targetPlayer.selected_position),
     );
   }

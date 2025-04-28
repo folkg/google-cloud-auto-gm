@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, test, vi } from "vitest";
 import * as positionalScarcityService from "../../calcPositionalScarcity/services/positionalScarcity.service";
 import type {
-  ITeamFirestore,
-  ITeamOptimizer,
-} from "../../common/interfaces/ITeam";
+  FirestoreTeam,
+  TeamOptimizer,
+} from "../../common/interfaces/Team";
 import * as yahooTopAvailablePlayersBuilder from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service";
 import type { TopAvailablePlayers } from "../../common/services/yahooAPI/yahooTopAvailablePlayersBuilder.service";
 import {
@@ -56,11 +56,11 @@ describe("test mergeTopAvailabePlayers function", () => {
 
 describe("generateTopAvailablePlayerPromises", () => {
   test("no teams adding players", () => {
-    const teams: ITeamFirestore[] = [
+    const teams: FirestoreTeam[] = [
       { allow_adding: false, game_code: "mlb" },
       { allow_adding: false, game_code: "nfl" },
       { allow_adding: false, game_code: "nhl" },
-    ] as ITeamFirestore[];
+    ] as FirestoreTeam[];
     const expectedOutput = [
       Promise.resolve({}),
       Promise.resolve({}),
@@ -71,10 +71,10 @@ describe("generateTopAvailablePlayerPromises", () => {
   });
 
   it("should call the API three times", () => {
-    const teams: ITeamFirestore[] = [
+    const teams: FirestoreTeam[] = [
       { allow_adding: true, game_code: "mlb" },
       { allow_adding: true, game_code: "nfl" },
-    ] as ITeamFirestore[];
+    ] as FirestoreTeam[];
     const expectedOutput = [
       Promise.resolve({}),
       Promise.resolve({}),
@@ -95,10 +95,10 @@ describe("generateTopAvailablePlayerPromises", () => {
   });
 
   it("should call the API two times (no NFL call)", () => {
-    const teams: ITeamFirestore[] = [
+    const teams: FirestoreTeam[] = [
       { allow_adding: true, game_code: "mlb" },
       { allow_adding: true, game_code: "nhl" },
-    ] as ITeamFirestore[];
+    ] as FirestoreTeam[];
     const expectedOutput = [
       Promise.resolve({}),
       Promise.resolve({}),
@@ -119,10 +119,10 @@ describe("generateTopAvailablePlayerPromises", () => {
   });
 
   it("should call the API two times (no rest call)", () => {
-    const teams: ITeamFirestore[] = [
+    const teams: FirestoreTeam[] = [
       { allow_adding: true, game_code: "nfl" },
       { allow_adding: true, game_code: "nfl" },
-    ] as ITeamFirestore[];
+    ] as FirestoreTeam[];
     const expectedOutput = [
       Promise.resolve({}),
       Promise.resolve({}),
@@ -156,7 +156,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
   it("should drop the worst player (D) to make room for a player coming back from IR", async () => {
     positionalScarcityServiceSpy.mockResolvedValue({});
 
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
@@ -190,7 +190,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       G: 50,
     });
 
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/testRosters/NHL/DailyDrops/dropPlayerWithLowestScoreAndOptimization.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
@@ -220,7 +220,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
   it("should add top ranked player (SS) for a player moving to IR", async () => {
     positionalScarcityServiceSpy.mockResolvedValue({});
 
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/testRosters/MLB/free1spotILswap.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
@@ -266,7 +266,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       P: 4,
     });
 
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/testRosters/MLB/free1spotILswap.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/topAvailablePlayersPromise2.json");
@@ -302,7 +302,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
   it("should drop for returning-IL and swap multiple players for a better player in free agency", async () => {
     positionalScarcityServiceSpy.mockResolvedValue({});
 
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/problematicAddDrop/moveILtoBN-lineup.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
@@ -351,7 +351,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       P: 50,
     });
 
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/problematicAddDrop/moveILtoBN-lineup.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
@@ -390,7 +390,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
   it("should return the add / drop/ position lists as expected", async () => {
     const teamKey = "422.l.115494.t.4";
     positionalScarcityServiceSpy.mockResolvedValue({});
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/problematicAddDrop/moveILtoBN-lineup.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
@@ -420,7 +420,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
   it("should return the players added and dropped as the only candidates when applicable", async () => {
     const teamKey = "422.l.115494.t.4";
     positionalScarcityServiceSpy.mockResolvedValue({});
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../dispatchSetLineup/spec/problematicAddDrop/noDropCandidates.json"),
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/problematicAddDrop/healthyOnILShouldBeIllegal-addcandidates.json");
@@ -468,7 +468,7 @@ describe("createPlayersTransactions with positionalScarcity", () => {
       "Q/W/R/T": 3,
     });
 
-    const rosters: ITeamOptimizer[] = [
+    const rosters: TeamOptimizer[] = [
       require("../../common/services/yahooAPI/spec/testYahooLineupJSON/output/NFLLineupEmptySpot.json")[0],
     ];
     const addCandidates: TopAvailablePlayers = require("../../dispatchSetLineup/spec/topAvailablePlayers/promises/nflReal.json");

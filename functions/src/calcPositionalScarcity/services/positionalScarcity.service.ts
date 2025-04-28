@@ -4,12 +4,12 @@ import {
   INACTIVE_POSITION_LIST,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants.js";
-import type { IPlayer } from "../../common/interfaces/IPlayer.js";
-import type { CommonTeam } from "../../common/interfaces/ITeam.js";
+import type { IPlayer } from "../../common/interfaces/Player.js";
+import type { CommonTeam } from "../../common/interfaces/Team.js";
 import * as Firestore from "../../common/services/firebase/firestore.service.js";
-import { getChild } from "../../common/services/utilities.service.js";
+import type { YahooAPIPlayerResponse } from "../../common/services/yahooAPI/interfaces/YahooAPIResponse.js";
 import { getTopPlayersGeneral } from "../../common/services/yahooAPI/yahooAPI.service.js";
-import getPlayersFromRoster from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
+import buildPlayers from "../../common/services/yahooAPI/yahooPlayerProcessing.service.js";
 
 export type ReplacementLevels = {
   [position: string]: number;
@@ -150,8 +150,8 @@ export function generateFetchPlayerPromises(
   position: string,
   gameCode: string,
   count: number,
-): Promise<unknown>[] {
-  const result: Promise<unknown>[] = [];
+): Promise<YahooAPIPlayerResponse>[] {
+  const result: Promise<YahooAPIPlayerResponse>[] = [];
 
   if (count < 1) {
     return result;
@@ -166,15 +166,16 @@ export function generateFetchPlayerPromises(
   return result;
 }
 
-async function fetchYahooPlayers(fetchPlayersPromises: Promise<unknown>[]) {
+async function fetchYahooPlayers(
+  fetchPlayersPromises: Promise<YahooAPIPlayerResponse>[],
+) {
   try {
     const yahooJSONs = await Promise.all(fetchPlayersPromises);
     const players: IPlayer[] = yahooJSONs
       .flatMap((yahooJSON) => {
-        // TODO: ArkType
         const gameJSON = yahooJSON.fantasy_content.games[0].game;
-        const playersJSON = getChild(gameJSON, "players");
-        return getPlayersFromRoster(playersJSON);
+        const playersJSON = gameJSON[1];
+        return buildPlayers(playersJSON);
       })
       .sort((a, b) => a.percent_owned - b.percent_owned);
     return players;

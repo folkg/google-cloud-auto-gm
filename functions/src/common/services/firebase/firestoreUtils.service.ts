@@ -1,12 +1,12 @@
 import { logger } from "firebase-functions";
 import { isEqual } from "lodash";
-import type { ITeamFirestore, ITeamOptimizer } from "../../interfaces/ITeam.js";
+import type { FirestoreTeam, TeamOptimizer } from "../../interfaces/Team.js";
 import { updateTeamFirestore } from "./firestore.service.js";
 
 export function enrichTeamsWithFirestoreSettings(
-  yahooTeams: readonly ITeamOptimizer[],
-  firestoreTeams: readonly ITeamFirestore[],
-): ITeamOptimizer[] {
+  yahooTeams: readonly TeamOptimizer[],
+  firestoreTeams: readonly FirestoreTeam[],
+): TeamOptimizer[] {
   return yahooTeams.map((yahooTeam) => {
     const firestoreTeam = firestoreTeams.find(
       (firestoreTeam) => firestoreTeam.team_key === yahooTeam.team_key,
@@ -27,8 +27,8 @@ export function enrichTeamsWithFirestoreSettings(
 }
 
 export async function patchTeamChangesInFirestore(
-  yahooTeams: readonly ITeamOptimizer[],
-  firestoreTeams: readonly ITeamFirestore[],
+  yahooTeams: readonly TeamOptimizer[],
+  firestoreTeams: readonly FirestoreTeam[],
 ): Promise<void> {
   const sharedKeys = Object.keys(firestoreTeams[0]).filter(
     (key) => key in yahooTeams[0],
@@ -44,8 +44,8 @@ export async function patchTeamChangesInFirestore(
 
     const differences: { [key: string]: unknown } = {};
     for (const key of sharedKeys) {
-      const yahooValue = yahooTeam[key as keyof ITeamOptimizer];
-      const firestoreValue = firestoreTeam[key as keyof ITeamFirestore];
+      const yahooValue = yahooTeam[key as keyof TeamOptimizer];
+      const firestoreValue = firestoreTeam[key as keyof FirestoreTeam];
       if (!isEqual(yahooValue, firestoreValue)) {
         differences[key] = yahooValue;
       }

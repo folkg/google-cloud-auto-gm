@@ -9,13 +9,11 @@ const integrationTestsEnabled = process.env.INTEGRATION_TEST_ENABLED === "true";
 describe.runIf(integrationTestsEnabled)("Firestore Integration", () => {
   it("should return uid", async () => {
     const result = await getRandomUID();
-    console.log(result);
     expect(result).toBeDefined();
   });
 
   it("should return positional scarcity offsets", async () => {
     const result = await getPositionalScarcityOffsets();
-    console.log(result);
     expect(result).toBeDefined();
     for (const league in result) {
       if (Object.hasOwn(result, league)) {

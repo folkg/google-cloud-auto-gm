@@ -9,12 +9,21 @@ import type {
   PlayerTransaction,
   TransactionType,
 } from "../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import { assertType, ensureType } from "../../helpers/checks.js";
 import type {
   Token,
   YahooRefreshRequestBody,
 } from "../../interfaces/credential.js";
 import { RevokedRefreshTokenError } from "../firebase/errors.js";
 import { updateFirestoreTimestamp } from "../firebase/firestore.service.js";
+import {
+  type YahooAPILeagueResponse,
+  YahooAPILeagueResponseSchema,
+  type YahooAPIPlayerResponse,
+  YahooAPIPlayerResponseSchema,
+  type YahooAPIUserResponse,
+  YahooAPIUserResponseSchema,
+} from "./interfaces/YahooAPIResponse.js";
 import type { YahooAccessTokenResponse } from "./interfaces/YahooAccessTokenResponse.js";
 import {
   httpGetAxios,
@@ -99,7 +108,7 @@ export async function getRostersByTeamID(
   teamKeys: string[],
   uid: string,
   date = "",
-): Promise<unknown> {
+): Promise<YahooAPIUserResponse> {
   const leagueKeysArray: string[] = [];
   for (const teamKey of teamKeys) {
     leagueKeysArray.push(teamKey.split(".t")[0]);
@@ -110,6 +119,7 @@ export async function getRostersByTeamID(
 
   try {
     const { data } = await httpGetAxios(url, uid);
+    assertType(data, YahooAPIUserResponseSchema);
     return data;
   } catch (err) {
     const errMessage = `Error in getRostersByTeamID. User: ${uid} Teams: ${teamKeys}`;
@@ -134,7 +144,7 @@ export async function getTopAvailablePlayers(
   uid: string,
   availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
   sort: PlayerSort = "sort=R_PO",
-): Promise<unknown> {
+): Promise<YahooAPIUserResponse> {
   const leagueKeysArray: string[] = [];
   for (const teamKey of teamKeys) {
     leagueKeysArray.push(teamKey.split(".t")[0]);
@@ -145,6 +155,7 @@ export async function getTopAvailablePlayers(
 
   try {
     const { data } = await httpGetAxios(url, uid);
+    assertType(data, YahooAPIUserResponseSchema);
     return data;
   } catch (err) {
     const errMessage = `Error in getTopAvailablePlayers. User: ${uid} League: ${teamKeys}`;
@@ -159,7 +170,7 @@ export async function getTopPlayersGeneral(
   start = 0,
   availabilityStatus: AvailabilityStatus = "A", // A = All Available, FA = Free Agents Only, W = Waivers Only
   sort: PlayerSort = "sort=R_PO",
-): Promise<unknown> {
+): Promise<YahooAPIPlayerResponse> {
   const positionArray = position.split(",");
   const expandedPositions = positionArray.map(
     (pos) => POSITION_EXPANSION[pos] ?? pos,
@@ -170,6 +181,7 @@ export async function getTopPlayersGeneral(
 
   try {
     const { data } = await httpGetAxios(url, uid);
+    assertType(data, YahooAPIPlayerResponseSchema);
     return data;
   } catch (err) {
     const errMessage = "Error in getTopPlayersGeneral.";
@@ -185,12 +197,15 @@ export async function getTopPlayersGeneral(
  * @param {string} uid - The firebase uid
  * @return {Promise<any>} The Yahoo JSON object containing team's standings data and settings
  */
-export async function getUsersTeams(uid: string): Promise<unknown> {
+export async function getUsersTeams(
+  uid: string,
+): Promise<YahooAPIUserResponse> {
   try {
     const { data } = await httpGetAxios(
       "users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues;out=settings/teams;out=standings?format=json",
       uid,
     );
+    assertType(data, YahooAPIUserResponseSchema);
     return data;
   } catch (err) {
     const errMessage = `Error in getUserStandings. User: ${uid}`;
@@ -213,7 +228,7 @@ export async function getStartingPlayers(
   league: string,
   uid: string,
   leagueKey: string,
-): Promise<unknown> {
+): Promise<YahooAPILeagueResponse[]> {
   const starterPositions: { [key: string]: string } = {
     nhl: "S_G",
     mlb: "S_P",
@@ -227,12 +242,14 @@ export async function getStartingPlayers(
     // There could be up to 32 starting players, so we need to make 2 calls
     // to get all the players. The first call will get the first 25 players.
     const urlBase = `league/${leagueKey}/players;position=${positions};sort=AR;start=`;
-    const [result1, result2] = await Promise.all([
+    const results = await Promise.all([
       httpGetAxios(`${urlBase}0?format=json`, uid),
       httpGetAxios(`${urlBase}25?format=json`, uid),
     ]);
-    return [result1.data, result2.data];
-  } catch (err: unknown) {
+    return results.map((result) =>
+      ensureType(result.data, YahooAPILeagueResponseSchema),
+    );
+  } catch (err) {
     const errMessage = `Error in getStartingPlayers. User: ${uid} League: ${leagueKey} Position: ${positions}`;
     handleAxiosError(err, errMessage);
   }

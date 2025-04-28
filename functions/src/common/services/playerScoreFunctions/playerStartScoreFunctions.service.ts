@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import type { Player } from "../../classes/Player.js";
 import { HEALTHY_STATUS_LIST } from "../../helpers/constants.js";
-import type { GamesPlayed, InningsPitched } from "../../interfaces/ITeam.js";
+import type { GamesPlayed, InningsPitched } from "../../interfaces/Team.js";
 import {
   getMLBStartingPitchers,
   getNHLStartingGoalies,

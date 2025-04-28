@@ -1,3 +1,4 @@
+import { type } from "arktype";
 import type { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import {
@@ -5,7 +6,7 @@ import {
   getStartingPlayersFromFirestore,
   storeStartingPlayersInFirestore,
 } from "../firebase/firestore.service.js";
-import { getChild } from "../utilities.service.js";
+import { flattenArray } from "../utilities.service.js";
 import { getStartingPlayers } from "./yahooAPI.service.js";
 
 let NHL_STARTING_GOALIES: string[];
@@ -47,7 +48,7 @@ export async function fetchStartingPlayers(league: string): Promise<void> {
     leagueKey,
   );
 
-  const startersGlobalArray: { [key: string]: string[] } = {
+  const startersGlobalArray: { [league: string]: string[] } = {
     nhl: NHL_STARTING_GOALIES,
     mlb: MLB_STARTING_PITCHERS,
   };
@@ -57,6 +58,10 @@ export async function fetchStartingPlayers(league: string): Promise<void> {
     await storeStartingPlayersInFirestore(startingPlayers, league);
   }
 }
+
+const FlatBasePlayerSchema = type({
+  player_key: "string",
+});
 
 /**
  * Populates the starting goalies array
@@ -79,10 +84,19 @@ async function parseStartingPlayersFromYahoo(
   if (startingPlayers) {
     for (const playersJSON of startingPlayers) {
       const players = playersJSON.fantasy_content.league[1].players;
-      for (const key in players) {
-        if (key !== "count") {
-          result.push(getChild(players[key].player[0], "player_key"));
+
+      for (const index in players) {
+        const player = players[index];
+        if (typeof player === "number") {
+          continue;
         }
+
+        const [basePlayer] = player.player;
+        const flatBasePlayer = FlatBasePlayerSchema.assert(
+          flattenArray(basePlayer),
+        );
+
+        result.push(flatBasePlayer.player_key);
       }
     }
   }

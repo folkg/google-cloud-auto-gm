@@ -2,6 +2,7 @@ import axios, { isAxiosError } from "axios";
 import type { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
 import type { TaskQueue } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
+import type { SportLeague } from "../../common/interfaces/SportLeague.js";
 import {
   db,
   storeTodaysPostponedTeams,
@@ -12,7 +13,6 @@ import {
 } from "../../common/services/utilities.service.js";
 import { fetchStartingPlayers } from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
 import type { GameStartTimes } from "../interfaces/GameStartTimes.js";
-import type { SportLeague } from "../interfaces/SportLeague.js";
 import type { SportsnetGamesResponse } from "../interfaces/SportsnetGamesResponse.js";
 import type { YahooGamesReponse } from "../interfaces/YahooGamesReponse.js";
 

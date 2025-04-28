@@ -7,14 +7,14 @@ import {
   getFirestore,
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { assert } from "superstruct";
 import type { ScarcityOffsetsCollection } from "../../../calcPositionalScarcity/services/positionalScarcity.service.js";
+import { assertType } from "../../helpers/checks.js";
 import {
-  type ITeamAngular,
-  type ITeamFirestore,
+  type AngularTeam,
+  type ClientTeam,
+  FirestoreTeam,
   yahooToFirestore,
-} from "../../interfaces/ITeam.js";
-import { type ClientTeam, FirestoreTeam } from "../../interfaces/Team.js";
+} from "../../interfaces/Team.js";
 import type { ReturnCredential, Token } from "../../interfaces/credential.js";
 import { sendUserEmail } from "../email/email.service.js";
 import {
@@ -139,7 +139,7 @@ export async function flagRefreshToken(uid: string) {
  */
 export async function fetchTeamsFirestore(
   uid: string,
-): Promise<ITeamFirestore[]> {
+): Promise<FirestoreTeam[]> {
   try {
     // get all teams for the user that have not ended
     const teamsRef = db.collection(`users/${uid}/teams`);
@@ -149,7 +149,7 @@ export async function fetchTeamsFirestore(
 
     return teamsSnapshot.docs.map((doc) => {
       const team = doc.data();
-      assert(team, FirestoreTeam);
+      assertType(team, FirestoreTeam);
       return team;
     });
   } catch (error) {
@@ -240,14 +240,14 @@ export async function getTomorrowsActiveWeeklyTeams() {
  *
  * @export
  * @async
- * @param {ITeamAngular[]} missingTeams - Teams that are in Yahoo but not in Firestore
- * @param {ITeamFirestore[]} extraTeams - Teams that are in Firestore but not in Yahoo
+ * @param {AngularTeam[]} missingTeams - Teams that are in Yahoo but not in Firestore
+ * @param {FirestoreTeam[]} extraTeams - Teams that are in Firestore but not in Yahoo
  * @param {string} uid - The user id
  * @return {Promise<ClientTeam[]>} - The teams that were synced
  */
 export async function syncTeamsInFirestore(
-  missingTeams: ITeamAngular[],
-  extraTeams: ITeamFirestore[],
+  missingTeams: AngularTeam[],
+  extraTeams: FirestoreTeam[],
   uid: string,
 ): Promise<ClientTeam[]> {
   const result: ClientTeam[] = [];
@@ -310,7 +310,7 @@ export async function updateFirestoreTimestamp(uid: string, teamKey: string) {
 export async function updateTeamFirestore(
   uid: string,
   teamKey: string,
-  data: Partial<ITeamFirestore>,
+  data: Partial<FirestoreTeam>,
 ) {
   const teamRef = db.collection(`users/${uid}/teams`).doc(teamKey);
   try {
@@ -411,7 +411,7 @@ export async function getStartingPlayersFromFirestore(
     }
     // if the starting players were not updated today,
     // or don't exist in firebase, fetch them from Yahoo API
-    console.log("Starting players not found in Firestore");
+    logger.log("Starting players not found in Firestore");
     try {
       await fetchStartingPlayers(league);
       return getStartingPlayersFromFirestore(league);

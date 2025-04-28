@@ -1,130 +1,151 @@
-import {
-  type Infer,
-  any,
-  array,
-  boolean,
-  literal,
-  number,
-  object,
-  optional,
-  record,
-  string,
-  union,
-} from "superstruct";
-import { Player } from "./Player.js";
+import { type } from "arktype";
+import { TransactionDetailsSchema } from "../services/yahooAPI/yahooTeamProcesssing.services";
+import { PlayerSchema } from "./Player";
+import { SportLeagueSchema } from "./SportLeague";
 
-export const Leagues = union([
-  literal("mlb"),
-  literal("nba"),
-  literal("nfl"),
-  literal("nhl"),
-]);
-
-const CommonTeam = object({
-  team_key: string(),
-  game_code: string(), // TODO: Change to Leagues
-  start_date: number(),
-  end_date: number(),
-  weekly_deadline: string(), // TODO: Is this string() | number()?
-  roster_positions: record(string(), number()),
-  num_teams: number(),
+const CommonTeam = type({
+  team_key: "string",
+  game_code: SportLeagueSchema,
+  start_date: "number",
+  end_date: "number",
+  weekly_deadline: "string",
+  roster_positions: "Record<string,number>",
+  num_teams: "number",
 });
 
-const OptionsTeam = object({
-  allow_transactions: boolean(),
-  allow_dropping: boolean(),
-  allow_adding: boolean(),
-  allow_add_drops: boolean(),
-  allow_waiver_adds: boolean(),
-  automated_transaction_processing: optional(boolean()),
-  last_updated: number(),
-  lineup_paused_at: optional(number()),
+const OptionsTeam = type({
+  allow_transactions: "boolean",
+  allow_dropping: "boolean",
+  allow_adding: "boolean",
+  allow_add_drops: "boolean",
+  allow_waiver_adds: "boolean",
+  automated_transaction_processing: "boolean?",
+  last_updated: "number",
+  lineup_paused_at: "number?",
 });
 
-export const FirestoreTeam = object({
-  ...CommonTeam.schema,
-  ...OptionsTeam.schema,
-  uid: string(),
-  is_subscribed: boolean(),
-  is_setting_lineups: boolean(),
-});
+const YahooTeam = CommonTeam.and(
+  type({
+    edit_key: "string",
+    faab_balance: "number",
+    current_weekly_adds: "number",
+    current_season_adds: "number",
+    scoring_type: "string",
+    team_name: "string",
+    league_name: "string",
+    max_weekly_adds: "number",
+    max_season_adds: "number",
+    waiver_rule: "string",
+  }),
+);
 
-export const YahooTeam = object({
-  ...CommonTeam.schema,
-  edit_key: string(),
-  faab_balance: number(),
-  current_weekly_adds: number(),
-  current_season_adds: number(),
-  scoring_type: string(),
-  team_name: string(),
-  league_name: string(),
-  max_weekly_adds: number(),
-  max_season_adds: number(),
-  waiver_rule: string(),
-});
+export const FirestoreTeam = CommonTeam.and(OptionsTeam).and(
+  type({
+    uid: "string",
+    is_subscribed: "boolean",
+    is_setting_lineups: "boolean",
+  }),
+);
 
-export const GamesPlayed = object({
-  position: string(),
-  games_played: object({
-    played: number(),
-    max: number(),
-    projected: number(),
+export const AngularTeam = YahooTeam.and(
+  type({
+    "uid?": "string",
+    max_games_played: "number",
+    max_innings_pitched: "number",
+    game_name: "string",
+    game_season: "string",
+    game_is_over: "boolean",
+    team_url: "string",
+    team_logo: "string",
+    rank: "string|number",
+    "points_for?": "string|number",
+    "points_against?": "string|number",
+    "points_back?": "string|number",
+    "outcome_totals?": type({
+      wins: "string|number",
+      losses: "string|number",
+      ties: "string|number",
+      percentage: "string|number",
+    }).or("null"),
+  }),
+);
+
+const GamesPlayed = type({
+  position: "string",
+  games_played: type({
+    played: "number",
+    max: "number",
+    projected: "number",
   }),
 });
 
-export const InningsPitched = object({
-  pitched: number(),
-  max: number(),
-  projected: number(),
+const InningsPitched = type({
+  pitched: "number",
+  max: "number",
+  projected: "number",
 });
 
-// TODO: Better naming / functions for AngularTeam / ClientTeam.
-// Angular Teams never actually make it to Angular, it is the client team. This is some sort of DTO.
-export const AngularTeam = object({
-  ...YahooTeam.schema,
-  uid: optional(string()),
-  max_games_played: number(),
-  max_innings_pitched: number(),
-  game_name: string(),
-  game_season: string(),
-  game_is_over: boolean(), // TODO: Is this boolean() | string()?
-  team_url: string(),
-  team_logo: string(),
-  rank: union([string(), number()]),
-  // TODO: I think the below are all nullable?
-  points_for: union([string(), number()]),
-  points_against: union([string(), number()]),
-  points_back: union([string(), number()]),
-  outcome_totals: object({
-    wins: union([string(), number()]),
-    losses: union([string(), number()]),
-    ties: union([string(), number()]),
-    percentage: union([string(), number()]),
-  }),
-});
+export const TeamOptimizer = YahooTeam.and(
+  OptionsTeam.partial().and(
+    type({
+      players: PlayerSchema.array(),
+      coverage_type: "string",
+      coverage_period: "string",
+      transactions: TransactionDetailsSchema.array(),
+      "games_played?": GamesPlayed.array(),
+      "innings_pitched?": InningsPitched,
+    }),
+  ),
+);
 
-export const ClientTeam = object({
-  ...AngularTeam.schema,
-  ...FirestoreTeam.schema,
-});
+export type CommonTeam = typeof CommonTeam.infer;
+export type OptionsTeam = typeof OptionsTeam.infer;
+export type YahooTeam = typeof YahooTeam.infer;
+export type FirestoreTeam = typeof FirestoreTeam.infer;
+export type AngularTeam = typeof AngularTeam.infer;
+export type ClientTeam = AngularTeam & FirestoreTeam;
+export type GamesPlayed = typeof GamesPlayed.infer;
+export type InningsPitched = typeof InningsPitched.infer;
+export type TeamOptimizer = typeof TeamOptimizer.infer;
 
-export const OptimizerTeam = object({
-  ...YahooTeam.schema,
-  ...optional(OptionsTeam).schema,
-  players: array(Player),
-  coverage_type: string(),
-  coverage_period: string(),
-  transactions: array(any()),
-  games_played: optional(array(GamesPlayed)),
-  innings_pitched: optional(InningsPitched),
-});
+/**
+ * Converts a TeamAngular to a TeamFirestore
+ *
+ * @export
+ * @param {AngularTeam} team - The team to convert
+ * @param {string} uid - The user id
+ * @return {FirestoreTeam} - The converted team
+ */
+export function yahooToFirestore(
+  team: AngularTeam,
+  uid: string,
+): FirestoreTeam {
+  const commonTeam: CommonTeam = {
+    team_key: team.team_key,
+    game_code: team.game_code,
+    start_date: team.start_date,
+    end_date: team.end_date,
+    weekly_deadline: team.weekly_deadline,
+    roster_positions: team.roster_positions,
+    num_teams: team.num_teams,
+  };
 
-export type CommonTeam = Infer<typeof CommonTeam>;
-export type FirestoreTeam = Infer<typeof FirestoreTeam>;
-export type YahooTeam = Infer<typeof YahooTeam>;
-export type AngularTeam = Infer<typeof AngularTeam>;
-export type ClientTeam = Infer<typeof ClientTeam>;
-export type OptimizerTeam = Infer<typeof OptimizerTeam>;
+  const optionsTeam: OptionsTeam = {
+    allow_transactions: false,
+    allow_dropping: false,
+    allow_adding: false,
+    allow_add_drops: false,
+    allow_waiver_adds: false,
+    automated_transaction_processing: false,
+    last_updated: -1,
+    lineup_paused_at: undefined,
+  };
 
-export type GamesPlayed = Infer<typeof GamesPlayed>;
-export type InningsPitched = Infer<typeof InningsPitched>;
+  return {
+    uid,
+    is_subscribed: true,
+    is_setting_lineups: false,
+    ...commonTeam,
+    ...optionsTeam,
+  };
+}

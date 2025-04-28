@@ -1,30 +1,42 @@
 import assert from "node:assert";
+import { type } from "arktype";
 import type { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import type { Player } from "../../common/classes/Player.js";
+import { isDefined } from "../../common/helpers/checks.js";
 import {
   COMPOUND_POSITION_COMPOSITIONS,
   INACTIVE_POSITION_LIST,
   POSITIONAL_MAX_EXTRA_PLAYERS,
 } from "../../common/helpers/constants.js";
+import type { SportLeague } from "../../common/interfaces/SportLeague.js";
 import type {
   GamesPlayed,
-  ITeamOptimizer,
   InningsPitched,
-} from "../../common/interfaces/ITeam.js";
+  TeamOptimizer,
+} from "../../common/interfaces/Team.js";
 import { ownershipScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerOwnershipScoreFunctions.service.js";
 import { playerStartScoreFunctionFactory } from "../../common/services/playerScoreFunctions/playerStartScoreFunctions.service.js";
 import {
-  getChild,
+  flattenArray,
   getNow,
   getProgressBetween,
   getWeeklyProgressPacific,
 } from "../../common/services/utilities.service.js";
+import type {
+  TransactionDetails,
+  TransactionPlayer,
+} from "../../common/services/yahooAPI/yahooTeamProcesssing.services.js";
 import { PlayerCollection } from "./PlayerCollection.js";
 
-export class Team extends PlayerCollection implements ITeamOptimizer {
+const TransactionPlayerInfoSchema = type({
+  player_key: "string",
+  display_position: "string",
+});
+
+export class Team extends PlayerCollection implements TeamOptimizer {
   coverage_type: string;
   coverage_period: string;
-  transactions: unknown[];
+  transactions: TransactionDetails[];
   games_played?: GamesPlayed[] | undefined;
   innings_pitched?: InningsPitched | undefined;
   edit_key: string;
@@ -38,7 +50,7 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
   max_season_adds: number;
   waiver_rule: string;
   team_key: string;
-  game_code: string;
+  game_code: SportLeague;
   start_date: number;
   end_date: number;
   weekly_deadline: string;
@@ -61,14 +73,44 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
   private _numNewAdds = 0;
 
   constructor(
-    team: ITeamOptimizer,
+    team: TeamOptimizer,
     positionalScarcityOffsets?: LeagueSpecificScarcityOffsets,
   ) {
-    super(team.players);
-
     const teamCopy = structuredClone(team);
-    teamCopy.players = this.players;
-    Object.assign(this, teamCopy);
+    super(teamCopy.players);
+
+    this.coverage_type = teamCopy.coverage_type;
+    this.coverage_period = teamCopy.coverage_period;
+    // Note: This should never really be undefined, but some old test data doesn't have it
+    this.transactions = teamCopy.transactions ?? [];
+    this.games_played = teamCopy.games_played;
+    this.innings_pitched = teamCopy.innings_pitched;
+    this.edit_key = teamCopy.edit_key;
+    this.faab_balance = teamCopy.faab_balance;
+    this.current_weekly_adds = teamCopy.current_weekly_adds;
+    this.current_season_adds = teamCopy.current_season_adds;
+    this.scoring_type = teamCopy.scoring_type;
+    this.team_name = teamCopy.team_name;
+    this.league_name = teamCopy.league_name;
+    this.max_weekly_adds = teamCopy.max_weekly_adds;
+    this.max_season_adds = teamCopy.max_season_adds;
+    this.waiver_rule = teamCopy.waiver_rule;
+    this.team_key = teamCopy.team_key;
+    this.game_code = teamCopy.game_code;
+    this.start_date = teamCopy.start_date;
+    this.end_date = teamCopy.end_date;
+    this.weekly_deadline = teamCopy.weekly_deadline;
+    this.roster_positions = teamCopy.roster_positions;
+    this.num_teams = teamCopy.num_teams;
+    this.allow_transactions = teamCopy.allow_transactions;
+    this.allow_dropping = teamCopy.allow_dropping;
+    this.allow_adding = teamCopy.allow_adding;
+    this.allow_add_drops = teamCopy.allow_add_drops;
+    this.allow_waiver_adds = teamCopy.allow_waiver_adds;
+    this.automated_transaction_processing =
+      teamCopy.automated_transaction_processing;
+    this.last_updated = teamCopy.last_updated;
+    this.lineup_paused_at = teamCopy.lineup_paused_at;
 
     this._editablePlayers = this.players.filter((player) => player.is_editable);
 
@@ -138,13 +180,13 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
 
   private processPendingTransactions(): void {
     for (const transaction of this.transactions ?? []) {
-      const playersObject = getChild(transaction, "players");
-      const isPendingTransaction =
-        getChild(transaction, "status") === "pending";
+      const playersObject = transaction[1].players;
+      const isPendingTransaction = ["pending"].includes(transaction[0].status); // "propsed" as well for if they're in a trade??
 
       for (const key in playersObject) {
-        if (key !== "count") {
-          const playerInTransaction = playersObject[key].player;
+        const player = playersObject[key];
+        if (typeof player !== "number") {
+          const playerInTransaction = player.player;
           this.makeTransactionPlayerInelligible(playerInTransaction);
           this.changePendingAddDrops(isPendingTransaction, playerInTransaction);
         }
@@ -152,11 +194,12 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
     }
   }
 
-  private makeTransactionPlayerInelligible(playerInTransaction: unknown) {
-    // TODO: ArkType
+  private makeTransactionPlayerInelligible(
+    playerInTransaction: TransactionPlayer,
+  ) {
     const matchingTeamPlayer = this.players.find(
       (player) =>
-        player.player_key === getChild(playerInTransaction[0], "player_key"),
+        player.player_key === flattenArray(playerInTransaction[0]).player_key,
     );
 
     if (!matchingTeamPlayer?.isInactiveList()) {
@@ -166,16 +209,15 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
 
   private changePendingAddDrops(
     isPendingTransaction: boolean,
-    playerInTransaction: unknown,
+    playerInTransaction: TransactionPlayer,
   ) {
-    // TODO: ArkType
-    const playerKey = getChild(playerInTransaction[0], "player_key");
-    const eligiblePositions = getChild(
-      playerInTransaction[0],
-      "display_position",
-    ).split(",");
+    const player = TransactionPlayerInfoSchema.assert(
+      flattenArray(playerInTransaction[0]),
+    );
+    const playerKey = player.player_key;
+    const eligiblePositions = player.display_position.split(",");
     // sometimes transaction_data is an array of size 1, sometimes just the object. Why, Yahoo?
-    let transactionData = getChild(playerInTransaction, "transaction_data");
+    let transactionData = playerInTransaction[1].transaction_data;
     if (Array.isArray(transactionData)) {
       transactionData = transactionData[0];
     }
@@ -228,11 +270,11 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
    * Returns a deep clone of the team as an ITeam object
    *
    * @public
-   * @return {ITeamOptimizer}
+   * @return {TeamOptimizer}
    */
-  public toPlainTeamObject(): ITeamOptimizer {
+  public toPlainTeamObject(): TeamOptimizer {
     const { _editablePlayers, _ownershipScoreFunction, ...team } = this;
-    return structuredClone(team) as ITeamOptimizer;
+    return structuredClone(team) as TeamOptimizer;
   }
 
   public get positionCounts(): { [position: string]: number } {
@@ -273,13 +315,16 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
 
   public get illegalPlayers(): Player[] {
     return this._editablePlayers.filter(
-      (player) => !player.eligible_positions.includes(player.selected_position),
+      (player) =>
+        player.selected_position === null ||
+        !player.eligible_positions.includes(player.selected_position),
     );
   }
 
   public get startingPlayers(): Player[] {
     return this._editablePlayers.filter(
       (player) =>
+        isDefined(player.selected_position) &&
         !INACTIVE_POSITION_LIST.includes(player.selected_position) &&
         player.selected_position !== "BN",
     );
@@ -322,7 +367,10 @@ export class Team extends PlayerCollection implements ITeamOptimizer {
   public get unfilledPositionCounter(): { [key: string]: number } {
     const result = { ...this.roster_positions };
     for (const player of this.players) {
-      if (result[player.selected_position] !== undefined) {
+      if (
+        isDefined(player.selected_position) &&
+        result[player.selected_position] !== undefined
+      ) {
         result[player.selected_position]--;
       }
     }

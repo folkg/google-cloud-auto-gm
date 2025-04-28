@@ -24,6 +24,10 @@ const mockLeaguesToSetLineupsFor = vi.spyOn(
   "leaguesToSetLineupsFor",
 );
 
+vi.spyOn(schedulingService, "setTodaysPostponedTeams").mockResolvedValue(
+  undefined,
+);
+
 const mockQueue = {
   enqueue: vi.fn(() => Promise.resolve()),
 };
@@ -157,7 +161,6 @@ describe("scheduleSetLineup", () => {
         "fetchStartingPlayers",
       )
       .mockImplementation(() => {
-        console.log("test");
         return Promise.resolve();
       });
 

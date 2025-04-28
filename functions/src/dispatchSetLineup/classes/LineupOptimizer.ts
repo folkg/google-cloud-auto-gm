@@ -2,8 +2,9 @@ import assert from "node:assert";
 import { logger } from "firebase-functions";
 import type { LeagueSpecificScarcityOffsets } from "../../calcPositionalScarcity/services/positionalScarcity.service.js";
 import { Player } from "../../common/classes/Player.js";
-import type { IPlayer } from "../../common/interfaces/IPlayer.js";
-import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import { isDefined } from "../../common/helpers/checks.js";
+import type { IPlayer } from "../../common/interfaces/Player.js";
+import type { TeamOptimizer } from "../../common/interfaces/Team.js";
 import type { LineupChanges } from "../interfaces/LineupChanges.js";
 import type { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
 import { PlayerCollection } from "./PlayerCollection.js";
@@ -29,7 +30,7 @@ export class LineupOptimizer {
   }
 
   constructor(
-    team: ITeamOptimizer,
+    team: TeamOptimizer,
     positionalScarcityOffsets?: LeagueSpecificScarcityOffsets,
   ) {
     this.team = new Team(team, positionalScarcityOffsets);
@@ -40,7 +41,7 @@ export class LineupOptimizer {
     this.deltaPlayerPositions = {};
   }
 
-  public getCurrentTeamState(): ITeamOptimizer {
+  public getCurrentTeamState(): TeamOptimizer {
     return this.team.toPlainTeamObject();
   }
 
@@ -88,7 +89,9 @@ export class LineupOptimizer {
   private createPlayerPositionDictionary(players: Player[]) {
     const result: { [playerKey: string]: string } = {};
     for (const player of players) {
-      result[player.player_key] = player.selected_position;
+      if (isDefined(player.selected_position)) {
+        result[player.player_key] = player.selected_position;
+      }
     }
     return result;
   }
@@ -654,7 +657,10 @@ export class LineupOptimizer {
       ? "BN"
       : playerB.selected_position;
 
-    if (!playerA.eligible_positions.includes(potentialPlayerAPosition)) {
+    if (
+      potentialPlayerAPosition === null ||
+      !playerA.eligible_positions.includes(potentialPlayerAPosition)
+    ) {
       return;
     }
 
@@ -818,7 +824,7 @@ export class LineupOptimizer {
       playerB,
       unfilledPositionTargetList,
     );
-    if (success) {
+    if (isDefined(playerBOriginalPosition) && success) {
       this.movePlayerToPosition(playerA, playerBOriginalPosition);
       return playerB;
     }
@@ -854,7 +860,16 @@ export class LineupOptimizer {
     this.logInfo(
       `swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`,
     );
+    if (
+      playerA.selected_position === null ||
+      playerB.selected_position === null
+    ) {
+      throw new Error(
+        `missing position when swapping ${playerA.player_name} ${playerA.selected_position} with ${playerB.player_name} ${playerB.selected_position}`,
+      );
+    }
     const temp = playerB.selected_position;
+
     this.movePlayerToPosition(playerB, playerA.selected_position);
     this.movePlayerToPosition(playerA, temp);
   }
@@ -1043,6 +1058,9 @@ export class LineupOptimizer {
       (playerC: Player) =>
         playerB !== playerC &&
         playerA !== playerC &&
+        isDefined(playerC.selected_position) &&
+        isDefined(playerA.selected_position) &&
+        isDefined(playerBPosition) &&
         playerB.eligible_positions.includes(playerC.selected_position) &&
         playerC.eligible_positions.includes(playerA.selected_position) &&
         playerA.eligible_positions.includes(playerBPosition) &&

@@ -1,9 +1,9 @@
 import assert from "node:assert";
 import { logger } from "firebase-functions";
 import type {
-  ITeamFirestore,
-  ITeamOptimizer,
-} from "../../common/interfaces/ITeam.js";
+  FirestoreTeam,
+  TeamOptimizer,
+} from "../../common/interfaces/Team.js";
 import { getTodaysPostponedTeams } from "../../common/services/firebase/firestore.service.js";
 import {
   enrichTeamsWithFirestoreSettings,
@@ -43,12 +43,12 @@ import type { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
  */
 export async function setUsersLineup(
   uid: string,
-  firestoreTeams: readonly ITeamFirestore[],
+  firestoreTeams: readonly FirestoreTeam[],
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
 
-  const isNotPaused = (team: ITeamFirestore) =>
+  const isNotPaused = (team: FirestoreTeam) =>
     !isTodayPacific(team.lineup_paused_at);
 
   const firestoreTeamsToSet = firestoreTeams.filter(isNotPaused);
@@ -66,7 +66,7 @@ export async function setUsersLineup(
     initializeGlobalStartingPlayers(firestoreTeamsToSet);
 
   const postponedTeams = await initializePostponedTeams();
-  let usersTeams: readonly ITeamOptimizer[] = await fetchRostersFromYahoo(
+  let usersTeams: readonly TeamOptimizer[] = await fetchRostersFromYahoo(
     firestoreTeamsToSet.map((t) => t.team_key),
     uid,
     "",
@@ -106,7 +106,7 @@ export async function setUsersLineup(
 
 export async function performWeeklyLeagueTransactions(
   uid: string,
-  firestoreTeams: ITeamFirestore[],
+  firestoreTeams: FirestoreTeam[],
 ): Promise<void> {
   assert(uid, "No uid provided");
   assert(firestoreTeams, "No teams provided");
@@ -127,10 +127,10 @@ export async function performWeeklyLeagueTransactions(
 }
 
 async function processLineupChanges(
-  teams: readonly ITeamOptimizer[],
+  teams: readonly TeamOptimizer[],
   uid: string,
-): Promise<ITeamOptimizer[]> {
-  const result: ITeamOptimizer[] = [];
+): Promise<TeamOptimizer[]> {
+  const result: TeamOptimizer[] = [];
 
   const allLineupChanges: LineupChanges[] = [];
   for (const team of teams) {
@@ -169,12 +169,12 @@ async function processLineupChanges(
 }
 
 async function processTransactionsForIntradayTeams(
-  originalTeams: readonly ITeamOptimizer[],
-  firestoreTeams: readonly ITeamFirestore[],
+  originalTeams: readonly TeamOptimizer[],
+  firestoreTeams: readonly FirestoreTeam[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string,
   postponedTeams: Set<string>,
-): Promise<readonly ITeamOptimizer[]> {
+): Promise<readonly TeamOptimizer[]> {
   const teams = getTeamsWithSameDayTransactions(originalTeams);
 
   await processManualTransactions(teams, topAvailablePlayerCandidates, uid);
@@ -197,8 +197,8 @@ async function processTransactionsForIntradayTeams(
 }
 
 async function processTransactionsForNextDayTeams(
-  originalTeams: readonly ITeamOptimizer[],
-  firestoreTeams: readonly ITeamFirestore[],
+  originalTeams: readonly TeamOptimizer[],
+  firestoreTeams: readonly FirestoreTeam[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string,
 ): Promise<void> {
@@ -224,8 +224,8 @@ async function processTransactionsForNextDayTeams(
 }
 
 async function processTomorrowsTransactions(
-  teams: readonly ITeamOptimizer[] | readonly ITeamFirestore[],
-  firestoreTeams: readonly ITeamFirestore[],
+  teams: readonly TeamOptimizer[] | readonly FirestoreTeam[],
+  firestoreTeams: readonly FirestoreTeam[],
   uid: string,
   topAvailablePlayerCandidates: TopAvailablePlayers,
 ) {
@@ -256,7 +256,7 @@ async function processTomorrowsTransactions(
 }
 
 async function processAutomaticTransactions(
-  teams: readonly ITeamOptimizer[],
+  teams: readonly TeamOptimizer[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string,
 ): Promise<boolean> {
@@ -291,7 +291,7 @@ async function processAutomaticTransactions(
 }
 
 async function processManualTransactions(
-  teams: readonly ITeamOptimizer[],
+  teams: readonly TeamOptimizer[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   uid: string,
 ): Promise<void> {
@@ -319,8 +319,8 @@ async function processManualTransactions(
 }
 
 export function getTeamsWithSameDayTransactions(
-  teams: readonly ITeamOptimizer[],
-): ITeamOptimizer[] {
+  teams: readonly TeamOptimizer[],
+): TeamOptimizer[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
@@ -329,8 +329,8 @@ export function getTeamsWithSameDayTransactions(
 }
 
 export function getTeamsForNextDayTransactions(
-  teams: readonly ITeamOptimizer[],
-): ITeamOptimizer[] {
+  teams: readonly TeamOptimizer[],
+): TeamOptimizer[] {
   return teams.filter(
     (team) =>
       (team.allow_adding || team.allow_dropping || team.allow_add_drops) &&
@@ -341,7 +341,7 @@ export function getTeamsForNextDayTransactions(
 }
 
 async function initializeGlobalStartingPlayers(
-  firestoreTeams: readonly ITeamFirestore[],
+  firestoreTeams: readonly FirestoreTeam[],
 ) {
   const hasNHLTeam = firestoreTeams.some((team) => team.game_code === "nhl");
   if (hasNHLTeam) {

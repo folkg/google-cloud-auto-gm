@@ -93,7 +93,7 @@
         "ownership_type": "freeagents"
       },
       "percent_owned": 2,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": 1,
       "player_key": "423.p.34099",
       "player_name": "Chigoziem Okonkwo",
@@ -371,7 +371,7 @@
         "ownership_type": "freeagents"
       },
       "percent_owned": 2,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": null,
       "player_key": "423.p.30157",
       "player_name": "Gerald Everett",
@@ -425,7 +425,7 @@
         "ownership_type": "freeagents"
       },
       "percent_owned": 3,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": 1,
       "player_key": "423.p.27564",
       "player_name": "Derek Carr",
@@ -506,7 +506,7 @@
         "ownership_type": "freeagents"
       },
       "percent_owned": 2,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": null,
       "player_key": "423.p.32725",
       "player_name": "J.K. Dobbins",
@@ -533,7 +533,7 @@
         "ownership_type": "freeagents"
       },
       "percent_owned": 2,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": null,
       "player_key": "423.p.33975",
       "player_name": "Kenny Pickett",
@@ -587,7 +587,7 @@
         "ownership_type": "freeagents"
       },
       "percent_owned": 1,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": null,
       "player_key": "423.p.33113",
       "player_name": "Juwan Johnson",
@@ -614,7 +614,7 @@
         "ownership_type": "freeagents"
       },
       "percent_owned": 2,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": null,
       "player_key": "423.p.7200",
       "player_name": "Aaron Rodgers",
@@ -672,7 +672,7 @@
         "waiver_date": "2023-10-18"
       },
       "percent_owned": 1,
-      "percent_owned_delta": -1,
+      "percent_owned_delta": 0,
       "percent_started": null,
       "player_key": "423.p.34036",
       "player_name": "Greg Dulcich",

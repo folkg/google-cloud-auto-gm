@@ -1,5 +1,7 @@
+import { type } from "arktype";
 import { GoogleAuth } from "google-auth-library";
 import spacetime from "spacetime";
+import { assertType } from "../helpers/checks";
 
 /**
  * The properties of the Player object are not consistent.
@@ -17,9 +19,41 @@ export function getChild(
   return element ? element[key] : null;
 }
 
-export function parseStringToInt(value: string, defaultValue = -1): number {
-  return Number.parseInt(value) || defaultValue;
+export function flattenArray(
+  arr: Record<string, unknown>[],
+): Record<string, unknown> {
+  return arr.reduce<Record<string, unknown>>((acc, item) => {
+    if (typeof item === "object" && item !== null && !Array.isArray(item)) {
+      for (const [key, value] of Object.entries(item)) {
+        acc[key] = value;
+      }
+    }
+    return acc;
+  }, {});
 }
+
+export function parseToInt(
+  value: string | number | undefined,
+  defaultValue = -1,
+): number {
+  if (value === undefined) {
+    return defaultValue;
+  }
+
+  if (typeof value === "number") {
+    return value;
+  }
+
+  return Number.parseInt(value) ?? defaultValue;
+}
+
+const GoogleAuthResponse = type({
+  data: {
+    serviceConfig: {
+      uri: "string",
+    },
+  },
+});
 
 let auth: GoogleAuth;
 /**
@@ -30,7 +64,10 @@ let auth: GoogleAuth;
  * @return {Promise<string>} The URL of the function
  *
  */
-export async function getFunctionUrl(name: string, location = "us-central1") {
+export async function getFunctionUrl(
+  name: string,
+  location = "us-central1",
+): Promise<string> {
   if (!auth) {
     auth = new GoogleAuth({
       scopes: "https://www.googleapis.com/auth/cloud-platform",
@@ -41,12 +78,8 @@ export async function getFunctionUrl(name: string, location = "us-central1") {
 
   const client = await auth.getClient();
   const res = await client.request({ url });
-  // TODO: ArkType
-  const uri = res.data?.serviceConfig?.uri;
-  if (!uri) {
-    throw new Error(`Unable to retreive uri for function at ${url}`);
-  }
-  return uri;
+  assertType(res, GoogleAuthResponse);
+  return res.data.serviceConfig.uri;
 }
 
 /**

@@ -55,7 +55,6 @@ describe.runIf(integrationTestsEnabled)(
         let result = false;
         try {
           result = await postRosterAddDropTransaction(transaction, uid);
-          console.log(`result: ${result}`);
         } catch (error) {
           console.error(error);
           expect(error).toBeDefined();
@@ -66,18 +65,15 @@ describe.runIf(integrationTestsEnabled)(
     );
 
     it("should getRostersByTeamID", async () => {
-      console.log("staring test...");
       const uid = "mzJVgridDRSG3zwFQxAuIhNro9V2"; // Jeff Barnes
-      const JSONresponse = await getRostersByTeamID(["422.l.90351.t.2 "], uid);
-      console.log(JSON.stringify(JSONresponse));
-      expect(JSONresponse).toBeDefined();
+      const jsonResponse = await getRostersByTeamID(["422.l.90351.t.2 "], uid);
+      expect(jsonResponse).toBeDefined();
     }, 10000);
 
     it("should getRostersByTeamID(2)", async () => {
       const uid = "LimuNc51OoelVHOOw4rQjWTflUh2"; // real user!!!
-      const JSONresponse = await getRostersByTeamID(["422.l.20786.t.11"], uid);
-      console.log(JSON.stringify(JSONresponse));
-      expect(JSONresponse).toBeDefined();
+      const jsonResponse = await getRostersByTeamID(["422.l.20786.t.11"], uid);
+      expect(jsonResponse).toBeDefined();
     }, 10000);
 
     it("should getUserTeams", async () => {

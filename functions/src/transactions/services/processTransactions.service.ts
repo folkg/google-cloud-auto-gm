@@ -1,10 +1,10 @@
 import assert from "node:assert";
 import { logger } from "firebase-functions";
-import type { IPlayer } from "../../common/interfaces/IPlayer.js";
+import type { IPlayer } from "../../common/interfaces/Player.js";
 import type {
-  ITeamFirestore,
-  ITeamOptimizer,
-} from "../../common/interfaces/ITeam.js";
+  FirestoreTeam,
+  TeamOptimizer,
+} from "../../common/interfaces/Team.js";
 import {
   getCurrentPacificNumDay,
   getPacificTimeDateString,
@@ -82,10 +82,10 @@ export async function getTransactions(uid: string): Promise<TransactionsData> {
     };
   }
 
-  const firestoreTeams: ITeamFirestore[] = teams.docs.map((doc) => {
+  const firestoreTeams: FirestoreTeam[] = teams.docs.map((doc) => {
     const team = doc.data();
     team.team_key = doc.id;
-    return team as ITeamFirestore;
+    return team as FirestoreTeam;
   });
 
   const intradayTeams = firestoreTeams.filter(
@@ -225,7 +225,7 @@ export async function postTransactions(
 
 async function getPlayerTransactionsForDate(
   uid: string,
-  firestoreTeams: readonly ITeamFirestore[],
+  firestoreTeams: readonly FirestoreTeam[],
   topAvailablePlayerCandidates: TopAvailablePlayers,
   date?: string,
 ): Promise<TransactionsData> {
@@ -251,7 +251,7 @@ async function getPlayerTransactionsForDate(
 }
 
 export async function getTopAvailablePlayers(
-  firestoreTeams: readonly ITeamFirestore[],
+  firestoreTeams: readonly FirestoreTeam[],
   uid: string,
 ) {
   // TODO: Do we want to initiate the promises here, or earlier in the call stack before we know usersTeams.length > 0?
@@ -276,7 +276,7 @@ export async function getTopAvailablePlayers(
 }
 
 export async function createPlayersTransactions(
-  teams: ITeamOptimizer[],
+  teams: TeamOptimizer[],
   allAddCandidates: TopAvailablePlayers,
 ): Promise<TransactionsData> {
   const dropPlayerTransactions: PlayerTransaction[][] = [];
@@ -487,7 +487,7 @@ function tomorrowsDateAsString(): string {
 }
 
 export function generateTopAvailablePlayerPromises(
-  firestoreTeams: readonly ITeamFirestore[],
+  firestoreTeams: readonly FirestoreTeam[],
   uid: string,
 ) {
   const nflTeamKeysAddingPlayers: string[] = firestoreTeams

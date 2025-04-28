@@ -1,5 +1,6 @@
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
+import { isDefined } from "../common/helpers/checks.js";
 import type { ClientTeam } from "../common/interfaces/Team.js";
 import {
   fetchTeamsFirestore,
@@ -35,7 +36,7 @@ export const fetchuserteams = onCall(async (request): Promise<ClientTeam[]> => {
       const yahooTeam = yahooTeams.find((y) => y.team_key === f.team_key);
       return yahooTeam ? { ...yahooTeam, ...f } : undefined;
     })
-    .filter((t) => t !== undefined);
+    .filter(isDefined);
 
   // Update the teams in firestore if required
   let newPatchedTeams: ClientTeam[] = [];

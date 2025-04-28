@@ -1,15 +1,20 @@
-import type { IPlayer } from "../../interfaces/IPlayer.js";
-import { getChild } from "../utilities.service.js";
+import { type } from "arktype";
+import type { IPlayer } from "../../interfaces/Player.js";
+import { YahooAPIPlayersSchema } from "./interfaces/YahooAPIResponse.js";
 import {
   type AvailabilityStatus,
   type PlayerSort,
   getTopAvailablePlayers,
 } from "./yahooAPI.service.js";
-import getPlayersFromRoster from "./yahooPlayerProcessing.service.js";
+import buildPlayers from "./yahooPlayerProcessing.service.js";
 
 export type TopAvailablePlayers = {
   [teamKey: string]: IPlayer[];
 };
+
+export const LeagueDetailsSchema = type({
+  league_key: "string",
+});
 
 /**
  * Fetches the top available players from Yahoo API for a given league.
@@ -47,31 +52,34 @@ export async function fetchTopAvailablePlayersFromYahoo(
     availabilityStatus,
     sort,
   );
-  if (!yahooJSON) {
-    return result; // return empty result if yahooJSON is null, this is primarily for testing
-  }
-  const gamesJSON = getChild(yahooJSON.fantasy_content.users[0].user, "games");
+
+  const gamesJSON = yahooJSON.fantasy_content.users[0].user[1].games;
 
   // Loop through each "game" (nfl, nhl, nba, mlb)
-  for (const gameKey of Object.keys(gamesJSON).filter(
-    (key) => key !== "count",
-  )) {
+  for (const gameKey in gamesJSON) {
+    if (gameKey === "count") {
+      continue;
+    }
+
     const gameJSON = gamesJSON[gameKey].game;
-    const leaguesJSON = getChild(gameJSON, "leagues");
+    const leaguesJSON = gameJSON[1].leagues;
 
     // Loop through each league within the game
-    for (const leagueKey of Object.keys(leaguesJSON).filter(
-      (key) => key !== "count",
-    )) {
-      const yahooLeagueKey = getChild(
-        leaguesJSON[leagueKey].league,
-        "league_key",
-      );
-      const teamKey = mapLeagueToTeam[yahooLeagueKey];
-      const league = leaguesJSON[leagueKey].league;
-      const players = getChild(league, "players");
+    for (const index in leaguesJSON) {
+      if (index === "count") {
+        continue;
+      }
 
-      result[teamKey] = getPlayersFromRoster(players);
+      const league = leaguesJSON[index].league;
+      const [baseLeague, ...extendedLeague] = league;
+
+      const leagueDetails = LeagueDetailsSchema.assert(baseLeague);
+      const leagueKey = leagueDetails.league_key;
+      const teamKey = mapLeagueToTeam[leagueKey];
+
+      const players = YahooAPIPlayersSchema.assert(extendedLeague[0]).players;
+
+      result[teamKey] = buildPlayers({ players });
     }
   }
   // logger.log("Fetched rosters from Yahoo API:");

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-  type ITeamAngular,
+  type AngularTeam,
   yahooToFirestore,
-} from "../../../interfaces/ITeam.js";
+} from "../../../interfaces/Team.js";
 
 vi.mock("firebase-admin/firestore", () => {
   return {
@@ -17,7 +17,7 @@ vi.mock("firebase-admin/app", () => {
 });
 
 describe("clientToFirestore", () => {
-  const mockTeam: ITeamAngular = {
+  const mockTeam: AngularTeam = {
     uid: "test_uid",
     game_name: "game name",
     game_code: "game code",

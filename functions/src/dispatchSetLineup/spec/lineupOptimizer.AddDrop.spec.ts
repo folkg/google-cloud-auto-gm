@@ -1,6 +1,6 @@
 import spacetime from "spacetime";
 import { assert, describe, expect, it, test, vi } from "vitest";
-import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import type { TeamOptimizer } from "../../common/interfaces/Team.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 import type { PlayerCollection } from "../classes/PlayerCollection.js";
 import type { PlayerTransaction } from "../interfaces/PlayerTransaction.js";
@@ -35,7 +35,7 @@ function getAddDroppedPlayerCounts(playerTransactions: PlayerTransaction[]): {
 
 describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   test("No drops allowed Daily", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/DailyDrops/noDropsAllowed.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -44,7 +44,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("No drops allowed Daily", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/noAllowDroppingPropertyOnTeam.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/DailyDrops/noAllowDroppingPropertyOnTeam.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -53,7 +53,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("No drops required Daily", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/noDropsRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/DailyDrops/noDropsRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -62,7 +62,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Injured player illegally on IR, don't drop anyone", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/injuredPlayerIllegallyOnIR.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/DailyDrops/injuredPlayerIllegallyOnIR.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -71,7 +71,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop player with lowest score for 'Probable' player Daily", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScore.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/DailyDrops/dropPlayerWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -86,7 +86,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("No drops required Intraday", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/noDropsRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/IntradayDrops/noDropsRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -95,7 +95,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Try dropping critical position G", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/tryDropCriticalPositionG.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/IntradayDrops/tryDropCriticalPositionG.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -115,7 +115,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop player with lowest score for 'Probable' player Intraday", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/dropPlayerWithLowestScore.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/IntradayDrops/dropPlayerWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -130,7 +130,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop two players with lowest score for 'Questionable' and 'Game Time Decision' players Intraday", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/IntradayDrops/dropTwoPlayersWithLowestScore.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -145,7 +145,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop player with lowest score for 'Probable' player NBA", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -160,7 +160,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop player with third lowest score (lowest are non-editable for today) - NBA", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredThirdLowest.json");
+    const roster: TeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredThirdLowest.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -170,7 +170,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop player with lowest score - same as above but roster is now daily change - NBA", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredLowest.json");
+    const roster: TeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredLowest.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -182,7 +182,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop player with lowest score for 'Game Time Decision' player NBA", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredWithOptimization.json");
+    const roster: TeamOptimizer = require("./testRosters/NBA/IntradayDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -197,7 +197,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop two player with lowest score for 'Game Time Decision' players NBA", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NBA/IntradayDrops/twoDropsRequiredWithOptimization.json");
+    const roster: TeamOptimizer = require("./testRosters/NBA/IntradayDrops/twoDropsRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -212,7 +212,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
   });
 
   test("Drop player with lowest score for 'Game Time Decision' player NBA weekly", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json");
+    const roster: TeamOptimizer = require("./testRosters/NBA/WeeklyDrops/oneDropRequiredWithOptimization.json");
     const lo = new LineupOptimizer(roster);
     lo.generateDropPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -229,7 +229,7 @@ describe("Unit Test LineupOptimizer Simple Drop Players", () => {
 
 describe("Add players", () => {
   test("set addCandidates with MLB players (with one candidate already pending waivers)", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/pendingTransactionsAddCandidates.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/pendingTransactionsAddCandidates.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
 
@@ -240,7 +240,7 @@ describe("Add players", () => {
   });
 
   it("should free 0 roster spots before adding players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -250,7 +250,7 @@ describe("Add players", () => {
   });
 
   it("should free 3 roster spots (injured players to IL) before adding players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free3spots.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free3spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -260,7 +260,7 @@ describe("Add players", () => {
   });
 
   it("should add top 3 players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free3spots.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free3spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -276,7 +276,7 @@ describe("Add players", () => {
   });
 
   it("should not add top player (422.p.10234) because they are LTIR", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates2.json");
     lo.generateAddPlayerTransactions();
@@ -288,7 +288,7 @@ describe("Add players", () => {
   });
 
   it("should not add top player (422.p.10234) because they are already in a current pending claim", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -300,7 +300,7 @@ describe("Add players", () => {
   });
 
   it("should only add one player, since pending waiver claim will fill extra spot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans2.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans2.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -316,7 +316,7 @@ describe("Add players", () => {
   });
 
   it("should not use faab when picking up two waiver players due to league settings", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/noFaab.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/noFaab.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateAddPlayerTransactions();
@@ -333,7 +333,7 @@ describe("Add players", () => {
   });
 
   it("should add top 1B and top C (from waivers) because they are empty roster positions", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateAddPlayerTransactions();
@@ -349,7 +349,7 @@ describe("Add players", () => {
   });
 
   it("should add top 1B, then top player, since 1B and C are empty, but no C available", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -363,7 +363,7 @@ describe("Add players", () => {
   });
 
   it("should add worse, boosted player (422.p.12024, 3B) because they have critical position (1B, 3B, RP) eligibility", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates4.json");
     lo.generateAddPlayerTransactions();
@@ -375,7 +375,7 @@ describe("Add players", () => {
   });
 
   it("should add best player (422.p.10666) because 3B is not a critical position, so no one has enough boost", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots2.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spots2.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates4.json");
     lo.generateAddPlayerTransactions();
@@ -386,7 +386,7 @@ describe("Add players", () => {
   });
 
   it("should add no one because we have an illegal lineup (healthy on IR)", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/illegalLineup1.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/illegalLineup1.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -396,7 +396,7 @@ describe("Add players", () => {
   });
 
   it("should add no one because we have an illegal lineup (too many at C)", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/illegalLineup2.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/illegalLineup2.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -406,7 +406,7 @@ describe("Add players", () => {
   });
 
   it("should add no one because we have no add candidates", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spots.json");
     const lo = new LineupOptimizer(roster);
     lo.generateAddPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
@@ -415,7 +415,7 @@ describe("Add players", () => {
   });
 
   it("Should not add top player because they are on waivers, and user's waiver setting is off", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWaiversOff.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsWaiversOff.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateAddPlayerTransactions();
@@ -429,7 +429,7 @@ describe("Add players", () => {
   });
 
   it("Should add top player because they are on waivers, and user's waiver setting is on", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spots.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spots.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateAddPlayerTransactions();
@@ -444,7 +444,7 @@ describe("Add players", () => {
     const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
 
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace1.json"); // 1/50 season, 1/5 weekly
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsPace1.json"); // 1/50 season, 1/5 weekly
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -463,7 +463,7 @@ describe("Add players", () => {
     const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
 
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -476,7 +476,7 @@ describe("Add players", () => {
     const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
 
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace4.json"); // 2/50 season, 2/5 weekly
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsPace4.json"); // 2/50 season, 2/5 weekly
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateAddPlayerTransactions();
@@ -504,7 +504,7 @@ describe("Add players", () => {
 
 describe("Swap players", () => {
   it("should swap worst player for best player 3 different times (respecting almostCriticalPositions)", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json"); // almostCriticalPositions = [ 'C', '1B', '2B', '3B', 'SS', 'RP' ]
+    const roster: TeamOptimizer = require("./testRosters/MLB/optimal.json"); // almostCriticalPositions = [ 'C', '1B', '2B', '3B', 'SS', 'RP' ]
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
@@ -513,7 +513,7 @@ describe("Swap players", () => {
   });
 
   it("should make no swaps because all addCandidates are worse than current players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates5.json");
     lo.generateSwapPlayerTransactions();
@@ -523,14 +523,12 @@ describe("Swap players", () => {
   });
 
   it("should prioritize top 1B and top C (from waivers) because they are empty roster positions (instead of BPA) (still drop worst player)", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/2unfilledPositions(C,1B).json");
     const lo = new LineupOptimizer(roster);
     lo.verbose = true;
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
-
-    assert(playerTransactions);
 
     const firstAddedPositions = playerTransactions[0].players
       .filter((p) => p.transactionType === "add")
@@ -548,7 +546,7 @@ describe("Swap players", () => {
   });
 
   it("should not add top player (422.p.10234) because they are already in a current pending claim", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsWpendTrans.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
@@ -562,7 +560,7 @@ describe("Swap players", () => {
   });
 
   it("should move the worst IL player to empty BN spot, and then drop them for the best add candidate", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILPlayer.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/swapILPlayer.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
@@ -581,7 +579,7 @@ describe("Swap players", () => {
   });
 
   it("should swap the worst IL player to BN, and then drop them for the best add candidate", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILPlayer2.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/swapILPlayer2.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
@@ -601,7 +599,7 @@ describe("Swap players", () => {
   });
 
   it("should move the worst IL player to BN, BN to IL+ in 3-way, and then drop them for the best add candidate", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILPlayer3.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/swapILPlayer3.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
@@ -625,7 +623,7 @@ describe("Swap players", () => {
     const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
 
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsPace3.json"); // 26/50 season, 0/5 weekly
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
@@ -638,7 +636,7 @@ describe("Swap players", () => {
     const mockSpacetime = spacetime("June 22, 2023", "Canada/Pacific"); // 45% through season, 42.8% through week
     vi.spyOn(spacetime, "now").mockReturnValue(mockSpacetime);
 
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free2spotsPace4.json"); // 2/50 season, 2/5 weekly
+    const roster: TeamOptimizer = require("./testRosters/MLB/free2spotsPace4.json"); // 2/50 season, 2/5 weekly
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateSwapPlayerTransactions();
@@ -650,7 +648,7 @@ describe("Swap players", () => {
 
 describe("Combination Drops or Adds", () => {
   it("should add / drop no one because lineup is optimal", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/optimal.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/optimal.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateDropPlayerTransactions();
@@ -663,7 +661,7 @@ describe("Combination Drops or Adds", () => {
   });
 
   it("should add / drop no one because we can move IL player to free spot on bench", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/moveILtoBN.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/moveILtoBN.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateDropPlayerTransactions();
@@ -683,7 +681,7 @@ describe("Combination Drops or Adds", () => {
     );
   });
   it("should add / drop no one because we can swap IL player with injured on roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/swapILtoBN.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/swapILtoBN.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateDropPlayerTransactions();
@@ -707,7 +705,7 @@ describe("Combination Drops or Adds", () => {
   });
 
   it("should drop one player because we have healthy player on IL and no free spots", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/DropWorstPlayer.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/DropWorstPlayer.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateDropPlayerTransactions();
@@ -720,7 +718,7 @@ describe("Combination Drops or Adds", () => {
     );
     expect(lineupChanges).toEqual(null);
 
-    const roster2: ITeamOptimizer = require("./testRosters/MLB/DropWorstPlayer-refetched.json");
+    const roster2: TeamOptimizer = require("./testRosters/MLB/DropWorstPlayer-refetched.json");
     const lo2 = new LineupOptimizer(roster2);
     lo2.optimizeStartingLineup();
     const rosterModifications = lo2.lineupChanges;
@@ -731,7 +729,7 @@ describe("Combination Drops or Adds", () => {
   });
 
   it("should add one player because we have one healthy on IL, and two injured on roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/AddBestPlayer.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/AddBestPlayer.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateDropPlayerTransactions();
@@ -750,7 +748,7 @@ describe("Combination Drops or Adds", () => {
   });
 
   it("should drop worst player for healthy on IL, then swap next-worst players for best players", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/dropWorst.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/dropWorst.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateDropPlayerTransactions();
@@ -768,7 +766,7 @@ describe("Combination Drops or Adds", () => {
   });
 
   it("should move a player to IL for a new add, then swap worst player for the next-best player two times", () => {
-    const roster: ITeamOptimizer = require("./testRosters/MLB/free1spot.json");
+    const roster: TeamOptimizer = require("./testRosters/MLB/free1spot.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates.json");
     lo.generateDropPlayerTransactions();
@@ -789,7 +787,7 @@ describe("Combination Drops or Adds", () => {
   });
 
   it("should not put roster over max size (no dropped players should be moved to IL)", () => {
-    const roster: ITeamOptimizer = require("./problematicAddDrop/1overMax-lineup.json");
+    const roster: TeamOptimizer = require("./problematicAddDrop/1overMax-lineup.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./problematicAddDrop/1overMax-addcandidates.json");
     lo.generateDropPlayerTransactions();
@@ -813,7 +811,7 @@ describe("Combination Drops or Adds", () => {
   });
 
   it("should not pick up extra P because we are at max capacity", () => {
-    const roster: ITeamOptimizer = require("./problematicAddDrop/tooManyPitchers-lineup.json");
+    const roster: TeamOptimizer = require("./problematicAddDrop/tooManyPitchers-lineup.json");
     const lo = new LineupOptimizer(roster);
     lo.addCandidates = require("./problematicAddDrop/tooManyPitchers-ac.json");
     lo.generateDropPlayerTransactions();
