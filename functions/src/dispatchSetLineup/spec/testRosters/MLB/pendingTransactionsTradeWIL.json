@@ -589,7 +589,7 @@
           },
           "1": {
             "player": [
-              [{ "player_key": "422.p.?" }],
+              [{ "player_key": "422.p.?" }, { "display_position": "RP" }],
               {
                 "transaction_data": {
                   "type": "drop",
@@ -623,7 +623,7 @@
         "players": {
           "0": {
             "player": [
-              [{ "player_key": "422.p.10660" }],
+              [{ "player_key": "422.p.10660" }, { "display_position": "BN" }],
               {
                 "transaction_data": [
                   {

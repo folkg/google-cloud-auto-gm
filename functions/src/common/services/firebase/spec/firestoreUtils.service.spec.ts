@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ITeamFirestore, ITeamOptimizer } from "../../../interfaces/ITeam";
+import type { FirestoreTeam, TeamOptimizer } from "../../../interfaces/Team";
 import { createMock } from "../../../spec/createMock";
 import * as firestoreService from "../firestore.service";
 import { patchTeamChangesInFirestore } from "../firestoreUtils.service";
@@ -13,7 +13,7 @@ vi.mock("../firestore.service", () => {
 describe("patchTeamChangesInFirestore", () => {
   it("updates Firestore teams with differences from Yahoo teams", async () => {
     const yahooTeams = [
-      createMock<ITeamOptimizer>({
+      createMock<TeamOptimizer>({
         team_key: "team1",
         weekly_deadline: "Tuesday",
         roster_positions: {
@@ -31,7 +31,7 @@ describe("patchTeamChangesInFirestore", () => {
           BN: 5,
         },
       }),
-      createMock<ITeamOptimizer>({
+      createMock<TeamOptimizer>({
         team_key: "team2",
         weekly_deadline: "Wednesday",
         roster_positions: {
@@ -51,7 +51,7 @@ describe("patchTeamChangesInFirestore", () => {
       }),
     ];
     const firestoreTeams = [
-      createMock<ITeamFirestore>({
+      createMock<FirestoreTeam>({
         uid: "uid1",
         team_key: "team1",
         weekly_deadline: "Monday",
@@ -70,7 +70,7 @@ describe("patchTeamChangesInFirestore", () => {
           BN: 5,
         },
       }),
-      createMock<ITeamFirestore>({
+      createMock<FirestoreTeam>({
         uid: "uid1",
         team_key: "team2",
         weekly_deadline: "Monday",

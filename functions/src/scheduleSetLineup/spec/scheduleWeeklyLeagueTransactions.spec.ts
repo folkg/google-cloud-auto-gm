@@ -1,7 +1,12 @@
-import type { DocumentData, QuerySnapshot } from "firebase-admin/firestore";
+import type {
+  DocumentData,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+} from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as firestoreService from "../../common/services/firebase/firestore.service.js";
+import { createMock } from "../../common/spec/createMock.js";
 import { scheduleWeeklyLeagueTransactions } from "../services/scheduleWeeklyLeagueTansactions.service.js";
 
 // mock firebase-admin
@@ -46,13 +51,18 @@ describe("scheduleWeeklyLeagueTransactions", () => {
     "getTomorrowsActiveWeeklyTeams",
   );
 
-  function mockTeamsSnapshot(teams) {
-    return {
-      docs: teams.map((team) => ({
-        id: team.team_key,
-        data: () => team,
-      })),
-    };
+  function mockTeamsSnapshot(
+    teams: { uid: string; team_key: string; start_date: number }[],
+  ) {
+    return createMock<QuerySnapshot<DocumentData>>({
+      size: teams.length,
+      docs: teams.map((team) =>
+        createMock<QueryDocumentSnapshot>({
+          id: team.team_key,
+          data: () => team,
+        }),
+      ),
+    });
   }
 
   it("should enqueue tasks for each active user with playing teams", async () => {
@@ -77,9 +87,7 @@ describe("scheduleWeeklyLeagueTransactions", () => {
     // mock the querySnapshot object
     const teamsSnapshot = mockTeamsSnapshot(teams);
 
-    mockGetActiveWeeklyTeams.mockReturnValue(
-      Promise.resolve(teamsSnapshot as unknown as QuerySnapshot<DocumentData>),
-    );
+    mockGetActiveWeeklyTeams.mockReturnValue(Promise.resolve(teamsSnapshot));
 
     await scheduleWeeklyLeagueTransactions();
 

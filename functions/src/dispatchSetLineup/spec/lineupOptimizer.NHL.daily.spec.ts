@@ -1,5 +1,5 @@
 import { assert, describe, expect, test, vi } from "vitest";
-import type { ITeamOptimizer } from "../../common/interfaces/ITeam.js";
+import type { TeamOptimizer } from "../../common/interfaces/Team.js";
 import * as yahooStartingPlayerService from "../../common/services/yahooAPI/yahooStartingPlayer.service.js";
 import { LineupOptimizer } from "../classes/LineupOptimizer.js";
 
@@ -15,7 +15,7 @@ vi.mock("firebase-admin/app", () => ({
 describe("Test LineupOptimizer Class NHL Daily", () => {
   // *** Test Optimization of Lineup using healthy players ***
   test("Already optimal roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/optimalRoster.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/optimalRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -29,7 +29,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("One active C on bench, spare C slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/oneMoveRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/oneMoveRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -45,7 +45,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("One active C on bench, one non-active C on roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/oneSwapRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/oneSwapRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -61,7 +61,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Different active C on bench, one non-active C on roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/oneSwapRequired2.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/oneSwapRequired2.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -78,7 +78,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two active players on bench, two non-active players on roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/twoSwapsRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/twoSwapsRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -102,7 +102,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two active players on bench, one non-active player on roster, one empty roster spot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/oneSwapOneMoveRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/oneSwapOneMoveRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -122,7 +122,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("All players on bench", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/allPlayersBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/allPlayersBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -168,7 +168,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("No players with games on active roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/allRosterPlayersHaveNoGames.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/allRosterPlayersHaveNoGames.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -229,7 +229,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Lineup with worst players on roster, best players on bench", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/BadOnRosterGoodOnBench.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/BadOnRosterGoodOnBench.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -268,7 +268,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Starting Goalies on Bench using NHL_STARTING_GOALIES array", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench2.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench2.json");
     // mock NHL_STARTING_GOALIES array
     vi.spyOn(
       yahooStartingPlayerService,
@@ -297,7 +297,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Bad goalies in NHL_STARTING_GOALIES array, good goalies with is_starting prop", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench3.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench3.json");
     // mock NHL_STARTING_GOALIES array
     vi.spyOn(
       yahooStartingPlayerService,
@@ -325,7 +325,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Starting Goalies on Bench with no NHL_STARTING_GOALIES array set", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/startingGoaliesOnBench.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -347,7 +347,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
 
   // *** Test Illegal players that should be resolved ***
   test("Healthy not-playing, low score, player on IR, and IR on Bench", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HonIR&IRonBench.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HonIR&IRonBench.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -361,7 +361,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Healthy high score on IR, and IR on Bench", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HHighScoreonIR&IRonBench.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HHighScoreonIR&IRonBench.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -377,7 +377,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Healthy on IR, IR on BN, and empty roster spot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HonIR&EmptyRosterSpot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HonIR&EmptyRosterSpot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -391,7 +391,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Healthy high score on IR, IR on BN, and empty roster spot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HHighScoreonIR&EmptyRosterSpot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HHighScoreonIR&EmptyRosterSpot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -409,7 +409,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Healthy player on IR, and IR+ on Bench with open IR+ slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HonIR&IR+OnRoster.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HonIR&IR+OnRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -421,7 +421,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Healthy player on IR, and IR+ on Bench with no open IR+ slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HonIR&IR+OnRosterNoOpenSlot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HonIR&IR+OnRosterNoOpenSlot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -432,7 +432,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Healthy player on IR+, and IR on Bench with open IR slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HonIR+&IROnRoster.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HonIR+&IROnRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -444,7 +444,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Healthy player on IR+, and IR on Bench with no open IR slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/HonIR+&IROnRosterNoOpenSlot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/HonIR+&IROnRosterNoOpenSlot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -460,7 +460,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("IR+ player on IR, open IR+ slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/IR+onIR&OpenIR+Slot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/IR+onIR&OpenIR+Slot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -473,7 +473,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("IR+ player on IR, no open IR+ slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/IR+onIR&NoOpenIR+Slot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/IR+onIR&NoOpenIR+Slot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -484,7 +484,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("IR+ player on IR, no open IR+ slot, IR player on BN", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/IR+onIR&NoOpenIR+Slot&IRonBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/IR+onIR&NoOpenIR+Slot&IRonBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -500,7 +500,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("NA player on IR, no NA slots on roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&NoNASlotsOnRoster.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&NoNASlotsOnRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -511,7 +511,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("NA player on IR, no NA slots on roster, empty roster position", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&NoNASlotsOnRoster&EmptyRosterPosition.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&NoNASlotsOnRoster&EmptyRosterPosition.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -526,7 +526,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("NA player on IR, open NA slot on roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&OpenNASlotOnRoster.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&OpenNASlotOnRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -541,7 +541,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("NA player on IR, no open NA slot on roster, IR player on Goalie", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&NoOpenNASlotOnRoster&IRonBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/NAonIR&NoOpenNASlotOnRoster&IRonBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -556,7 +556,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two healthy players on IR, one empty roster spot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1EmptyRosterSpot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1EmptyRosterSpot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -569,7 +569,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two healthy players on IR, one empty roster spot, one IR player on BN", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1EmptyRosterSpot&1IRonBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1EmptyRosterSpot&1IRonBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -590,7 +590,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two healthy players on IR, two IR on bench, Healthy G on IR has score of 0", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&2IRonBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&2IRonBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -614,7 +614,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   // TODO: Add test case: playerA on IR (NOT IR+ eligible), playerB on IR+ (IR, NA eligible), open NA spot.
 
   test("Two healthy players on IR, one IR player on BN, no IR+ slots open", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1IRonBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1IRonBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -628,7 +628,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two healthy players on IR, one IR+ player on BN", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1IR+onBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&1IR+onBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -642,7 +642,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two healthy players on IR, two IR+ player on BN", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&2IR+onBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2HealthyOnIR&2IR+onBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -658,7 +658,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("One healthy player on IR, one IR+ player on BN, one IR player on IR+, no spare IR+ slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onBN&1IRonIR+&NoSpareIR+Slot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onBN&1IRonIR+&NoSpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -673,7 +673,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("One healthy player on IR, one IR+ player on LW, one IR player on IR+, no spare IR+ slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onLW&1IRonIR+&NoSpareIR+Slot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onLW&1IRonIR+&NoSpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -689,7 +689,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
 
   // One healthy on IR, one IR on NA, one NA on Util
   test("One healthy on IR, one IR on NA, one NA on Util", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IRonNA&1NAonUtil.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IRonNA&1NAonUtil.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -704,7 +704,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
   // One IR+ on IR, one IR on NA, one NA on IR+
   test("One IR+ on IR, one IR on NA, one NA on IR+", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1IR+onIR&1IRonNA&1NAonIR+.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1IR+onIR&1IRonNA&1NAonIR+.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -719,7 +719,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
   // One IR+ on IR, one IR on NA, one NA on IR+, two other swaps required
   test("One IR+ on IR, one IR on NA, one NA on IR+, two other swaps required", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1IR+onIR&1IRonNA&1NAonIR+2More.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1IR+onIR&1IRonNA&1NAonIR+2More.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -738,7 +738,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
   // One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+ (expect healthy to remain on IR)
   test("One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onIR&1IRonNA&1NAonIR+.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onIR&1IRonNA&1NAonIR+.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -753,7 +753,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
   // One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+, one IR on G
   test("One healthy on IR, one IR+ on IR, one IR on NA, one NA on IR+, one IR on G", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onIR&1IRonNA&1NAonIR+&1IRonG.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IR+onIR&1IRonNA&1NAonIR+&1IRonG.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -770,7 +770,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two IR players on IR+, one IR+ player on BN, no spare IR+ slot, 1 spare IR slot, One HonIR", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&NoSpareIR+Slot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&NoSpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -789,7 +789,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two IR players on IR+, one IR+ player on BN, all other players on BN, One HonIR", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&AllOtherPlayersOnBN.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/2IRonIR+&1IR+onBN&AllOtherPlayersOnBN.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -808,7 +808,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("One healthy player on IR, one IR player on BN, one IR+ player on IR, one spare IR+ slot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IRonBN&1IR+onIR&1SpareIR+Slot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/1HealthyOnIR&1IRonBN&1IR+onIR&1SpareIR+Slot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -824,7 +824,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
 
   // ***Test cases where a player randomly ends up in an illegal position? ie. C on LW? Would yahoo ever remove eligibility?
   test("C stuck on LW, open C position", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/CStuckOnLW.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/CStuckOnLW.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -838,7 +838,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("C stuck on LW, no open C position", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/CStuckOnLWSwapRequired.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/CStuckOnLWSwapRequired.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -853,7 +853,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Worse IR player on bench, better IR player on IR", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/WorseIRPlayerOnBench.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/WorseIRPlayerOnBench.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -868,7 +868,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
 
   // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is open spot
   test("Three way swap with open LW spot", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/threeWaySwapWithOpenLWSpot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/threeWaySwapWithOpenLWSpot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -885,7 +885,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   // BN has Util eligiblity, Util has RW,LW eligiblity, LW is open spot
   // TODO: Problematic test! Infinte loop? Why can't I get anything out of this test?
   test("Two three-way swap with two open LW", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/threeWaySwapsWithTwoOpenLWSpot.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/threeWaySwapsWithTwoOpenLWSpot.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -902,7 +902,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
 
   // Three way swap. BN has RW eligiblity, RW has RW,LW eligiblity, LW is lower score
   test("Specific three way swap", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/threeWaySwapSpecific.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/threeWaySwapSpecific.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -917,7 +917,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Two players on IR/IR+, two empty roster spots", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/twoPlayersOnIRTwoEmptyRosterSpots.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/twoPlayersOnIRTwoEmptyRosterSpots.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -931,7 +931,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("Injured players on BN, not playing players on Roster", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/injuredPlayersOnBenchNotPlayingPlayersOnRoster.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/injuredPlayersOnBenchNotPlayingPlayersOnRoster.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;
@@ -957,7 +957,7 @@ describe("Test LineupOptimizer Class NHL Daily", () => {
   });
 
   test("better player on IR+, worse IR+ player on bench, and even worse player on IR+", () => {
-    const roster: ITeamOptimizer = require("./testRosters/NHL/Daily/betterPlayerOnIRWorseIRPlayerOnBench.json");
+    const roster: TeamOptimizer = require("./testRosters/NHL/Daily/betterPlayerOnIRWorseIRPlayerOnBench.json");
     const lo = new LineupOptimizer(roster);
     lo.optimizeStartingLineup();
     const rosterModification = lo.lineupChanges;

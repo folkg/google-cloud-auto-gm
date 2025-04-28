@@ -16,6 +16,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "exclude": ["**/*.spec.ts", "node_modules"],
+  "exclude": ["node_modules"],
   "include": ["src"]
 }

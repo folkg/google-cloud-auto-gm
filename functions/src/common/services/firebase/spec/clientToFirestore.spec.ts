@@ -20,7 +20,7 @@ describe("clientToFirestore", () => {
   const mockTeam: AngularTeam = {
     uid: "test_uid",
     game_name: "game name",
-    game_code: "game code",
+    game_code: "nhl",
     game_season: "game season",
     game_is_over: false,
     team_key: "team key",

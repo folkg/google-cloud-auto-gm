@@ -1,4 +1,9 @@
 import { beforeAll, describe, expect, it } from "vitest";
+import type {
+  PlayerTransaction,
+  TPlayer,
+} from "../../../../dispatchSetLineup/interfaces/PlayerTransaction.js";
+import { createMock } from "../../../spec/createMock.js";
 import {
   getRostersByTeamID,
   getTopAvailablePlayers,
@@ -11,11 +16,7 @@ const integrationTestsEnabled = process.env.INTEGRATION_TEST_ENABLED === "true";
 describe.runIf(integrationTestsEnabled)("Playground", () => {
   it("will get the roster for a specific team and day", async () => {
     const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff BarnesintegrationTestsEnabled
-    const _yahooJSON = await getRostersByTeamID(
-      ["418.l.16955.t.10"],
-      uid,
-      "2023-08-13",
-    );
+    await getRostersByTeamID(["418.l.16955.t.10"], uid, "2023-08-13");
   });
 });
 
@@ -36,30 +37,30 @@ describe.runIf(integrationTestsEnabled)(
       async () => {
         const uid = "xAyXmaHKO3aRm9J3fnj2rgZRPnX2"; // Jeff Barnes
 
-        const transaction = {
+        const transaction = createMock<PlayerTransaction>({
           sameDayTransactions: true,
           teamKey: "418.l.201581.t.1",
           players: [
-            {
+            createMock<TPlayer>({
               playerKey: "418.p.5295",
               transactionType: "drop",
-            },
-            {
+            }),
+            createMock<TPlayer>({
               playerKey: "418.p.5069",
               transactionType: "add",
-            },
+            }),
           ],
-        };
+        });
 
         expect.assertions(1);
-        let result = false;
+        let result: unknown;
         try {
           result = await postRosterAddDropTransaction(transaction, uid);
         } catch (error) {
           console.error(error);
           expect(error).toBeDefined();
         }
-        expect(result).toBe(true);
+        expect(result).toBeDefined();
       },
       10000,
     );

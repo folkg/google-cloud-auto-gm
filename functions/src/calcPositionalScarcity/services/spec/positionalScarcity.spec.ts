@@ -10,8 +10,11 @@ import {
 import * as constants from "../../../common/helpers/constants";
 import type { FirestoreTeam } from "../../../common/interfaces/Team";
 import * as firestoreService from "../../../common/services/firebase/firestore.service";
+import { YahooAPIPlayerResponseSchema } from "../../../common/services/yahooAPI/interfaces/YahooAPIResponse";
 import * as yahooAPI from "../../../common/services/yahooAPI/yahooAPI.service";
+import { createMock } from "../../../common/spec/createMock";
 import {
+  type ReplacementLevels,
   clearScarcityOffsets,
   generateFetchPlayerPromises,
   getLeagueSpecificScarcityOffsets,
@@ -20,9 +23,13 @@ import {
   getScarcityOffsetsForTeam,
   recalculateScarcityOffsetsForAll,
 } from "../positionalScarcity.service";
-import playersD from "./playersD.json" assert { type: "json" };
-import playersF from "./playersF.json" assert { type: "json" };
-import playersG from "./playersG.json" assert { type: "json" };
+import playersDJSON from "./playersD.json" assert { type: "json" };
+import playersFJSON from "./playersF.json" assert { type: "json" };
+import playersGJSON from "./playersG.json" assert { type: "json" };
+
+const playersD = YahooAPIPlayerResponseSchema.assert(playersDJSON);
+const playersF = YahooAPIPlayerResponseSchema.assert(playersFJSON);
+const playersG = YahooAPIPlayerResponseSchema.assert(playersGJSON);
 
 const numbersArr100 = Array.from({ length: 100 }, (_, i) => 100 - i);
 
@@ -54,7 +61,7 @@ describe("getReplacementLevel", () => {
     vi.clearAllMocks();
   });
   it("should return the correct replacement level for a team with no compound positions", () => {
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nhl",
       roster_positions: {
         C: 2,
@@ -67,8 +74,8 @@ describe("getReplacementLevel", () => {
         NA: 2,
       },
       num_teams: 12,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       C: 24,
       LW: 24,
       RW: 24,
@@ -85,7 +92,7 @@ describe("getReplacementLevel", () => {
     );
   });
   it("should return the correct replacement level for a team with compound positions", () => {
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nhl",
       roster_positions: {
         C: 2,
@@ -96,8 +103,8 @@ describe("getReplacementLevel", () => {
         Util: 4,
       },
       num_teams: 12,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       C: 33.6,
       LW: 33.6,
       RW: 33.6,
@@ -119,7 +126,7 @@ describe("getReplacementLevel", () => {
     );
   });
   it("should return the correct replacement level for a team with compound positions and BN positions", () => {
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nhl",
       roster_positions: {
         C: 2,
@@ -131,8 +138,8 @@ describe("getReplacementLevel", () => {
         BN: 5,
       },
       num_teams: 12,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       C: 43.6,
       LW: 43.6,
       RW: 43.6,
@@ -154,7 +161,7 @@ describe("getReplacementLevel", () => {
     );
   });
   it("should return the correct replacement level for a team with compound positions, BN positions, and max extra players (NFL)", () => {
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nfl",
       roster_positions: {
         QB: 1,
@@ -170,8 +177,8 @@ describe("getReplacementLevel", () => {
         IL: 2,
       },
       num_teams: 12,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       QB: 24,
       RB: 57.6,
       WR: 57.6,
@@ -196,7 +203,7 @@ describe("getReplacementLevel", () => {
     );
   });
   it("should return the correct replacement level for a team with compound positions (with no subs listed) and BN positions (NHL)", () => {
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nhl",
       roster_positions: {
         F: 6,
@@ -205,8 +212,8 @@ describe("getReplacementLevel", () => {
         BN: 6,
       },
       num_teams: 12,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       F: 108,
       D: 72,
       G: 36,
@@ -226,7 +233,7 @@ describe("getReplacementLevel", () => {
       nhl: { D: 2, G: 1 },
     });
 
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nhl",
       roster_positions: {
         F: 6,
@@ -236,8 +243,8 @@ describe("getReplacementLevel", () => {
         BN: 6,
       },
       num_teams: 12,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       D: 72, // 48 + 14.4 (from Util) = 62.4 + 24 (from BN) = 86.4 ! Too much. Should cap at 72, then allocate elsewhere.
       G: 36, // 24 + (72 - 9.6) * (2/8) = 39.6 ! Too much. Should cap at 36, then allocate elsewhere.
       F: 144, // 72 + 21.6 (from Util) = 93.6 + the rest = 144
@@ -258,7 +265,7 @@ describe("getReplacementLevel", () => {
       mlb: { P: 2 },
     });
 
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "mlb",
       roster_positions: {
         C: 1,
@@ -274,8 +281,8 @@ describe("getReplacementLevel", () => {
         NA: 2,
       },
       num_teams: 12,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       C: 24,
       "1B": 24,
       "2B": 24,
@@ -296,7 +303,7 @@ describe("getReplacementLevel", () => {
 
   it("should return the correct replacement level for a team with nested compound positions (W inside Util)", () => {
     const NUM_TEAMS = 12;
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nhl",
       roster_positions: {
         BN: 4,
@@ -311,9 +318,9 @@ describe("getReplacementLevel", () => {
         W: 1,
       },
       num_teams: NUM_TEAMS,
-    } as unknown as FirestoreTeam;
+    });
 
-    const expectedOutput = {
+    const expectedOutput: ReplacementLevels = {
       C: 2 * NUM_TEAMS + 4 * (2 / 12) * NUM_TEAMS + 2 * (2 / 10) * NUM_TEAMS,
       D: 4 * NUM_TEAMS + 4 * (4 / 12) * NUM_TEAMS + 4 * (2 / 10) * NUM_TEAMS,
       G: 2 * NUM_TEAMS + 4 * (2 / 12) * NUM_TEAMS,
@@ -356,7 +363,7 @@ describe("recalculateScarcityOffsetsForAll", () => {
   };
 
   beforeEach(() => {
-    getTopPlayersGeneralSpy.mockResolvedValue({});
+    getTopPlayersGeneralSpy.mockResolvedValue(createMock({}));
     getPositionalScarcityOffsetsSpy.mockResolvedValue(scarcityOffsets);
     clearScarcityOffsets();
   });
@@ -473,7 +480,7 @@ describe("recalculateScarcityOffsetsForAll", () => {
   });
 });
 describe("getScarcityOffsetsForLeague", () => {
-  const team = {
+  const team = createMock<FirestoreTeam>({
     game_code: "nhl",
     roster_positions: {
       F: 6,
@@ -481,7 +488,7 @@ describe("getScarcityOffsetsForLeague", () => {
       G: 2,
     },
     num_teams: 12,
-  } as unknown as FirestoreTeam;
+  });
   const league = team.game_code;
   const replacementLevels = { F: 72, D: 48, G: 24 };
 
@@ -498,7 +505,7 @@ describe("getScarcityOffsetsForLeague", () => {
   });
 
   beforeEach(() => {
-    getTopPlayersGeneralSpy.mockResolvedValue({});
+    getTopPlayersGeneralSpy.mockResolvedValue(createMock({}));
     clearScarcityOffsets();
   });
 
@@ -556,7 +563,9 @@ describe("getScarcityOffsetsForLeague", () => {
   it("should return empty if loading/calculating scarcity offsets fails", async () => {
     getPositionalScarcityOffsetsSpy.mockResolvedValueOnce({});
     // Don't actually fetch players from yahoo
-    vi.spyOn(yahooAPI, "getTopPlayersGeneral").mockResolvedValue({});
+    vi.spyOn(yahooAPI, "getTopPlayersGeneral").mockResolvedValue(
+      createMock({}),
+    );
 
     const result = await getLeagueSpecificScarcityOffsets(
       league,
@@ -652,7 +661,7 @@ describe("getScarcityOffsetsForTeam", () => {
   });
 
   beforeEach(() => {
-    getTopPlayersGeneralSpy.mockResolvedValue({});
+    getTopPlayersGeneralSpy.mockResolvedValue(createMock({}));
     clearScarcityOffsets();
   });
 
@@ -661,7 +670,7 @@ describe("getScarcityOffsetsForTeam", () => {
   });
 
   it("should return the correct offsets (including compound positions) for an NFL team with no explicit QB position", async () => {
-    const team = {
+    const team = createMock<FirestoreTeam>({
       game_code: "nfl",
       roster_positions: {
         RB: 2,
@@ -676,8 +685,8 @@ describe("getScarcityOffsetsForTeam", () => {
         IL: 2,
       },
       num_teams: 6,
-    } as unknown as FirestoreTeam;
-    const expectedOutput = {
+    });
+    const expectedOutput: ReplacementLevels = {
       RB: 70,
       WR: 70,
       TE: 86,
@@ -707,7 +716,7 @@ describe("generateFetchPlayerPromises", () => {
   });
 
   beforeEach(() => {
-    getTopPlayersGeneralSpy.mockResolvedValue({});
+    getTopPlayersGeneralSpy.mockResolvedValue(createMock({}));
   });
 
   afterEach(() => {

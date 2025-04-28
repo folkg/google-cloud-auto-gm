@@ -529,6 +529,7 @@ describe("Swap players", () => {
     lo.addCandidates = require("./topAvailablePlayers/MLBCandidates3.json");
     lo.generateSwapPlayerTransactions();
     const playerTransactions = lo.playerTransactions;
+    assert(playerTransactions);
 
     const firstAddedPositions = playerTransactions[0].players
       .filter((p) => p.transactionType === "add")
@@ -817,7 +818,6 @@ describe("Combination Drops or Adds", () => {
     lo.generateDropPlayerTransactions();
     lo.generateAddPlayerTransactions();
     lo.generateSwapPlayerTransactions();
-    const _lineupChanges = lo.lineupChanges;
     const playerTransactions = lo.playerTransactions;
 
     const addedPitcherCount = playerTransactions?.flatMap((t) =>
