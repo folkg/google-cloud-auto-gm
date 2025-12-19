@@ -15,7 +15,7 @@
         "js2xmlparser": "5.0.0",
         "lodash": "4.17.21",
         "p-limit": "6.2.0",
-        "spacetime": "7.10.0",
+        "spacetime": "7.12.0",
         "superstruct": "2.0.2",
       },
       "devDependencies": {
@@ -1488,7 +1488,7 @@
 
     "source-map-support": ["source-map-support@0.5.13", "", { "dependencies": { "buffer-from": "^1.0.0", "source-map": "^0.6.0" } }, "sha512-SHSKFHadjVA5oR4PPqhtAVdcBWwRYVd6g6cAXnIbRiIwc2EhPrTuKUBdSLvlEKyIP3GCf89fltvcZiP9MMFA1w=="],
 
-    "spacetime": ["spacetime@7.10.0", "", {}, "sha512-tanJSLq0/+Qvq1bmK0Nh2Ppk0lFOkGwpes29/64E6hyK4kn5d6LPt65Eidm2Xaf3gLvmG8KaXh8LmeymPlw0Aw=="],
+    "spacetime": ["spacetime@7.12.0", "", {}, "sha512-n7iQdr/oiTc0Yc0m5/8lpqRPMxuD9c6Yk7F8Np5+jH7tawt+dJZeCLDHNnr2kP5tUlv1H0fazdCOE9EQUv0B3g=="],
 
     "sprintf-js": ["sprintf-js@1.0.3", "", {}, "sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g=="],
 
