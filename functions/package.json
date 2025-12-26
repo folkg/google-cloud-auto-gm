@@ -31,7 +31,7 @@
     "axios": "1.13.2",
     "axios-retry": "4.5.0",
     "dotenv": "16.6.1",
-    "fast-xml-parser": "4.5.3",
+    "fast-xml-parser": "5.3.3",
     "firebase-admin": "13.6.0",
     "firebase-functions": "6.6.0",
     "js2xmlparser": "5.0.0",
