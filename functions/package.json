@@ -22,7 +22,7 @@
     "coverage": "vitest --coverage --silent"
   },
   "engines": {
-    "node": "22"
+    "node": "24"
   },
   "type": "module",
   "main": "lib/index.js",
